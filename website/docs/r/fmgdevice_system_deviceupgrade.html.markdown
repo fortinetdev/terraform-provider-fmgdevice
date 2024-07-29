@@ -1,0 +1,78 @@
+---
+subcategory: "No Category"
+layout: "fmgdevice"
+page_title: "FortiManager Device: fmgdevice_system_deviceupgrade"
+description: |-
+  Independent upgrades for managed devices.
+---
+
+# fmgdevice_system_deviceupgrade
+Independent upgrades for managed devices.
+
+~> The following variables have sub resource. Avoid using them together, otherwise conflicts and overwrites may occur.
+>- `known_ha_members`: `fmgdevice_system_deviceupgrade_knownhamembers`
+
+
+
+## Example Usage
+
+```hcl
+resource "fmgdevice_system_deviceupgrade" "trname" {
+  device_type          = "fortiswitch"
+  failure_reason       = "node-failed"
+  ha_reboot_controller = "your own value"
+  known_ha_members {
+    serial = "your own value"
+  }
+
+  maximum_minutes = 10
+  serial          = "your own value"
+  device_name     = var.device_name # not required if setting is at provider
+}
+```
+
+## Argument Reference
+
+
+The following arguments are supported:
+
+* `device_name` - FortiManager managed device name. This variable is used in the request URL. If not specified, it will inherit the variable `device_name` of the provider.
+
+* `device_type` - Fortinet device type. Valid values: `fortigate`, `fortiswitch`, `fortiap`, `fortiextender`.
+
+* `failure_reason` - Upgrade failure reason. Valid values: `none`, `internal`, `timeout`, `device-type-unsupported`, `download-failed`, `device-missing`, `version-unavailable`, `staging-failed`, `reboot-failed`, `device-not-reconnected`, `node-not-ready`, `no-final-confirmation`, `no-confirmation-query`, `config-error-log-nonempty`, `node-failed`, `csf-tree-not-supported`.
+
+* `ha_reboot_controller` - Serial number of the FortiGate unit that will control the reboot process for the federated upgrade of the HA cluster.
+* `known_ha_members` - Known-Ha-Members. The structure of `known_ha_members` block is documented below.
+* `maximum_minutes` - Maximum number of minutes to allow for immediate upgrade preparation.
+* `serial` - Serial number of the node to include.
+* `setup_time` - Upgrade preparation start time in UTC (hh:mm yyyy/mm/dd UTC).
+* `status` - Current status of the upgrade. Valid values: `disabled`, `initialized`, `downloading`, `ready`, `cancelled`, `confirmed`, `done`, `failed`, `device-disconnected`, `staging`, `final-check`, `upgrade-devices`, `coordinating`.
+
+* `time` - Scheduled upgrade execution time in UTC (hh:mm yyyy/mm/dd UTC).
+* `timing` - Run immediately or at a scheduled time. Valid values: `immediate`, `scheduled`.
+
+* `upgrade_path` - Fortinet OS image versions to upgrade through in major-minor-patch format, such as 7-0-4.
+* `dynamic_sort_subtable` - true or false, set this parameter to true when using dynamic for_each + toset to configure and sort sub-tables, please do not set this parameter when configuring static sub-tables.
+
+The `known_ha_members` block supports:
+
+* `serial` - Serial number of HA member
+
+
+## Attribute Reference
+
+In addition to all the above arguments, the following attributes are exported:
+* `id` - an identifier for the resource with format {{serial}}.
+
+## Import
+
+System DeviceUpgrade can be imported using any of these accepted formats:
+```
+Set import_options = ["device_name=YOUR_VALUE"] in the provider section.
+
+$ export "FORTIMANAGER_IMPORT_TABLE"="true"
+$ terraform import fmgdevice_system_deviceupgrade.labelname {{serial}}
+$ unset "FORTIMANAGER_IMPORT_TABLE"
+```
+

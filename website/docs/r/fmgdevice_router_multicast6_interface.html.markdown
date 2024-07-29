@@ -1,0 +1,56 @@
+---
+subcategory: "No Category"
+layout: "fmgdevice"
+page_title: "FortiManager Device: fmgdevice_router_multicast6_interface"
+description: |-
+  Protocol Independent Multicast (PIM) interfaces.
+---
+
+# fmgdevice_router_multicast6_interface
+Protocol Independent Multicast (PIM) interfaces.
+
+~> This resource is a sub resource for variable `interface` of resource `fmgdevice_router_multicast6`. Conflict and overwrite may occur if use both of them.
+
+
+
+## Example Usage
+
+```hcl
+resource "fmgdevice_router_multicast6_interface" "trname" {
+  hello_holdtime = 10
+  hello_interval = 10
+  name           = "your own value"
+  device_name    = var.device_name # not required if setting is at provider
+  device_vdom    = var.device_vdom # not required if setting is at provider
+}
+```
+
+## Argument Reference
+
+
+The following arguments are supported:
+
+* `device_name` - FortiManager managed device name. This variable is used in the request URL. If not specified, it will inherit the variable `device_name` of the provider.
+* `device_vdom` - FortiManager managed device vdom. This variable is used in the request URL. If not specified, it will inherit the variable `device_vdom` of the provider.
+
+* `hello_holdtime` - Time before old neighbor information expires in seconds (1 - 65535, default = 105).
+* `hello_interval` - Interval between sending PIM hello messages in seconds (1 - 65535, default = 30).
+* `name` - Interface name.
+
+
+## Attribute Reference
+
+In addition to all the above arguments, the following attributes are exported:
+* `id` - an identifier for the resource with format {{name}}.
+
+## Import
+
+Router Multicast6Interface can be imported using any of these accepted formats:
+```
+Set import_options = ["device_name=YOUR_VALUE", "device_vdom=YOUR_VALUE"] in the provider section.
+
+$ export "FORTIMANAGER_IMPORT_TABLE"="true"
+$ terraform import fmgdevice_router_multicast6_interface.labelname {{name}}
+$ unset "FORTIMANAGER_IMPORT_TABLE"
+```
+
