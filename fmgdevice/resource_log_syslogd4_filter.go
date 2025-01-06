@@ -87,6 +87,11 @@ func resourceLogSyslogd4Filter() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"http_transaction": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
 			"local_traffic": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -314,6 +319,10 @@ func flattenLogSyslogd4FilterGtp(v interface{}, d *schema.ResourceData, pre stri
 	return v
 }
 
+func flattenLogSyslogd4FilterHttpTransaction(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenLogSyslogd4FilterLocalTraffic(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -426,6 +435,16 @@ func refreshObjectLogSyslogd4Filter(d *schema.ResourceData, o map[string]interfa
 			}
 		} else {
 			return fmt.Errorf("Error reading gtp: %v", err)
+		}
+	}
+
+	if err = d.Set("http_transaction", flattenLogSyslogd4FilterHttpTransaction(o["http-transaction"], d, "http_transaction")); err != nil {
+		if vv, ok := fortiAPIPatch(o["http-transaction"], "LogSyslogd4Filter-HttpTransaction"); ok {
+			if err = d.Set("http_transaction", vv); err != nil {
+				return fmt.Errorf("Error reading http_transaction: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading http_transaction: %v", err)
 		}
 	}
 
@@ -582,6 +601,10 @@ func expandLogSyslogd4FilterGtp(d *schema.ResourceData, v interface{}, pre strin
 	return v, nil
 }
 
+func expandLogSyslogd4FilterHttpTransaction(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandLogSyslogd4FilterLocalTraffic(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -669,6 +692,15 @@ func getObjectLogSyslogd4Filter(d *schema.ResourceData) (*map[string]interface{}
 			return &obj, err
 		} else if t != nil {
 			obj["gtp"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("http_transaction"); ok || d.HasChange("http_transaction") {
+		t, err := expandLogSyslogd4FilterHttpTransaction(d, v, "http_transaction")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["http-transaction"] = t
 		}
 	}
 

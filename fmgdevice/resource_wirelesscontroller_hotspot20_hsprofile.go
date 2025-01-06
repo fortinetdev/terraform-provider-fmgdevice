@@ -238,6 +238,27 @@ func resourceWirelessControllerHotspot20HsProfile() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"wba_charging_currency": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"wba_charging_rate": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+			},
+			"wba_data_clearing_provider": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"wba_financial_clearing_provider": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"wba_open_roaming": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
 			"wnm_sleep_mode": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -543,6 +564,26 @@ func flattenWirelessControllerHotspot20HsProfileVenueUrl(v interface{}, d *schem
 
 func flattenWirelessControllerHotspot20HsProfileWanMetrics(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return flattenStringList(v)
+}
+
+func flattenWirelessControllerHotspot20HsProfileWbaChargingCurrency(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWirelessControllerHotspot20HsProfileWbaChargingRate(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWirelessControllerHotspot20HsProfileWbaDataClearingProvider(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWirelessControllerHotspot20HsProfileWbaFinancialClearingProvider(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWirelessControllerHotspot20HsProfileWbaOpenRoaming(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
 }
 
 func flattenWirelessControllerHotspot20HsProfileWnmSleepMode(v interface{}, d *schema.ResourceData, pre string) interface{} {
@@ -922,6 +963,56 @@ func refreshObjectWirelessControllerHotspot20HsProfile(d *schema.ResourceData, o
 		}
 	}
 
+	if err = d.Set("wba_charging_currency", flattenWirelessControllerHotspot20HsProfileWbaChargingCurrency(o["wba-charging-currency"], d, "wba_charging_currency")); err != nil {
+		if vv, ok := fortiAPIPatch(o["wba-charging-currency"], "WirelessControllerHotspot20HsProfile-WbaChargingCurrency"); ok {
+			if err = d.Set("wba_charging_currency", vv); err != nil {
+				return fmt.Errorf("Error reading wba_charging_currency: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading wba_charging_currency: %v", err)
+		}
+	}
+
+	if err = d.Set("wba_charging_rate", flattenWirelessControllerHotspot20HsProfileWbaChargingRate(o["wba-charging-rate"], d, "wba_charging_rate")); err != nil {
+		if vv, ok := fortiAPIPatch(o["wba-charging-rate"], "WirelessControllerHotspot20HsProfile-WbaChargingRate"); ok {
+			if err = d.Set("wba_charging_rate", vv); err != nil {
+				return fmt.Errorf("Error reading wba_charging_rate: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading wba_charging_rate: %v", err)
+		}
+	}
+
+	if err = d.Set("wba_data_clearing_provider", flattenWirelessControllerHotspot20HsProfileWbaDataClearingProvider(o["wba-data-clearing-provider"], d, "wba_data_clearing_provider")); err != nil {
+		if vv, ok := fortiAPIPatch(o["wba-data-clearing-provider"], "WirelessControllerHotspot20HsProfile-WbaDataClearingProvider"); ok {
+			if err = d.Set("wba_data_clearing_provider", vv); err != nil {
+				return fmt.Errorf("Error reading wba_data_clearing_provider: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading wba_data_clearing_provider: %v", err)
+		}
+	}
+
+	if err = d.Set("wba_financial_clearing_provider", flattenWirelessControllerHotspot20HsProfileWbaFinancialClearingProvider(o["wba-financial-clearing-provider"], d, "wba_financial_clearing_provider")); err != nil {
+		if vv, ok := fortiAPIPatch(o["wba-financial-clearing-provider"], "WirelessControllerHotspot20HsProfile-WbaFinancialClearingProvider"); ok {
+			if err = d.Set("wba_financial_clearing_provider", vv); err != nil {
+				return fmt.Errorf("Error reading wba_financial_clearing_provider: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading wba_financial_clearing_provider: %v", err)
+		}
+	}
+
+	if err = d.Set("wba_open_roaming", flattenWirelessControllerHotspot20HsProfileWbaOpenRoaming(o["wba-open-roaming"], d, "wba_open_roaming")); err != nil {
+		if vv, ok := fortiAPIPatch(o["wba-open-roaming"], "WirelessControllerHotspot20HsProfile-WbaOpenRoaming"); ok {
+			if err = d.Set("wba_open_roaming", vv); err != nil {
+				return fmt.Errorf("Error reading wba_open_roaming: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading wba_open_roaming: %v", err)
+		}
+	}
+
 	if err = d.Set("wnm_sleep_mode", flattenWirelessControllerHotspot20HsProfileWnmSleepMode(o["wnm-sleep-mode"], d, "wnm_sleep_mode")); err != nil {
 		if vv, ok := fortiAPIPatch(o["wnm-sleep-mode"], "WirelessControllerHotspot20HsProfile-WnmSleepMode"); ok {
 			if err = d.Set("wnm_sleep_mode", vv); err != nil {
@@ -1087,6 +1178,26 @@ func expandWirelessControllerHotspot20HsProfileVenueUrl(d *schema.ResourceData, 
 
 func expandWirelessControllerHotspot20HsProfileWanMetrics(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandWirelessControllerHotspot20HsProfileWbaChargingCurrency(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWirelessControllerHotspot20HsProfileWbaChargingRate(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWirelessControllerHotspot20HsProfileWbaDataClearingProvider(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWirelessControllerHotspot20HsProfileWbaFinancialClearingProvider(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWirelessControllerHotspot20HsProfileWbaOpenRoaming(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
 }
 
 func expandWirelessControllerHotspot20HsProfileWnmSleepMode(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
@@ -1426,6 +1537,51 @@ func getObjectWirelessControllerHotspot20HsProfile(d *schema.ResourceData) (*map
 			return &obj, err
 		} else if t != nil {
 			obj["wan-metrics"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("wba_charging_currency"); ok || d.HasChange("wba_charging_currency") {
+		t, err := expandWirelessControllerHotspot20HsProfileWbaChargingCurrency(d, v, "wba_charging_currency")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["wba-charging-currency"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("wba_charging_rate"); ok || d.HasChange("wba_charging_rate") {
+		t, err := expandWirelessControllerHotspot20HsProfileWbaChargingRate(d, v, "wba_charging_rate")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["wba-charging-rate"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("wba_data_clearing_provider"); ok || d.HasChange("wba_data_clearing_provider") {
+		t, err := expandWirelessControllerHotspot20HsProfileWbaDataClearingProvider(d, v, "wba_data_clearing_provider")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["wba-data-clearing-provider"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("wba_financial_clearing_provider"); ok || d.HasChange("wba_financial_clearing_provider") {
+		t, err := expandWirelessControllerHotspot20HsProfileWbaFinancialClearingProvider(d, v, "wba_financial_clearing_provider")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["wba-financial-clearing-provider"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("wba_open_roaming"); ok || d.HasChange("wba_open_roaming") {
+		t, err := expandWirelessControllerHotspot20HsProfileWbaOpenRoaming(d, v, "wba_open_roaming")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["wba-open-roaming"] = t
 		}
 	}
 

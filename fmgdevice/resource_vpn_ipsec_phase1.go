@@ -55,6 +55,48 @@ func resourceVpnIpsecPhase1() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"addke1": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Computed: true,
+			},
+			"addke2": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Computed: true,
+			},
+			"addke3": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Computed: true,
+			},
+			"addke4": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Computed: true,
+			},
+			"addke5": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Computed: true,
+			},
+			"addke6": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Computed: true,
+			},
+			"addke7": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Computed: true,
+			},
 			"assign_ip": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -92,6 +134,11 @@ func resourceVpnIpsecPhase1() *schema.Resource {
 			},
 			"auto_negotiate": &schema.Schema{
 				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+			"auto_transport_threshold": &schema.Schema{
+				Type:     schema.TypeInt,
 				Optional: true,
 				Computed: true,
 			},
@@ -452,6 +499,10 @@ func resourceVpnIpsecPhase1() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
+			"ipv6_auto_linklocal": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 			"ipv6_dns_server1": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -711,6 +762,12 @@ func resourceVpnIpsecPhase1() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"remote_gw_ztna_tags": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Computed: true,
+			},
 			"remote_gw6_country": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -755,6 +812,10 @@ func resourceVpnIpsecPhase1() *schema.Resource {
 				Computed: true,
 			},
 			"send_cert_chain": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"shared_idle_timeout": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 			},
@@ -979,6 +1040,34 @@ func flattenVpnIpsecPhase1AddRoute(v interface{}, d *schema.ResourceData, pre st
 	return v
 }
 
+func flattenVpnIpsecPhase1Addke1(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
+func flattenVpnIpsecPhase1Addke2(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
+func flattenVpnIpsecPhase1Addke3(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
+func flattenVpnIpsecPhase1Addke4(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
+func flattenVpnIpsecPhase1Addke5(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
+func flattenVpnIpsecPhase1Addke6(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
+func flattenVpnIpsecPhase1Addke7(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
 func flattenVpnIpsecPhase1AssignIp(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -1004,6 +1093,10 @@ func flattenVpnIpsecPhase1Authusrgrp(v interface{}, d *schema.ResourceData, pre 
 }
 
 func flattenVpnIpsecPhase1AutoNegotiate(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenVpnIpsecPhase1AutoTransportThreshold(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -1346,6 +1439,10 @@ func flattenVpnIpsecPhase1Ipv4WinsServer2(v interface{}, d *schema.ResourceData,
 	return v
 }
 
+func flattenVpnIpsecPhase1Ipv6AutoLinklocal(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenVpnIpsecPhase1Ipv6DnsServer1(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -1585,6 +1682,10 @@ func flattenVpnIpsecPhase1RemoteGwSubnet(v interface{}, d *schema.ResourceData, 
 	return flattenStringList(v)
 }
 
+func flattenVpnIpsecPhase1RemoteGwZtnaTags(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
 func flattenVpnIpsecPhase1RemoteGw6Country(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -1622,6 +1723,10 @@ func flattenVpnIpsecPhase1SavePassword(v interface{}, d *schema.ResourceData, pr
 }
 
 func flattenVpnIpsecPhase1SendCertChain(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenVpnIpsecPhase1SharedIdleTimeout(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -1702,6 +1807,76 @@ func refreshObjectVpnIpsecPhase1(d *schema.ResourceData, o map[string]interface{
 		}
 	}
 
+	if err = d.Set("addke1", flattenVpnIpsecPhase1Addke1(o["addke1"], d, "addke1")); err != nil {
+		if vv, ok := fortiAPIPatch(o["addke1"], "VpnIpsecPhase1-Addke1"); ok {
+			if err = d.Set("addke1", vv); err != nil {
+				return fmt.Errorf("Error reading addke1: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading addke1: %v", err)
+		}
+	}
+
+	if err = d.Set("addke2", flattenVpnIpsecPhase1Addke2(o["addke2"], d, "addke2")); err != nil {
+		if vv, ok := fortiAPIPatch(o["addke2"], "VpnIpsecPhase1-Addke2"); ok {
+			if err = d.Set("addke2", vv); err != nil {
+				return fmt.Errorf("Error reading addke2: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading addke2: %v", err)
+		}
+	}
+
+	if err = d.Set("addke3", flattenVpnIpsecPhase1Addke3(o["addke3"], d, "addke3")); err != nil {
+		if vv, ok := fortiAPIPatch(o["addke3"], "VpnIpsecPhase1-Addke3"); ok {
+			if err = d.Set("addke3", vv); err != nil {
+				return fmt.Errorf("Error reading addke3: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading addke3: %v", err)
+		}
+	}
+
+	if err = d.Set("addke4", flattenVpnIpsecPhase1Addke4(o["addke4"], d, "addke4")); err != nil {
+		if vv, ok := fortiAPIPatch(o["addke4"], "VpnIpsecPhase1-Addke4"); ok {
+			if err = d.Set("addke4", vv); err != nil {
+				return fmt.Errorf("Error reading addke4: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading addke4: %v", err)
+		}
+	}
+
+	if err = d.Set("addke5", flattenVpnIpsecPhase1Addke5(o["addke5"], d, "addke5")); err != nil {
+		if vv, ok := fortiAPIPatch(o["addke5"], "VpnIpsecPhase1-Addke5"); ok {
+			if err = d.Set("addke5", vv); err != nil {
+				return fmt.Errorf("Error reading addke5: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading addke5: %v", err)
+		}
+	}
+
+	if err = d.Set("addke6", flattenVpnIpsecPhase1Addke6(o["addke6"], d, "addke6")); err != nil {
+		if vv, ok := fortiAPIPatch(o["addke6"], "VpnIpsecPhase1-Addke6"); ok {
+			if err = d.Set("addke6", vv); err != nil {
+				return fmt.Errorf("Error reading addke6: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading addke6: %v", err)
+		}
+	}
+
+	if err = d.Set("addke7", flattenVpnIpsecPhase1Addke7(o["addke7"], d, "addke7")); err != nil {
+		if vv, ok := fortiAPIPatch(o["addke7"], "VpnIpsecPhase1-Addke7"); ok {
+			if err = d.Set("addke7", vv); err != nil {
+				return fmt.Errorf("Error reading addke7: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading addke7: %v", err)
+		}
+	}
+
 	if err = d.Set("assign_ip", flattenVpnIpsecPhase1AssignIp(o["assign-ip"], d, "assign_ip")); err != nil {
 		if vv, ok := fortiAPIPatch(o["assign-ip"], "VpnIpsecPhase1-AssignIp"); ok {
 			if err = d.Set("assign_ip", vv); err != nil {
@@ -1769,6 +1944,16 @@ func refreshObjectVpnIpsecPhase1(d *schema.ResourceData, o map[string]interface{
 			}
 		} else {
 			return fmt.Errorf("Error reading auto_negotiate: %v", err)
+		}
+	}
+
+	if err = d.Set("auto_transport_threshold", flattenVpnIpsecPhase1AutoTransportThreshold(o["auto-transport-threshold"], d, "auto_transport_threshold")); err != nil {
+		if vv, ok := fortiAPIPatch(o["auto-transport-threshold"], "VpnIpsecPhase1-AutoTransportThreshold"); ok {
+			if err = d.Set("auto_transport_threshold", vv); err != nil {
+				return fmt.Errorf("Error reading auto_transport_threshold: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading auto_transport_threshold: %v", err)
 		}
 	}
 
@@ -2496,6 +2681,16 @@ func refreshObjectVpnIpsecPhase1(d *schema.ResourceData, o map[string]interface{
 		}
 	}
 
+	if err = d.Set("ipv6_auto_linklocal", flattenVpnIpsecPhase1Ipv6AutoLinklocal(o["ipv6-auto-linklocal"], d, "ipv6_auto_linklocal")); err != nil {
+		if vv, ok := fortiAPIPatch(o["ipv6-auto-linklocal"], "VpnIpsecPhase1-Ipv6AutoLinklocal"); ok {
+			if err = d.Set("ipv6_auto_linklocal", vv); err != nil {
+				return fmt.Errorf("Error reading ipv6_auto_linklocal: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading ipv6_auto_linklocal: %v", err)
+		}
+	}
+
 	if err = d.Set("ipv6_dns_server1", flattenVpnIpsecPhase1Ipv6DnsServer1(o["ipv6-dns-server1"], d, "ipv6_dns_server1")); err != nil {
 		if vv, ok := fortiAPIPatch(o["ipv6-dns-server1"], "VpnIpsecPhase1-Ipv6DnsServer1"); ok {
 			if err = d.Set("ipv6_dns_server1", vv); err != nil {
@@ -2970,6 +3165,16 @@ func refreshObjectVpnIpsecPhase1(d *schema.ResourceData, o map[string]interface{
 		}
 	}
 
+	if err = d.Set("remote_gw_ztna_tags", flattenVpnIpsecPhase1RemoteGwZtnaTags(o["remote-gw-ztna-tags"], d, "remote_gw_ztna_tags")); err != nil {
+		if vv, ok := fortiAPIPatch(o["remote-gw-ztna-tags"], "VpnIpsecPhase1-RemoteGwZtnaTags"); ok {
+			if err = d.Set("remote_gw_ztna_tags", vv); err != nil {
+				return fmt.Errorf("Error reading remote_gw_ztna_tags: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading remote_gw_ztna_tags: %v", err)
+		}
+	}
+
 	if err = d.Set("remote_gw6_country", flattenVpnIpsecPhase1RemoteGw6Country(o["remote-gw6-country"], d, "remote_gw6_country")); err != nil {
 		if vv, ok := fortiAPIPatch(o["remote-gw6-country"], "VpnIpsecPhase1-RemoteGw6Country"); ok {
 			if err = d.Set("remote_gw6_country", vv); err != nil {
@@ -3067,6 +3272,16 @@ func refreshObjectVpnIpsecPhase1(d *schema.ResourceData, o map[string]interface{
 			}
 		} else {
 			return fmt.Errorf("Error reading send_cert_chain: %v", err)
+		}
+	}
+
+	if err = d.Set("shared_idle_timeout", flattenVpnIpsecPhase1SharedIdleTimeout(o["shared-idle-timeout"], d, "shared_idle_timeout")); err != nil {
+		if vv, ok := fortiAPIPatch(o["shared-idle-timeout"], "VpnIpsecPhase1-SharedIdleTimeout"); ok {
+			if err = d.Set("shared_idle_timeout", vv); err != nil {
+				return fmt.Errorf("Error reading shared_idle_timeout: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading shared_idle_timeout: %v", err)
 		}
 	}
 
@@ -3191,6 +3406,34 @@ func expandVpnIpsecPhase1AddRoute(d *schema.ResourceData, v interface{}, pre str
 	return v, nil
 }
 
+func expandVpnIpsecPhase1Addke1(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandVpnIpsecPhase1Addke2(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandVpnIpsecPhase1Addke3(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandVpnIpsecPhase1Addke4(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandVpnIpsecPhase1Addke5(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandVpnIpsecPhase1Addke6(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandVpnIpsecPhase1Addke7(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
 func expandVpnIpsecPhase1AssignIp(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -3220,6 +3463,10 @@ func expandVpnIpsecPhase1Authusrgrp(d *schema.ResourceData, v interface{}, pre s
 }
 
 func expandVpnIpsecPhase1AutoNegotiate(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandVpnIpsecPhase1AutoTransportThreshold(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -3558,6 +3805,10 @@ func expandVpnIpsecPhase1Ipv4WinsServer2(d *schema.ResourceData, v interface{}, 
 	return v, nil
 }
 
+func expandVpnIpsecPhase1Ipv6AutoLinklocal(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandVpnIpsecPhase1Ipv6DnsServer1(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -3801,6 +4052,10 @@ func expandVpnIpsecPhase1RemoteGwSubnet(d *schema.ResourceData, v interface{}, p
 	return expandStringList(v.([]interface{})), nil
 }
 
+func expandVpnIpsecPhase1RemoteGwZtnaTags(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
 func expandVpnIpsecPhase1RemoteGw6Country(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -3838,6 +4093,10 @@ func expandVpnIpsecPhase1SavePassword(d *schema.ResourceData, v interface{}, pre
 }
 
 func expandVpnIpsecPhase1SendCertChain(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandVpnIpsecPhase1SharedIdleTimeout(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -3911,6 +4170,69 @@ func getObjectVpnIpsecPhase1(d *schema.ResourceData) (*map[string]interface{}, e
 		}
 	}
 
+	if v, ok := d.GetOk("addke1"); ok || d.HasChange("addke1") {
+		t, err := expandVpnIpsecPhase1Addke1(d, v, "addke1")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["addke1"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("addke2"); ok || d.HasChange("addke2") {
+		t, err := expandVpnIpsecPhase1Addke2(d, v, "addke2")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["addke2"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("addke3"); ok || d.HasChange("addke3") {
+		t, err := expandVpnIpsecPhase1Addke3(d, v, "addke3")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["addke3"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("addke4"); ok || d.HasChange("addke4") {
+		t, err := expandVpnIpsecPhase1Addke4(d, v, "addke4")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["addke4"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("addke5"); ok || d.HasChange("addke5") {
+		t, err := expandVpnIpsecPhase1Addke5(d, v, "addke5")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["addke5"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("addke6"); ok || d.HasChange("addke6") {
+		t, err := expandVpnIpsecPhase1Addke6(d, v, "addke6")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["addke6"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("addke7"); ok || d.HasChange("addke7") {
+		t, err := expandVpnIpsecPhase1Addke7(d, v, "addke7")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["addke7"] = t
+		}
+	}
+
 	if v, ok := d.GetOk("assign_ip"); ok || d.HasChange("assign_ip") {
 		t, err := expandVpnIpsecPhase1AssignIp(d, v, "assign_ip")
 		if err != nil {
@@ -3980,6 +4302,15 @@ func getObjectVpnIpsecPhase1(d *schema.ResourceData) (*map[string]interface{}, e
 			return &obj, err
 		} else if t != nil {
 			obj["auto-negotiate"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("auto_transport_threshold"); ok || d.HasChange("auto_transport_threshold") {
+		t, err := expandVpnIpsecPhase1AutoTransportThreshold(d, v, "auto_transport_threshold")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["auto-transport-threshold"] = t
 		}
 	}
 
@@ -4631,6 +4962,15 @@ func getObjectVpnIpsecPhase1(d *schema.ResourceData) (*map[string]interface{}, e
 		}
 	}
 
+	if v, ok := d.GetOk("ipv6_auto_linklocal"); ok || d.HasChange("ipv6_auto_linklocal") {
+		t, err := expandVpnIpsecPhase1Ipv6AutoLinklocal(d, v, "ipv6_auto_linklocal")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["ipv6-auto-linklocal"] = t
+		}
+	}
+
 	if v, ok := d.GetOk("ipv6_dns_server1"); ok || d.HasChange("ipv6_dns_server1") {
 		t, err := expandVpnIpsecPhase1Ipv6DnsServer1(d, v, "ipv6_dns_server1")
 		if err != nil {
@@ -5072,6 +5412,15 @@ func getObjectVpnIpsecPhase1(d *schema.ResourceData) (*map[string]interface{}, e
 		}
 	}
 
+	if v, ok := d.GetOk("remote_gw_ztna_tags"); ok || d.HasChange("remote_gw_ztna_tags") {
+		t, err := expandVpnIpsecPhase1RemoteGwZtnaTags(d, v, "remote_gw_ztna_tags")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["remote-gw-ztna-tags"] = t
+		}
+	}
+
 	if v, ok := d.GetOk("remote_gw6_country"); ok || d.HasChange("remote_gw6_country") {
 		t, err := expandVpnIpsecPhase1RemoteGw6Country(d, v, "remote_gw6_country")
 		if err != nil {
@@ -5159,6 +5508,15 @@ func getObjectVpnIpsecPhase1(d *schema.ResourceData) (*map[string]interface{}, e
 			return &obj, err
 		} else if t != nil {
 			obj["send-cert-chain"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("shared_idle_timeout"); ok || d.HasChange("shared_idle_timeout") {
+		t, err := expandVpnIpsecPhase1SharedIdleTimeout(d, v, "shared_idle_timeout")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["shared-idle-timeout"] = t
 		}
 	}
 

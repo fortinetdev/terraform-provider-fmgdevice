@@ -34,6 +34,20 @@ The following arguments are supported:
 
 * `add_route` - Enable/disable automatic route addition. Valid values: `disable`, `enable`, `phase1`.
 
+* `addke1` - phase2 ADDKE1 group. Valid values: `0`, `1080`, `1081`, `1082`.
+
+* `addke2` - phase2 ADDKE2 group. Valid values: `0`, `1080`, `1081`, `1082`.
+
+* `addke3` - phase2 ADDKE3 group. Valid values: `0`, `1080`, `1081`, `1082`.
+
+* `addke4` - phase2 ADDKE4 group. Valid values: `0`, `1080`, `1081`, `1082`.
+
+* `addke5` - phase2 ADDKE5 group. Valid values: `0`, `1080`, `1081`, `1082`.
+
+* `addke6` - phase2 ADDKE6 group. Valid values: `0`, `1080`, `1081`, `1082`.
+
+* `addke7` - phase2 ADDKE7 group. Valid values: `0`, `1080`, `1081`, `1082`.
+
 * `auto_discovery_forwarder` - Enable/disable forwarding short-cut messages. Valid values: `disable`, `enable`, `phase1`.
 
 * `auto_discovery_sender` - Enable/disable sending short-cut messages. Valid values: `disable`, `enable`, `phase1`.

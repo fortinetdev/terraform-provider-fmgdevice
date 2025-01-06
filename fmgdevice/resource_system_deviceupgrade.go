@@ -48,6 +48,11 @@ func resourceSystemDeviceUpgrade() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
+			"ignore_signing_errors": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
 			"known_ha_members": &schema.Schema{
 				Type:     schema.TypeList,
 				Optional: true,
@@ -241,6 +246,10 @@ func flattenSystemDeviceUpgradeHaRebootController(v interface{}, d *schema.Resou
 	return v
 }
 
+func flattenSystemDeviceUpgradeIgnoreSigningErrors(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenSystemDeviceUpgradeKnownHaMembers(v interface{}, d *schema.ResourceData, pre string) []map[string]interface{} {
 	if v == nil {
 		return nil
@@ -342,6 +351,16 @@ func refreshObjectSystemDeviceUpgrade(d *schema.ResourceData, o map[string]inter
 			}
 		} else {
 			return fmt.Errorf("Error reading ha_reboot_controller: %v", err)
+		}
+	}
+
+	if err = d.Set("ignore_signing_errors", flattenSystemDeviceUpgradeIgnoreSigningErrors(o["ignore-signing-errors"], d, "ignore_signing_errors")); err != nil {
+		if vv, ok := fortiAPIPatch(o["ignore-signing-errors"], "SystemDeviceUpgrade-IgnoreSigningErrors"); ok {
+			if err = d.Set("ignore_signing_errors", vv); err != nil {
+				return fmt.Errorf("Error reading ignore_signing_errors: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading ignore_signing_errors: %v", err)
 		}
 	}
 
@@ -460,6 +479,10 @@ func expandSystemDeviceUpgradeHaRebootController(d *schema.ResourceData, v inter
 	return v, nil
 }
 
+func expandSystemDeviceUpgradeIgnoreSigningErrors(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandSystemDeviceUpgradeKnownHaMembers(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	l := v.([]interface{})
 	result := make([]map[string]interface{}, 0, len(l))
@@ -548,6 +571,15 @@ func getObjectSystemDeviceUpgrade(d *schema.ResourceData) (*map[string]interface
 			return &obj, err
 		} else if t != nil {
 			obj["ha-reboot-controller"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("ignore_signing_errors"); ok || d.HasChange("ignore_signing_errors") {
+		t, err := expandSystemDeviceUpgradeIgnoreSigningErrors(d, v, "ignore_signing_errors")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["ignore-signing-errors"] = t
 		}
 	}
 

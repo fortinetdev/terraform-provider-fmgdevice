@@ -199,6 +199,21 @@ The `lbs` block supports:
 * `aeroscout_mu_timeout` - AeroScout MU mode timeout (0 - 65535 sec, default = 5).
 * `aeroscout_server_ip` - IP address of AeroScout server.
 * `aeroscout_server_port` - AeroScout server UDP listening port.
+* `ble_rtls` - Set BLE Real Time Location Service (RTLS) support (default = none). Valid values: `none`, `polestar`, `evresys`.
+
+* `ble_rtls_accumulation_interval` - Time that measurements should be accumulated in seconds (default = 2).
+* `ble_rtls_asset_addrgrp_list` - Tags and asset addrgrp list to be reported.
+* `ble_rtls_asset_uuid_list1` - Tags and asset UUID list 1 to be reported (string in the format of 'XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX').
+* `ble_rtls_asset_uuid_list2` - Tags and asset UUID list 2 to be reported (string in the format of 'XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX').
+* `ble_rtls_asset_uuid_list3` - Tags and asset UUID list 3 to be reported (string in the format of 'XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX').
+* `ble_rtls_asset_uuid_list4` - Tags and asset UUID list 4 to be reported (string in the format of 'XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX').
+* `ble_rtls_protocol` - Select the protocol to report Measurements, Advertising Data, or Location Data to Cloud Server. (default = WSS). Valid values: `WSS`.
+
+* `ble_rtls_reporting_interval` - Time between reporting accumulated measurements in seconds (default = 2).
+* `ble_rtls_server_fqdn` - FQDN of BLE Real Time Location Service (RTLS) Server.
+* `ble_rtls_server_path` - Path of BLE Real Time Location Service (RTLS) Server.
+* `ble_rtls_server_port` - Port of BLE Real Time Location Service (RTLS) Server (default = 443).
+* `ble_rtls_server_token` - Access Token of BLE Real Time Location Service (RTLS) Server.
 * `ekahau_blink_mode` - Enable/disable Ekahau blink mode (now known as AiRISTA Flow) to track and locate WiFi tags (default = disable). Valid values: `disable`, `enable`.
 
 * `ekahau_tag` - WiFi frame MAC address or WiFi Tag.
@@ -252,6 +267,8 @@ The `radio_1` block supports:
 
 * `n80211d` - Enable/disable 802.11d countryie(default = enable). Valid values: `disable`, `enable`.
 
+* `n80211mc` - Enable/disable 802.11mc responder mode (default = disable). Valid values: `disable`, `enable`.
+
 * `airtime_fairness` - Enable/disable airtime fairness (default = disable). Valid values: `disable`, `enable`.
 
 * `amsdu` - Enable/disable 802.11n AMSDU support. AMSDU can improve performance if supported by your WiFi clients (default = enable). Valid values: `disable`, `enable`.
@@ -261,6 +278,8 @@ The `radio_1` block supports:
 * `ap_sniffer_addr` - MAC address to monitor.
 * `ap_sniffer_bufsize` - Sniffer buffer size (1 - 32 MB, default = 16).
 * `ap_sniffer_chan` - Channel on which to operate the sniffer (default = 6).
+* `ap_sniffer_chan_width` - Channel bandwidth for sniffer. Valid values: `320MHz`, `240MHz`, `160MHz`, `80MHz`, `40MHz`, `20MHz`.
+
 * `ap_sniffer_ctl` - Enable/disable sniffer on WiFi control frame (default = enable). Valid values: `disable`, `enable`.
 
 * `ap_sniffer_data` - Enable/disable sniffer on WiFi data frame (default = enable). Valid values: `disable`, `enable`.
@@ -385,6 +404,8 @@ The `radio_2` block supports:
 
 * `n80211d` - Enable/disable 802.11d countryie(default = enable). Valid values: `disable`, `enable`.
 
+* `n80211mc` - Enable/disable 802.11mc responder mode (default = disable). Valid values: `disable`, `enable`.
+
 * `airtime_fairness` - Enable/disable airtime fairness (default = disable). Valid values: `disable`, `enable`.
 
 * `amsdu` - Enable/disable 802.11n AMSDU support. AMSDU can improve performance if supported by your WiFi clients (default = enable). Valid values: `disable`, `enable`.
@@ -394,6 +415,8 @@ The `radio_2` block supports:
 * `ap_sniffer_addr` - MAC address to monitor.
 * `ap_sniffer_bufsize` - Sniffer buffer size (1 - 32 MB, default = 16).
 * `ap_sniffer_chan` - Channel on which to operate the sniffer (default = 6).
+* `ap_sniffer_chan_width` - Channel bandwidth for sniffer. Valid values: `320MHz`, `240MHz`, `160MHz`, `80MHz`, `40MHz`, `20MHz`.
+
 * `ap_sniffer_ctl` - Enable/disable sniffer on WiFi control frame (default = enable). Valid values: `disable`, `enable`.
 
 * `ap_sniffer_data` - Enable/disable sniffer on WiFi data frame (default = enable). Valid values: `disable`, `enable`.
@@ -518,6 +541,8 @@ The `radio_3` block supports:
 
 * `n80211d` - Enable/disable 802.11d countryie(default = enable). Valid values: `disable`, `enable`.
 
+* `n80211mc` - Enable/disable 802.11mc responder mode (default = disable). Valid values: `disable`, `enable`.
+
 * `airtime_fairness` - Enable/disable airtime fairness (default = disable). Valid values: `disable`, `enable`.
 
 * `amsdu` - Enable/disable 802.11n AMSDU support. AMSDU can improve performance if supported by your WiFi clients (default = enable). Valid values: `disable`, `enable`.
@@ -527,6 +552,8 @@ The `radio_3` block supports:
 * `ap_sniffer_addr` - MAC address to monitor.
 * `ap_sniffer_bufsize` - Sniffer buffer size (1 - 32 MB, default = 16).
 * `ap_sniffer_chan` - Channel on which to operate the sniffer (default = 6).
+* `ap_sniffer_chan_width` - Channel bandwidth for sniffer. Valid values: `320MHz`, `240MHz`, `160MHz`, `80MHz`, `40MHz`, `20MHz`.
+
 * `ap_sniffer_ctl` - Enable/disable sniffer on WiFi control frame (default = enable). Valid values: `disable`, `enable`.
 
 * `ap_sniffer_data` - Enable/disable sniffer on WiFi data frame (default = enable). Valid values: `disable`, `enable`.
@@ -651,6 +678,8 @@ The `radio_4` block supports:
 
 * `n80211d` - Enable/disable 802.11d countryie(default = enable). Valid values: `disable`, `enable`.
 
+* `n80211mc` - Enable/disable 802.11mc responder mode (default = disable). Valid values: `disable`, `enable`.
+
 * `airtime_fairness` - Enable/disable airtime fairness (default = disable). Valid values: `disable`, `enable`.
 
 * `amsdu` - Enable/disable 802.11n AMSDU support. AMSDU can improve performance if supported by your WiFi clients (default = enable). Valid values: `disable`, `enable`.
@@ -660,6 +689,8 @@ The `radio_4` block supports:
 * `ap_sniffer_addr` - MAC address to monitor.
 * `ap_sniffer_bufsize` - Sniffer buffer size (1 - 32 MB, default = 16).
 * `ap_sniffer_chan` - Channel on which to operate the sniffer (default = 6).
+* `ap_sniffer_chan_width` - Channel bandwidth for sniffer. Valid values: `320MHz`, `240MHz`, `160MHz`, `80MHz`, `40MHz`, `20MHz`.
+
 * `ap_sniffer_ctl` - Enable/disable sniffer on WiFi control frame (default = enable). Valid values: `disable`, `enable`.
 
 * `ap_sniffer_data` - Enable/disable sniffer on WiFi data frame (default = enable). Valid values: `disable`, `enable`.

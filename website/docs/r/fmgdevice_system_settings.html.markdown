@@ -149,6 +149,8 @@ The following arguments are supported:
 
 * `gui_fortiextender_controller` - Enable/disable FortiExtender on the GUI. Valid values: `disable`, `enable`.
 
+* `gui_gtp` - Enable/disable Manage general radio packet service (GPRS) protocols on the GUI. Valid values: `disable`, `enable`.
+
 * `gui_icap` - Enable/disable ICAP on the GUI. Valid values: `disable`, `enable`.
 
 * `gui_implicit_policy` - Enable/disable implicit firewall policies on the GUI. Valid values: `disable`, `enable`.
@@ -273,6 +275,8 @@ The following arguments are supported:
 
 * `ngfw_mode` - Next Generation Firewall (NGFW) mode. Valid values: `profile-based`, `policy-based`.
 
+* `nonat_eif_key_sel` - Nonat EIF tuple key selection. Valid values: `dip-only`, `dip-dport`, `dip-dport-proto`.
+
 * `npu_group_id` - npu-group-index.
 * `opmode` - Firewall operation mode (NAT or Transparent). Valid values: `nat`, `transparent`.
 
@@ -284,6 +288,8 @@ The following arguments are supported:
 
 * `sccp_port` - TCP port the SCCP proxy monitors for SCCP traffic (0 - 65535, default = 2000).
 * `sctp_session_without_init` - Enable/disable SCTP session creation without SCTP INIT. Valid values: `disable`, `enable`.
+
+* `ses_denied_multicast_traffic` - Enable/disable including denied multicast session in the session table. Valid values: `disable`, `enable`.
 
 * `ses_denied_traffic` - Enable/disable including denied session in the session table. Valid values: `disable`, `enable`.
 

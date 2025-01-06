@@ -178,7 +178,7 @@ func resourceSwitchControllerAutoConfigDefaultRead(d *schema.ResourceData, m int
 }
 
 func flattenSwitchControllerAutoConfigDefaultFgtPolicy(v interface{}, d *schema.ResourceData, pre string) interface{} {
-	return v
+	return convintflist2str(v, d.Get(pre))
 }
 
 func flattenSwitchControllerAutoConfigDefaultIclPolicy(v interface{}, d *schema.ResourceData, pre string) interface{} {
@@ -232,7 +232,7 @@ func flattenSwitchControllerAutoConfigDefaultFortiTestDebug(d *schema.ResourceDa
 }
 
 func expandSwitchControllerAutoConfigDefaultFgtPolicy(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
-	return v, nil
+	return convstr2list(v, nil), nil
 }
 
 func expandSwitchControllerAutoConfigDefaultIclPolicy(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {

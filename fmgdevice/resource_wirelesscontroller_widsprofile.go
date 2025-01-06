@@ -107,10 +107,12 @@ func resourceWirelessControllerWidsProfile() *schema.Resource {
 			"assoc_flood_thresh": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"assoc_flood_time": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"assoc_frame_flood": &schema.Schema{
 				Type:     schema.TypeString,
@@ -120,10 +122,12 @@ func resourceWirelessControllerWidsProfile() *schema.Resource {
 			"auth_flood_thresh": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"auth_flood_time": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"auth_frame_flood": &schema.Schema{
 				Type:     schema.TypeString,

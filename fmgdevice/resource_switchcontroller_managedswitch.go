@@ -665,6 +665,10 @@ func resourceSwitchControllerManagedSwitch() *schema.Resource {
 							Type:     schema.TypeString,
 							Optional: true,
 						},
+						"log_mac_event": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
 						"loop_guard": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
@@ -741,6 +745,10 @@ func resourceSwitchControllerManagedSwitch() *schema.Resource {
 						},
 						"pause_meter_resume": &schema.Schema{
 							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"pd_capable": &schema.Schema{
+							Type:     schema.TypeInt,
 							Optional: true,
 						},
 						"poe_capable": &schema.Schema{
@@ -820,6 +828,12 @@ func resourceSwitchControllerManagedSwitch() *schema.Resource {
 						"ptp_status": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+						},
+						"qnq": &schema.Schema{
+							Type:     schema.TypeSet,
+							Elem:     &schema.Schema{Type: schema.TypeString},
+							Optional: true,
+							Computed: true,
 						},
 						"qos_policy": &schema.Schema{
 							Type:     schema.TypeSet,
@@ -2613,6 +2627,12 @@ func flattenSwitchControllerManagedSwitchPorts(v interface{}, d *schema.Resource
 			tmp["lldp_status"] = fortiAPISubPartPatch(v, "SwitchControllerManagedSwitch-Ports-LldpStatus")
 		}
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "log_mac_event"
+		if _, ok := i["log-mac-event"]; ok {
+			v := flattenSwitchControllerManagedSwitchPortsLogMacEvent(i["log-mac-event"], d, pre_append)
+			tmp["log_mac_event"] = fortiAPISubPartPatch(v, "SwitchControllerManagedSwitch-Ports-LogMacEvent")
+		}
+
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "loop_guard"
 		if _, ok := i["loop-guard"]; ok {
 			v := flattenSwitchControllerManagedSwitchPortsLoopGuard(i["loop-guard"], d, pre_append)
@@ -2727,6 +2747,12 @@ func flattenSwitchControllerManagedSwitchPorts(v interface{}, d *schema.Resource
 			tmp["pause_meter_resume"] = fortiAPISubPartPatch(v, "SwitchControllerManagedSwitch-Ports-PauseMeterResume")
 		}
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "pd_capable"
+		if _, ok := i["pd-capable"]; ok {
+			v := flattenSwitchControllerManagedSwitchPortsPdCapable(i["pd-capable"], d, pre_append)
+			tmp["pd_capable"] = fortiAPISubPartPatch(v, "SwitchControllerManagedSwitch-Ports-PdCapable")
+		}
+
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "poe_capable"
 		if _, ok := i["poe-capable"]; ok {
 			v := flattenSwitchControllerManagedSwitchPortsPoeCapable(i["poe-capable"], d, pre_append)
@@ -2833,6 +2859,12 @@ func flattenSwitchControllerManagedSwitchPorts(v interface{}, d *schema.Resource
 		if _, ok := i["ptp-status"]; ok {
 			v := flattenSwitchControllerManagedSwitchPortsPtpStatus(i["ptp-status"], d, pre_append)
 			tmp["ptp_status"] = fortiAPISubPartPatch(v, "SwitchControllerManagedSwitch-Ports-PtpStatus")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "qnq"
+		if _, ok := i["qnq"]; ok {
+			v := flattenSwitchControllerManagedSwitchPortsQnq(i["qnq"], d, pre_append)
+			tmp["qnq"] = fortiAPISubPartPatch(v, "SwitchControllerManagedSwitch-Ports-Qnq")
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "qos_policy"
@@ -3226,6 +3258,10 @@ func flattenSwitchControllerManagedSwitchPortsLldpStatus(v interface{}, d *schem
 	return v
 }
 
+func flattenSwitchControllerManagedSwitchPortsLogMacEvent(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenSwitchControllerManagedSwitchPortsLoopGuard(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -3302,6 +3338,10 @@ func flattenSwitchControllerManagedSwitchPortsPauseMeterResume(v interface{}, d 
 	return v
 }
 
+func flattenSwitchControllerManagedSwitchPortsPdCapable(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenSwitchControllerManagedSwitchPortsPoeCapable(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -3372,6 +3412,10 @@ func flattenSwitchControllerManagedSwitchPortsPtpPolicy(v interface{}, d *schema
 
 func flattenSwitchControllerManagedSwitchPortsPtpStatus(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
+}
+
+func flattenSwitchControllerManagedSwitchPortsQnq(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
 }
 
 func flattenSwitchControllerManagedSwitchPortsQosPolicy(v interface{}, d *schema.ResourceData, pre string) interface{} {
@@ -6333,6 +6377,11 @@ func expandSwitchControllerManagedSwitchPorts(d *schema.ResourceData, v interfac
 			tmp["lldp-status"], _ = expandSwitchControllerManagedSwitchPortsLldpStatus(d, i["lldp_status"], pre_append)
 		}
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "log_mac_event"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["log-mac-event"], _ = expandSwitchControllerManagedSwitchPortsLogMacEvent(d, i["log_mac_event"], pre_append)
+		}
+
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "loop_guard"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
 			tmp["loop-guard"], _ = expandSwitchControllerManagedSwitchPortsLoopGuard(d, i["loop_guard"], pre_append)
@@ -6428,6 +6477,11 @@ func expandSwitchControllerManagedSwitchPorts(d *schema.ResourceData, v interfac
 			tmp["pause-meter-resume"], _ = expandSwitchControllerManagedSwitchPortsPauseMeterResume(d, i["pause_meter_resume"], pre_append)
 		}
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "pd_capable"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["pd-capable"], _ = expandSwitchControllerManagedSwitchPortsPdCapable(d, i["pd_capable"], pre_append)
+		}
+
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "poe_capable"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
 			tmp["poe-capable"], _ = expandSwitchControllerManagedSwitchPortsPoeCapable(d, i["poe_capable"], pre_append)
@@ -6516,6 +6570,11 @@ func expandSwitchControllerManagedSwitchPorts(d *schema.ResourceData, v interfac
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "ptp_status"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
 			tmp["ptp-status"], _ = expandSwitchControllerManagedSwitchPortsPtpStatus(d, i["ptp_status"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "qnq"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["qnq"], _ = expandSwitchControllerManagedSwitchPortsQnq(d, i["qnq"], pre_append)
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "qos_policy"
@@ -6880,6 +6939,10 @@ func expandSwitchControllerManagedSwitchPortsLldpStatus(d *schema.ResourceData, 
 	return v, nil
 }
 
+func expandSwitchControllerManagedSwitchPortsLogMacEvent(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandSwitchControllerManagedSwitchPortsLoopGuard(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -6956,6 +7019,10 @@ func expandSwitchControllerManagedSwitchPortsPauseMeterResume(d *schema.Resource
 	return v, nil
 }
 
+func expandSwitchControllerManagedSwitchPortsPdCapable(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandSwitchControllerManagedSwitchPortsPoeCapable(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -7026,6 +7093,10 @@ func expandSwitchControllerManagedSwitchPortsPtpPolicy(d *schema.ResourceData, v
 
 func expandSwitchControllerManagedSwitchPortsPtpStatus(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
+}
+
+func expandSwitchControllerManagedSwitchPortsQnq(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
 }
 
 func expandSwitchControllerManagedSwitchPortsQosPolicy(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {

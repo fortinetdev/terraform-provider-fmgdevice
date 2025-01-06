@@ -45,6 +45,48 @@ func resourceVpnIpsecPhase2() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"addke1": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Computed: true,
+			},
+			"addke2": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Computed: true,
+			},
+			"addke3": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Computed: true,
+			},
+			"addke4": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Computed: true,
+			},
+			"addke5": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Computed: true,
+			},
+			"addke6": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Computed: true,
+			},
+			"addke7": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Computed: true,
+			},
 			"auto_negotiate": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -420,6 +462,34 @@ func flattenVpnIpsecPhase2AddRoute(v interface{}, d *schema.ResourceData, pre st
 	return v
 }
 
+func flattenVpnIpsecPhase2Addke1(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
+func flattenVpnIpsecPhase2Addke2(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
+func flattenVpnIpsecPhase2Addke3(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
+func flattenVpnIpsecPhase2Addke4(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
+func flattenVpnIpsecPhase2Addke5(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
+func flattenVpnIpsecPhase2Addke6(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
+func flattenVpnIpsecPhase2Addke7(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
 func flattenVpnIpsecPhase2AutoNegotiate(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -610,6 +680,76 @@ func refreshObjectVpnIpsecPhase2(d *schema.ResourceData, o map[string]interface{
 			}
 		} else {
 			return fmt.Errorf("Error reading add_route: %v", err)
+		}
+	}
+
+	if err = d.Set("addke1", flattenVpnIpsecPhase2Addke1(o["addke1"], d, "addke1")); err != nil {
+		if vv, ok := fortiAPIPatch(o["addke1"], "VpnIpsecPhase2-Addke1"); ok {
+			if err = d.Set("addke1", vv); err != nil {
+				return fmt.Errorf("Error reading addke1: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading addke1: %v", err)
+		}
+	}
+
+	if err = d.Set("addke2", flattenVpnIpsecPhase2Addke2(o["addke2"], d, "addke2")); err != nil {
+		if vv, ok := fortiAPIPatch(o["addke2"], "VpnIpsecPhase2-Addke2"); ok {
+			if err = d.Set("addke2", vv); err != nil {
+				return fmt.Errorf("Error reading addke2: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading addke2: %v", err)
+		}
+	}
+
+	if err = d.Set("addke3", flattenVpnIpsecPhase2Addke3(o["addke3"], d, "addke3")); err != nil {
+		if vv, ok := fortiAPIPatch(o["addke3"], "VpnIpsecPhase2-Addke3"); ok {
+			if err = d.Set("addke3", vv); err != nil {
+				return fmt.Errorf("Error reading addke3: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading addke3: %v", err)
+		}
+	}
+
+	if err = d.Set("addke4", flattenVpnIpsecPhase2Addke4(o["addke4"], d, "addke4")); err != nil {
+		if vv, ok := fortiAPIPatch(o["addke4"], "VpnIpsecPhase2-Addke4"); ok {
+			if err = d.Set("addke4", vv); err != nil {
+				return fmt.Errorf("Error reading addke4: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading addke4: %v", err)
+		}
+	}
+
+	if err = d.Set("addke5", flattenVpnIpsecPhase2Addke5(o["addke5"], d, "addke5")); err != nil {
+		if vv, ok := fortiAPIPatch(o["addke5"], "VpnIpsecPhase2-Addke5"); ok {
+			if err = d.Set("addke5", vv); err != nil {
+				return fmt.Errorf("Error reading addke5: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading addke5: %v", err)
+		}
+	}
+
+	if err = d.Set("addke6", flattenVpnIpsecPhase2Addke6(o["addke6"], d, "addke6")); err != nil {
+		if vv, ok := fortiAPIPatch(o["addke6"], "VpnIpsecPhase2-Addke6"); ok {
+			if err = d.Set("addke6", vv); err != nil {
+				return fmt.Errorf("Error reading addke6: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading addke6: %v", err)
+		}
+	}
+
+	if err = d.Set("addke7", flattenVpnIpsecPhase2Addke7(o["addke7"], d, "addke7")); err != nil {
+		if vv, ok := fortiAPIPatch(o["addke7"], "VpnIpsecPhase2-Addke7"); ok {
+			if err = d.Set("addke7", vv); err != nil {
+				return fmt.Errorf("Error reading addke7: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading addke7: %v", err)
 		}
 	}
 
@@ -1076,6 +1216,34 @@ func expandVpnIpsecPhase2AddRoute(d *schema.ResourceData, v interface{}, pre str
 	return v, nil
 }
 
+func expandVpnIpsecPhase2Addke1(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandVpnIpsecPhase2Addke2(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandVpnIpsecPhase2Addke3(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandVpnIpsecPhase2Addke4(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandVpnIpsecPhase2Addke5(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandVpnIpsecPhase2Addke6(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandVpnIpsecPhase2Addke7(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
 func expandVpnIpsecPhase2AutoNegotiate(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -1265,6 +1433,69 @@ func getObjectVpnIpsecPhase2(d *schema.ResourceData) (*map[string]interface{}, e
 			return &obj, err
 		} else if t != nil {
 			obj["add-route"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("addke1"); ok || d.HasChange("addke1") {
+		t, err := expandVpnIpsecPhase2Addke1(d, v, "addke1")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["addke1"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("addke2"); ok || d.HasChange("addke2") {
+		t, err := expandVpnIpsecPhase2Addke2(d, v, "addke2")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["addke2"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("addke3"); ok || d.HasChange("addke3") {
+		t, err := expandVpnIpsecPhase2Addke3(d, v, "addke3")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["addke3"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("addke4"); ok || d.HasChange("addke4") {
+		t, err := expandVpnIpsecPhase2Addke4(d, v, "addke4")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["addke4"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("addke5"); ok || d.HasChange("addke5") {
+		t, err := expandVpnIpsecPhase2Addke5(d, v, "addke5")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["addke5"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("addke6"); ok || d.HasChange("addke6") {
+		t, err := expandVpnIpsecPhase2Addke6(d, v, "addke6")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["addke6"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("addke7"); ok || d.HasChange("addke7") {
+		t, err := expandVpnIpsecPhase2Addke7(d, v, "addke7")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["addke7"] = t
 		}
 	}
 

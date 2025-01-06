@@ -84,6 +84,10 @@ func resourceSystemPasswordPolicyGuestAdmin() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"reuse_password_limit": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+			},
 			"status": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -232,6 +236,10 @@ func flattenSystemPasswordPolicyGuestAdminReusePassword(v interface{}, d *schema
 	return v
 }
 
+func flattenSystemPasswordPolicyGuestAdminReusePasswordLimit(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenSystemPasswordPolicyGuestAdminStatus(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -349,6 +357,16 @@ func refreshObjectSystemPasswordPolicyGuestAdmin(d *schema.ResourceData, o map[s
 		}
 	}
 
+	if err = d.Set("reuse_password_limit", flattenSystemPasswordPolicyGuestAdminReusePasswordLimit(o["reuse-password-limit"], d, "reuse_password_limit")); err != nil {
+		if vv, ok := fortiAPIPatch(o["reuse-password-limit"], "SystemPasswordPolicyGuestAdmin-ReusePasswordLimit"); ok {
+			if err = d.Set("reuse_password_limit", vv); err != nil {
+				return fmt.Errorf("Error reading reuse_password_limit: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading reuse_password_limit: %v", err)
+		}
+	}
+
 	if err = d.Set("status", flattenSystemPasswordPolicyGuestAdminStatus(o["status"], d, "status")); err != nil {
 		if vv, ok := fortiAPIPatch(o["status"], "SystemPasswordPolicyGuestAdmin-Status"); ok {
 			if err = d.Set("status", vv); err != nil {
@@ -409,6 +427,10 @@ func expandSystemPasswordPolicyGuestAdminMinimumLength(d *schema.ResourceData, v
 }
 
 func expandSystemPasswordPolicyGuestAdminReusePassword(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemPasswordPolicyGuestAdminReusePasswordLimit(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -515,6 +537,15 @@ func getObjectSystemPasswordPolicyGuestAdmin(d *schema.ResourceData) (*map[strin
 			return &obj, err
 		} else if t != nil {
 			obj["reuse-password"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("reuse_password_limit"); ok || d.HasChange("reuse_password_limit") {
+		t, err := expandSystemPasswordPolicyGuestAdminReusePasswordLimit(d, v, "reuse_password_limit")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["reuse-password-limit"] = t
 		}
 	}
 

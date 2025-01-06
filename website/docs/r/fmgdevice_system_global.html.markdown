@@ -92,6 +92,10 @@ The following arguments are supported:
 * `auth_ike_saml_port` - User IKE SAML authentication port (0 - 65535, default = 1001).
 * `auth_keepalive` - Enable to prevent user authentication sessions from timing out when idle. Valid values: `disable`, `enable`.
 
+* `auth_session_auto_backup` - Enable/disable automatic and periodic backup of authentication sessions (default = disable). Sessions are restored upon bootup. Valid values: `disable`, `enable`.
+
+* `auth_session_auto_backup_interval` - Configure automatic authentication session backup interval in minutes (default = 15). Valid values: `1min`, `5min`, `15min`, `30min`, `1hr`.
+
 * `auth_session_limit` - Action to take when the number of allowed user authenticated sessions is reached. Valid values: `block-new`, `logout-inactive`.
 
 * `auto_auth_extension_device` - Enable/disable automatic authorization of dedicated Fortinet extension devices. Valid values: `disable`, `enable`.
@@ -129,6 +133,8 @@ The following arguments are supported:
 * `daily_restart` - Enable/disable daily restart of FortiGate unit. Use the restart-time option to set the time of day for the restart. Valid values: `disable`, `enable`.
 
 * `default_service_source_port` - Default service source port range (default = 1 - 65535).
+* `delay_tcp_npu_session` - Enable TCP NPU session delay to guarantee packet order of 3-way handshake. Valid values: `disable`, `enable`.
+
 * `device_idle_timeout` - Time in seconds that a device must be idle to automatically log the device user out. (30 - 31536000 sec (30 sec to 1 year), default = 300).
 * `dh_params` - Number of bits to use in the Diffie-Hellman exchange for HTTPS/SSH protocols. Valid values: `1024`, `1536`, `2048`, `3072`, `4096`, `6144`, `8192`.
 
@@ -187,6 +193,8 @@ The following arguments are supported:
 * `fortitoken_cloud_push_status` - Enable/disable FTM push service of FortiToken Cloud. Valid values: `disable`, `enable`.
 
 * `fortitoken_cloud_sync_interval` - Interval in which to clean up remote users in FortiToken Cloud (0 - 336 hours (14 days), default = 24, disable = 0).
+* `gtpu_dynamic_source_port` - Enable/disable GTP-U dynamic source port support. Valid values: `disable`, `enable`.
+
 * `gui_allow_incompatible_fabric_fgt` - Enable/disable Allow FGT with incompatible firmware to be treated as compatible in security fabric on the GUI. May cause unexpected error. Valid values: `disable`, `enable`.
 
 * `gui_app_detection_sdwan` - Enable/disable Allow app-detection based SD-WAN. Valid values: `disable`, `enable`.
@@ -243,6 +251,7 @@ The following arguments are supported:
 
 * `http_request_limit` - HTTP request body size limit.
 * `http_unauthenticated_request_limit` - HTTP request body size limit before authentication.
+* `httpd_max_worker_count` - Maximum number of simultaneous HTTP requests that will be served. This number may affect GUI and REST API performance (0 - 128, default = 0 means let system decide).
 * `hyper_scale_vdom_num` - Number of VDOMs for hyper scale license.
 * `igmp_state_limit` - Maximum number of IGMP memberships (96 - 64000, default = 3200).
 * `interface_subnet_usage` - Enable/disable allowing use of interface-subnet setting in firewall addresses (default = enable). Valid values: `disable`, `enable`.
@@ -254,7 +263,10 @@ The following arguments are supported:
 * `internet_service_database` - Configure which Internet Service database size to download from FortiGuard and use. Valid values: `mini`, `standard`, `full`, `on-demand`.
 
 * `internet_service_download_list` - Configure which on-demand Internet Service IDs are to be downloaded.
+* `ip_conflict_detection` - Enable/disable logging of IPv4 address conflict detection. Valid values: `disable`, `enable`.
+
 * `ip_fragment_mem_thresholds` - Maximum memory (MB) used to reassemble IPv4/IPv6 fragments.
+* `ip_fragment_timeout` - Timeout value in seconds for any fragment not being reassembled
 * `ip_src_port_range` - IP source port range used for traffic originating from the FortiGate unit.
 * `ips_affinity` - Affinity setting for IPS (hexadecimal value up to 256 bits in the format of xxxxxxxxxxxxxxxx; allowed CPUs must be less than total number of IPS engine daemons).
 * `ipsec_asic_offload` - Enable/disable ASIC offloading (hardware acceleration) for IPsec VPN traffic. Hardware acceleration can offload IPsec VPN sessions and accelerate encryption and decryption. Valid values: `disable`, `enable`.
@@ -279,6 +291,7 @@ The following arguments are supported:
 
 * `ipv6_allow_traffic_redirect` - Disable to prevent IPv6 traffic with same local ingress and egress interface from being forwarded without policy check. Valid values: `disable`, `enable`.
 
+* `ipv6_fragment_timeout` - Timeout value in seconds for any IPv6 fragment not being reassembled
 * `irq_time_accounting` - Configure CPU IRQ time accounting mode. Valid values: `auto`, `force`.
 
 * `language` - GUI display language. Valid values: `english`, `simch`, `japanese`, `korean`, `spanish`, `trach`, `french`, `portuguese`.
@@ -376,12 +389,17 @@ The following arguments are supported:
 * `remoteauthtimeout` - Number of seconds that the FortiGate waits for responses from remote RADIUS, LDAP, or TACACS+ authentication servers. (1-300 sec, default = 5).
 * `reset_sessionless_tcp` - Action to perform if the FortiGate receives a TCP packet but cannot find a corresponding session in its session table. NAT/Route mode only. Valid values: `disable`, `enable`.
 
+* `rest_api_key_url_query` - Enable/disable support for passing REST API keys through URL query parameters. Valid values: `disable`, `enable`.
+
 * `restart_time` - Daily restart time (hh:mm).
 * `revision_backup_on_logout` - Enable/disable back-up of the latest configuration revision when an administrator logs out of the CLI or GUI. Valid values: `disable`, `enable`.
 
 * `revision_image_auto_backup` - Enable/disable back-up of the latest image revision after the firmware is upgraded. Valid values: `disable`, `enable`.
 
 * `scanunit_count` - Number of scanunits. The range and the default depend on the number of CPUs. Only available on FortiGate units with multiple CPUs.
+* `scim_http_port` - SCIM http port (0 - 65535, default = 44558).
+* `scim_https_port` - SCIM port (0 - 65535, default = 44559).
+* `scim_server_cert` - Server certificate that the FortiGate uses for SCIM connections.
 * `security_rating_result_submission` - Enable/disable the submission of Security Rating results to FortiGuard. Valid values: `disable`, `enable`.
 
 * `security_rating_run_on_schedule` - Enable/disable scheduled runs of Security Rating. Valid values: `disable`, `enable`.
@@ -477,6 +495,7 @@ The following arguments are supported:
 * `user_device_store_max_devices` - Maximum number of devices allowed in user device store.
 * `user_device_store_max_unified_mem` - Maximum unified memory allowed in user device store.
 * `user_device_store_max_users` - Maximum number of users allowed in user device store.
+* `user_history_password_threshold` - Maximum number of previous passwords saved per admin/user (3 - 15, default = 3).
 * `user_server_cert` - User-Server-Cert.
 * `vdom_mode` - Enable/disable support for multiple virtual domains (VDOMs). Valid values: `no-vdom`, `multi-vdom`, `split-vdom`.
 

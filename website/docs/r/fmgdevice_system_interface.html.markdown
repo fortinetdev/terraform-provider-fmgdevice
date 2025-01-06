@@ -255,8 +255,10 @@ The following arguments are supported:
 
 * `netbios_forward` - Enable/disable NETBIOS forwarding. Valid values: `disable`, `enable`.
 
+* `netflow_sample_rate` - NetFlow sample rate.  Sample one packet every configured number of packets (1 - 65535, default = 1, which means standard NetFlow where all packets are sampled).
 * `netflow_sampler` - Enable/disable NetFlow on this interface and set the data that NetFlow collects (rx, tx, or both). Valid values: `disable`, `tx`, `rx`, `both`.
 
+* `netflow_sampler_id` - Netflow sampler ID.
 * `np_qos_profile` - NP QoS profile ID.
 * `outbandwidth` - Bandwidth limit for outgoing traffic (0 - 80000000 kbps).
 * `padt_retry_timeout` - PPPoE Active Discovery Terminate (PADT) used to terminate sessions after an idle time.
@@ -267,6 +269,8 @@ The following arguments are supported:
 
 * `polling_interval` - sFlow polling interval in seconds (1 - 255).
 * `port_mirroring` - Enable/disable NP port mirroring. Valid values: `disable`, `enable`.
+
+* `pppoe_egress_cos` - CoS in VLAN tag for outgoing PPPoE/PPP packets. Valid values: `cos0`, `cos1`, `cos2`, `cos3`, `cos4`, `cos5`, `cos6`, `cos7`.
 
 * `pppoe_unnumbered_negotiate` - Enable/disable PPPoE unnumbered negotiation. Valid values: `disable`, `enable`.
 
@@ -324,6 +328,8 @@ The following arguments are supported:
 * `security_external_logout` - URL of external authentication logout server.
 * `security_external_web` - URL of external authentication web server.
 * `security_groups` - User groups that can authenticate with the captive portal.
+* `security_ip_auth_bypass` - Enable/disable IP authentication bypass. Valid values: `disable`, `enable`.
+
 * `security_mac_auth_bypass` - Enable/disable MAC authentication bypass. Valid values: `disable`, `enable`, `mac-auth-only`.
 
 * `security_mode` - Turn on captive portal authentication for this interface. Valid values: `none`, `captive-portal`, `802.1X`.
@@ -428,6 +434,7 @@ The following arguments are supported:
 * `vectoring` - Enable/disable DSL vectoring. Valid values: `disable`, `enable`.
 
 * `vindex` - Vindex.
+* `virtual_mac` - Change the interface's virtual MAC address.
 * `vlan_id` - Vlan ID.
 * `vlan_op_mode` - Configure DSL 802.1q mode. Valid values: `tag`, `untag`, `passthrough`.
 
@@ -510,6 +517,7 @@ The `ipv6` block supports:
 * `autoconf` - Enable/disable address auto config. Valid values: `disable`, `enable`.
 
 * `cli_conn6_status` - Cli-Conn6-Status.
+* `client_options` - Client-Options. The structure of `client_options` block is documented below.
 * `dhcp6_client_options` - Dhcp6-Client-Options. Valid values: `rapid`, `iapd`, `iana`, `dns`, `dnsname`.
 
 * `dhcp6_iapd_list` - Dhcp6-Iapd-List. The structure of `dhcp6_iapd_list` block is documented below.
@@ -576,6 +584,15 @@ The `ipv6` block supports:
 
 * `vrrp6` - Vrrp6. The structure of `vrrp6` block is documented below.
 
+The `client_options` block supports:
+
+* `code` - DHCPv6 option code.
+* `id` - ID.
+* `ip6` - DHCP option IP6s.
+* `type` - DHCPv6 option type. Valid values: `hex`, `string`, `ip6`, `fqdn`.
+
+* `value` - DHCPv6 option value (hexadecimal value must be even).
+
 The `dhcp6_iapd_list` block supports:
 
 * `iaid` - Identity association identifier.
@@ -626,6 +643,7 @@ The `vrrp6` block supports:
 * `start_time` - Startup time (1 - 255 seconds).
 * `status` - Enable/disable VRRP. Valid values: `disable`, `enable`.
 
+* `vrdst_priority` - Priority of the virtual router when the virtual router destination becomes unreachable (0 - 254).
 * `vrdst6` - Monitor the route to this destination.
 * `vrgrp` - VRRP group ID (1 - 65535).
 * `vrid` - Virtual router identifier (1 - 255).

@@ -233,7 +233,7 @@ func resourceRouterBgpNeighborConditionalAdvertiseRead(d *schema.ResourceData, m
 }
 
 func flattenRouterBgpNeighborConditionalAdvertiseAdvertiseRoutemap3rdl(v interface{}, d *schema.ResourceData, pre string) interface{} {
-	return v
+	return convintflist2str(v, d.Get(pre))
 }
 
 func flattenRouterBgpNeighborConditionalAdvertiseConditionRoutemap3rdl(v interface{}, d *schema.ResourceData, pre string) interface{} {
@@ -287,7 +287,7 @@ func flattenRouterBgpNeighborConditionalAdvertiseFortiTestDebug(d *schema.Resour
 }
 
 func expandRouterBgpNeighborConditionalAdvertiseAdvertiseRoutemap3rdl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
-	return v, nil
+	return convstr2list(v, nil), nil
 }
 
 func expandRouterBgpNeighborConditionalAdvertiseConditionRoutemap3rdl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {

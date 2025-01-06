@@ -93,6 +93,11 @@ func resourceLogSyslogd3OverrideFilter() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"http_transaction": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
 			"local_traffic": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -341,6 +346,10 @@ func flattenLogSyslogd3OverrideFilterGtp(v interface{}, d *schema.ResourceData, 
 	return v
 }
 
+func flattenLogSyslogd3OverrideFilterHttpTransaction(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenLogSyslogd3OverrideFilterLocalTraffic(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -453,6 +462,16 @@ func refreshObjectLogSyslogd3OverrideFilter(d *schema.ResourceData, o map[string
 			}
 		} else {
 			return fmt.Errorf("Error reading gtp: %v", err)
+		}
+	}
+
+	if err = d.Set("http_transaction", flattenLogSyslogd3OverrideFilterHttpTransaction(o["http-transaction"], d, "http_transaction")); err != nil {
+		if vv, ok := fortiAPIPatch(o["http-transaction"], "LogSyslogd3OverrideFilter-HttpTransaction"); ok {
+			if err = d.Set("http_transaction", vv); err != nil {
+				return fmt.Errorf("Error reading http_transaction: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading http_transaction: %v", err)
 		}
 	}
 
@@ -609,6 +628,10 @@ func expandLogSyslogd3OverrideFilterGtp(d *schema.ResourceData, v interface{}, p
 	return v, nil
 }
 
+func expandLogSyslogd3OverrideFilterHttpTransaction(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandLogSyslogd3OverrideFilterLocalTraffic(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -696,6 +719,15 @@ func getObjectLogSyslogd3OverrideFilter(d *schema.ResourceData) (*map[string]int
 			return &obj, err
 		} else if t != nil {
 			obj["gtp"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("http_transaction"); ok || d.HasChange("http_transaction") {
+		t, err := expandLogSyslogd3OverrideFilterHttpTransaction(d, v, "http_transaction")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["http-transaction"] = t
 		}
 	}
 

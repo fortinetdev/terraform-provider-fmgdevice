@@ -39,6 +39,9 @@ The following arguments are supported:
 * `host_type` - Control whether the SNMP manager sends SNMP queries, receives SNMP traps, or both. Valid values: `any`, `query`, `trap`.
 
 * `fosid` - Host6 entry ID.
+* `interface` - Specify outgoing interface to reach server.
+* `interface_select_method` - Specify how to select outgoing interface to reach server. Valid values: `auto`, `sdwan`, `specify`.
+
 * `ipv6` - SNMP manager IPv6 address prefix.
 * `source_ipv6` - Source IPv6 address for SNMP traps.
 

@@ -179,7 +179,7 @@ func resourceWebfilterIpsUrlfilterSettingRead(d *schema.ResourceData, m interfac
 }
 
 func flattenWebfilterIpsUrlfilterSettingDevice(v interface{}, d *schema.ResourceData, pre string) interface{} {
-	return v
+	return convintflist2str(v, d.Get(pre))
 }
 
 func flattenWebfilterIpsUrlfilterSettingDistance(v interface{}, d *schema.ResourceData, pre string) interface{} {
@@ -247,7 +247,7 @@ func flattenWebfilterIpsUrlfilterSettingFortiTestDebug(d *schema.ResourceData, f
 }
 
 func expandWebfilterIpsUrlfilterSettingDevice(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
-	return v, nil
+	return convstr2list(v, nil), nil
 }
 
 func expandWebfilterIpsUrlfilterSettingDistance(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {

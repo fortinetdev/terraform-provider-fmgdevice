@@ -82,6 +82,9 @@ The `hosts` block supports:
 * `host_type` - Control whether the SNMP manager sends SNMP queries, receives SNMP traps, or both. No traps will be sent when IP type is subnet. Valid values: `any`, `query`, `trap`.
 
 * `id` - Host entry ID.
+* `interface` - Specify outgoing interface to reach server.
+* `interface_select_method` - Specify how to select outgoing interface to reach server. Valid values: `auto`, `sdwan`, `specify`.
+
 * `ip` - IPv4 address of the SNMP manager (host).
 * `source_ip` - Source IPv4 address for SNMP traps.
 
@@ -92,6 +95,9 @@ The `hosts6` block supports:
 * `host_type` - Control whether the SNMP manager sends SNMP queries, receives SNMP traps, or both. Valid values: `any`, `query`, `trap`.
 
 * `id` - Host6 entry ID.
+* `interface` - Specify outgoing interface to reach server.
+* `interface_select_method` - Specify how to select outgoing interface to reach server. Valid values: `auto`, `sdwan`, `specify`.
+
 * `ipv6` - SNMP manager IPv6 address prefix.
 * `source_ipv6` - Source IPv6 address for SNMP traps.
 

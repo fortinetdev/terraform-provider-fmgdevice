@@ -62,6 +62,12 @@ func resourceRouterBgpNetwork() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"prefix_name": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Computed: true,
+			},
 			"route_map": &schema.Schema{
 				Type:     schema.TypeSet,
 				Elem:     &schema.Schema{Type: schema.TypeString},
@@ -247,6 +253,10 @@ func flattenRouterBgpNetworkPrefix2edl(v interface{}, d *schema.ResourceData, pr
 	return flattenStringList(v)
 }
 
+func flattenRouterBgpNetworkPrefixName2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
 func flattenRouterBgpNetworkRouteMap2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return flattenStringList(v)
 }
@@ -294,6 +304,16 @@ func refreshObjectRouterBgpNetwork(d *schema.ResourceData, o map[string]interfac
 		}
 	}
 
+	if err = d.Set("prefix_name", flattenRouterBgpNetworkPrefixName2edl(o["prefix-name"], d, "prefix_name")); err != nil {
+		if vv, ok := fortiAPIPatch(o["prefix-name"], "RouterBgpNetwork-PrefixName"); ok {
+			if err = d.Set("prefix_name", vv); err != nil {
+				return fmt.Errorf("Error reading prefix_name: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading prefix_name: %v", err)
+		}
+	}
+
 	if err = d.Set("route_map", flattenRouterBgpNetworkRouteMap2edl(o["route-map"], d, "route_map")); err != nil {
 		if vv, ok := fortiAPIPatch(o["route-map"], "RouterBgpNetwork-RouteMap"); ok {
 			if err = d.Set("route_map", vv); err != nil {
@@ -327,6 +347,10 @@ func expandRouterBgpNetworkNetworkImportCheck2edl(d *schema.ResourceData, v inte
 
 func expandRouterBgpNetworkPrefix2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return expandStringList(v.([]interface{})), nil
+}
+
+func expandRouterBgpNetworkPrefixName2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
 }
 
 func expandRouterBgpNetworkRouteMap2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
@@ -369,6 +393,15 @@ func getObjectRouterBgpNetwork(d *schema.ResourceData) (*map[string]interface{},
 			return &obj, err
 		} else if t != nil {
 			obj["prefix"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("prefix_name"); ok || d.HasChange("prefix_name") {
+		t, err := expandRouterBgpNetworkPrefixName2edl(d, v, "prefix_name")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["prefix-name"] = t
 		}
 	}
 

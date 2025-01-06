@@ -63,18 +63,22 @@ func resourceSystemStandaloneCluster() *schema.Resource {
 						"ike_heartbeat_interval": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"ike_monitor": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"ike_monitor_interval": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"ike_use_rfc6311": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"ipsec_tunnel_sync": &schema.Schema{
 							Type:     schema.TypeString,
@@ -192,6 +196,18 @@ func resourceSystemStandaloneCluster() *schema.Resource {
 			},
 			"layer2_connection": &schema.Schema{
 				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+			"monitor_interface": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Computed: true,
+			},
+			"pingsvr_monitor_interface": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
 				Optional: true,
 				Computed: true,
 			},
@@ -632,6 +648,14 @@ func flattenSystemStandaloneClusterLayer2Connection(v interface{}, d *schema.Res
 	return v
 }
 
+func flattenSystemStandaloneClusterMonitorInterface(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
+func flattenSystemStandaloneClusterPingsvrMonitorInterface(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
 func flattenSystemStandaloneClusterSessionSyncDev(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return flattenStringList(v)
 }
@@ -718,6 +742,26 @@ func refreshObjectSystemStandaloneCluster(d *schema.ResourceData, o map[string]i
 			}
 		} else {
 			return fmt.Errorf("Error reading layer2_connection: %v", err)
+		}
+	}
+
+	if err = d.Set("monitor_interface", flattenSystemStandaloneClusterMonitorInterface(o["monitor-interface"], d, "monitor_interface")); err != nil {
+		if vv, ok := fortiAPIPatch(o["monitor-interface"], "SystemStandaloneCluster-MonitorInterface"); ok {
+			if err = d.Set("monitor_interface", vv); err != nil {
+				return fmt.Errorf("Error reading monitor_interface: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading monitor_interface: %v", err)
+		}
+	}
+
+	if err = d.Set("pingsvr_monitor_interface", flattenSystemStandaloneClusterPingsvrMonitorInterface(o["pingsvr-monitor-interface"], d, "pingsvr_monitor_interface")); err != nil {
+		if vv, ok := fortiAPIPatch(o["pingsvr-monitor-interface"], "SystemStandaloneCluster-PingsvrMonitorInterface"); ok {
+			if err = d.Set("pingsvr_monitor_interface", vv); err != nil {
+				return fmt.Errorf("Error reading pingsvr_monitor_interface: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading pingsvr_monitor_interface: %v", err)
 		}
 	}
 
@@ -1043,6 +1087,14 @@ func expandSystemStandaloneClusterLayer2Connection(d *schema.ResourceData, v int
 	return v, nil
 }
 
+func expandSystemStandaloneClusterMonitorInterface(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandSystemStandaloneClusterPingsvrMonitorInterface(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
 func expandSystemStandaloneClusterPsksecret(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return expandStringList(v.(*schema.Set).List()), nil
 }
@@ -1109,6 +1161,24 @@ func getObjectSystemStandaloneCluster(d *schema.ResourceData) (*map[string]inter
 			return &obj, err
 		} else if t != nil {
 			obj["layer2-connection"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("monitor_interface"); ok || d.HasChange("monitor_interface") {
+		t, err := expandSystemStandaloneClusterMonitorInterface(d, v, "monitor_interface")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["monitor-interface"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("pingsvr_monitor_interface"); ok || d.HasChange("pingsvr_monitor_interface") {
+		t, err := expandSystemStandaloneClusterPingsvrMonitorInterface(d, v, "pingsvr_monitor_interface")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["pingsvr-monitor-interface"] = t
 		}
 	}
 

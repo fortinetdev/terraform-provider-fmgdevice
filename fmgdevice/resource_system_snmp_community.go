@@ -59,6 +59,17 @@ func resourceSystemSnmpCommunity() *schema.Resource {
 							Type:     schema.TypeInt,
 							Optional: true,
 						},
+						"interface": &schema.Schema{
+							Type:     schema.TypeSet,
+							Elem:     &schema.Schema{Type: schema.TypeString},
+							Optional: true,
+							Computed: true,
+						},
+						"interface_select_method": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+							Computed: true,
+						},
 						"ip": &schema.Schema{
 							Type:     schema.TypeList,
 							Elem:     &schema.Schema{Type: schema.TypeString},
@@ -91,6 +102,17 @@ func resourceSystemSnmpCommunity() *schema.Resource {
 						"id": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+						},
+						"interface": &schema.Schema{
+							Type:     schema.TypeSet,
+							Elem:     &schema.Schema{Type: schema.TypeString},
+							Optional: true,
+							Computed: true,
+						},
+						"interface_select_method": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+							Computed: true,
 						},
 						"ipv6": &schema.Schema{
 							Type:     schema.TypeString,
@@ -355,6 +377,18 @@ func flattenSystemSnmpCommunityHosts(v interface{}, d *schema.ResourceData, pre 
 			tmp["id"] = fortiAPISubPartPatch(v, "SystemSnmpCommunity-Hosts-Id")
 		}
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "interface"
+		if _, ok := i["interface"]; ok {
+			v := flattenSystemSnmpCommunityHostsInterface(i["interface"], d, pre_append)
+			tmp["interface"] = fortiAPISubPartPatch(v, "SystemSnmpCommunity-Hosts-Interface")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "interface_select_method"
+		if _, ok := i["interface-select-method"]; ok {
+			v := flattenSystemSnmpCommunityHostsInterfaceSelectMethod(i["interface-select-method"], d, pre_append)
+			tmp["interface_select_method"] = fortiAPISubPartPatch(v, "SystemSnmpCommunity-Hosts-InterfaceSelectMethod")
+		}
+
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "ip"
 		if _, ok := i["ip"]; ok {
 			v := flattenSystemSnmpCommunityHostsIp(i["ip"], d, pre_append)
@@ -386,6 +420,14 @@ func flattenSystemSnmpCommunityHostsHostType(v interface{}, d *schema.ResourceDa
 }
 
 func flattenSystemSnmpCommunityHostsId(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemSnmpCommunityHostsInterface(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
+func flattenSystemSnmpCommunityHostsInterfaceSelectMethod(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -434,6 +476,18 @@ func flattenSystemSnmpCommunityHosts6(v interface{}, d *schema.ResourceData, pre
 			tmp["id"] = fortiAPISubPartPatch(v, "SystemSnmpCommunity-Hosts6-Id")
 		}
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "interface"
+		if _, ok := i["interface"]; ok {
+			v := flattenSystemSnmpCommunityHosts6Interface(i["interface"], d, pre_append)
+			tmp["interface"] = fortiAPISubPartPatch(v, "SystemSnmpCommunity-Hosts6-Interface")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "interface_select_method"
+		if _, ok := i["interface-select-method"]; ok {
+			v := flattenSystemSnmpCommunityHosts6InterfaceSelectMethod(i["interface-select-method"], d, pre_append)
+			tmp["interface_select_method"] = fortiAPISubPartPatch(v, "SystemSnmpCommunity-Hosts6-InterfaceSelectMethod")
+		}
+
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "ipv6"
 		if _, ok := i["ipv6"]; ok {
 			v := flattenSystemSnmpCommunityHosts6Ipv6(i["ipv6"], d, pre_append)
@@ -465,6 +519,14 @@ func flattenSystemSnmpCommunityHosts6HostType(v interface{}, d *schema.ResourceD
 }
 
 func flattenSystemSnmpCommunityHosts6Id(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemSnmpCommunityHosts6Interface(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
+func flattenSystemSnmpCommunityHosts6InterfaceSelectMethod(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -793,6 +855,16 @@ func expandSystemSnmpCommunityHosts(d *schema.ResourceData, v interface{}, pre s
 			tmp["id"], _ = expandSystemSnmpCommunityHostsId(d, i["id"], pre_append)
 		}
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "interface"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["interface"], _ = expandSystemSnmpCommunityHostsInterface(d, i["interface"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "interface_select_method"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["interface-select-method"], _ = expandSystemSnmpCommunityHostsInterfaceSelectMethod(d, i["interface_select_method"], pre_append)
+		}
+
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "ip"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
 			tmp["ip"], _ = expandSystemSnmpCommunityHostsIp(d, i["ip"], pre_append)
@@ -822,6 +894,14 @@ func expandSystemSnmpCommunityHostsHostType(d *schema.ResourceData, v interface{
 }
 
 func expandSystemSnmpCommunityHostsId(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemSnmpCommunityHostsInterface(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandSystemSnmpCommunityHostsInterfaceSelectMethod(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -862,6 +942,16 @@ func expandSystemSnmpCommunityHosts6(d *schema.ResourceData, v interface{}, pre 
 			tmp["id"], _ = expandSystemSnmpCommunityHosts6Id(d, i["id"], pre_append)
 		}
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "interface"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["interface"], _ = expandSystemSnmpCommunityHosts6Interface(d, i["interface"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "interface_select_method"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["interface-select-method"], _ = expandSystemSnmpCommunityHosts6InterfaceSelectMethod(d, i["interface_select_method"], pre_append)
+		}
+
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "ipv6"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
 			tmp["ipv6"], _ = expandSystemSnmpCommunityHosts6Ipv6(d, i["ipv6"], pre_append)
@@ -891,6 +981,14 @@ func expandSystemSnmpCommunityHosts6HostType(d *schema.ResourceData, v interface
 }
 
 func expandSystemSnmpCommunityHosts6Id(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemSnmpCommunityHosts6Interface(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandSystemSnmpCommunityHosts6InterfaceSelectMethod(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 

@@ -54,6 +54,17 @@ func resourceSystemSnmpCommunityHosts6() *schema.Resource {
 				ForceNew: true,
 				Optional: true,
 			},
+			"interface": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Computed: true,
+			},
+			"interface_select_method": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
 			"ipv6": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -221,6 +232,14 @@ func flattenSystemSnmpCommunityHosts6Id2edl(v interface{}, d *schema.ResourceDat
 	return v
 }
 
+func flattenSystemSnmpCommunityHosts6Interface2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
+func flattenSystemSnmpCommunityHosts6InterfaceSelectMethod2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenSystemSnmpCommunityHosts6Ipv62edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -259,6 +278,26 @@ func refreshObjectSystemSnmpCommunityHosts6(d *schema.ResourceData, o map[string
 			}
 		} else {
 			return fmt.Errorf("Error reading fosid: %v", err)
+		}
+	}
+
+	if err = d.Set("interface", flattenSystemSnmpCommunityHosts6Interface2edl(o["interface"], d, "interface")); err != nil {
+		if vv, ok := fortiAPIPatch(o["interface"], "SystemSnmpCommunityHosts6-Interface"); ok {
+			if err = d.Set("interface", vv); err != nil {
+				return fmt.Errorf("Error reading interface: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading interface: %v", err)
+		}
+	}
+
+	if err = d.Set("interface_select_method", flattenSystemSnmpCommunityHosts6InterfaceSelectMethod2edl(o["interface-select-method"], d, "interface_select_method")); err != nil {
+		if vv, ok := fortiAPIPatch(o["interface-select-method"], "SystemSnmpCommunityHosts6-InterfaceSelectMethod"); ok {
+			if err = d.Set("interface_select_method", vv); err != nil {
+				return fmt.Errorf("Error reading interface_select_method: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading interface_select_method: %v", err)
 		}
 	}
 
@@ -303,6 +342,14 @@ func expandSystemSnmpCommunityHosts6Id2edl(d *schema.ResourceData, v interface{}
 	return v, nil
 }
 
+func expandSystemSnmpCommunityHosts6Interface2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandSystemSnmpCommunityHosts6InterfaceSelectMethod2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandSystemSnmpCommunityHosts6Ipv62edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -338,6 +385,24 @@ func getObjectSystemSnmpCommunityHosts6(d *schema.ResourceData) (*map[string]int
 			return &obj, err
 		} else if t != nil {
 			obj["id"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("interface"); ok || d.HasChange("interface") {
+		t, err := expandSystemSnmpCommunityHosts6Interface2edl(d, v, "interface")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["interface"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("interface_select_method"); ok || d.HasChange("interface_select_method") {
+		t, err := expandSystemSnmpCommunityHosts6InterfaceSelectMethod2edl(d, v, "interface_select_method")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["interface-select-method"] = t
 		}
 	}
 

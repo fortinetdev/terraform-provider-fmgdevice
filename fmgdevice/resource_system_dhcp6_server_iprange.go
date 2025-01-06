@@ -60,6 +60,17 @@ func resourceSystemDhcp6ServerIpRange() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"vci_match": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+			"vci_string": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Computed: true,
+			},
 		},
 	}
 }
@@ -243,6 +254,14 @@ func flattenSystemDhcp6ServerIpRangeStartIp2edl(v interface{}, d *schema.Resourc
 	return v
 }
 
+func flattenSystemDhcp6ServerIpRangeVciMatch2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemDhcp6ServerIpRangeVciString2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
 func refreshObjectSystemDhcp6ServerIpRange(d *schema.ResourceData, o map[string]interface{}) error {
 	var err error
 
@@ -276,6 +295,26 @@ func refreshObjectSystemDhcp6ServerIpRange(d *schema.ResourceData, o map[string]
 		}
 	}
 
+	if err = d.Set("vci_match", flattenSystemDhcp6ServerIpRangeVciMatch2edl(o["vci-match"], d, "vci_match")); err != nil {
+		if vv, ok := fortiAPIPatch(o["vci-match"], "SystemDhcp6ServerIpRange-VciMatch"); ok {
+			if err = d.Set("vci_match", vv); err != nil {
+				return fmt.Errorf("Error reading vci_match: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading vci_match: %v", err)
+		}
+	}
+
+	if err = d.Set("vci_string", flattenSystemDhcp6ServerIpRangeVciString2edl(o["vci-string"], d, "vci_string")); err != nil {
+		if vv, ok := fortiAPIPatch(o["vci-string"], "SystemDhcp6ServerIpRange-VciString"); ok {
+			if err = d.Set("vci_string", vv); err != nil {
+				return fmt.Errorf("Error reading vci_string: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading vci_string: %v", err)
+		}
+	}
+
 	return nil
 }
 
@@ -295,6 +334,14 @@ func expandSystemDhcp6ServerIpRangeId2edl(d *schema.ResourceData, v interface{},
 
 func expandSystemDhcp6ServerIpRangeStartIp2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
+}
+
+func expandSystemDhcp6ServerIpRangeVciMatch2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemDhcp6ServerIpRangeVciString2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
 }
 
 func getObjectSystemDhcp6ServerIpRange(d *schema.ResourceData) (*map[string]interface{}, error) {
@@ -324,6 +371,24 @@ func getObjectSystemDhcp6ServerIpRange(d *schema.ResourceData) (*map[string]inte
 			return &obj, err
 		} else if t != nil {
 			obj["start-ip"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("vci_match"); ok || d.HasChange("vci_match") {
+		t, err := expandSystemDhcp6ServerIpRangeVciMatch2edl(d, v, "vci_match")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["vci-match"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("vci_string"); ok || d.HasChange("vci_string") {
+		t, err := expandSystemDhcp6ServerIpRangeVciString2edl(d, v, "vci_string")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["vci-string"] = t
 		}
 	}
 

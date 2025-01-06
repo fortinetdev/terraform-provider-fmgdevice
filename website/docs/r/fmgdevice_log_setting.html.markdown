@@ -41,6 +41,8 @@ The following arguments are supported:
 
 * `extended_log` - Enable/disable extended traffic logging. Valid values: `disable`, `enable`.
 
+* `extended_utm_log` - Enable/disable extended UTM logging. Valid values: `disable`, `enable`.
+
 * `faz_override` - Enable/disable override FortiAnalyzer settings. Valid values: `disable`, `enable`.
 
 * `fortiview_weekly_data` - Enable/disable FortiView weekly data. Valid values: `disable`, `enable`.
@@ -54,6 +56,8 @@ The following arguments are supported:
 * `local_in_deny_broadcast` - Enable/disable local-in-deny-broadcast logging. Valid values: `disable`, `enable`.
 
 * `local_in_deny_unicast` - Enable/disable local-in-deny-unicast logging. Valid values: `disable`, `enable`.
+
+* `local_in_policy_log` - Enable/disable local-in-policy logging. Valid values: `disable`, `enable`.
 
 * `local_out` - Enable/disable local-out logging. Valid values: `disable`, `enable`.
 

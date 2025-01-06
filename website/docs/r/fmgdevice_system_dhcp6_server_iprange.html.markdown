@@ -37,6 +37,9 @@ The following arguments are supported:
 * `end_ip` - End of IP range.
 * `fosid` - ID.
 * `start_ip` - Start of IP range.
+* `vci_match` - Enable/disable vendor class option matching. When enabled only DHCP requests with a matching VC are served with this range. Valid values: `disable`, `enable`.
+
+* `vci_string` - One or more VCI strings in quotes separated by spaces.
 
 
 ## Attribute Reference

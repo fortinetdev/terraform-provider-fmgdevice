@@ -114,6 +114,7 @@ The following arguments are supported:
 * `distribute_route_map_in` - Filter incoming external routes by route-map.
 * `log_neighbour_changes` - Log of OSPF neighbor changes. Valid values: `disable`, `enable`.
 
+* `lsa_refresh_interval` - The minimal OSPF LSA update time interval
 * `neighbor` - Neighbor. The structure of `neighbor` block is documented below.
 * `network` - Network. The structure of `network` block is documented below.
 * `ospf_interface` - Ospf-Interface. The structure of `ospf_interface` block is documented below.
@@ -233,6 +234,8 @@ The `ospf_interface` block supports:
 * `interface` - Configuration interface name.
 * `ip` - IP address.
 * `keychain` - Message-digest key-chain name.
+* `linkdown_fast_failover` - Enable/disable fast link failover. Valid values: `disable`, `enable`.
+
 * `md5_keychain` - Md5-Keychain.
 * `md5_keys` - Md5-Keys. The structure of `md5_keys` block is documented below.
 * `mtu` - MTU for database description packets.

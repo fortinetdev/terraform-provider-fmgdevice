@@ -41,6 +41,8 @@ The following arguments are supported:
 * `fqdn_cache_ttl` - FQDN cache time to live in seconds (0 - 86400, default = 0).
 * `fqdn_max_refresh` - FQDN cache maximum refresh time in seconds (3600 - 86400, default = 3600).
 * `fqdn_min_refresh` - FQDN cache minimum refresh time in seconds (10 - 3600, default = 60).
+* `hostname_limit` - Limit of the number of hostname table entries (0 - 50000).
+* `hostname_ttl` - TTL of hostname table entries (60 - 86400).
 * `interface` - Specify outgoing interface to reach server.
 * `interface_select_method` - Specify how to select outgoing interface to reach server. Valid values: `auto`, `sdwan`, `specify`.
 
@@ -52,6 +54,7 @@ The following arguments are supported:
 * `protocol` - DNS transport protocols. Valid values: `cleartext`, `dot`, `doh`.
 
 * `retry` - Number of times to retry (0 - 5).
+* `root_servers` - Configure up to two preferred servers that serve the DNS root zone (default uses all 13 root servers).
 * `secondary` - Secondary DNS server IP address.
 * `server_hostname` - DNS server host name list.
 * `server_select_method` - Specify how configured servers are prioritized. Valid values: `least-rtt`, `failover`.

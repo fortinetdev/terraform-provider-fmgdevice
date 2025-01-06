@@ -99,6 +99,11 @@ func resourceRouterOspfOspfInterface() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"linkdown_fast_failover": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
 			"md5_keychain": &schema.Schema{
 				Type:     schema.TypeSet,
 				Elem:     &schema.Schema{Type: schema.TypeString},
@@ -375,6 +380,10 @@ func flattenRouterOspfOspfInterfaceKeychain2edl(v interface{}, d *schema.Resourc
 	return flattenStringList(v)
 }
 
+func flattenRouterOspfOspfInterfaceLinkdownFastFailover2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenRouterOspfOspfInterfaceMd5Keychain2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return flattenStringList(v)
 }
@@ -575,6 +584,16 @@ func refreshObjectRouterOspfOspfInterface(d *schema.ResourceData, o map[string]i
 		}
 	}
 
+	if err = d.Set("linkdown_fast_failover", flattenRouterOspfOspfInterfaceLinkdownFastFailover2edl(o["linkdown-fast-failover"], d, "linkdown_fast_failover")); err != nil {
+		if vv, ok := fortiAPIPatch(o["linkdown-fast-failover"], "RouterOspfOspfInterface-LinkdownFastFailover"); ok {
+			if err = d.Set("linkdown_fast_failover", vv); err != nil {
+				return fmt.Errorf("Error reading linkdown_fast_failover: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading linkdown_fast_failover: %v", err)
+		}
+	}
+
 	if err = d.Set("md5_keychain", flattenRouterOspfOspfInterfaceMd5Keychain2edl(o["md5-keychain"], d, "md5_keychain")); err != nil {
 		if vv, ok := fortiAPIPatch(o["md5-keychain"], "RouterOspfOspfInterface-Md5Keychain"); ok {
 			if err = d.Set("md5_keychain", vv); err != nil {
@@ -764,6 +783,10 @@ func expandRouterOspfOspfInterfaceIp2edl(d *schema.ResourceData, v interface{}, 
 
 func expandRouterOspfOspfInterfaceKeychain2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandRouterOspfOspfInterfaceLinkdownFastFailover2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
 }
 
 func expandRouterOspfOspfInterfaceMd5Keychain2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
@@ -960,6 +983,15 @@ func getObjectRouterOspfOspfInterface(d *schema.ResourceData) (*map[string]inter
 			return &obj, err
 		} else if t != nil {
 			obj["keychain"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("linkdown_fast_failover"); ok || d.HasChange("linkdown_fast_failover") {
+		t, err := expandRouterOspfOspfInterfaceLinkdownFastFailover2edl(d, v, "linkdown_fast_failover")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["linkdown-fast-failover"] = t
 		}
 	}
 

@@ -117,6 +117,7 @@ func resourceLogEventfilter() *schema.Resource {
 			"webproxy": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"wireless_activity": &schema.Schema{
 				Type:     schema.TypeString,

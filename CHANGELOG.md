@@ -1,4 +1,29 @@
-## 1.1.0 (Unreleased)
+## 1.2.0 (Unreleased)
+
+## 1.1.0 (Jan 06, 2025)
+
+IMPROVEMENTS:
+* Support FortiManager version 7.4.4, 7.4.5, 7.6.0, 7.6.1;
+* Fix type convert issue of resource firewall_internetserviceextension;
+* Fix issue of missing value when convert list to string;
+
+FEATURES:
+
+* **New Resource:** `fmgdevice_azure_vwaningresspublicips`
+* **New Resource:** `fmgdevice_system_dhcp6_server_options`
+* **New Resource:** `fmgdevice_system_interface_ipv6_clientoptions`
+* **New Resource:** `fmgdevice_system_netflow_exclusionfilters`
+* **New Resource:** `fmgdevice_system_sdwan_healthcheckfortiguard`
+* **New Resource:** `fmgdevice_system_sdwan_healthcheckfortiguard_sla`
+* **New Resource:** `fmgdevice_system_snmp_rmonstat`
+* **New Resource:** `fmgdevice_system_vneinterface`
+* **New Resource:** `fmgdevice_user_scim`
+* **New Resource:** `fmgdevice_ztna_trafficforwardproxy`
+* **New Resource:** `fmgdevice_ztna_trafficforwardproxyreverseservice`
+* **New Resource:** `fmgdevice_ztna_trafficforwardproxyreverseservice_remoteservers`
+* **New Resource:** `fmgdevice_ztna_trafficforwardproxy_quic`
+* **New Resource:** `fmgdevice_ztna_trafficforwardproxy_sslciphersuites`
+* **New Resource:** `fmgdevice_ztna_trafficforwardproxy_sslserverciphersuites`
 
 ## 1.0.0 (Jul 29, 2024)
 

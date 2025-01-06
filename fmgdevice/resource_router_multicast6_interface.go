@@ -217,7 +217,7 @@ func flattenRouterMulticast6InterfaceHelloInterval2edl(v interface{}, d *schema.
 }
 
 func flattenRouterMulticast6InterfaceName2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
-	return v
+	return convintflist2str(v, d.Get(pre))
 }
 
 func refreshObjectRouterMulticast6Interface(d *schema.ResourceData, o map[string]interface{}) error {
@@ -271,7 +271,7 @@ func expandRouterMulticast6InterfaceHelloInterval2edl(d *schema.ResourceData, v 
 }
 
 func expandRouterMulticast6InterfaceName2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
-	return v, nil
+	return convstr2list(v, nil), nil
 }
 
 func getObjectRouterMulticast6Interface(d *schema.ResourceData) (*map[string]interface{}, error) {

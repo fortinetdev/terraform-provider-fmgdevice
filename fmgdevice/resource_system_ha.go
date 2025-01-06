@@ -48,12 +48,28 @@ func resourceSystemHa() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"auto_virtual_mac_interface": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Computed: true,
+			},
+			"backup_hbdev": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Computed: true,
+			},
 			"board_failover_tolerance": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
 			},
 			"chassis_id": &schema.Schema{
 				Type:     schema.TypeInt,
+				Optional: true,
+			},
+			"check_secondary_dev_health": &schema.Schema{
+				Type:     schema.TypeString,
 				Optional: true,
 			},
 			"cpu_threshold": &schema.Schema{
@@ -794,11 +810,23 @@ func flattenSystemHaAuthentication(v interface{}, d *schema.ResourceData, pre st
 	return v
 }
 
+func flattenSystemHaAutoVirtualMacInterface(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
+func flattenSystemHaBackupHbdev(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
 func flattenSystemHaBoardFailoverTolerance(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
 func flattenSystemHaChassisId(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemHaCheckSecondaryDevHealth(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -1593,6 +1621,26 @@ func refreshObjectSystemHa(d *schema.ResourceData, o map[string]interface{}) err
 		}
 	}
 
+	if err = d.Set("auto_virtual_mac_interface", flattenSystemHaAutoVirtualMacInterface(o["auto-virtual-mac-interface"], d, "auto_virtual_mac_interface")); err != nil {
+		if vv, ok := fortiAPIPatch(o["auto-virtual-mac-interface"], "SystemHa-AutoVirtualMacInterface"); ok {
+			if err = d.Set("auto_virtual_mac_interface", vv); err != nil {
+				return fmt.Errorf("Error reading auto_virtual_mac_interface: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading auto_virtual_mac_interface: %v", err)
+		}
+	}
+
+	if err = d.Set("backup_hbdev", flattenSystemHaBackupHbdev(o["backup-hbdev"], d, "backup_hbdev")); err != nil {
+		if vv, ok := fortiAPIPatch(o["backup-hbdev"], "SystemHa-BackupHbdev"); ok {
+			if err = d.Set("backup_hbdev", vv); err != nil {
+				return fmt.Errorf("Error reading backup_hbdev: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading backup_hbdev: %v", err)
+		}
+	}
+
 	if err = d.Set("board_failover_tolerance", flattenSystemHaBoardFailoverTolerance(o["board-failover-tolerance"], d, "board_failover_tolerance")); err != nil {
 		if vv, ok := fortiAPIPatch(o["board-failover-tolerance"], "SystemHa-BoardFailoverTolerance"); ok {
 			if err = d.Set("board_failover_tolerance", vv); err != nil {
@@ -1610,6 +1658,16 @@ func refreshObjectSystemHa(d *schema.ResourceData, o map[string]interface{}) err
 			}
 		} else {
 			return fmt.Errorf("Error reading chassis_id: %v", err)
+		}
+	}
+
+	if err = d.Set("check_secondary_dev_health", flattenSystemHaCheckSecondaryDevHealth(o["check-secondary-dev-health"], d, "check_secondary_dev_health")); err != nil {
+		if vv, ok := fortiAPIPatch(o["check-secondary-dev-health"], "SystemHa-CheckSecondaryDevHealth"); ok {
+			if err = d.Set("check_secondary_dev_health", vv); err != nil {
+				return fmt.Errorf("Error reading check_secondary_dev_health: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading check_secondary_dev_health: %v", err)
 		}
 	}
 
@@ -2614,11 +2672,23 @@ func expandSystemHaAuthentication(d *schema.ResourceData, v interface{}, pre str
 	return v, nil
 }
 
+func expandSystemHaAutoVirtualMacInterface(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandSystemHaBackupHbdev(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
 func expandSystemHaBoardFailoverTolerance(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
 func expandSystemHaChassisId(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemHaCheckSecondaryDevHealth(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -3370,6 +3440,24 @@ func getObjectSystemHa(d *schema.ResourceData) (*map[string]interface{}, error) 
 		}
 	}
 
+	if v, ok := d.GetOk("auto_virtual_mac_interface"); ok || d.HasChange("auto_virtual_mac_interface") {
+		t, err := expandSystemHaAutoVirtualMacInterface(d, v, "auto_virtual_mac_interface")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["auto-virtual-mac-interface"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("backup_hbdev"); ok || d.HasChange("backup_hbdev") {
+		t, err := expandSystemHaBackupHbdev(d, v, "backup_hbdev")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["backup-hbdev"] = t
+		}
+	}
+
 	if v, ok := d.GetOk("board_failover_tolerance"); ok || d.HasChange("board_failover_tolerance") {
 		t, err := expandSystemHaBoardFailoverTolerance(d, v, "board_failover_tolerance")
 		if err != nil {
@@ -3385,6 +3473,15 @@ func getObjectSystemHa(d *schema.ResourceData) (*map[string]interface{}, error) 
 			return &obj, err
 		} else if t != nil {
 			obj["chassis-id"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("check_secondary_dev_health"); ok || d.HasChange("check_secondary_dev_health") {
+		t, err := expandSystemHaCheckSecondaryDevHealth(d, v, "check_secondary_dev_health")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["check-secondary-dev-health"] = t
 		}
 	}
 

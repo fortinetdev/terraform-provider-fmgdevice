@@ -29,6 +29,7 @@ The following arguments are supported:
 * `device_vdom` - FortiManager managed device vdom. This variable is used in the request URL. If not specified, it will inherit the variable `device_vdom` of the provider.
 
 * `hostname` - Hostname for this virtual domain router.
+* `kernel_route_distance` - Administrative distance for routes learned from kernel (0 - 255).
 * `show_filter` - Prefix-list as filter for showing routes.
 
 

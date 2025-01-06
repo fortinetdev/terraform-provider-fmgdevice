@@ -38,6 +38,8 @@ The following arguments are supported:
 * `device_name` - FortiManager managed device name. This variable is used in the request URL. If not specified, it will inherit the variable `device_name` of the provider.
 * `device_vdom` - FortiManager managed device vdom. This variable is used in the request URL. If not specified, it will inherit the variable `device_vdom` of the provider.
 
+* `pim_use_sdwan` - Enable/disable use of SDWAN when checking RPF neighbor and sending of REG packet. Valid values: `disable`, `enable`.
+
 * `register_rate_limit` - Limit of packets/sec per source registered through this RP (0 means unlimited).
 * `rp_address` - Rp-Address. The structure of `rp_address` block is documented below.
 * `dynamic_sort_subtable` - true or false, set this parameter to true when using dynamic for_each + toset to configure and sort sub-tables, please do not set this parameter when configuring static sub-tables.

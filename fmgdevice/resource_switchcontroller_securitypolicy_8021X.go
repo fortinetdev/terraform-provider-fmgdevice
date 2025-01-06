@@ -51,6 +51,14 @@ func resourceSwitchControllerSecurityPolicy8021X() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"auth_order": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"auth_priority": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 			"authserver_timeout_period": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
@@ -310,6 +318,14 @@ func flattenSwitchControllerSecurityPolicy8021XAuthFailVlanId(v interface{}, d *
 	return flattenStringList(v)
 }
 
+func flattenSwitchControllerSecurityPolicy8021XAuthOrder(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSwitchControllerSecurityPolicy8021XAuthPriority(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenSwitchControllerSecurityPolicy8021XAuthserverTimeoutPeriod(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -406,6 +422,26 @@ func refreshObjectSwitchControllerSecurityPolicy8021X(d *schema.ResourceData, o 
 			}
 		} else {
 			return fmt.Errorf("Error reading auth_fail_vlan_id: %v", err)
+		}
+	}
+
+	if err = d.Set("auth_order", flattenSwitchControllerSecurityPolicy8021XAuthOrder(o["auth-order"], d, "auth_order")); err != nil {
+		if vv, ok := fortiAPIPatch(o["auth-order"], "SwitchControllerSecurityPolicy8021X-AuthOrder"); ok {
+			if err = d.Set("auth_order", vv); err != nil {
+				return fmt.Errorf("Error reading auth_order: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading auth_order: %v", err)
+		}
+	}
+
+	if err = d.Set("auth_priority", flattenSwitchControllerSecurityPolicy8021XAuthPriority(o["auth-priority"], d, "auth_priority")); err != nil {
+		if vv, ok := fortiAPIPatch(o["auth-priority"], "SwitchControllerSecurityPolicy8021X-AuthPriority"); ok {
+			if err = d.Set("auth_priority", vv); err != nil {
+				return fmt.Errorf("Error reading auth_priority: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading auth_priority: %v", err)
 		}
 	}
 
@@ -616,6 +652,14 @@ func expandSwitchControllerSecurityPolicy8021XAuthFailVlanId(d *schema.ResourceD
 	return expandStringList(v.(*schema.Set).List()), nil
 }
 
+func expandSwitchControllerSecurityPolicy8021XAuthOrder(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSwitchControllerSecurityPolicy8021XAuthPriority(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandSwitchControllerSecurityPolicy8021XAuthserverTimeoutPeriod(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -710,6 +754,24 @@ func getObjectSwitchControllerSecurityPolicy8021X(d *schema.ResourceData) (*map[
 			return &obj, err
 		} else if t != nil {
 			obj["auth-fail-vlan-id"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("auth_order"); ok || d.HasChange("auth_order") {
+		t, err := expandSwitchControllerSecurityPolicy8021XAuthOrder(d, v, "auth_order")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["auth-order"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("auth_priority"); ok || d.HasChange("auth_priority") {
+		t, err := expandSwitchControllerSecurityPolicy8021XAuthPriority(d, v, "auth_priority")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["auth-priority"] = t
 		}
 	}
 

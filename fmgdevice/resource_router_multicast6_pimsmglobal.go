@@ -40,6 +40,11 @@ func resourceRouterMulticast6PimSmGlobal() *schema.Resource {
 				Computed: true,
 				ForceNew: true,
 			},
+			"pim_use_sdwan": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
 			"register_rate_limit": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
@@ -186,6 +191,10 @@ func resourceRouterMulticast6PimSmGlobalRead(d *schema.ResourceData, m interface
 	return nil
 }
 
+func flattenRouterMulticast6PimSmGlobalPimUseSdwan2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenRouterMulticast6PimSmGlobalRegisterRateLimit2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -246,6 +255,16 @@ func refreshObjectRouterMulticast6PimSmGlobal(d *schema.ResourceData, o map[stri
 		d.Set("dynamic_sort_subtable", "false")
 	}
 
+	if err = d.Set("pim_use_sdwan", flattenRouterMulticast6PimSmGlobalPimUseSdwan2edl(o["pim-use-sdwan"], d, "pim_use_sdwan")); err != nil {
+		if vv, ok := fortiAPIPatch(o["pim-use-sdwan"], "RouterMulticast6PimSmGlobal-PimUseSdwan"); ok {
+			if err = d.Set("pim_use_sdwan", vv); err != nil {
+				return fmt.Errorf("Error reading pim_use_sdwan: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading pim_use_sdwan: %v", err)
+		}
+	}
+
 	if err = d.Set("register_rate_limit", flattenRouterMulticast6PimSmGlobalRegisterRateLimit2edl(o["register-rate-limit"], d, "register_rate_limit")); err != nil {
 		if vv, ok := fortiAPIPatch(o["register-rate-limit"], "RouterMulticast6PimSmGlobal-RegisterRateLimit"); ok {
 			if err = d.Set("register_rate_limit", vv); err != nil {
@@ -287,6 +306,10 @@ func flattenRouterMulticast6PimSmGlobalFortiTestDebug(d *schema.ResourceData, fo
 	log.Printf(strconv.Itoa(fosdebugsn))
 	e := validation.IntBetween(fosdebugbeg, fosdebugend)
 	log.Printf("ER List: %v", e)
+}
+
+func expandRouterMulticast6PimSmGlobalPimUseSdwan2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
 }
 
 func expandRouterMulticast6PimSmGlobalRegisterRateLimit2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
@@ -337,6 +360,15 @@ func expandRouterMulticast6PimSmGlobalRpAddressIp6Address2edl(d *schema.Resource
 
 func getObjectRouterMulticast6PimSmGlobal(d *schema.ResourceData) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
+
+	if v, ok := d.GetOk("pim_use_sdwan"); ok || d.HasChange("pim_use_sdwan") {
+		t, err := expandRouterMulticast6PimSmGlobalPimUseSdwan2edl(d, v, "pim_use_sdwan")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["pim-use-sdwan"] = t
+		}
+	}
 
 	if v, ok := d.GetOk("register_rate_limit"); ok || d.HasChange("register_rate_limit") {
 		t, err := expandRouterMulticast6PimSmGlobalRegisterRateLimit2edl(d, v, "register_rate_limit")

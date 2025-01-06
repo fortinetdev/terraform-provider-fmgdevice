@@ -46,6 +46,7 @@ The following arguments are supported:
 * `start_time` - Startup time (1 - 255 seconds).
 * `status` - Enable/disable VRRP. Valid values: `disable`, `enable`.
 
+* `vrdst_priority` - Priority of the virtual router when the virtual router destination becomes unreachable (0 - 254).
 * `vrdst6` - Monitor the route to this destination.
 * `vrgrp` - VRRP group ID (1 - 65535).
 * `vrid` - Virtual router identifier (1 - 255).

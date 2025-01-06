@@ -67,10 +67,14 @@ The following arguments are supported:
 * `_intf_dhcp6_relay_type` - _Intf_Dhcp6-Relay-Type. Valid values: `regular`.
 
 * `_intf_ip` - _Intf_Ip.
+* `_intf_ip_managed_by_fortiipam` - _Intf_Ip-Managed-By-Fortiipam. Valid values: `disable`, `enable`, `inherit-global`.
+
 * `_intf_ip6_address` - _Intf_Ip6-Address.
 * `_intf_ip6_allowaccess` - _Intf_Ip6-Allowaccess. Valid values: `https`, `ping`, `ssh`, `snmp`, `http`, `telnet`, `any`, `fgfm`, `capwap`.
 
 * `_intf_listen_forticlient_connection` - _Intf_Listen-Forticlient-Connection. Valid values: `disable`, `enable`.
+
+* `_intf_managed_subnetwork_size` - _Intf_Managed-Subnetwork-Size. Valid values: `32`, `64`, `128`, `256`, `512`, `1024`, `2048`, `4096`, `8192`, `16384`, `32768`, `65536`.
 
 * `_is_factory_setting` - _Is_Factory_Setting. Valid values: `disable`, `enable`, `ext`.
 
@@ -132,6 +136,8 @@ The following arguments are supported:
 
 * `dhcp_option82_remote_id_insertion` - Enable/disable DHCP option 82 remote-id insert (default = disable). Valid values: `disable`, `style-1`.
 
+* `domain_name_stripping` - Enable/disable stripping domain name from identity (default = disable). Valid values: `disable`, `enable`.
+
 * `dynamic_vlan` - Enable/disable dynamic VLAN assignment. Valid values: `disable`, `enable`.
 
 * `dynamic_mapping` - Dynamic_Mapping. The structure of `dynamic_mapping` block is documented below.
@@ -185,6 +191,8 @@ The following arguments are supported:
 * `local_bridging` - Enable/disable bridging of wireless and Ethernet interfaces on the FortiAP (default = disable). Valid values: `disable`, `enable`.
 
 * `local_lan` - Allow/deny traffic destined for a Class A, B, or C private IP address (default = allow). Valid values: `deny`, `allow`.
+
+* `local_lan_partition` - Enable/disable segregating client traffic to local LAN side (default = disable). Valid values: `disable`, `enable`.
 
 * `local_standalone` - Enable/disable AP local standalone (default = disable). Valid values: `disable`, `enable`.
 
@@ -386,10 +394,14 @@ The `dynamic_mapping` block supports:
 * `_intf_dhcp6_relay_type` - _Intf_Dhcp6-Relay-Type. Valid values: `regular`.
 
 * `_intf_ip` - _Intf_Ip.
+* `_intf_ip_managed_by_fortiipam` - _Intf_Ip-Managed-By-Fortiipam. Valid values: `disable`, `enable`, `inherit-global`.
+
 * `_intf_ip6_address` - _Intf_Ip6-Address.
 * `_intf_ip6_allowaccess` - _Intf_Ip6-Allowaccess. Valid values: `https`, `ping`, `ssh`, `snmp`, `http`, `telnet`, `any`, `fgfm`, `capwap`.
 
 * `_intf_listen_forticlient_connection` - _Intf_Listen-Forticlient-Connection. Valid values: `disable`, `enable`.
+
+* `_intf_managed_subnetwork_size` - _Intf_Managed-Subnetwork-Size. Valid values: `32`, `64`, `128`, `256`, `512`, `1024`, `2048`, `4096`, `8192`, `16384`, `32768`, `65536`.
 
 * `_is_factory_setting` - _Is_Factory_Setting. Valid values: `disable`, `enable`, `ext`.
 
@@ -453,6 +465,8 @@ The `dynamic_mapping` block supports:
 
 * `dhcp_option82_remote_id_insertion` - Enable/disable DHCP option 82 remote-id insert (default = disable). Valid values: `disable`, `style-1`.
 
+* `domain_name_stripping` - Enable/disable stripping domain name from identity (default = disable). Valid values: `disable`, `enable`.
+
 * `dynamic_vlan` - Enable/disable dynamic VLAN assignment. Valid values: `disable`, `enable`.
 
 * `eap_reauth` - Enable/disable EAP re-authentication for WPA-Enterprise security. Valid values: `disable`, `enable`.
@@ -505,6 +519,8 @@ The `dynamic_mapping` block supports:
 * `local_bridging` - Enable/disable bridging of wireless and Ethernet interfaces on the FortiAP (default = disable). Valid values: `disable`, `enable`.
 
 * `local_lan` - Allow/deny traffic destined for a Class A, B, or C private IP address (default = allow). Valid values: `deny`, `allow`.
+
+* `local_lan_partition` - Enable/disable segregating client traffic to local LAN side (default = disable). Valid values: `disable`, `enable`.
 
 * `local_standalone` - Enable/disable AP local standalone (default = disable). Valid values: `disable`, `enable`.
 

@@ -840,7 +840,7 @@ func flattenRouterMulticastInterfaceMulticastFlow(v interface{}, d *schema.Resou
 }
 
 func flattenRouterMulticastInterfaceName(v interface{}, d *schema.ResourceData, pre string) interface{} {
-	return v
+	return convintflist2str(v, d.Get(pre))
 }
 
 func flattenRouterMulticastInterfaceNeighbourFilter(v interface{}, d *schema.ResourceData, pre string) interface{} {
@@ -1600,7 +1600,7 @@ func expandRouterMulticastInterfaceMulticastFlow(d *schema.ResourceData, v inter
 }
 
 func expandRouterMulticastInterfaceName(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
-	return v, nil
+	return convstr2list(v, nil), nil
 }
 
 func expandRouterMulticastInterfaceNeighbourFilter(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {

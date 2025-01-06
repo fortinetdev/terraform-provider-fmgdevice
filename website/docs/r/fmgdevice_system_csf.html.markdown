@@ -60,6 +60,8 @@ The following arguments are supported:
 
 * `group_name` - Security Fabric group name. All FortiGates in a Security Fabric must have the same group name.
 * `group_password` - Security Fabric group password. All FortiGates in a Security Fabric must have the same group password.
+* `legacy_authentication` - Enable/disable legacy authentication. Valid values: `disable`, `enable`.
+
 * `log_unification` - Enable/disable broadcast of discovery messages for log unification. Valid values: `disable`, `enable`.
 
 * `management_ip` - Management IP address of this FortiGate. Used to log into this FortiGate from another FortiGate in the Security Fabric.

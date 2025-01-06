@@ -41,6 +41,7 @@ The following arguments are supported:
 * `network_import_check` - Configure insurance of BGP network route existence in IGP. Valid values: `disable`, `enable`, `global`.
 
 * `prefix` - Network prefix.
+* `prefix_name` - Name of firewall address or address group.
 * `route_map` - Route map to modify generated route.
 
 

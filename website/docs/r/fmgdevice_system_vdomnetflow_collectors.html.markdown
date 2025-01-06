@@ -42,6 +42,7 @@ The following arguments are supported:
 * `interface_select_method` - Specify how to select outgoing interface to reach server. Valid values: `auto`, `sdwan`, `specify`.
 
 * `source_ip` - Source IP address for communication with the NetFlow agent.
+* `source_ip_interface` - Name of the interface used to determine the source IP for exporting packets.
 
 
 ## Attribute Reference

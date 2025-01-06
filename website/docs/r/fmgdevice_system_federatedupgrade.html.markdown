@@ -38,6 +38,8 @@ The following arguments are supported:
 
 * `device_name` - FortiManager managed device name. This variable is used in the request URL. If not specified, it will inherit the variable `device_name` of the provider.
 
+* `dry_run` - Perform federated upgrades as a dry run. Valid values: `disable`, `enable`.
+
 * `failure_device` - Serial number of the node to include.
 * `failure_reason` - Reason for upgrade failure. Valid values: `none`, `internal`, `timeout`, `device-type-unsupported`, `download-failed`, `device-missing`, `version-unavailable`, `staging-failed`, `reboot-failed`, `device-not-reconnected`, `node-not-ready`, `no-final-confirmation`, `no-confirmation-query`, `config-error-log-nonempty`, `node-failed`, `csf-tree-not-supported`.
 
@@ -47,6 +49,8 @@ The following arguments are supported:
 * `known_ha_members` - Known-Ha-Members. The structure of `known_ha_members` block is documented below.
 * `next_path_index` - The index of the next image to upgrade to.
 * `node_list` - Node-List. The structure of `node_list` block is documented below.
+* `source` - Source that set up the federated upgrade config. Valid values: `user`, `auto-firmware-upgrade`.
+
 * `status` - Current status of the upgrade. Valid values: `disabled`, `initialized`, `downloading`, `download-failed`, `ready`, `cancelled`, `confirmed`, `done`, `failed`, `device-disconnected`, `staging`, `final-check`, `upgrade-devices`, `coordinating`.
 
 * `upgrade_id` - Unique identifier for this upgrade.

@@ -132,6 +132,11 @@ func resourceWebProxyGlobal() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"request_obs_fold": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
 			"src_affinity_exempt_addr": &schema.Schema{
 				Type:     schema.TypeSet,
 				Elem:     &schema.Schema{Type: schema.TypeString},
@@ -367,6 +372,10 @@ func flattenWebProxyGlobalProxyTransparentCertInspection(v interface{}, d *schem
 	return v
 }
 
+func flattenWebProxyGlobalRequestObsFold(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenWebProxyGlobalSrcAffinityExemptAddr(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return flattenStringList(v)
 }
@@ -582,6 +591,16 @@ func refreshObjectWebProxyGlobal(d *schema.ResourceData, o map[string]interface{
 		}
 	}
 
+	if err = d.Set("request_obs_fold", flattenWebProxyGlobalRequestObsFold(o["request-obs-fold"], d, "request_obs_fold")); err != nil {
+		if vv, ok := fortiAPIPatch(o["request-obs-fold"], "WebProxyGlobal-RequestObsFold"); ok {
+			if err = d.Set("request_obs_fold", vv); err != nil {
+				return fmt.Errorf("Error reading request_obs_fold: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading request_obs_fold: %v", err)
+		}
+	}
+
 	if err = d.Set("src_affinity_exempt_addr", flattenWebProxyGlobalSrcAffinityExemptAddr(o["src-affinity-exempt-addr"], d, "src_affinity_exempt_addr")); err != nil {
 		if vv, ok := fortiAPIPatch(o["src-affinity-exempt-addr"], "WebProxyGlobal-SrcAffinityExemptAddr"); ok {
 			if err = d.Set("src_affinity_exempt_addr", vv); err != nil {
@@ -740,6 +759,10 @@ func expandWebProxyGlobalProxyFqdn(d *schema.ResourceData, v interface{}, pre st
 }
 
 func expandWebProxyGlobalProxyTransparentCertInspection(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWebProxyGlobalRequestObsFold(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -937,6 +960,15 @@ func getObjectWebProxyGlobal(d *schema.ResourceData) (*map[string]interface{}, e
 			return &obj, err
 		} else if t != nil {
 			obj["proxy-transparent-cert-inspection"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("request_obs_fold"); ok || d.HasChange("request_obs_fold") {
+		t, err := expandWebProxyGlobalRequestObsFold(d, v, "request_obs_fold")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["request-obs-fold"] = t
 		}
 	}
 

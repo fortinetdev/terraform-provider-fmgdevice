@@ -230,6 +230,15 @@ func resourceSystemGlobal() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"auth_session_auto_backup": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+			"auth_session_auto_backup_interval": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 			"auth_session_limit": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -340,6 +349,11 @@ func resourceSystemGlobal() *schema.Resource {
 				Computed: true,
 			},
 			"default_service_source_port": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+			"delay_tcp_npu_session": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
@@ -518,6 +532,10 @@ func resourceSystemGlobal() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"gtpu_dynamic_source_port": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 			"gui_allow_incompatible_fabric_fgt": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -671,6 +689,10 @@ func resourceSystemGlobal() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"httpd_max_worker_count": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+			},
 			"hyper_scale_vdom_num": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
@@ -706,7 +728,17 @@ func resourceSystemGlobal() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"ip_conflict_detection": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
 			"ip_fragment_mem_thresholds": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+				Computed: true,
+			},
+			"ip_fragment_timeout": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
 				Computed: true,
@@ -777,6 +809,11 @@ func resourceSystemGlobal() *schema.Resource {
 			},
 			"ipv6_allow_traffic_redirect": &schema.Schema{
 				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+			"ipv6_fragment_timeout": &schema.Schema{
+				Type:     schema.TypeInt,
 				Optional: true,
 				Computed: true,
 			},
@@ -1074,6 +1111,11 @@ func resourceSystemGlobal() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"rest_api_key_url_query": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
 			"restart_time": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -1091,6 +1133,22 @@ func resourceSystemGlobal() *schema.Resource {
 			"scanunit_count": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+			},
+			"scim_http_port": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+				Computed: true,
+			},
+			"scim_https_port": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+				Computed: true,
+			},
+			"scim_server_cert": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Computed: true,
 			},
 			"security_rating_result_submission": &schema.Schema{
 				Type:     schema.TypeString,
@@ -1411,6 +1469,11 @@ func resourceSystemGlobal() *schema.Resource {
 				Computed: true,
 			},
 			"user_device_store_max_users": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+				Computed: true,
+			},
+			"user_history_password_threshold": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
 				Computed: true,
@@ -1786,6 +1849,14 @@ func flattenSystemGlobalAuthKeepalive(v interface{}, d *schema.ResourceData, pre
 	return v
 }
 
+func flattenSystemGlobalAuthSessionAutoBackup(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemGlobalAuthSessionAutoBackupInterval(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenSystemGlobalAuthSessionLimit(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -1875,6 +1946,10 @@ func flattenSystemGlobalDailyRestart(v interface{}, d *schema.ResourceData, pre 
 }
 
 func flattenSystemGlobalDefaultServiceSourcePort(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemGlobalDelayTcpNpuSession(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -2026,6 +2101,10 @@ func flattenSystemGlobalFortitokenCloudSyncInterval(v interface{}, d *schema.Res
 	return v
 }
 
+func flattenSystemGlobalGtpuDynamicSourcePort(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenSystemGlobalGuiAllowIncompatibleFabricFgt(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -2154,6 +2233,10 @@ func flattenSystemGlobalHttpUnauthenticatedRequestLimit(v interface{}, d *schema
 	return v
 }
 
+func flattenSystemGlobalHttpdMaxWorkerCount(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenSystemGlobalHyperScaleVdomNum(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -2182,7 +2265,15 @@ func flattenSystemGlobalInternetServiceDownloadList(v interface{}, d *schema.Res
 	return flattenStringList(v)
 }
 
+func flattenSystemGlobalIpConflictDetection(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenSystemGlobalIpFragmentMemThresholds(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemGlobalIpFragmentTimeout(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -2239,6 +2330,10 @@ func flattenSystemGlobalIpv6AllowMulticastProbe(v interface{}, d *schema.Resourc
 }
 
 func flattenSystemGlobalIpv6AllowTrafficRedirect(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemGlobalIpv6FragmentTimeout(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -2486,6 +2581,10 @@ func flattenSystemGlobalResetSessionlessTcp(v interface{}, d *schema.ResourceDat
 	return v
 }
 
+func flattenSystemGlobalRestApiKeyUrlQuery(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenSystemGlobalRestartTime(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -2500,6 +2599,18 @@ func flattenSystemGlobalRevisionImageAutoBackup(v interface{}, d *schema.Resourc
 
 func flattenSystemGlobalScanunitCount(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
+}
+
+func flattenSystemGlobalScimHttpPort(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemGlobalScimHttpsPort(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemGlobalScimServerCert(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
 }
 
 func flattenSystemGlobalSecurityRatingResultSubmission(v interface{}, d *schema.ResourceData, pre string) interface{} {
@@ -2792,6 +2903,10 @@ func flattenSystemGlobalUserDeviceStoreMaxUnifiedMem(v interface{}, d *schema.Re
 }
 
 func flattenSystemGlobalUserDeviceStoreMaxUsers(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemGlobalUserHistoryPasswordThreshold(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -3284,6 +3399,26 @@ func refreshObjectSystemGlobal(d *schema.ResourceData, o map[string]interface{})
 		}
 	}
 
+	if err = d.Set("auth_session_auto_backup", flattenSystemGlobalAuthSessionAutoBackup(o["auth-session-auto-backup"], d, "auth_session_auto_backup")); err != nil {
+		if vv, ok := fortiAPIPatch(o["auth-session-auto-backup"], "SystemGlobal-AuthSessionAutoBackup"); ok {
+			if err = d.Set("auth_session_auto_backup", vv); err != nil {
+				return fmt.Errorf("Error reading auth_session_auto_backup: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading auth_session_auto_backup: %v", err)
+		}
+	}
+
+	if err = d.Set("auth_session_auto_backup_interval", flattenSystemGlobalAuthSessionAutoBackupInterval(o["auth-session-auto-backup-interval"], d, "auth_session_auto_backup_interval")); err != nil {
+		if vv, ok := fortiAPIPatch(o["auth-session-auto-backup-interval"], "SystemGlobal-AuthSessionAutoBackupInterval"); ok {
+			if err = d.Set("auth_session_auto_backup_interval", vv); err != nil {
+				return fmt.Errorf("Error reading auth_session_auto_backup_interval: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading auth_session_auto_backup_interval: %v", err)
+		}
+	}
+
 	if err = d.Set("auth_session_limit", flattenSystemGlobalAuthSessionLimit(o["auth-session-limit"], d, "auth_session_limit")); err != nil {
 		if vv, ok := fortiAPIPatch(o["auth-session-limit"], "SystemGlobal-AuthSessionLimit"); ok {
 			if err = d.Set("auth_session_limit", vv); err != nil {
@@ -3511,6 +3646,16 @@ func refreshObjectSystemGlobal(d *schema.ResourceData, o map[string]interface{})
 			}
 		} else {
 			return fmt.Errorf("Error reading default_service_source_port: %v", err)
+		}
+	}
+
+	if err = d.Set("delay_tcp_npu_session", flattenSystemGlobalDelayTcpNpuSession(o["delay-tcp-npu-session"], d, "delay_tcp_npu_session")); err != nil {
+		if vv, ok := fortiAPIPatch(o["delay-tcp-npu-session"], "SystemGlobal-DelayTcpNpuSession"); ok {
+			if err = d.Set("delay_tcp_npu_session", vv); err != nil {
+				return fmt.Errorf("Error reading delay_tcp_npu_session: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading delay_tcp_npu_session: %v", err)
 		}
 	}
 
@@ -3884,6 +4029,16 @@ func refreshObjectSystemGlobal(d *schema.ResourceData, o map[string]interface{})
 		}
 	}
 
+	if err = d.Set("gtpu_dynamic_source_port", flattenSystemGlobalGtpuDynamicSourcePort(o["gtpu-dynamic-source-port"], d, "gtpu_dynamic_source_port")); err != nil {
+		if vv, ok := fortiAPIPatch(o["gtpu-dynamic-source-port"], "SystemGlobal-GtpuDynamicSourcePort"); ok {
+			if err = d.Set("gtpu_dynamic_source_port", vv); err != nil {
+				return fmt.Errorf("Error reading gtpu_dynamic_source_port: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading gtpu_dynamic_source_port: %v", err)
+		}
+	}
+
 	if err = d.Set("gui_allow_incompatible_fabric_fgt", flattenSystemGlobalGuiAllowIncompatibleFabricFgt(o["gui-allow-incompatible-fabric-fgt"], d, "gui_allow_incompatible_fabric_fgt")); err != nil {
 		if vv, ok := fortiAPIPatch(o["gui-allow-incompatible-fabric-fgt"], "SystemGlobal-GuiAllowIncompatibleFabricFgt"); ok {
 			if err = d.Set("gui_allow_incompatible_fabric_fgt", vv); err != nil {
@@ -4204,6 +4359,16 @@ func refreshObjectSystemGlobal(d *schema.ResourceData, o map[string]interface{})
 		}
 	}
 
+	if err = d.Set("httpd_max_worker_count", flattenSystemGlobalHttpdMaxWorkerCount(o["httpd-max-worker-count"], d, "httpd_max_worker_count")); err != nil {
+		if vv, ok := fortiAPIPatch(o["httpd-max-worker-count"], "SystemGlobal-HttpdMaxWorkerCount"); ok {
+			if err = d.Set("httpd_max_worker_count", vv); err != nil {
+				return fmt.Errorf("Error reading httpd_max_worker_count: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading httpd_max_worker_count: %v", err)
+		}
+	}
+
 	if err = d.Set("hyper_scale_vdom_num", flattenSystemGlobalHyperScaleVdomNum(o["hyper-scale-vdom-num"], d, "hyper_scale_vdom_num")); err != nil {
 		if vv, ok := fortiAPIPatch(o["hyper-scale-vdom-num"], "SystemGlobal-HyperScaleVdomNum"); ok {
 			if err = d.Set("hyper_scale_vdom_num", vv); err != nil {
@@ -4274,6 +4439,16 @@ func refreshObjectSystemGlobal(d *schema.ResourceData, o map[string]interface{})
 		}
 	}
 
+	if err = d.Set("ip_conflict_detection", flattenSystemGlobalIpConflictDetection(o["ip-conflict-detection"], d, "ip_conflict_detection")); err != nil {
+		if vv, ok := fortiAPIPatch(o["ip-conflict-detection"], "SystemGlobal-IpConflictDetection"); ok {
+			if err = d.Set("ip_conflict_detection", vv); err != nil {
+				return fmt.Errorf("Error reading ip_conflict_detection: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading ip_conflict_detection: %v", err)
+		}
+	}
+
 	if err = d.Set("ip_fragment_mem_thresholds", flattenSystemGlobalIpFragmentMemThresholds(o["ip-fragment-mem-thresholds"], d, "ip_fragment_mem_thresholds")); err != nil {
 		if vv, ok := fortiAPIPatch(o["ip-fragment-mem-thresholds"], "SystemGlobal-IpFragmentMemThresholds"); ok {
 			if err = d.Set("ip_fragment_mem_thresholds", vv); err != nil {
@@ -4281,6 +4456,16 @@ func refreshObjectSystemGlobal(d *schema.ResourceData, o map[string]interface{})
 			}
 		} else {
 			return fmt.Errorf("Error reading ip_fragment_mem_thresholds: %v", err)
+		}
+	}
+
+	if err = d.Set("ip_fragment_timeout", flattenSystemGlobalIpFragmentTimeout(o["ip-fragment-timeout"], d, "ip_fragment_timeout")); err != nil {
+		if vv, ok := fortiAPIPatch(o["ip-fragment-timeout"], "SystemGlobal-IpFragmentTimeout"); ok {
+			if err = d.Set("ip_fragment_timeout", vv); err != nil {
+				return fmt.Errorf("Error reading ip_fragment_timeout: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading ip_fragment_timeout: %v", err)
 		}
 	}
 
@@ -4421,6 +4606,16 @@ func refreshObjectSystemGlobal(d *schema.ResourceData, o map[string]interface{})
 			}
 		} else {
 			return fmt.Errorf("Error reading ipv6_allow_traffic_redirect: %v", err)
+		}
+	}
+
+	if err = d.Set("ipv6_fragment_timeout", flattenSystemGlobalIpv6FragmentTimeout(o["ipv6-fragment-timeout"], d, "ipv6_fragment_timeout")); err != nil {
+		if vv, ok := fortiAPIPatch(o["ipv6-fragment-timeout"], "SystemGlobal-Ipv6FragmentTimeout"); ok {
+			if err = d.Set("ipv6_fragment_timeout", vv); err != nil {
+				return fmt.Errorf("Error reading ipv6_fragment_timeout: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading ipv6_fragment_timeout: %v", err)
 		}
 	}
 
@@ -5034,6 +5229,16 @@ func refreshObjectSystemGlobal(d *schema.ResourceData, o map[string]interface{})
 		}
 	}
 
+	if err = d.Set("rest_api_key_url_query", flattenSystemGlobalRestApiKeyUrlQuery(o["rest-api-key-url-query"], d, "rest_api_key_url_query")); err != nil {
+		if vv, ok := fortiAPIPatch(o["rest-api-key-url-query"], "SystemGlobal-RestApiKeyUrlQuery"); ok {
+			if err = d.Set("rest_api_key_url_query", vv); err != nil {
+				return fmt.Errorf("Error reading rest_api_key_url_query: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading rest_api_key_url_query: %v", err)
+		}
+	}
+
 	if err = d.Set("restart_time", flattenSystemGlobalRestartTime(o["restart-time"], d, "restart_time")); err != nil {
 		if vv, ok := fortiAPIPatch(o["restart-time"], "SystemGlobal-RestartTime"); ok {
 			if err = d.Set("restart_time", vv); err != nil {
@@ -5071,6 +5276,36 @@ func refreshObjectSystemGlobal(d *schema.ResourceData, o map[string]interface{})
 			}
 		} else {
 			return fmt.Errorf("Error reading scanunit_count: %v", err)
+		}
+	}
+
+	if err = d.Set("scim_http_port", flattenSystemGlobalScimHttpPort(o["scim-http-port"], d, "scim_http_port")); err != nil {
+		if vv, ok := fortiAPIPatch(o["scim-http-port"], "SystemGlobal-ScimHttpPort"); ok {
+			if err = d.Set("scim_http_port", vv); err != nil {
+				return fmt.Errorf("Error reading scim_http_port: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading scim_http_port: %v", err)
+		}
+	}
+
+	if err = d.Set("scim_https_port", flattenSystemGlobalScimHttpsPort(o["scim-https-port"], d, "scim_https_port")); err != nil {
+		if vv, ok := fortiAPIPatch(o["scim-https-port"], "SystemGlobal-ScimHttpsPort"); ok {
+			if err = d.Set("scim_https_port", vv); err != nil {
+				return fmt.Errorf("Error reading scim_https_port: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading scim_https_port: %v", err)
+		}
+	}
+
+	if err = d.Set("scim_server_cert", flattenSystemGlobalScimServerCert(o["scim-server-cert"], d, "scim_server_cert")); err != nil {
+		if vv, ok := fortiAPIPatch(o["scim-server-cert"], "SystemGlobal-ScimServerCert"); ok {
+			if err = d.Set("scim_server_cert", vv); err != nil {
+				return fmt.Errorf("Error reading scim_server_cert: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading scim_server_cert: %v", err)
 		}
 	}
 
@@ -5708,6 +5943,16 @@ func refreshObjectSystemGlobal(d *schema.ResourceData, o map[string]interface{})
 		}
 	}
 
+	if err = d.Set("user_history_password_threshold", flattenSystemGlobalUserHistoryPasswordThreshold(o["user-history-password-threshold"], d, "user_history_password_threshold")); err != nil {
+		if vv, ok := fortiAPIPatch(o["user-history-password-threshold"], "SystemGlobal-UserHistoryPasswordThreshold"); ok {
+			if err = d.Set("user_history_password_threshold", vv); err != nil {
+				return fmt.Errorf("Error reading user_history_password_threshold: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading user_history_password_threshold: %v", err)
+		}
+	}
+
 	if err = d.Set("user_server_cert", flattenSystemGlobalUserServerCert(o["user-server-cert"], d, "user_server_cert")); err != nil {
 		if vv, ok := fortiAPIPatch(o["user-server-cert"], "SystemGlobal-UserServerCert"); ok {
 			if err = d.Set("user_server_cert", vv); err != nil {
@@ -6103,6 +6348,14 @@ func expandSystemGlobalAuthKeepalive(d *schema.ResourceData, v interface{}, pre 
 	return v, nil
 }
 
+func expandSystemGlobalAuthSessionAutoBackup(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemGlobalAuthSessionAutoBackupInterval(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandSystemGlobalAuthSessionLimit(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -6192,6 +6445,10 @@ func expandSystemGlobalDailyRestart(d *schema.ResourceData, v interface{}, pre s
 }
 
 func expandSystemGlobalDefaultServiceSourcePort(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemGlobalDelayTcpNpuSession(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -6343,6 +6600,10 @@ func expandSystemGlobalFortitokenCloudSyncInterval(d *schema.ResourceData, v int
 	return v, nil
 }
 
+func expandSystemGlobalGtpuDynamicSourcePort(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandSystemGlobalGuiAllowIncompatibleFabricFgt(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -6471,6 +6732,10 @@ func expandSystemGlobalHttpUnauthenticatedRequestLimit(d *schema.ResourceData, v
 	return v, nil
 }
 
+func expandSystemGlobalHttpdMaxWorkerCount(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandSystemGlobalHyperScaleVdomNum(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -6499,7 +6764,15 @@ func expandSystemGlobalInternetServiceDownloadList(d *schema.ResourceData, v int
 	return expandStringList(v.(*schema.Set).List()), nil
 }
 
+func expandSystemGlobalIpConflictDetection(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandSystemGlobalIpFragmentMemThresholds(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemGlobalIpFragmentTimeout(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -6556,6 +6829,10 @@ func expandSystemGlobalIpv6AllowMulticastProbe(d *schema.ResourceData, v interfa
 }
 
 func expandSystemGlobalIpv6AllowTrafficRedirect(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemGlobalIpv6FragmentTimeout(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -6803,6 +7080,10 @@ func expandSystemGlobalResetSessionlessTcp(d *schema.ResourceData, v interface{}
 	return v, nil
 }
 
+func expandSystemGlobalRestApiKeyUrlQuery(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandSystemGlobalRestartTime(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -6817,6 +7098,18 @@ func expandSystemGlobalRevisionImageAutoBackup(d *schema.ResourceData, v interfa
 
 func expandSystemGlobalScanunitCount(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
+}
+
+func expandSystemGlobalScimHttpPort(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemGlobalScimHttpsPort(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemGlobalScimServerCert(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
 }
 
 func expandSystemGlobalSecurityRatingResultSubmission(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
@@ -7106,6 +7399,10 @@ func expandSystemGlobalUserDeviceStoreMaxUnifiedMem(d *schema.ResourceData, v in
 }
 
 func expandSystemGlobalUserDeviceStoreMaxUsers(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemGlobalUserHistoryPasswordThreshold(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -7555,6 +7852,24 @@ func getObjectSystemGlobal(d *schema.ResourceData) (*map[string]interface{}, err
 		}
 	}
 
+	if v, ok := d.GetOk("auth_session_auto_backup"); ok || d.HasChange("auth_session_auto_backup") {
+		t, err := expandSystemGlobalAuthSessionAutoBackup(d, v, "auth_session_auto_backup")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["auth-session-auto-backup"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("auth_session_auto_backup_interval"); ok || d.HasChange("auth_session_auto_backup_interval") {
+		t, err := expandSystemGlobalAuthSessionAutoBackupInterval(d, v, "auth_session_auto_backup_interval")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["auth-session-auto-backup-interval"] = t
+		}
+	}
+
 	if v, ok := d.GetOk("auth_session_limit"); ok || d.HasChange("auth_session_limit") {
 		t, err := expandSystemGlobalAuthSessionLimit(d, v, "auth_session_limit")
 		if err != nil {
@@ -7759,6 +8074,15 @@ func getObjectSystemGlobal(d *schema.ResourceData) (*map[string]interface{}, err
 			return &obj, err
 		} else if t != nil {
 			obj["default-service-source-port"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("delay_tcp_npu_session"); ok || d.HasChange("delay_tcp_npu_session") {
+		t, err := expandSystemGlobalDelayTcpNpuSession(d, v, "delay_tcp_npu_session")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["delay-tcp-npu-session"] = t
 		}
 	}
 
@@ -8095,6 +8419,15 @@ func getObjectSystemGlobal(d *schema.ResourceData) (*map[string]interface{}, err
 		}
 	}
 
+	if v, ok := d.GetOk("gtpu_dynamic_source_port"); ok || d.HasChange("gtpu_dynamic_source_port") {
+		t, err := expandSystemGlobalGtpuDynamicSourcePort(d, v, "gtpu_dynamic_source_port")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["gtpu-dynamic-source-port"] = t
+		}
+	}
+
 	if v, ok := d.GetOk("gui_allow_incompatible_fabric_fgt"); ok || d.HasChange("gui_allow_incompatible_fabric_fgt") {
 		t, err := expandSystemGlobalGuiAllowIncompatibleFabricFgt(d, v, "gui_allow_incompatible_fabric_fgt")
 		if err != nil {
@@ -8383,6 +8716,15 @@ func getObjectSystemGlobal(d *schema.ResourceData) (*map[string]interface{}, err
 		}
 	}
 
+	if v, ok := d.GetOk("httpd_max_worker_count"); ok || d.HasChange("httpd_max_worker_count") {
+		t, err := expandSystemGlobalHttpdMaxWorkerCount(d, v, "httpd_max_worker_count")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["httpd-max-worker-count"] = t
+		}
+	}
+
 	if v, ok := d.GetOk("hyper_scale_vdom_num"); ok || d.HasChange("hyper_scale_vdom_num") {
 		t, err := expandSystemGlobalHyperScaleVdomNum(d, v, "hyper_scale_vdom_num")
 		if err != nil {
@@ -8446,12 +8788,30 @@ func getObjectSystemGlobal(d *schema.ResourceData) (*map[string]interface{}, err
 		}
 	}
 
+	if v, ok := d.GetOk("ip_conflict_detection"); ok || d.HasChange("ip_conflict_detection") {
+		t, err := expandSystemGlobalIpConflictDetection(d, v, "ip_conflict_detection")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["ip-conflict-detection"] = t
+		}
+	}
+
 	if v, ok := d.GetOk("ip_fragment_mem_thresholds"); ok || d.HasChange("ip_fragment_mem_thresholds") {
 		t, err := expandSystemGlobalIpFragmentMemThresholds(d, v, "ip_fragment_mem_thresholds")
 		if err != nil {
 			return &obj, err
 		} else if t != nil {
 			obj["ip-fragment-mem-thresholds"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("ip_fragment_timeout"); ok || d.HasChange("ip_fragment_timeout") {
+		t, err := expandSystemGlobalIpFragmentTimeout(d, v, "ip_fragment_timeout")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["ip-fragment-timeout"] = t
 		}
 	}
 
@@ -8578,6 +8938,15 @@ func getObjectSystemGlobal(d *schema.ResourceData) (*map[string]interface{}, err
 			return &obj, err
 		} else if t != nil {
 			obj["ipv6-allow-traffic-redirect"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("ipv6_fragment_timeout"); ok || d.HasChange("ipv6_fragment_timeout") {
+		t, err := expandSystemGlobalIpv6FragmentTimeout(d, v, "ipv6_fragment_timeout")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["ipv6-fragment-timeout"] = t
 		}
 	}
 
@@ -9130,6 +9499,15 @@ func getObjectSystemGlobal(d *schema.ResourceData) (*map[string]interface{}, err
 		}
 	}
 
+	if v, ok := d.GetOk("rest_api_key_url_query"); ok || d.HasChange("rest_api_key_url_query") {
+		t, err := expandSystemGlobalRestApiKeyUrlQuery(d, v, "rest_api_key_url_query")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["rest-api-key-url-query"] = t
+		}
+	}
+
 	if v, ok := d.GetOk("restart_time"); ok || d.HasChange("restart_time") {
 		t, err := expandSystemGlobalRestartTime(d, v, "restart_time")
 		if err != nil {
@@ -9163,6 +9541,33 @@ func getObjectSystemGlobal(d *schema.ResourceData) (*map[string]interface{}, err
 			return &obj, err
 		} else if t != nil {
 			obj["scanunit-count"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("scim_http_port"); ok || d.HasChange("scim_http_port") {
+		t, err := expandSystemGlobalScimHttpPort(d, v, "scim_http_port")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["scim-http-port"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("scim_https_port"); ok || d.HasChange("scim_https_port") {
+		t, err := expandSystemGlobalScimHttpsPort(d, v, "scim_https_port")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["scim-https-port"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("scim_server_cert"); ok || d.HasChange("scim_server_cert") {
+		t, err := expandSystemGlobalScimServerCert(d, v, "scim_server_cert")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["scim-server-cert"] = t
 		}
 	}
 
@@ -9730,6 +10135,15 @@ func getObjectSystemGlobal(d *schema.ResourceData) (*map[string]interface{}, err
 			return &obj, err
 		} else if t != nil {
 			obj["user-device-store-max-users"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("user_history_password_threshold"); ok || d.HasChange("user_history_password_threshold") {
+		t, err := expandSystemGlobalUserHistoryPasswordThreshold(d, v, "user_history_password_threshold")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["user-history-password-threshold"] = t
 		}
 	}
 

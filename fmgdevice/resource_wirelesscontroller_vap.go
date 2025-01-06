@@ -121,6 +121,10 @@ func resourceWirelessControllerVap() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"_intf_ip_managed_by_fortiipam": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 			"_intf_ip6_address": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -132,6 +136,11 @@ func resourceWirelessControllerVap() *schema.Resource {
 				Computed: true,
 			},
 			"_intf_listen_forticlient_connection": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+			"_intf_managed_subnetwork_size": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
@@ -338,6 +347,10 @@ func resourceWirelessControllerVap() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"domain_name_stripping": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 			"dynamic_vlan": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -426,6 +439,10 @@ func resourceWirelessControllerVap() *schema.Resource {
 							Optional: true,
 							Computed: true,
 						},
+						"_intf_ip_managed_by_fortiipam": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
 						"_intf_ip6_address": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
@@ -437,6 +454,11 @@ func resourceWirelessControllerVap() *schema.Resource {
 							Computed: true,
 						},
 						"_intf_listen_forticlient_connection": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+							Computed: true,
+						},
+						"_intf_managed_subnetwork_size": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
 							Computed: true,
@@ -644,6 +666,10 @@ func resourceWirelessControllerVap() *schema.Resource {
 							Type:     schema.TypeString,
 							Optional: true,
 						},
+						"domain_name_stripping": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
 						"dynamic_vlan": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
@@ -784,6 +810,10 @@ func resourceWirelessControllerVap() *schema.Resource {
 							Optional: true,
 						},
 						"local_lan": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"local_lan_partition": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
 						},
@@ -1440,6 +1470,10 @@ func resourceWirelessControllerVap() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"local_lan_partition": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 			"local_standalone": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -1904,6 +1938,7 @@ func resourceWirelessControllerVap() *schema.Resource {
 			"sae_h2e_only": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"sae_hnp_only": &schema.Schema{
 				Type:     schema.TypeString,
@@ -1919,6 +1954,7 @@ func resourceWirelessControllerVap() *schema.Resource {
 			"sae_pk": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"sae_private_key": &schema.Schema{
 				Type:     schema.TypeString,
@@ -2315,6 +2351,10 @@ func flattenWirelessControllerVapIntfIp(v interface{}, d *schema.ResourceData, p
 	return flattenStringList(v)
 }
 
+func flattenWirelessControllerVapIntfIpManagedByFortiipam(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenWirelessControllerVapIntfIp6Address(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -2324,6 +2364,10 @@ func flattenWirelessControllerVapIntfIp6Allowaccess(v interface{}, d *schema.Res
 }
 
 func flattenWirelessControllerVapIntfListenForticlientConnection(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWirelessControllerVapIntfManagedSubnetworkSize(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -2479,6 +2523,10 @@ func flattenWirelessControllerVapDhcpOption82RemoteIdInsertion(v interface{}, d 
 	return v
 }
 
+func flattenWirelessControllerVapDomainNameStripping(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenWirelessControllerVapDynamicVlan(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -2592,6 +2640,12 @@ func flattenWirelessControllerVapDynamicMapping(v interface{}, d *schema.Resourc
 			tmp["_intf_ip"] = fortiAPISubPartPatch(v, "WirelessControllerVap-DynamicMapping-IntfIp")
 		}
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "_intf_ip_managed_by_fortiipam"
+		if _, ok := i["_intf_ip-managed-by-fortiipam"]; ok {
+			v := flattenWirelessControllerVapDynamicMappingIntfIpManagedByFortiipam(i["_intf_ip-managed-by-fortiipam"], d, pre_append)
+			tmp["_intf_ip_managed_by_fortiipam"] = fortiAPISubPartPatch(v, "WirelessControllerVap-DynamicMapping-IntfIpManagedByFortiipam")
+		}
+
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "_intf_ip6_address"
 		if _, ok := i["_intf_ip6-address"]; ok {
 			v := flattenWirelessControllerVapDynamicMappingIntfIp6Address(i["_intf_ip6-address"], d, pre_append)
@@ -2608,6 +2662,12 @@ func flattenWirelessControllerVapDynamicMapping(v interface{}, d *schema.Resourc
 		if _, ok := i["_intf_listen-forticlient-connection"]; ok {
 			v := flattenWirelessControllerVapDynamicMappingIntfListenForticlientConnection(i["_intf_listen-forticlient-connection"], d, pre_append)
 			tmp["_intf_listen_forticlient_connection"] = fortiAPISubPartPatch(v, "WirelessControllerVap-DynamicMapping-IntfListenForticlientConnection")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "_intf_managed_subnetwork_size"
+		if _, ok := i["_intf_managed-subnetwork-size"]; ok {
+			v := flattenWirelessControllerVapDynamicMappingIntfManagedSubnetworkSize(i["_intf_managed-subnetwork-size"], d, pre_append)
+			tmp["_intf_managed_subnetwork_size"] = fortiAPISubPartPatch(v, "WirelessControllerVap-DynamicMapping-IntfManagedSubnetworkSize")
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "_is_factory_setting"
@@ -2850,6 +2910,12 @@ func flattenWirelessControllerVapDynamicMapping(v interface{}, d *schema.Resourc
 			tmp["dhcp_option82_remote_id_insertion"] = fortiAPISubPartPatch(v, "WirelessControllerVap-DynamicMapping-DhcpOption82RemoteIdInsertion")
 		}
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "domain_name_stripping"
+		if _, ok := i["domain-name-stripping"]; ok {
+			v := flattenWirelessControllerVapDynamicMappingDomainNameStripping(i["domain-name-stripping"], d, pre_append)
+			tmp["domain_name_stripping"] = fortiAPISubPartPatch(v, "WirelessControllerVap-DynamicMapping-DomainNameStripping")
+		}
+
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "dynamic_vlan"
 		if _, ok := i["dynamic-vlan"]; ok {
 			v := flattenWirelessControllerVapDynamicMappingDynamicVlan(i["dynamic-vlan"], d, pre_append)
@@ -3040,6 +3106,12 @@ func flattenWirelessControllerVapDynamicMapping(v interface{}, d *schema.Resourc
 		if _, ok := i["local-lan"]; ok {
 			v := flattenWirelessControllerVapDynamicMappingLocalLan(i["local-lan"], d, pre_append)
 			tmp["local_lan"] = fortiAPISubPartPatch(v, "WirelessControllerVap-DynamicMapping-LocalLan")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "local_lan_partition"
+		if _, ok := i["local-lan-partition"]; ok {
+			v := flattenWirelessControllerVapDynamicMappingLocalLanPartition(i["local-lan-partition"], d, pre_append)
+			tmp["local_lan_partition"] = fortiAPISubPartPatch(v, "WirelessControllerVap-DynamicMapping-LocalLanPartition")
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "local_standalone"
@@ -3748,6 +3820,10 @@ func flattenWirelessControllerVapDynamicMappingIntfIp(v interface{}, d *schema.R
 	return flattenStringList(v)
 }
 
+func flattenWirelessControllerVapDynamicMappingIntfIpManagedByFortiipam(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenWirelessControllerVapDynamicMappingIntfIp6Address(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -3757,6 +3833,10 @@ func flattenWirelessControllerVapDynamicMappingIntfIp6Allowaccess(v interface{},
 }
 
 func flattenWirelessControllerVapDynamicMappingIntfListenForticlientConnection(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWirelessControllerVapDynamicMappingIntfManagedSubnetworkSize(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -3965,6 +4045,10 @@ func flattenWirelessControllerVapDynamicMappingDhcpOption82RemoteIdInsertion(v i
 	return v
 }
 
+func flattenWirelessControllerVapDynamicMappingDomainNameStripping(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenWirelessControllerVapDynamicMappingDynamicVlan(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -4090,6 +4174,10 @@ func flattenWirelessControllerVapDynamicMappingLocalBridging(v interface{}, d *s
 }
 
 func flattenWirelessControllerVapDynamicMappingLocalLan(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWirelessControllerVapDynamicMappingLocalLanPartition(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -4638,6 +4726,10 @@ func flattenWirelessControllerVapLocalBridging(v interface{}, d *schema.Resource
 }
 
 func flattenWirelessControllerVapLocalLan(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWirelessControllerVapLocalLanPartition(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -5493,6 +5585,16 @@ func refreshObjectWirelessControllerVap(d *schema.ResourceData, o map[string]int
 		}
 	}
 
+	if err = d.Set("_intf_ip_managed_by_fortiipam", flattenWirelessControllerVapIntfIpManagedByFortiipam(o["_intf_ip-managed-by-fortiipam"], d, "_intf_ip_managed_by_fortiipam")); err != nil {
+		if vv, ok := fortiAPIPatch(o["_intf_ip-managed-by-fortiipam"], "WirelessControllerVap-IntfIpManagedByFortiipam"); ok {
+			if err = d.Set("_intf_ip_managed_by_fortiipam", vv); err != nil {
+				return fmt.Errorf("Error reading _intf_ip_managed_by_fortiipam: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading _intf_ip_managed_by_fortiipam: %v", err)
+		}
+	}
+
 	if err = d.Set("_intf_ip6_address", flattenWirelessControllerVapIntfIp6Address(o["_intf_ip6-address"], d, "_intf_ip6_address")); err != nil {
 		if vv, ok := fortiAPIPatch(o["_intf_ip6-address"], "WirelessControllerVap-IntfIp6Address"); ok {
 			if err = d.Set("_intf_ip6_address", vv); err != nil {
@@ -5520,6 +5622,16 @@ func refreshObjectWirelessControllerVap(d *schema.ResourceData, o map[string]int
 			}
 		} else {
 			return fmt.Errorf("Error reading _intf_listen_forticlient_connection: %v", err)
+		}
+	}
+
+	if err = d.Set("_intf_managed_subnetwork_size", flattenWirelessControllerVapIntfManagedSubnetworkSize(o["_intf_managed-subnetwork-size"], d, "_intf_managed_subnetwork_size")); err != nil {
+		if vv, ok := fortiAPIPatch(o["_intf_managed-subnetwork-size"], "WirelessControllerVap-IntfManagedSubnetworkSize"); ok {
+			if err = d.Set("_intf_managed_subnetwork_size", vv); err != nil {
+				return fmt.Errorf("Error reading _intf_managed_subnetwork_size: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading _intf_managed_subnetwork_size: %v", err)
 		}
 	}
 
@@ -5903,6 +6015,16 @@ func refreshObjectWirelessControllerVap(d *schema.ResourceData, o map[string]int
 		}
 	}
 
+	if err = d.Set("domain_name_stripping", flattenWirelessControllerVapDomainNameStripping(o["domain-name-stripping"], d, "domain_name_stripping")); err != nil {
+		if vv, ok := fortiAPIPatch(o["domain-name-stripping"], "WirelessControllerVap-DomainNameStripping"); ok {
+			if err = d.Set("domain_name_stripping", vv); err != nil {
+				return fmt.Errorf("Error reading domain_name_stripping: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading domain_name_stripping: %v", err)
+		}
+	}
+
 	if err = d.Set("dynamic_vlan", flattenWirelessControllerVapDynamicVlan(o["dynamic-vlan"], d, "dynamic_vlan")); err != nil {
 		if vv, ok := fortiAPIPatch(o["dynamic-vlan"], "WirelessControllerVap-DynamicVlan"); ok {
 			if err = d.Set("dynamic_vlan", vv); err != nil {
@@ -6244,6 +6366,16 @@ func refreshObjectWirelessControllerVap(d *schema.ResourceData, o map[string]int
 			}
 		} else {
 			return fmt.Errorf("Error reading local_lan: %v", err)
+		}
+	}
+
+	if err = d.Set("local_lan_partition", flattenWirelessControllerVapLocalLanPartition(o["local-lan-partition"], d, "local_lan_partition")); err != nil {
+		if vv, ok := fortiAPIPatch(o["local-lan-partition"], "WirelessControllerVap-LocalLanPartition"); ok {
+			if err = d.Set("local_lan_partition", vv); err != nil {
+				return fmt.Errorf("Error reading local_lan_partition: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading local_lan_partition: %v", err)
 		}
 	}
 
@@ -7486,6 +7618,10 @@ func expandWirelessControllerVapIntfIp(d *schema.ResourceData, v interface{}, pr
 	return expandStringList(v.([]interface{})), nil
 }
 
+func expandWirelessControllerVapIntfIpManagedByFortiipam(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandWirelessControllerVapIntfIp6Address(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -7495,6 +7631,10 @@ func expandWirelessControllerVapIntfIp6Allowaccess(d *schema.ResourceData, v int
 }
 
 func expandWirelessControllerVapIntfListenForticlientConnection(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWirelessControllerVapIntfManagedSubnetworkSize(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -7658,6 +7798,10 @@ func expandWirelessControllerVapDhcpOption82RemoteIdInsertion(d *schema.Resource
 	return v, nil
 }
 
+func expandWirelessControllerVapDomainNameStripping(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandWirelessControllerVapDynamicVlan(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -7751,6 +7895,11 @@ func expandWirelessControllerVapDynamicMapping(d *schema.ResourceData, v interfa
 			tmp["_intf_ip"], _ = expandWirelessControllerVapDynamicMappingIntfIp(d, i["_intf_ip"], pre_append)
 		}
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "_intf_ip_managed_by_fortiipam"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["_intf_ip-managed-by-fortiipam"], _ = expandWirelessControllerVapDynamicMappingIntfIpManagedByFortiipam(d, i["_intf_ip_managed_by_fortiipam"], pre_append)
+		}
+
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "_intf_ip6_address"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
 			tmp["_intf_ip6-address"], _ = expandWirelessControllerVapDynamicMappingIntfIp6Address(d, i["_intf_ip6_address"], pre_append)
@@ -7764,6 +7913,11 @@ func expandWirelessControllerVapDynamicMapping(d *schema.ResourceData, v interfa
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "_intf_listen_forticlient_connection"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
 			tmp["_intf_listen-forticlient-connection"], _ = expandWirelessControllerVapDynamicMappingIntfListenForticlientConnection(d, i["_intf_listen_forticlient_connection"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "_intf_managed_subnetwork_size"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["_intf_managed-subnetwork-size"], _ = expandWirelessControllerVapDynamicMappingIntfManagedSubnetworkSize(d, i["_intf_managed_subnetwork_size"], pre_append)
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "_is_factory_setting"
@@ -7981,6 +8135,11 @@ func expandWirelessControllerVapDynamicMapping(d *schema.ResourceData, v interfa
 			tmp["dhcp-option82-remote-id-insertion"], _ = expandWirelessControllerVapDynamicMappingDhcpOption82RemoteIdInsertion(d, i["dhcp_option82_remote_id_insertion"], pre_append)
 		}
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "domain_name_stripping"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["domain-name-stripping"], _ = expandWirelessControllerVapDynamicMappingDomainNameStripping(d, i["domain_name_stripping"], pre_append)
+		}
+
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "dynamic_vlan"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
 			tmp["dynamic-vlan"], _ = expandWirelessControllerVapDynamicMappingDynamicVlan(d, i["dynamic_vlan"], pre_append)
@@ -8144,6 +8303,11 @@ func expandWirelessControllerVapDynamicMapping(d *schema.ResourceData, v interfa
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "local_lan"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
 			tmp["local-lan"], _ = expandWirelessControllerVapDynamicMappingLocalLan(d, i["local_lan"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "local_lan_partition"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["local-lan-partition"], _ = expandWirelessControllerVapDynamicMappingLocalLanPartition(d, i["local_lan_partition"], pre_append)
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "local_standalone"
@@ -8756,6 +8920,10 @@ func expandWirelessControllerVapDynamicMappingIntfIp(d *schema.ResourceData, v i
 	return expandStringList(v.([]interface{})), nil
 }
 
+func expandWirelessControllerVapDynamicMappingIntfIpManagedByFortiipam(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandWirelessControllerVapDynamicMappingIntfIp6Address(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -8765,6 +8933,10 @@ func expandWirelessControllerVapDynamicMappingIntfIp6Allowaccess(d *schema.Resou
 }
 
 func expandWirelessControllerVapDynamicMappingIntfListenForticlientConnection(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWirelessControllerVapDynamicMappingIntfManagedSubnetworkSize(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -8974,6 +9146,10 @@ func expandWirelessControllerVapDynamicMappingDhcpOption82RemoteIdInsertion(d *s
 	return v, nil
 }
 
+func expandWirelessControllerVapDynamicMappingDomainNameStripping(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandWirelessControllerVapDynamicMappingDynamicVlan(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -9103,6 +9279,10 @@ func expandWirelessControllerVapDynamicMappingLocalBridging(d *schema.ResourceDa
 }
 
 func expandWirelessControllerVapDynamicMappingLocalLan(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWirelessControllerVapDynamicMappingLocalLanPartition(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -9663,6 +9843,10 @@ func expandWirelessControllerVapLocalBridging(d *schema.ResourceData, v interfac
 }
 
 func expandWirelessControllerVapLocalLan(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWirelessControllerVapLocalLanPartition(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -10482,6 +10666,15 @@ func getObjectWirelessControllerVap(d *schema.ResourceData) (*map[string]interfa
 		}
 	}
 
+	if v, ok := d.GetOk("_intf_ip_managed_by_fortiipam"); ok || d.HasChange("_intf_ip_managed_by_fortiipam") {
+		t, err := expandWirelessControllerVapIntfIpManagedByFortiipam(d, v, "_intf_ip_managed_by_fortiipam")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["_intf_ip-managed-by-fortiipam"] = t
+		}
+	}
+
 	if v, ok := d.GetOk("_intf_ip6_address"); ok || d.HasChange("_intf_ip6_address") {
 		t, err := expandWirelessControllerVapIntfIp6Address(d, v, "_intf_ip6_address")
 		if err != nil {
@@ -10506,6 +10699,15 @@ func getObjectWirelessControllerVap(d *schema.ResourceData) (*map[string]interfa
 			return &obj, err
 		} else if t != nil {
 			obj["_intf_listen-forticlient-connection"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("_intf_managed_subnetwork_size"); ok || d.HasChange("_intf_managed_subnetwork_size") {
+		t, err := expandWirelessControllerVapIntfManagedSubnetworkSize(d, v, "_intf_managed_subnetwork_size")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["_intf_managed-subnetwork-size"] = t
 		}
 	}
 
@@ -10869,6 +11071,15 @@ func getObjectWirelessControllerVap(d *schema.ResourceData) (*map[string]interfa
 		}
 	}
 
+	if v, ok := d.GetOk("domain_name_stripping"); ok || d.HasChange("domain_name_stripping") {
+		t, err := expandWirelessControllerVapDomainNameStripping(d, v, "domain_name_stripping")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["domain-name-stripping"] = t
+		}
+	}
+
 	if v, ok := d.GetOk("dynamic_vlan"); ok || d.HasChange("dynamic_vlan") {
 		t, err := expandWirelessControllerVapDynamicVlan(d, v, "dynamic_vlan")
 		if err != nil {
@@ -11172,6 +11383,15 @@ func getObjectWirelessControllerVap(d *schema.ResourceData) (*map[string]interfa
 			return &obj, err
 		} else if t != nil {
 			obj["local-lan"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("local_lan_partition"); ok || d.HasChange("local_lan_partition") {
+		t, err := expandWirelessControllerVapLocalLanPartition(d, v, "local_lan_partition")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["local-lan-partition"] = t
 		}
 	}
 

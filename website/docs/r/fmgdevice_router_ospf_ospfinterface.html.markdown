@@ -53,6 +53,8 @@ The following arguments are supported:
 * `interface` - Configuration interface name.
 * `ip` - IP address.
 * `keychain` - Message-digest key-chain name.
+* `linkdown_fast_failover` - Enable/disable fast link failover. Valid values: `disable`, `enable`.
+
 * `md5_keychain` - Md5-Keychain.
 * `md5_keys` - Md5-Keys. The structure of `md5_keys` block is documented below.
 * `mtu` - MTU for database description packets.

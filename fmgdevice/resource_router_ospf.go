@@ -357,6 +357,10 @@ func resourceRouterOspf() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"lsa_refresh_interval": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+			},
 			"neighbor": &schema.Schema{
 				Type:     schema.TypeList,
 				Optional: true,
@@ -475,6 +479,11 @@ func resourceRouterOspf() *schema.Resource {
 						"keychain": &schema.Schema{
 							Type:     schema.TypeSet,
 							Elem:     &schema.Schema{Type: schema.TypeString},
+							Optional: true,
+							Computed: true,
+						},
+						"linkdown_fast_failover": &schema.Schema{
+							Type:     schema.TypeString,
 							Optional: true,
 							Computed: true,
 						},
@@ -1381,6 +1390,10 @@ func flattenRouterOspfLogNeighbourChanges(v interface{}, d *schema.ResourceData,
 	return v
 }
 
+func flattenRouterOspfLsaRefreshInterval(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenRouterOspfNeighbor(v interface{}, d *schema.ResourceData, pre string) []map[string]interface{} {
 	if v == nil {
 		return nil
@@ -1614,6 +1627,12 @@ func flattenRouterOspfOspfInterface(v interface{}, d *schema.ResourceData, pre s
 			tmp["keychain"] = fortiAPISubPartPatch(v, "RouterOspf-OspfInterface-Keychain")
 		}
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "linkdown_fast_failover"
+		if _, ok := i["linkdown-fast-failover"]; ok {
+			v := flattenRouterOspfOspfInterfaceLinkdownFastFailover(i["linkdown-fast-failover"], d, pre_append)
+			tmp["linkdown_fast_failover"] = fortiAPISubPartPatch(v, "RouterOspf-OspfInterface-LinkdownFastFailover")
+		}
+
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "md5_keychain"
 		if _, ok := i["md5-keychain"]; ok {
 			v := flattenRouterOspfOspfInterfaceMd5Keychain(i["md5-keychain"], d, pre_append)
@@ -1738,6 +1757,10 @@ func flattenRouterOspfOspfInterfaceIp(v interface{}, d *schema.ResourceData, pre
 
 func flattenRouterOspfOspfInterfaceKeychain(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return flattenStringList(v)
+}
+
+func flattenRouterOspfOspfInterfaceLinkdownFastFailover(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
 }
 
 func flattenRouterOspfOspfInterfaceMd5Keychain(v interface{}, d *schema.ResourceData, pre string) interface{} {
@@ -2219,6 +2242,16 @@ func refreshObjectRouterOspf(d *schema.ResourceData, o map[string]interface{}) e
 			}
 		} else {
 			return fmt.Errorf("Error reading log_neighbour_changes: %v", err)
+		}
+	}
+
+	if err = d.Set("lsa_refresh_interval", flattenRouterOspfLsaRefreshInterval(o["lsa-refresh-interval"], d, "lsa_refresh_interval")); err != nil {
+		if vv, ok := fortiAPIPatch(o["lsa-refresh-interval"], "RouterOspf-LsaRefreshInterval"); ok {
+			if err = d.Set("lsa_refresh_interval", vv); err != nil {
+				return fmt.Errorf("Error reading lsa_refresh_interval: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading lsa_refresh_interval: %v", err)
 		}
 	}
 
@@ -2992,6 +3025,10 @@ func expandRouterOspfLogNeighbourChanges(d *schema.ResourceData, v interface{}, 
 	return v, nil
 }
 
+func expandRouterOspfLsaRefreshInterval(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandRouterOspfNeighbor(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	l := v.([]interface{})
 	result := make([]map[string]interface{}, 0, len(l))
@@ -3195,6 +3232,11 @@ func expandRouterOspfOspfInterface(d *schema.ResourceData, v interface{}, pre st
 			tmp["keychain"], _ = expandRouterOspfOspfInterfaceKeychain(d, i["keychain"], pre_append)
 		}
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "linkdown_fast_failover"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["linkdown-fast-failover"], _ = expandRouterOspfOspfInterfaceLinkdownFastFailover(d, i["linkdown_fast_failover"], pre_append)
+		}
+
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "md5_keychain"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
 			tmp["md5-keychain"], _ = expandRouterOspfOspfInterfaceMd5Keychain(d, i["md5_keychain"], pre_append)
@@ -3316,6 +3358,10 @@ func expandRouterOspfOspfInterfaceIp(d *schema.ResourceData, v interface{}, pre 
 
 func expandRouterOspfOspfInterfaceKeychain(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandRouterOspfOspfInterfaceLinkdownFastFailover(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
 }
 
 func expandRouterOspfOspfInterfaceMd5Keychain(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
@@ -3734,6 +3780,15 @@ func getObjectRouterOspf(d *schema.ResourceData) (*map[string]interface{}, error
 			return &obj, err
 		} else if t != nil {
 			obj["log-neighbour-changes"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("lsa_refresh_interval"); ok || d.HasChange("lsa_refresh_interval") {
+		t, err := expandRouterOspfLsaRefreshInterval(d, v, "lsa_refresh_interval")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["lsa-refresh-interval"] = t
 		}
 	}
 

@@ -120,12 +120,23 @@ func resourceLogSyslogd2OverrideSetting() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
+			"source_ip_interface": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Computed: true,
+			},
 			"ssl_min_proto_version": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
 			},
 			"status": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+			"use_management_vdom": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
@@ -366,11 +377,19 @@ func flattenLogSyslogd2OverrideSettingSourceIp(v interface{}, d *schema.Resource
 	return v
 }
 
+func flattenLogSyslogd2OverrideSettingSourceIpInterface(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
 func flattenLogSyslogd2OverrideSettingSslMinProtoVersion(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
 func flattenLogSyslogd2OverrideSettingStatus(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenLogSyslogd2OverrideSettingUseManagementVdom(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -535,6 +554,16 @@ func refreshObjectLogSyslogd2OverrideSetting(d *schema.ResourceData, o map[strin
 		}
 	}
 
+	if err = d.Set("source_ip_interface", flattenLogSyslogd2OverrideSettingSourceIpInterface(o["source-ip-interface"], d, "source_ip_interface")); err != nil {
+		if vv, ok := fortiAPIPatch(o["source-ip-interface"], "LogSyslogd2OverrideSetting-SourceIpInterface"); ok {
+			if err = d.Set("source_ip_interface", vv); err != nil {
+				return fmt.Errorf("Error reading source_ip_interface: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading source_ip_interface: %v", err)
+		}
+	}
+
 	if err = d.Set("ssl_min_proto_version", flattenLogSyslogd2OverrideSettingSslMinProtoVersion(o["ssl-min-proto-version"], d, "ssl_min_proto_version")); err != nil {
 		if vv, ok := fortiAPIPatch(o["ssl-min-proto-version"], "LogSyslogd2OverrideSetting-SslMinProtoVersion"); ok {
 			if err = d.Set("ssl_min_proto_version", vv); err != nil {
@@ -552,6 +581,16 @@ func refreshObjectLogSyslogd2OverrideSetting(d *schema.ResourceData, o map[strin
 			}
 		} else {
 			return fmt.Errorf("Error reading status: %v", err)
+		}
+	}
+
+	if err = d.Set("use_management_vdom", flattenLogSyslogd2OverrideSettingUseManagementVdom(o["use-management-vdom"], d, "use_management_vdom")); err != nil {
+		if vv, ok := fortiAPIPatch(o["use-management-vdom"], "LogSyslogd2OverrideSetting-UseManagementVdom"); ok {
+			if err = d.Set("use_management_vdom", vv); err != nil {
+				return fmt.Errorf("Error reading use_management_vdom: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading use_management_vdom: %v", err)
 		}
 	}
 
@@ -667,11 +706,19 @@ func expandLogSyslogd2OverrideSettingSourceIp(d *schema.ResourceData, v interfac
 	return v, nil
 }
 
+func expandLogSyslogd2OverrideSettingSourceIpInterface(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
 func expandLogSyslogd2OverrideSettingSslMinProtoVersion(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
 func expandLogSyslogd2OverrideSettingStatus(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandLogSyslogd2OverrideSettingUseManagementVdom(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -804,6 +851,15 @@ func getObjectLogSyslogd2OverrideSetting(d *schema.ResourceData) (*map[string]in
 		}
 	}
 
+	if v, ok := d.GetOk("source_ip_interface"); ok || d.HasChange("source_ip_interface") {
+		t, err := expandLogSyslogd2OverrideSettingSourceIpInterface(d, v, "source_ip_interface")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["source-ip-interface"] = t
+		}
+	}
+
 	if v, ok := d.GetOk("ssl_min_proto_version"); ok || d.HasChange("ssl_min_proto_version") {
 		t, err := expandLogSyslogd2OverrideSettingSslMinProtoVersion(d, v, "ssl_min_proto_version")
 		if err != nil {
@@ -819,6 +875,15 @@ func getObjectLogSyslogd2OverrideSetting(d *schema.ResourceData) (*map[string]in
 			return &obj, err
 		} else if t != nil {
 			obj["status"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("use_management_vdom"); ok || d.HasChange("use_management_vdom") {
+		t, err := expandLogSyslogd2OverrideSettingUseManagementVdom(d, v, "use_management_vdom")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["use-management-vdom"] = t
 		}
 	}
 

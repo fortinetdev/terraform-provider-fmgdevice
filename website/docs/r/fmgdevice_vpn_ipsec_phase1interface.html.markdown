@@ -44,6 +44,20 @@ The following arguments are supported:
 
 * `add_route` - Enable/disable control addition of a route to peer destination selector. Valid values: `disable`, `enable`.
 
+* `addke1` - ADDKE1 group. Valid values: `0`, `1080`, `1081`, `1082`.
+
+* `addke2` - ADDKE2 group. Valid values: `0`, `1080`, `1081`, `1082`.
+
+* `addke3` - ADDKE3 group. Valid values: `0`, `1080`, `1081`, `1082`.
+
+* `addke4` - ADDKE4 group. Valid values: `0`, `1080`, `1081`, `1082`.
+
+* `addke5` - ADDKE5 group. Valid values: `0`, `1080`, `1081`, `1082`.
+
+* `addke6` - ADDKE6 group. Valid values: `0`, `1080`, `1081`, `1082`.
+
+* `addke7` - ADDKE7 group. Valid values: `0`, `1080`, `1081`, `1082`.
+
 * `aggregate_member` - Enable/disable use as an aggregate member. Valid values: `disable`, `enable`.
 
 * `aggregate_weight` - Link weight for aggregate.
@@ -73,6 +87,7 @@ The following arguments are supported:
 
 * `auto_negotiate` - Enable/disable automatic initiation of IKE SA negotiation. Valid values: `disable`, `enable`.
 
+* `auto_transport_threshold` - Timeout in seconds before falling back to next transport protocol.
 * `azure_ad_autoconnect` - Enable/disable Azure AD Auto-Connect for FortiClient. Valid values: `disable`, `enable`.
 
 * `backup_gateway` - Instruct unity clients about the backup gateway address(es).
@@ -199,6 +214,8 @@ The following arguments are supported:
 * `ipv4_start_ip` - Start of IPv4 range.
 * `ipv4_wins_server1` - WINS server 1.
 * `ipv4_wins_server2` - WINS server 2.
+* `ipv6_auto_linklocal` - Enable/disable auto generation of IPv6 link-local address using last 8 bytes of mode-cfg assigned IPv6 address. Valid values: `disable`, `enable`.
+
 * `ipv6_dns_server1` - IPv6 DNS server 1.
 * `ipv6_dns_server2` - IPv6 DNS server 2.
 * `ipv6_dns_server3` - IPv6 DNS server 3.
@@ -279,6 +296,7 @@ The following arguments are supported:
 
 * `remote_gw_start_ip` - First IPv4 address in the range.
 * `remote_gw_subnet` - IPv4 address and subnet mask.
+* `remote_gw_ztna_tags` - IPv4 ZTNA posture tags.
 * `remote_gw6` - IPv6 address of the remote gateway's external interface.
 * `remote_gw6_country` - IPv6 addresses associated to a specific country.
 * `remote_gw6_end_ip` - Last IPv6 address in the range.
@@ -294,6 +312,8 @@ The following arguments are supported:
 * `save_password` - Enable/disable saving XAuth username and password on VPN clients. Valid values: `disable`, `enable`.
 
 * `send_cert_chain` - Enable/disable sending certificate chain. Valid values: `disable`, `enable`.
+
+* `shared_idle_timeout` - Enable/disable IPsec tunnel shared idle timeout. Valid values: `disable`, `enable`.
 
 * `signature_hash_alg` - Digital Signature Authentication hash algorithms. Valid values: `sha1`, `sha2-256`, `sha2-384`, `sha2-512`.
 

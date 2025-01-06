@@ -39,6 +39,9 @@ The following arguments are supported:
 * `host_type` - Control whether the SNMP manager sends SNMP queries, receives SNMP traps, or both. No traps will be sent when IP type is subnet. Valid values: `any`, `query`, `trap`.
 
 * `fosid` - Host entry ID.
+* `interface` - Specify outgoing interface to reach server.
+* `interface_select_method` - Specify how to select outgoing interface to reach server. Valid values: `auto`, `sdwan`, `specify`.
+
 * `ip` - IPv4 address of the SNMP manager (host).
 * `source_ip` - Source IPv4 address for SNMP traps.
 

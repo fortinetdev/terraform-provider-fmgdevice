@@ -20,6 +20,10 @@ The following arguments are supported:
 * `auth_fail_vlan` - Enable to allow limited access to clients that cannot authenticate. Valid values: `disable`, `enable`.
 
 * `auth_fail_vlan_id` - VLAN ID on which authentication failed.
+* `auth_order` - Configure authentication order. Valid values: `dot1x-mab`, `mab-dot1x`, `mab`.
+
+* `auth_priority` - Configure authentication priority. Valid values: `dot1x-mab`, `mab-dot1x`, `legacy`.
+
 * `authserver_timeout_period` - Authentication server timeout period (3 - 15 sec, default = 3).
 * `authserver_timeout_tagged` - Configure timeout option for the tagged VLAN which allows limited access when the authentication server is unavailable. Valid values: `static`, `disable`, `lldp-voice`.
 

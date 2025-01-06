@@ -81,6 +81,12 @@ func resourceSystemVdomNetflow() *schema.Resource {
 							Type:     schema.TypeString,
 							Optional: true,
 						},
+						"source_ip_interface": &schema.Schema{
+							Type:     schema.TypeSet,
+							Elem:     &schema.Schema{Type: schema.TypeString},
+							Optional: true,
+							Computed: true,
+						},
 					},
 				},
 			},
@@ -292,6 +298,12 @@ func flattenSystemVdomNetflowCollectors(v interface{}, d *schema.ResourceData, p
 			tmp["source_ip"] = fortiAPISubPartPatch(v, "SystemVdomNetflow-Collectors-SourceIp")
 		}
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "source_ip_interface"
+		if _, ok := i["source-ip-interface"]; ok {
+			v := flattenSystemVdomNetflowCollectorsSourceIpInterface(i["source-ip-interface"], d, pre_append)
+			tmp["source_ip_interface"] = fortiAPISubPartPatch(v, "SystemVdomNetflow-Collectors-SourceIpInterface")
+		}
+
 		if len(tmp) > 0 {
 			result = append(result, tmp)
 		}
@@ -324,6 +336,10 @@ func flattenSystemVdomNetflowCollectorsInterfaceSelectMethod(v interface{}, d *s
 
 func flattenSystemVdomNetflowCollectorsSourceIp(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
+}
+
+func flattenSystemVdomNetflowCollectorsSourceIpInterface(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
 }
 
 func flattenSystemVdomNetflowInterface(v interface{}, d *schema.ResourceData, pre string) interface{} {
@@ -494,6 +510,11 @@ func expandSystemVdomNetflowCollectors(d *schema.ResourceData, v interface{}, pr
 			tmp["source-ip"], _ = expandSystemVdomNetflowCollectorsSourceIp(d, i["source_ip"], pre_append)
 		}
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "source_ip_interface"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["source-ip-interface"], _ = expandSystemVdomNetflowCollectorsSourceIpInterface(d, i["source_ip_interface"], pre_append)
+		}
+
 		if len(tmp) > 0 {
 			result = append(result, tmp)
 		}
@@ -526,6 +547,10 @@ func expandSystemVdomNetflowCollectorsInterfaceSelectMethod(d *schema.ResourceDa
 
 func expandSystemVdomNetflowCollectorsSourceIp(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
+}
+
+func expandSystemVdomNetflowCollectorsSourceIpInterface(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
 }
 
 func expandSystemVdomNetflowInterface(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {

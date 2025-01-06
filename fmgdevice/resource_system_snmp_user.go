@@ -56,6 +56,17 @@ func resourceSystemSnmpUser() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"interface": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Computed: true,
+			},
+			"interface_select_method": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
 			"mib_view": &schema.Schema{
 				Type:     schema.TypeSet,
 				Elem:     &schema.Schema{Type: schema.TypeString},
@@ -281,6 +292,14 @@ func flattenSystemSnmpUserHaDirect(v interface{}, d *schema.ResourceData, pre st
 	return v
 }
 
+func flattenSystemSnmpUserInterface(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
+func flattenSystemSnmpUserInterfaceSelectMethod(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenSystemSnmpUserMibView(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return flattenStringList(v)
 }
@@ -371,6 +390,26 @@ func refreshObjectSystemSnmpUser(d *schema.ResourceData, o map[string]interface{
 			}
 		} else {
 			return fmt.Errorf("Error reading ha_direct: %v", err)
+		}
+	}
+
+	if err = d.Set("interface", flattenSystemSnmpUserInterface(o["interface"], d, "interface")); err != nil {
+		if vv, ok := fortiAPIPatch(o["interface"], "SystemSnmpUser-Interface"); ok {
+			if err = d.Set("interface", vv); err != nil {
+				return fmt.Errorf("Error reading interface: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading interface: %v", err)
+		}
+	}
+
+	if err = d.Set("interface_select_method", flattenSystemSnmpUserInterfaceSelectMethod(o["interface-select-method"], d, "interface_select_method")); err != nil {
+		if vv, ok := fortiAPIPatch(o["interface-select-method"], "SystemSnmpUser-InterfaceSelectMethod"); ok {
+			if err = d.Set("interface_select_method", vv); err != nil {
+				return fmt.Errorf("Error reading interface_select_method: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading interface_select_method: %v", err)
 		}
 	}
 
@@ -549,6 +588,14 @@ func expandSystemSnmpUserHaDirect(d *schema.ResourceData, v interface{}, pre str
 	return v, nil
 }
 
+func expandSystemSnmpUserInterface(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandSystemSnmpUserInterfaceSelectMethod(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandSystemSnmpUserMibView(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return expandStringList(v.(*schema.Set).List()), nil
 }
@@ -649,6 +696,24 @@ func getObjectSystemSnmpUser(d *schema.ResourceData) (*map[string]interface{}, e
 			return &obj, err
 		} else if t != nil {
 			obj["ha-direct"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("interface"); ok || d.HasChange("interface") {
+		t, err := expandSystemSnmpUserInterface(d, v, "interface")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["interface"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("interface_select_method"); ok || d.HasChange("interface_select_method") {
+		t, err := expandSystemSnmpUserInterfaceSelectMethod(d, v, "interface_select_method")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["interface-select-method"] = t
 		}
 	}
 

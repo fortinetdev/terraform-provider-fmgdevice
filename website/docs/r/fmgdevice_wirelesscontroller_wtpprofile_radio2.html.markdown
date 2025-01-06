@@ -38,6 +38,8 @@ The following arguments are supported:
 
 * `n80211d` - Enable/disable 802.11d countryie(default = enable). Valid values: `disable`, `enable`.
 
+* `n80211mc` - Enable/disable 802.11mc responder mode (default = disable). Valid values: `disable`, `enable`.
+
 * `airtime_fairness` - Enable/disable airtime fairness (default = disable). Valid values: `disable`, `enable`.
 
 * `amsdu` - Enable/disable 802.11n AMSDU support. AMSDU can improve performance if supported by your WiFi clients (default = enable). Valid values: `disable`, `enable`.
@@ -47,6 +49,8 @@ The following arguments are supported:
 * `ap_sniffer_addr` - MAC address to monitor.
 * `ap_sniffer_bufsize` - Sniffer buffer size (1 - 32 MB, default = 16).
 * `ap_sniffer_chan` - Channel on which to operate the sniffer (default = 6).
+* `ap_sniffer_chan_width` - Channel bandwidth for sniffer. Valid values: `320MHz`, `240MHz`, `160MHz`, `80MHz`, `40MHz`, `20MHz`.
+
 * `ap_sniffer_ctl` - Enable/disable sniffer on WiFi control frame (default = enable). Valid values: `disable`, `enable`.
 
 * `ap_sniffer_data` - Enable/disable sniffer on WiFi data frame (default = enable). Valid values: `disable`, `enable`.

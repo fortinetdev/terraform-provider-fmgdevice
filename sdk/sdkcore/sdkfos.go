@@ -318,6 +318,72 @@ func (c *FortiSDKClient) ReadAutomationSetting(mkey string, paradict map[string]
 	return
 }
 
+// CreateAzureVwanIngressPublicIps API operation for FortiManager Device creates a new Vwan Ingress Public Ips.
+// Returns the index value of the Vwan Ingress Public Ips and execution result when the request executes successfully.
+// Returns error for service API and SDK errors.
+// See the device - azure vwan-ingress-public-IPs chapter in the FortiManager Handbook - CLI Reference.
+func (c *FortiSDKClient) CreateAzureVwanIngressPublicIps(params *map[string]interface{}, paradict map[string]string) (output map[string]interface{}, err error) {
+	path := "/pm/config/device/{device}/global/azure/vwan-ingress-public-IPs"
+	path, err = replaceParaWithValue(path, paradict)
+	if err != nil {
+		return nil, fmt.Errorf("%v", err)
+	}
+
+	output, err = createUpdate(c, path, "add", params, false)
+	return
+}
+
+// UpdateAzureVwanIngressPublicIps API operation for FortiManager Device updates the specified Vwan Ingress Public Ips.
+// Returns the index value of the Vwan Ingress Public Ips and execution result when the request executes successfully.
+// Returns error for service API and SDK errors.
+// See the device - azure vwan-ingress-public-IPs chapter in the FortiManager Handbook - CLI Reference.
+func (c *FortiSDKClient) UpdateAzureVwanIngressPublicIps(params *map[string]interface{}, mkey string, paradict map[string]string) (output map[string]interface{}, err error) {
+	path := "/pm/config/device/{device}/global/azure/vwan-ingress-public-IPs"
+	path, err = replaceParaWithValue(path, paradict)
+	if err != nil {
+		return nil, fmt.Errorf("%v", err)
+	}
+
+	path += "/" + escapeURLString(mkey)
+
+	output, err = createUpdate(c, path, "set", params, false)
+	return
+}
+
+// DeleteAzureVwanIngressPublicIps API operation for FortiManager Device deletes the specified Vwan Ingress Public Ips.
+// Returns error for service API and SDK errors.
+// See the device - azure vwan-ingress-public-IPs chapter in the FortiManager Handbook - CLI Reference.
+func (c *FortiSDKClient) DeleteAzureVwanIngressPublicIps(mkey string, paradict map[string]string) (err error) {
+	path := "/pm/config/device/{device}/global/azure/vwan-ingress-public-IPs"
+	path, err = replaceParaWithValue(path, paradict)
+	if err != nil {
+		return fmt.Errorf("%v", err)
+	}
+
+	path += "/" + escapeURLString(mkey)
+
+	err = delete(c, path, "delete", false)
+	return
+}
+
+// ReadAzureVwanIngressPublicIps API operation for FortiManager Device gets the Vwan Ingress Public Ips
+// with the specified index value.
+// Returns the requested Vwan Ingress Public Ips value when the request executes successfully.
+// Returns error for service API and SDK errors.
+// See the device - azure vwan-ingress-public-IPs chapter in the FortiManager Handbook - CLI Reference.
+func (c *FortiSDKClient) ReadAzureVwanIngressPublicIps(mkey string, paradict map[string]string) (mapTmp map[string]interface{}, err error) {
+	path := "/pm/config/device/{device}/global/azure/vwan-ingress-public-IPs"
+	path, err = replaceParaWithValue(path, paradict)
+	if err != nil {
+		return nil, fmt.Errorf("%v", err)
+	}
+
+	path += "/" + escapeURLString(mkey)
+
+	mapTmp, err = read(c, path, "get", false)
+	return
+}
+
 // CreateCertificateRemote API operation for FortiManager Device creates a new Remote.
 // Returns the index value of the Remote and execution result when the request executes successfully.
 // Returns error for service API and SDK errors.
@@ -20474,6 +20540,72 @@ func (c *FortiSDKClient) ReadSystemDhcp6ServerIpRange(mkey string, paradict map[
 	return
 }
 
+// CreateSystemDhcp6ServerOptions API operation for FortiManager Device creates a new Dhcp6ServerOptions.
+// Returns the index value of the Dhcp6ServerOptions and execution result when the request executes successfully.
+// Returns error for service API and SDK errors.
+// See the device - system dhcp6 server options chapter in the FortiManager Handbook - CLI Reference.
+func (c *FortiSDKClient) CreateSystemDhcp6ServerOptions(params *map[string]interface{}, paradict map[string]string) (output map[string]interface{}, err error) {
+	path := "/pm/config/device/{device}/vdom/{vdom}/system/dhcp6/server/{server}/options"
+	path, err = replaceParaWithValue(path, paradict)
+	if err != nil {
+		return nil, fmt.Errorf("%v", err)
+	}
+
+	output, err = createUpdate(c, path, "add", params, false)
+	return
+}
+
+// UpdateSystemDhcp6ServerOptions API operation for FortiManager Device updates the specified Dhcp6ServerOptions.
+// Returns the index value of the Dhcp6ServerOptions and execution result when the request executes successfully.
+// Returns error for service API and SDK errors.
+// See the device - system dhcp6 server options chapter in the FortiManager Handbook - CLI Reference.
+func (c *FortiSDKClient) UpdateSystemDhcp6ServerOptions(params *map[string]interface{}, mkey string, paradict map[string]string) (output map[string]interface{}, err error) {
+	path := "/pm/config/device/{device}/vdom/{vdom}/system/dhcp6/server/{server}/options"
+	path, err = replaceParaWithValue(path, paradict)
+	if err != nil {
+		return nil, fmt.Errorf("%v", err)
+	}
+
+	path += "/" + escapeURLString(mkey)
+
+	output, err = createUpdate(c, path, "set", params, false)
+	return
+}
+
+// DeleteSystemDhcp6ServerOptions API operation for FortiManager Device deletes the specified Dhcp6ServerOptions.
+// Returns error for service API and SDK errors.
+// See the device - system dhcp6 server options chapter in the FortiManager Handbook - CLI Reference.
+func (c *FortiSDKClient) DeleteSystemDhcp6ServerOptions(mkey string, paradict map[string]string) (err error) {
+	path := "/pm/config/device/{device}/vdom/{vdom}/system/dhcp6/server/{server}/options"
+	path, err = replaceParaWithValue(path, paradict)
+	if err != nil {
+		return fmt.Errorf("%v", err)
+	}
+
+	path += "/" + escapeURLString(mkey)
+
+	err = delete(c, path, "delete", false)
+	return
+}
+
+// ReadSystemDhcp6ServerOptions API operation for FortiManager Device gets the Dhcp6ServerOptions
+// with the specified index value.
+// Returns the requested Dhcp6ServerOptions value when the request executes successfully.
+// Returns error for service API and SDK errors.
+// See the device - system dhcp6 server options chapter in the FortiManager Handbook - CLI Reference.
+func (c *FortiSDKClient) ReadSystemDhcp6ServerOptions(mkey string, paradict map[string]string) (mapTmp map[string]interface{}, err error) {
+	path := "/pm/config/device/{device}/vdom/{vdom}/system/dhcp6/server/{server}/options"
+	path, err = replaceParaWithValue(path, paradict)
+	if err != nil {
+		return nil, fmt.Errorf("%v", err)
+	}
+
+	path += "/" + escapeURLString(mkey)
+
+	mapTmp, err = read(c, path, "get", false)
+	return
+}
+
 // CreateSystemDhcp6ServerPrefixRange API operation for FortiManager Device creates a new Dhcp6ServerPrefix Range.
 // Returns the index value of the Dhcp6ServerPrefix Range and execution result when the request executes successfully.
 // Returns error for service API and SDK errors.
@@ -22810,6 +22942,72 @@ func (c *FortiSDKClient) ReadSystemInterfaceIpv6(mkey string, paradict map[strin
 	return
 }
 
+// CreateSystemInterfaceIpv6ClientOptions API operation for FortiManager Device creates a new InterfaceIpv6Client Options.
+// Returns the index value of the InterfaceIpv6Client Options and execution result when the request executes successfully.
+// Returns error for service API and SDK errors.
+// See the device - system interface ipv6 client-options chapter in the FortiManager Handbook - CLI Reference.
+func (c *FortiSDKClient) CreateSystemInterfaceIpv6ClientOptions(params *map[string]interface{}, paradict map[string]string) (output map[string]interface{}, err error) {
+	path := "/pm/config/device/{device}/global/system/interface/{interface}/ipv6/client-options"
+	path, err = replaceParaWithValue(path, paradict)
+	if err != nil {
+		return nil, fmt.Errorf("%v", err)
+	}
+
+	output, err = createUpdate(c, path, "add", params, false)
+	return
+}
+
+// UpdateSystemInterfaceIpv6ClientOptions API operation for FortiManager Device updates the specified InterfaceIpv6Client Options.
+// Returns the index value of the InterfaceIpv6Client Options and execution result when the request executes successfully.
+// Returns error for service API and SDK errors.
+// See the device - system interface ipv6 client-options chapter in the FortiManager Handbook - CLI Reference.
+func (c *FortiSDKClient) UpdateSystemInterfaceIpv6ClientOptions(params *map[string]interface{}, mkey string, paradict map[string]string) (output map[string]interface{}, err error) {
+	path := "/pm/config/device/{device}/global/system/interface/{interface}/ipv6/client-options"
+	path, err = replaceParaWithValue(path, paradict)
+	if err != nil {
+		return nil, fmt.Errorf("%v", err)
+	}
+
+	path += "/" + escapeURLString(mkey)
+
+	output, err = createUpdate(c, path, "set", params, false)
+	return
+}
+
+// DeleteSystemInterfaceIpv6ClientOptions API operation for FortiManager Device deletes the specified InterfaceIpv6Client Options.
+// Returns error for service API and SDK errors.
+// See the device - system interface ipv6 client-options chapter in the FortiManager Handbook - CLI Reference.
+func (c *FortiSDKClient) DeleteSystemInterfaceIpv6ClientOptions(mkey string, paradict map[string]string) (err error) {
+	path := "/pm/config/device/{device}/global/system/interface/{interface}/ipv6/client-options"
+	path, err = replaceParaWithValue(path, paradict)
+	if err != nil {
+		return fmt.Errorf("%v", err)
+	}
+
+	path += "/" + escapeURLString(mkey)
+
+	err = delete(c, path, "delete", false)
+	return
+}
+
+// ReadSystemInterfaceIpv6ClientOptions API operation for FortiManager Device gets the InterfaceIpv6Client Options
+// with the specified index value.
+// Returns the requested InterfaceIpv6Client Options value when the request executes successfully.
+// Returns error for service API and SDK errors.
+// See the device - system interface ipv6 client-options chapter in the FortiManager Handbook - CLI Reference.
+func (c *FortiSDKClient) ReadSystemInterfaceIpv6ClientOptions(mkey string, paradict map[string]string) (mapTmp map[string]interface{}, err error) {
+	path := "/pm/config/device/{device}/global/system/interface/{interface}/ipv6/client-options"
+	path, err = replaceParaWithValue(path, paradict)
+	if err != nil {
+		return nil, fmt.Errorf("%v", err)
+	}
+
+	path += "/" + escapeURLString(mkey)
+
+	mapTmp, err = read(c, path, "get", false)
+	return
+}
+
 // CreateSystemInterfaceIpv6Dhcp6IapdList API operation for FortiManager Device creates a new InterfaceIpv6Dhcp6 Iapd List.
 // Returns the index value of the InterfaceIpv6Dhcp6 Iapd List and execution result when the request executes successfully.
 // Returns error for service API and SDK errors.
@@ -24710,6 +24908,72 @@ func (c *FortiSDKClient) ReadSystemNetflowCollectors(mkey string, paradict map[s
 	return
 }
 
+// CreateSystemNetflowExclusionFilters API operation for FortiManager Device creates a new NetflowExclusion Filters.
+// Returns the index value of the NetflowExclusion Filters and execution result when the request executes successfully.
+// Returns error for service API and SDK errors.
+// See the device - system netflow exclusion-filters chapter in the FortiManager Handbook - CLI Reference.
+func (c *FortiSDKClient) CreateSystemNetflowExclusionFilters(params *map[string]interface{}, paradict map[string]string) (output map[string]interface{}, err error) {
+	path := "/pm/config/device/{device}/global/system/netflow/exclusion-filters"
+	path, err = replaceParaWithValue(path, paradict)
+	if err != nil {
+		return nil, fmt.Errorf("%v", err)
+	}
+
+	output, err = createUpdate(c, path, "add", params, false)
+	return
+}
+
+// UpdateSystemNetflowExclusionFilters API operation for FortiManager Device updates the specified NetflowExclusion Filters.
+// Returns the index value of the NetflowExclusion Filters and execution result when the request executes successfully.
+// Returns error for service API and SDK errors.
+// See the device - system netflow exclusion-filters chapter in the FortiManager Handbook - CLI Reference.
+func (c *FortiSDKClient) UpdateSystemNetflowExclusionFilters(params *map[string]interface{}, mkey string, paradict map[string]string) (output map[string]interface{}, err error) {
+	path := "/pm/config/device/{device}/global/system/netflow/exclusion-filters"
+	path, err = replaceParaWithValue(path, paradict)
+	if err != nil {
+		return nil, fmt.Errorf("%v", err)
+	}
+
+	path += "/" + escapeURLString(mkey)
+
+	output, err = createUpdate(c, path, "set", params, false)
+	return
+}
+
+// DeleteSystemNetflowExclusionFilters API operation for FortiManager Device deletes the specified NetflowExclusion Filters.
+// Returns error for service API and SDK errors.
+// See the device - system netflow exclusion-filters chapter in the FortiManager Handbook - CLI Reference.
+func (c *FortiSDKClient) DeleteSystemNetflowExclusionFilters(mkey string, paradict map[string]string) (err error) {
+	path := "/pm/config/device/{device}/global/system/netflow/exclusion-filters"
+	path, err = replaceParaWithValue(path, paradict)
+	if err != nil {
+		return fmt.Errorf("%v", err)
+	}
+
+	path += "/" + escapeURLString(mkey)
+
+	err = delete(c, path, "delete", false)
+	return
+}
+
+// ReadSystemNetflowExclusionFilters API operation for FortiManager Device gets the NetflowExclusion Filters
+// with the specified index value.
+// Returns the requested NetflowExclusion Filters value when the request executes successfully.
+// Returns error for service API and SDK errors.
+// See the device - system netflow exclusion-filters chapter in the FortiManager Handbook - CLI Reference.
+func (c *FortiSDKClient) ReadSystemNetflowExclusionFilters(mkey string, paradict map[string]string) (mapTmp map[string]interface{}, err error) {
+	path := "/pm/config/device/{device}/global/system/netflow/exclusion-filters"
+	path, err = replaceParaWithValue(path, paradict)
+	if err != nil {
+		return nil, fmt.Errorf("%v", err)
+	}
+
+	path += "/" + escapeURLString(mkey)
+
+	mapTmp, err = read(c, path, "get", false)
+	return
+}
+
 // UpdateSystemNetworkVisibility API operation for FortiManager Device updates the specified Network Visibility.
 // Returns the index value of the Network Visibility and execution result when the request executes successfully.
 // Returns error for service API and SDK errors.
@@ -26172,6 +26436,138 @@ func (c *FortiSDKClient) ReadSystemSdwanHealthCheck(mkey string, paradict map[st
 	return
 }
 
+// CreateSystemSdwanHealthCheckFortiguard API operation for FortiManager Device creates a new SdwanHealth Check Fortiguard.
+// Returns the index value of the SdwanHealth Check Fortiguard and execution result when the request executes successfully.
+// Returns error for service API and SDK errors.
+// See the device - system sdwan health-check-fortiguard chapter in the FortiManager Handbook - CLI Reference.
+func (c *FortiSDKClient) CreateSystemSdwanHealthCheckFortiguard(params *map[string]interface{}, paradict map[string]string) (output map[string]interface{}, err error) {
+	path := "/pm/config/device/{device}/vdom/{vdom}/system/sdwan/health-check-fortiguard"
+	path, err = replaceParaWithValue(path, paradict)
+	if err != nil {
+		return nil, fmt.Errorf("%v", err)
+	}
+
+	output, err = createUpdate(c, path, "add", params, false)
+	return
+}
+
+// UpdateSystemSdwanHealthCheckFortiguard API operation for FortiManager Device updates the specified SdwanHealth Check Fortiguard.
+// Returns the index value of the SdwanHealth Check Fortiguard and execution result when the request executes successfully.
+// Returns error for service API and SDK errors.
+// See the device - system sdwan health-check-fortiguard chapter in the FortiManager Handbook - CLI Reference.
+func (c *FortiSDKClient) UpdateSystemSdwanHealthCheckFortiguard(params *map[string]interface{}, mkey string, paradict map[string]string) (output map[string]interface{}, err error) {
+	path := "/pm/config/device/{device}/vdom/{vdom}/system/sdwan/health-check-fortiguard"
+	path, err = replaceParaWithValue(path, paradict)
+	if err != nil {
+		return nil, fmt.Errorf("%v", err)
+	}
+
+	path += "/" + escapeURLString(mkey)
+
+	output, err = createUpdate(c, path, "set", params, false)
+	return
+}
+
+// DeleteSystemSdwanHealthCheckFortiguard API operation for FortiManager Device deletes the specified SdwanHealth Check Fortiguard.
+// Returns error for service API and SDK errors.
+// See the device - system sdwan health-check-fortiguard chapter in the FortiManager Handbook - CLI Reference.
+func (c *FortiSDKClient) DeleteSystemSdwanHealthCheckFortiguard(mkey string, paradict map[string]string) (err error) {
+	path := "/pm/config/device/{device}/vdom/{vdom}/system/sdwan/health-check-fortiguard"
+	path, err = replaceParaWithValue(path, paradict)
+	if err != nil {
+		return fmt.Errorf("%v", err)
+	}
+
+	path += "/" + escapeURLString(mkey)
+
+	err = delete(c, path, "delete", false)
+	return
+}
+
+// ReadSystemSdwanHealthCheckFortiguard API operation for FortiManager Device gets the SdwanHealth Check Fortiguard
+// with the specified index value.
+// Returns the requested SdwanHealth Check Fortiguard value when the request executes successfully.
+// Returns error for service API and SDK errors.
+// See the device - system sdwan health-check-fortiguard chapter in the FortiManager Handbook - CLI Reference.
+func (c *FortiSDKClient) ReadSystemSdwanHealthCheckFortiguard(mkey string, paradict map[string]string) (mapTmp map[string]interface{}, err error) {
+	path := "/pm/config/device/{device}/vdom/{vdom}/system/sdwan/health-check-fortiguard"
+	path, err = replaceParaWithValue(path, paradict)
+	if err != nil {
+		return nil, fmt.Errorf("%v", err)
+	}
+
+	path += "/" + escapeURLString(mkey)
+
+	mapTmp, err = read(c, path, "get", false)
+	return
+}
+
+// CreateSystemSdwanHealthCheckFortiguardSla API operation for FortiManager Device creates a new SdwanHealth Check FortiguardSla.
+// Returns the index value of the SdwanHealth Check FortiguardSla and execution result when the request executes successfully.
+// Returns error for service API and SDK errors.
+// See the device - system sdwan health-check-fortiguard sla chapter in the FortiManager Handbook - CLI Reference.
+func (c *FortiSDKClient) CreateSystemSdwanHealthCheckFortiguardSla(params *map[string]interface{}, paradict map[string]string) (output map[string]interface{}, err error) {
+	path := "/pm/config/device/{device}/vdom/{vdom}/system/sdwan/health-check-fortiguard/{health-check-fortiguard}/sla"
+	path, err = replaceParaWithValue(path, paradict)
+	if err != nil {
+		return nil, fmt.Errorf("%v", err)
+	}
+
+	output, err = createUpdate(c, path, "add", params, false)
+	return
+}
+
+// UpdateSystemSdwanHealthCheckFortiguardSla API operation for FortiManager Device updates the specified SdwanHealth Check FortiguardSla.
+// Returns the index value of the SdwanHealth Check FortiguardSla and execution result when the request executes successfully.
+// Returns error for service API and SDK errors.
+// See the device - system sdwan health-check-fortiguard sla chapter in the FortiManager Handbook - CLI Reference.
+func (c *FortiSDKClient) UpdateSystemSdwanHealthCheckFortiguardSla(params *map[string]interface{}, mkey string, paradict map[string]string) (output map[string]interface{}, err error) {
+	path := "/pm/config/device/{device}/vdom/{vdom}/system/sdwan/health-check-fortiguard/{health-check-fortiguard}/sla"
+	path, err = replaceParaWithValue(path, paradict)
+	if err != nil {
+		return nil, fmt.Errorf("%v", err)
+	}
+
+	path += "/" + escapeURLString(mkey)
+
+	output, err = createUpdate(c, path, "set", params, false)
+	return
+}
+
+// DeleteSystemSdwanHealthCheckFortiguardSla API operation for FortiManager Device deletes the specified SdwanHealth Check FortiguardSla.
+// Returns error for service API and SDK errors.
+// See the device - system sdwan health-check-fortiguard sla chapter in the FortiManager Handbook - CLI Reference.
+func (c *FortiSDKClient) DeleteSystemSdwanHealthCheckFortiguardSla(mkey string, paradict map[string]string) (err error) {
+	path := "/pm/config/device/{device}/vdom/{vdom}/system/sdwan/health-check-fortiguard/{health-check-fortiguard}/sla"
+	path, err = replaceParaWithValue(path, paradict)
+	if err != nil {
+		return fmt.Errorf("%v", err)
+	}
+
+	path += "/" + escapeURLString(mkey)
+
+	err = delete(c, path, "delete", false)
+	return
+}
+
+// ReadSystemSdwanHealthCheckFortiguardSla API operation for FortiManager Device gets the SdwanHealth Check FortiguardSla
+// with the specified index value.
+// Returns the requested SdwanHealth Check FortiguardSla value when the request executes successfully.
+// Returns error for service API and SDK errors.
+// See the device - system sdwan health-check-fortiguard sla chapter in the FortiManager Handbook - CLI Reference.
+func (c *FortiSDKClient) ReadSystemSdwanHealthCheckFortiguardSla(mkey string, paradict map[string]string) (mapTmp map[string]interface{}, err error) {
+	path := "/pm/config/device/{device}/vdom/{vdom}/system/sdwan/health-check-fortiguard/{health-check-fortiguard}/sla"
+	path, err = replaceParaWithValue(path, paradict)
+	if err != nil {
+		return nil, fmt.Errorf("%v", err)
+	}
+
+	path += "/" + escapeURLString(mkey)
+
+	mapTmp, err = read(c, path, "get", false)
+	return
+}
+
 // CreateSystemSdwanHealthCheckSla API operation for FortiManager Device creates a new SdwanHealth CheckSla.
 // Returns the index value of the SdwanHealth CheckSla and execution result when the request executes successfully.
 // Returns error for service API and SDK errors.
@@ -27241,6 +27637,72 @@ func (c *FortiSDKClient) DeleteSystemSnmpMibView(mkey string, paradict map[strin
 // See the device - system snmp mib-view chapter in the FortiManager Handbook - CLI Reference.
 func (c *FortiSDKClient) ReadSystemSnmpMibView(mkey string, paradict map[string]string) (mapTmp map[string]interface{}, err error) {
 	path := "/pm/config/device/{device}/global/system/snmp/mib-view"
+	path, err = replaceParaWithValue(path, paradict)
+	if err != nil {
+		return nil, fmt.Errorf("%v", err)
+	}
+
+	path += "/" + escapeURLString(mkey)
+
+	mapTmp, err = read(c, path, "get", false)
+	return
+}
+
+// CreateSystemSnmpRmonStat API operation for FortiManager Device creates a new SnmpRmon Stat.
+// Returns the index value of the SnmpRmon Stat and execution result when the request executes successfully.
+// Returns error for service API and SDK errors.
+// See the device - system snmp rmon-stat chapter in the FortiManager Handbook - CLI Reference.
+func (c *FortiSDKClient) CreateSystemSnmpRmonStat(params *map[string]interface{}, paradict map[string]string) (output map[string]interface{}, err error) {
+	path := "/pm/config/device/{device}/global/system/snmp/rmon-stat"
+	path, err = replaceParaWithValue(path, paradict)
+	if err != nil {
+		return nil, fmt.Errorf("%v", err)
+	}
+
+	output, err = createUpdate(c, path, "add", params, false)
+	return
+}
+
+// UpdateSystemSnmpRmonStat API operation for FortiManager Device updates the specified SnmpRmon Stat.
+// Returns the index value of the SnmpRmon Stat and execution result when the request executes successfully.
+// Returns error for service API and SDK errors.
+// See the device - system snmp rmon-stat chapter in the FortiManager Handbook - CLI Reference.
+func (c *FortiSDKClient) UpdateSystemSnmpRmonStat(params *map[string]interface{}, mkey string, paradict map[string]string) (output map[string]interface{}, err error) {
+	path := "/pm/config/device/{device}/global/system/snmp/rmon-stat"
+	path, err = replaceParaWithValue(path, paradict)
+	if err != nil {
+		return nil, fmt.Errorf("%v", err)
+	}
+
+	path += "/" + escapeURLString(mkey)
+
+	output, err = createUpdate(c, path, "set", params, false)
+	return
+}
+
+// DeleteSystemSnmpRmonStat API operation for FortiManager Device deletes the specified SnmpRmon Stat.
+// Returns error for service API and SDK errors.
+// See the device - system snmp rmon-stat chapter in the FortiManager Handbook - CLI Reference.
+func (c *FortiSDKClient) DeleteSystemSnmpRmonStat(mkey string, paradict map[string]string) (err error) {
+	path := "/pm/config/device/{device}/global/system/snmp/rmon-stat"
+	path, err = replaceParaWithValue(path, paradict)
+	if err != nil {
+		return fmt.Errorf("%v", err)
+	}
+
+	path += "/" + escapeURLString(mkey)
+
+	err = delete(c, path, "delete", false)
+	return
+}
+
+// ReadSystemSnmpRmonStat API operation for FortiManager Device gets the SnmpRmon Stat
+// with the specified index value.
+// Returns the requested SnmpRmon Stat value when the request executes successfully.
+// Returns error for service API and SDK errors.
+// See the device - system snmp rmon-stat chapter in the FortiManager Handbook - CLI Reference.
+func (c *FortiSDKClient) ReadSystemSnmpRmonStat(mkey string, paradict map[string]string) (mapTmp map[string]interface{}, err error) {
+	path := "/pm/config/device/{device}/global/system/snmp/rmon-stat"
 	path, err = replaceParaWithValue(path, paradict)
 	if err != nil {
 		return nil, fmt.Errorf("%v", err)
@@ -28826,6 +29288,72 @@ func (c *FortiSDKClient) ReadSystemVdomSflowCollectors(mkey string, paradict map
 	return
 }
 
+// CreateSystemVneInterface API operation for FortiManager Device creates a new Vne Interface.
+// Returns the index value of the Vne Interface and execution result when the request executes successfully.
+// Returns error for service API and SDK errors.
+// See the device - system vne-interface chapter in the FortiManager Handbook - CLI Reference.
+func (c *FortiSDKClient) CreateSystemVneInterface(params *map[string]interface{}, paradict map[string]string) (output map[string]interface{}, err error) {
+	path := "/pm/config/device/{device}/vdom/{vdom}/system/vne-interface"
+	path, err = replaceParaWithValue(path, paradict)
+	if err != nil {
+		return nil, fmt.Errorf("%v", err)
+	}
+
+	output, err = createUpdate(c, path, "add", params, false)
+	return
+}
+
+// UpdateSystemVneInterface API operation for FortiManager Device updates the specified Vne Interface.
+// Returns the index value of the Vne Interface and execution result when the request executes successfully.
+// Returns error for service API and SDK errors.
+// See the device - system vne-interface chapter in the FortiManager Handbook - CLI Reference.
+func (c *FortiSDKClient) UpdateSystemVneInterface(params *map[string]interface{}, mkey string, paradict map[string]string) (output map[string]interface{}, err error) {
+	path := "/pm/config/device/{device}/vdom/{vdom}/system/vne-interface"
+	path, err = replaceParaWithValue(path, paradict)
+	if err != nil {
+		return nil, fmt.Errorf("%v", err)
+	}
+
+	path += "/" + escapeURLString(mkey)
+
+	output, err = createUpdate(c, path, "set", params, false)
+	return
+}
+
+// DeleteSystemVneInterface API operation for FortiManager Device deletes the specified Vne Interface.
+// Returns error for service API and SDK errors.
+// See the device - system vne-interface chapter in the FortiManager Handbook - CLI Reference.
+func (c *FortiSDKClient) DeleteSystemVneInterface(mkey string, paradict map[string]string) (err error) {
+	path := "/pm/config/device/{device}/vdom/{vdom}/system/vne-interface"
+	path, err = replaceParaWithValue(path, paradict)
+	if err != nil {
+		return fmt.Errorf("%v", err)
+	}
+
+	path += "/" + escapeURLString(mkey)
+
+	err = delete(c, path, "delete", false)
+	return
+}
+
+// ReadSystemVneInterface API operation for FortiManager Device gets the Vne Interface
+// with the specified index value.
+// Returns the requested Vne Interface value when the request executes successfully.
+// Returns error for service API and SDK errors.
+// See the device - system vne-interface chapter in the FortiManager Handbook - CLI Reference.
+func (c *FortiSDKClient) ReadSystemVneInterface(mkey string, paradict map[string]string) (mapTmp map[string]interface{}, err error) {
+	path := "/pm/config/device/{device}/vdom/{vdom}/system/vne-interface"
+	path, err = replaceParaWithValue(path, paradict)
+	if err != nil {
+		return nil, fmt.Errorf("%v", err)
+	}
+
+	path += "/" + escapeURLString(mkey)
+
+	mapTmp, err = read(c, path, "get", false)
+	return
+}
+
 // UpdateSystemVneTunnel API operation for FortiManager Device updates the specified Vne Tunnel.
 // Returns the index value of the Vne Tunnel and execution result when the request executes successfully.
 // Returns error for service API and SDK errors.
@@ -29391,6 +29919,72 @@ func (c *FortiSDKClient) DeleteUserQuarantineTargetsMacs(mkey string, paradict m
 // See the device - user quarantine targets macs chapter in the FortiManager Handbook - CLI Reference.
 func (c *FortiSDKClient) ReadUserQuarantineTargetsMacs(mkey string, paradict map[string]string) (mapTmp map[string]interface{}, err error) {
 	path := "/pm/config/device/{device}/vdom/{vdom}/user/quarantine/targets/{targets}/macs"
+	path, err = replaceParaWithValue(path, paradict)
+	if err != nil {
+		return nil, fmt.Errorf("%v", err)
+	}
+
+	path += "/" + escapeURLString(mkey)
+
+	mapTmp, err = read(c, path, "get", false)
+	return
+}
+
+// CreateUserScim API operation for FortiManager Device creates a new Scim.
+// Returns the index value of the Scim and execution result when the request executes successfully.
+// Returns error for service API and SDK errors.
+// See the device - user scim chapter in the FortiManager Handbook - CLI Reference.
+func (c *FortiSDKClient) CreateUserScim(params *map[string]interface{}, paradict map[string]string) (output map[string]interface{}, err error) {
+	path := "/pm/config/device/{device}/vdom/{vdom}/user/scim"
+	path, err = replaceParaWithValue(path, paradict)
+	if err != nil {
+		return nil, fmt.Errorf("%v", err)
+	}
+
+	output, err = createUpdate(c, path, "add", params, false)
+	return
+}
+
+// UpdateUserScim API operation for FortiManager Device updates the specified Scim.
+// Returns the index value of the Scim and execution result when the request executes successfully.
+// Returns error for service API and SDK errors.
+// See the device - user scim chapter in the FortiManager Handbook - CLI Reference.
+func (c *FortiSDKClient) UpdateUserScim(params *map[string]interface{}, mkey string, paradict map[string]string) (output map[string]interface{}, err error) {
+	path := "/pm/config/device/{device}/vdom/{vdom}/user/scim"
+	path, err = replaceParaWithValue(path, paradict)
+	if err != nil {
+		return nil, fmt.Errorf("%v", err)
+	}
+
+	path += "/" + escapeURLString(mkey)
+
+	output, err = createUpdate(c, path, "set", params, false)
+	return
+}
+
+// DeleteUserScim API operation for FortiManager Device deletes the specified Scim.
+// Returns error for service API and SDK errors.
+// See the device - user scim chapter in the FortiManager Handbook - CLI Reference.
+func (c *FortiSDKClient) DeleteUserScim(mkey string, paradict map[string]string) (err error) {
+	path := "/pm/config/device/{device}/vdom/{vdom}/user/scim"
+	path, err = replaceParaWithValue(path, paradict)
+	if err != nil {
+		return fmt.Errorf("%v", err)
+	}
+
+	path += "/" + escapeURLString(mkey)
+
+	err = delete(c, path, "delete", false)
+	return
+}
+
+// ReadUserScim API operation for FortiManager Device gets the Scim
+// with the specified index value.
+// Returns the requested Scim value when the request executes successfully.
+// Returns error for service API and SDK errors.
+// See the device - user scim chapter in the FortiManager Handbook - CLI Reference.
+func (c *FortiSDKClient) ReadUserScim(mkey string, paradict map[string]string) (mapTmp map[string]interface{}, err error) {
+	path := "/pm/config/device/{device}/vdom/{vdom}/user/scim"
 	path, err = replaceParaWithValue(path, paradict)
 	if err != nil {
 		return nil, fmt.Errorf("%v", err)
@@ -37869,6 +38463,350 @@ func (c *FortiSDKClient) ReadWirelessControllerWtpRadio4(mkey string, paradict m
 	if err != nil {
 		return nil, fmt.Errorf("%v", err)
 	}
+
+	mapTmp, err = read(c, path, "get", false)
+	return
+}
+
+// CreateZtnaTrafficForwardProxy API operation for FortiManager Device creates a new Traffic Forward Proxy.
+// Returns the index value of the Traffic Forward Proxy and execution result when the request executes successfully.
+// Returns error for service API and SDK errors.
+// See the device - ztna traffic-forward-proxy chapter in the FortiManager Handbook - CLI Reference.
+func (c *FortiSDKClient) CreateZtnaTrafficForwardProxy(params *map[string]interface{}, paradict map[string]string) (output map[string]interface{}, err error) {
+	path := "/pm/config/device/{device}/vdom/{vdom}/ztna/traffic-forward-proxy"
+	path, err = replaceParaWithValue(path, paradict)
+	if err != nil {
+		return nil, fmt.Errorf("%v", err)
+	}
+
+	output, err = createUpdate(c, path, "add", params, false)
+	return
+}
+
+// UpdateZtnaTrafficForwardProxy API operation for FortiManager Device updates the specified Traffic Forward Proxy.
+// Returns the index value of the Traffic Forward Proxy and execution result when the request executes successfully.
+// Returns error for service API and SDK errors.
+// See the device - ztna traffic-forward-proxy chapter in the FortiManager Handbook - CLI Reference.
+func (c *FortiSDKClient) UpdateZtnaTrafficForwardProxy(params *map[string]interface{}, mkey string, paradict map[string]string) (output map[string]interface{}, err error) {
+	path := "/pm/config/device/{device}/vdom/{vdom}/ztna/traffic-forward-proxy"
+	path, err = replaceParaWithValue(path, paradict)
+	if err != nil {
+		return nil, fmt.Errorf("%v", err)
+	}
+
+	path += "/" + escapeURLString(mkey)
+
+	output, err = createUpdate(c, path, "set", params, false)
+	return
+}
+
+// DeleteZtnaTrafficForwardProxy API operation for FortiManager Device deletes the specified Traffic Forward Proxy.
+// Returns error for service API and SDK errors.
+// See the device - ztna traffic-forward-proxy chapter in the FortiManager Handbook - CLI Reference.
+func (c *FortiSDKClient) DeleteZtnaTrafficForwardProxy(mkey string, paradict map[string]string) (err error) {
+	path := "/pm/config/device/{device}/vdom/{vdom}/ztna/traffic-forward-proxy"
+	path, err = replaceParaWithValue(path, paradict)
+	if err != nil {
+		return fmt.Errorf("%v", err)
+	}
+
+	path += "/" + escapeURLString(mkey)
+
+	err = delete(c, path, "delete", false)
+	return
+}
+
+// ReadZtnaTrafficForwardProxy API operation for FortiManager Device gets the Traffic Forward Proxy
+// with the specified index value.
+// Returns the requested Traffic Forward Proxy value when the request executes successfully.
+// Returns error for service API and SDK errors.
+// See the device - ztna traffic-forward-proxy chapter in the FortiManager Handbook - CLI Reference.
+func (c *FortiSDKClient) ReadZtnaTrafficForwardProxy(mkey string, paradict map[string]string) (mapTmp map[string]interface{}, err error) {
+	path := "/pm/config/device/{device}/vdom/{vdom}/ztna/traffic-forward-proxy"
+	path, err = replaceParaWithValue(path, paradict)
+	if err != nil {
+		return nil, fmt.Errorf("%v", err)
+	}
+
+	path += "/" + escapeURLString(mkey)
+
+	mapTmp, err = read(c, path, "get", false)
+	return
+}
+
+// UpdateZtnaTrafficForwardProxyReverseService API operation for FortiManager Device updates the specified Traffic Forward Proxy Reverse Service.
+// Returns the index value of the Traffic Forward Proxy Reverse Service and execution result when the request executes successfully.
+// Returns error for service API and SDK errors.
+// See the device - ztna traffic-forward-proxy-reverse-service chapter in the FortiManager Handbook - CLI Reference.
+func (c *FortiSDKClient) UpdateZtnaTrafficForwardProxyReverseService(params *map[string]interface{}, mkey string, paradict map[string]string) (output map[string]interface{}, err error) {
+	path := "/pm/config/device/{device}/vdom/{vdom}/ztna/traffic-forward-proxy-reverse-service"
+	path, err = replaceParaWithValue(path, paradict)
+	if err != nil {
+		return nil, fmt.Errorf("%v", err)
+	}
+
+	output, err = createUpdate(c, path, "set", params, false)
+	return
+}
+
+// DeleteZtnaTrafficForwardProxyReverseService API operation for FortiManager Device deletes the specified Traffic Forward Proxy Reverse Service.
+// Returns error for service API and SDK errors.
+// See the device - ztna traffic-forward-proxy-reverse-service chapter in the FortiManager Handbook - CLI Reference.
+func (c *FortiSDKClient) DeleteZtnaTrafficForwardProxyReverseService(mkey string, paradict map[string]string) (err error) {
+
+	//No unset API for ztna - traffic-forward-proxy-reverse-service
+	return
+}
+
+// ReadZtnaTrafficForwardProxyReverseService API operation for FortiManager Device gets the Traffic Forward Proxy Reverse Service
+// with the specified index value.
+// Returns the requested Traffic Forward Proxy Reverse Service value when the request executes successfully.
+// Returns error for service API and SDK errors.
+// See the device - ztna traffic-forward-proxy-reverse-service chapter in the FortiManager Handbook - CLI Reference.
+func (c *FortiSDKClient) ReadZtnaTrafficForwardProxyReverseService(mkey string, paradict map[string]string) (mapTmp map[string]interface{}, err error) {
+	path := "/pm/config/device/{device}/vdom/{vdom}/ztna/traffic-forward-proxy-reverse-service"
+	path, err = replaceParaWithValue(path, paradict)
+	if err != nil {
+		return nil, fmt.Errorf("%v", err)
+	}
+
+	mapTmp, err = read(c, path, "get", false)
+	return
+}
+
+// CreateZtnaTrafficForwardProxyReverseServiceRemoteServers API operation for FortiManager Device creates a new Traffic Forward Proxy Reverse ServiceRemote Servers.
+// Returns the index value of the Traffic Forward Proxy Reverse ServiceRemote Servers and execution result when the request executes successfully.
+// Returns error for service API and SDK errors.
+// See the device - ztna traffic-forward-proxy-reverse-service remote-servers chapter in the FortiManager Handbook - CLI Reference.
+func (c *FortiSDKClient) CreateZtnaTrafficForwardProxyReverseServiceRemoteServers(params *map[string]interface{}, paradict map[string]string) (output map[string]interface{}, err error) {
+	path := "/pm/config/device/{device}/vdom/{vdom}/ztna/traffic-forward-proxy-reverse-service/remote-servers"
+	path, err = replaceParaWithValue(path, paradict)
+	if err != nil {
+		return nil, fmt.Errorf("%v", err)
+	}
+
+	output, err = createUpdate(c, path, "add", params, false)
+	return
+}
+
+// UpdateZtnaTrafficForwardProxyReverseServiceRemoteServers API operation for FortiManager Device updates the specified Traffic Forward Proxy Reverse ServiceRemote Servers.
+// Returns the index value of the Traffic Forward Proxy Reverse ServiceRemote Servers and execution result when the request executes successfully.
+// Returns error for service API and SDK errors.
+// See the device - ztna traffic-forward-proxy-reverse-service remote-servers chapter in the FortiManager Handbook - CLI Reference.
+func (c *FortiSDKClient) UpdateZtnaTrafficForwardProxyReverseServiceRemoteServers(params *map[string]interface{}, mkey string, paradict map[string]string) (output map[string]interface{}, err error) {
+	path := "/pm/config/device/{device}/vdom/{vdom}/ztna/traffic-forward-proxy-reverse-service/remote-servers"
+	path, err = replaceParaWithValue(path, paradict)
+	if err != nil {
+		return nil, fmt.Errorf("%v", err)
+	}
+
+	path += "/" + escapeURLString(mkey)
+
+	output, err = createUpdate(c, path, "set", params, false)
+	return
+}
+
+// DeleteZtnaTrafficForwardProxyReverseServiceRemoteServers API operation for FortiManager Device deletes the specified Traffic Forward Proxy Reverse ServiceRemote Servers.
+// Returns error for service API and SDK errors.
+// See the device - ztna traffic-forward-proxy-reverse-service remote-servers chapter in the FortiManager Handbook - CLI Reference.
+func (c *FortiSDKClient) DeleteZtnaTrafficForwardProxyReverseServiceRemoteServers(mkey string, paradict map[string]string) (err error) {
+	path := "/pm/config/device/{device}/vdom/{vdom}/ztna/traffic-forward-proxy-reverse-service/remote-servers"
+	path, err = replaceParaWithValue(path, paradict)
+	if err != nil {
+		return fmt.Errorf("%v", err)
+	}
+
+	path += "/" + escapeURLString(mkey)
+
+	err = delete(c, path, "delete", false)
+	return
+}
+
+// ReadZtnaTrafficForwardProxyReverseServiceRemoteServers API operation for FortiManager Device gets the Traffic Forward Proxy Reverse ServiceRemote Servers
+// with the specified index value.
+// Returns the requested Traffic Forward Proxy Reverse ServiceRemote Servers value when the request executes successfully.
+// Returns error for service API and SDK errors.
+// See the device - ztna traffic-forward-proxy-reverse-service remote-servers chapter in the FortiManager Handbook - CLI Reference.
+func (c *FortiSDKClient) ReadZtnaTrafficForwardProxyReverseServiceRemoteServers(mkey string, paradict map[string]string) (mapTmp map[string]interface{}, err error) {
+	path := "/pm/config/device/{device}/vdom/{vdom}/ztna/traffic-forward-proxy-reverse-service/remote-servers"
+	path, err = replaceParaWithValue(path, paradict)
+	if err != nil {
+		return nil, fmt.Errorf("%v", err)
+	}
+
+	path += "/" + escapeURLString(mkey)
+
+	mapTmp, err = read(c, path, "get", false)
+	return
+}
+
+// UpdateZtnaTrafficForwardProxyQuic API operation for FortiManager Device updates the specified Traffic Forward ProxyQuic.
+// Returns the index value of the Traffic Forward ProxyQuic and execution result when the request executes successfully.
+// Returns error for service API and SDK errors.
+// See the device - ztna traffic-forward-proxy quic chapter in the FortiManager Handbook - CLI Reference.
+func (c *FortiSDKClient) UpdateZtnaTrafficForwardProxyQuic(params *map[string]interface{}, mkey string, paradict map[string]string) (output map[string]interface{}, err error) {
+	path := "/pm/config/device/{device}/vdom/{vdom}/ztna/traffic-forward-proxy/{traffic-forward-proxy}/quic"
+	path, err = replaceParaWithValue(path, paradict)
+	if err != nil {
+		return nil, fmt.Errorf("%v", err)
+	}
+
+	output, err = createUpdate(c, path, "set", params, false)
+	return
+}
+
+// DeleteZtnaTrafficForwardProxyQuic API operation for FortiManager Device deletes the specified Traffic Forward ProxyQuic.
+// Returns error for service API and SDK errors.
+// See the device - ztna traffic-forward-proxy quic chapter in the FortiManager Handbook - CLI Reference.
+func (c *FortiSDKClient) DeleteZtnaTrafficForwardProxyQuic(mkey string, paradict map[string]string) (err error) {
+
+	//No unset API for ztna - traffic-forward-proxy quic
+	return
+}
+
+// ReadZtnaTrafficForwardProxyQuic API operation for FortiManager Device gets the Traffic Forward ProxyQuic
+// with the specified index value.
+// Returns the requested Traffic Forward ProxyQuic value when the request executes successfully.
+// Returns error for service API and SDK errors.
+// See the device - ztna traffic-forward-proxy quic chapter in the FortiManager Handbook - CLI Reference.
+func (c *FortiSDKClient) ReadZtnaTrafficForwardProxyQuic(mkey string, paradict map[string]string) (mapTmp map[string]interface{}, err error) {
+	path := "/pm/config/device/{device}/vdom/{vdom}/ztna/traffic-forward-proxy/{traffic-forward-proxy}/quic"
+	path, err = replaceParaWithValue(path, paradict)
+	if err != nil {
+		return nil, fmt.Errorf("%v", err)
+	}
+
+	mapTmp, err = read(c, path, "get", false)
+	return
+}
+
+// CreateZtnaTrafficForwardProxySslCipherSuites API operation for FortiManager Device creates a new Traffic Forward ProxySsl Cipher Suites.
+// Returns the index value of the Traffic Forward ProxySsl Cipher Suites and execution result when the request executes successfully.
+// Returns error for service API and SDK errors.
+// See the device - ztna traffic-forward-proxy ssl-cipher-suites chapter in the FortiManager Handbook - CLI Reference.
+func (c *FortiSDKClient) CreateZtnaTrafficForwardProxySslCipherSuites(params *map[string]interface{}, paradict map[string]string) (output map[string]interface{}, err error) {
+	path := "/pm/config/device/{device}/vdom/{vdom}/ztna/traffic-forward-proxy/{traffic-forward-proxy}/ssl-cipher-suites"
+	path, err = replaceParaWithValue(path, paradict)
+	if err != nil {
+		return nil, fmt.Errorf("%v", err)
+	}
+
+	output, err = createUpdate(c, path, "add", params, false)
+	return
+}
+
+// UpdateZtnaTrafficForwardProxySslCipherSuites API operation for FortiManager Device updates the specified Traffic Forward ProxySsl Cipher Suites.
+// Returns the index value of the Traffic Forward ProxySsl Cipher Suites and execution result when the request executes successfully.
+// Returns error for service API and SDK errors.
+// See the device - ztna traffic-forward-proxy ssl-cipher-suites chapter in the FortiManager Handbook - CLI Reference.
+func (c *FortiSDKClient) UpdateZtnaTrafficForwardProxySslCipherSuites(params *map[string]interface{}, mkey string, paradict map[string]string) (output map[string]interface{}, err error) {
+	path := "/pm/config/device/{device}/vdom/{vdom}/ztna/traffic-forward-proxy/{traffic-forward-proxy}/ssl-cipher-suites"
+	path, err = replaceParaWithValue(path, paradict)
+	if err != nil {
+		return nil, fmt.Errorf("%v", err)
+	}
+
+	path += "/" + escapeURLString(mkey)
+
+	output, err = createUpdate(c, path, "set", params, false)
+	return
+}
+
+// DeleteZtnaTrafficForwardProxySslCipherSuites API operation for FortiManager Device deletes the specified Traffic Forward ProxySsl Cipher Suites.
+// Returns error for service API and SDK errors.
+// See the device - ztna traffic-forward-proxy ssl-cipher-suites chapter in the FortiManager Handbook - CLI Reference.
+func (c *FortiSDKClient) DeleteZtnaTrafficForwardProxySslCipherSuites(mkey string, paradict map[string]string) (err error) {
+	path := "/pm/config/device/{device}/vdom/{vdom}/ztna/traffic-forward-proxy/{traffic-forward-proxy}/ssl-cipher-suites"
+	path, err = replaceParaWithValue(path, paradict)
+	if err != nil {
+		return fmt.Errorf("%v", err)
+	}
+
+	path += "/" + escapeURLString(mkey)
+
+	err = delete(c, path, "delete", false)
+	return
+}
+
+// ReadZtnaTrafficForwardProxySslCipherSuites API operation for FortiManager Device gets the Traffic Forward ProxySsl Cipher Suites
+// with the specified index value.
+// Returns the requested Traffic Forward ProxySsl Cipher Suites value when the request executes successfully.
+// Returns error for service API and SDK errors.
+// See the device - ztna traffic-forward-proxy ssl-cipher-suites chapter in the FortiManager Handbook - CLI Reference.
+func (c *FortiSDKClient) ReadZtnaTrafficForwardProxySslCipherSuites(mkey string, paradict map[string]string) (mapTmp map[string]interface{}, err error) {
+	path := "/pm/config/device/{device}/vdom/{vdom}/ztna/traffic-forward-proxy/{traffic-forward-proxy}/ssl-cipher-suites"
+	path, err = replaceParaWithValue(path, paradict)
+	if err != nil {
+		return nil, fmt.Errorf("%v", err)
+	}
+
+	path += "/" + escapeURLString(mkey)
+
+	mapTmp, err = read(c, path, "get", false)
+	return
+}
+
+// CreateZtnaTrafficForwardProxySslServerCipherSuites API operation for FortiManager Device creates a new Traffic Forward ProxySsl Server Cipher Suites.
+// Returns the index value of the Traffic Forward ProxySsl Server Cipher Suites and execution result when the request executes successfully.
+// Returns error for service API and SDK errors.
+// See the device - ztna traffic-forward-proxy ssl-server-cipher-suites chapter in the FortiManager Handbook - CLI Reference.
+func (c *FortiSDKClient) CreateZtnaTrafficForwardProxySslServerCipherSuites(params *map[string]interface{}, paradict map[string]string) (output map[string]interface{}, err error) {
+	path := "/pm/config/device/{device}/vdom/{vdom}/ztna/traffic-forward-proxy/{traffic-forward-proxy}/ssl-server-cipher-suites"
+	path, err = replaceParaWithValue(path, paradict)
+	if err != nil {
+		return nil, fmt.Errorf("%v", err)
+	}
+
+	output, err = createUpdate(c, path, "add", params, false)
+	return
+}
+
+// UpdateZtnaTrafficForwardProxySslServerCipherSuites API operation for FortiManager Device updates the specified Traffic Forward ProxySsl Server Cipher Suites.
+// Returns the index value of the Traffic Forward ProxySsl Server Cipher Suites and execution result when the request executes successfully.
+// Returns error for service API and SDK errors.
+// See the device - ztna traffic-forward-proxy ssl-server-cipher-suites chapter in the FortiManager Handbook - CLI Reference.
+func (c *FortiSDKClient) UpdateZtnaTrafficForwardProxySslServerCipherSuites(params *map[string]interface{}, mkey string, paradict map[string]string) (output map[string]interface{}, err error) {
+	path := "/pm/config/device/{device}/vdom/{vdom}/ztna/traffic-forward-proxy/{traffic-forward-proxy}/ssl-server-cipher-suites"
+	path, err = replaceParaWithValue(path, paradict)
+	if err != nil {
+		return nil, fmt.Errorf("%v", err)
+	}
+
+	path += "/" + escapeURLString(mkey)
+
+	output, err = createUpdate(c, path, "set", params, false)
+	return
+}
+
+// DeleteZtnaTrafficForwardProxySslServerCipherSuites API operation for FortiManager Device deletes the specified Traffic Forward ProxySsl Server Cipher Suites.
+// Returns error for service API and SDK errors.
+// See the device - ztna traffic-forward-proxy ssl-server-cipher-suites chapter in the FortiManager Handbook - CLI Reference.
+func (c *FortiSDKClient) DeleteZtnaTrafficForwardProxySslServerCipherSuites(mkey string, paradict map[string]string) (err error) {
+	path := "/pm/config/device/{device}/vdom/{vdom}/ztna/traffic-forward-proxy/{traffic-forward-proxy}/ssl-server-cipher-suites"
+	path, err = replaceParaWithValue(path, paradict)
+	if err != nil {
+		return fmt.Errorf("%v", err)
+	}
+
+	path += "/" + escapeURLString(mkey)
+
+	err = delete(c, path, "delete", false)
+	return
+}
+
+// ReadZtnaTrafficForwardProxySslServerCipherSuites API operation for FortiManager Device gets the Traffic Forward ProxySsl Server Cipher Suites
+// with the specified index value.
+// Returns the requested Traffic Forward ProxySsl Server Cipher Suites value when the request executes successfully.
+// Returns error for service API and SDK errors.
+// See the device - ztna traffic-forward-proxy ssl-server-cipher-suites chapter in the FortiManager Handbook - CLI Reference.
+func (c *FortiSDKClient) ReadZtnaTrafficForwardProxySslServerCipherSuites(mkey string, paradict map[string]string) (mapTmp map[string]interface{}, err error) {
+	path := "/pm/config/device/{device}/vdom/{vdom}/ztna/traffic-forward-proxy/{traffic-forward-proxy}/ssl-server-cipher-suites"
+	path, err = replaceParaWithValue(path, paradict)
+	if err != nil {
+		return nil, fmt.Errorf("%v", err)
+	}
+
+	path += "/" + escapeURLString(mkey)
 
 	mapTmp, err = read(c, path, "get", false)
 	return

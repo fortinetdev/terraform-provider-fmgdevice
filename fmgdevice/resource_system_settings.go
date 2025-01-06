@@ -364,6 +364,11 @@ func resourceSystemSettings() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"gui_gtp": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
 			"gui_icap": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -468,10 +473,12 @@ func resourceSystemSettings() *schema.Resource {
 			"gui_sslvpn_personal_bookmarks": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"gui_sslvpn_realms": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"gui_switch_controller": &schema.Schema{
 				Type:     schema.TypeString,
@@ -691,6 +698,10 @@ func resourceSystemSettings() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"nonat_eif_key_sel": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 			"npu_group_id": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
@@ -719,6 +730,11 @@ func resourceSystemSettings() *schema.Resource {
 				Computed: true,
 			},
 			"sctp_session_without_init": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+			"ses_denied_multicast_traffic": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
@@ -1201,6 +1217,10 @@ func flattenSystemSettingsGuiFortiextenderController(v interface{}, d *schema.Re
 	return v
 }
 
+func flattenSystemSettingsGuiGtp(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenSystemSettingsGuiIcap(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -1469,6 +1489,10 @@ func flattenSystemSettingsNgfwMode(v interface{}, d *schema.ResourceData, pre st
 	return v
 }
 
+func flattenSystemSettingsNonatEifKeySel(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenSystemSettingsNpuGroupId(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -1494,6 +1518,10 @@ func flattenSystemSettingsSccpPort(v interface{}, d *schema.ResourceData, pre st
 }
 
 func flattenSystemSettingsSctpSessionWithoutInit(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemSettingsSesDeniedMulticastTraffic(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -2236,6 +2264,16 @@ func refreshObjectSystemSettings(d *schema.ResourceData, o map[string]interface{
 		}
 	}
 
+	if err = d.Set("gui_gtp", flattenSystemSettingsGuiGtp(o["gui-gtp"], d, "gui_gtp")); err != nil {
+		if vv, ok := fortiAPIPatch(o["gui-gtp"], "SystemSettings-GuiGtp"); ok {
+			if err = d.Set("gui_gtp", vv); err != nil {
+				return fmt.Errorf("Error reading gui_gtp: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading gui_gtp: %v", err)
+		}
+	}
+
 	if err = d.Set("gui_icap", flattenSystemSettingsGuiIcap(o["gui-icap"], d, "gui_icap")); err != nil {
 		if vv, ok := fortiAPIPatch(o["gui-icap"], "SystemSettings-GuiIcap"); ok {
 			if err = d.Set("gui_icap", vv); err != nil {
@@ -2906,6 +2944,16 @@ func refreshObjectSystemSettings(d *schema.ResourceData, o map[string]interface{
 		}
 	}
 
+	if err = d.Set("nonat_eif_key_sel", flattenSystemSettingsNonatEifKeySel(o["nonat-eif-key-sel"], d, "nonat_eif_key_sel")); err != nil {
+		if vv, ok := fortiAPIPatch(o["nonat-eif-key-sel"], "SystemSettings-NonatEifKeySel"); ok {
+			if err = d.Set("nonat_eif_key_sel", vv); err != nil {
+				return fmt.Errorf("Error reading nonat_eif_key_sel: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading nonat_eif_key_sel: %v", err)
+		}
+	}
+
 	if err = d.Set("npu_group_id", flattenSystemSettingsNpuGroupId(o["npu-group-id"], d, "npu_group_id")); err != nil {
 		if vv, ok := fortiAPIPatch(o["npu-group-id"], "SystemSettings-NpuGroupId"); ok {
 			if err = d.Set("npu_group_id", vv); err != nil {
@@ -2973,6 +3021,16 @@ func refreshObjectSystemSettings(d *schema.ResourceData, o map[string]interface{
 			}
 		} else {
 			return fmt.Errorf("Error reading sctp_session_without_init: %v", err)
+		}
+	}
+
+	if err = d.Set("ses_denied_multicast_traffic", flattenSystemSettingsSesDeniedMulticastTraffic(o["ses-denied-multicast-traffic"], d, "ses_denied_multicast_traffic")); err != nil {
+		if vv, ok := fortiAPIPatch(o["ses-denied-multicast-traffic"], "SystemSettings-SesDeniedMulticastTraffic"); ok {
+			if err = d.Set("ses_denied_multicast_traffic", vv); err != nil {
+				return fmt.Errorf("Error reading ses_denied_multicast_traffic: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading ses_denied_multicast_traffic: %v", err)
 		}
 	}
 
@@ -3439,6 +3497,10 @@ func expandSystemSettingsGuiFortiextenderController(d *schema.ResourceData, v in
 	return v, nil
 }
 
+func expandSystemSettingsGuiGtp(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandSystemSettingsGuiIcap(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -3707,6 +3769,10 @@ func expandSystemSettingsNgfwMode(d *schema.ResourceData, v interface{}, pre str
 	return v, nil
 }
 
+func expandSystemSettingsNonatEifKeySel(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandSystemSettingsNpuGroupId(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -3732,6 +3798,10 @@ func expandSystemSettingsSccpPort(d *schema.ResourceData, v interface{}, pre str
 }
 
 func expandSystemSettingsSctpSessionWithoutInit(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemSettingsSesDeniedMulticastTraffic(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -4408,6 +4478,15 @@ func getObjectSystemSettings(d *schema.ResourceData) (*map[string]interface{}, e
 		}
 	}
 
+	if v, ok := d.GetOk("gui_gtp"); ok || d.HasChange("gui_gtp") {
+		t, err := expandSystemSettingsGuiGtp(d, v, "gui_gtp")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["gui-gtp"] = t
+		}
+	}
+
 	if v, ok := d.GetOk("gui_icap"); ok || d.HasChange("gui_icap") {
 		t, err := expandSystemSettingsGuiIcap(d, v, "gui_icap")
 		if err != nil {
@@ -5011,6 +5090,15 @@ func getObjectSystemSettings(d *schema.ResourceData) (*map[string]interface{}, e
 		}
 	}
 
+	if v, ok := d.GetOk("nonat_eif_key_sel"); ok || d.HasChange("nonat_eif_key_sel") {
+		t, err := expandSystemSettingsNonatEifKeySel(d, v, "nonat_eif_key_sel")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["nonat-eif-key-sel"] = t
+		}
+	}
+
 	if v, ok := d.GetOk("npu_group_id"); ok || d.HasChange("npu_group_id") {
 		t, err := expandSystemSettingsNpuGroupId(d, v, "npu_group_id")
 		if err != nil {
@@ -5071,6 +5159,15 @@ func getObjectSystemSettings(d *schema.ResourceData) (*map[string]interface{}, e
 			return &obj, err
 		} else if t != nil {
 			obj["sctp-session-without-init"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("ses_denied_multicast_traffic"); ok || d.HasChange("ses_denied_multicast_traffic") {
+		t, err := expandSystemSettingsSesDeniedMulticastTraffic(d, v, "ses_denied_multicast_traffic")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["ses-denied-multicast-traffic"] = t
 		}
 	}
 

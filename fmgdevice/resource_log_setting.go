@@ -70,6 +70,11 @@ func resourceLogSetting() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"extended_utm_log": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
 			"faz_override": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -100,6 +105,11 @@ func resourceLogSetting() *schema.Resource {
 				Computed: true,
 			},
 			"local_in_deny_unicast": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+			"local_in_policy_log": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
@@ -317,6 +327,10 @@ func flattenLogSettingExtendedLog(v interface{}, d *schema.ResourceData, pre str
 	return v
 }
 
+func flattenLogSettingExtendedUtmLog(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenLogSettingFazOverride(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -342,6 +356,10 @@ func flattenLogSettingLocalInDenyBroadcast(v interface{}, d *schema.ResourceData
 }
 
 func flattenLogSettingLocalInDenyUnicast(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenLogSettingLocalInPolicyLog(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -464,6 +482,16 @@ func refreshObjectLogSetting(d *schema.ResourceData, o map[string]interface{}) e
 		}
 	}
 
+	if err = d.Set("extended_utm_log", flattenLogSettingExtendedUtmLog(o["extended-utm-log"], d, "extended_utm_log")); err != nil {
+		if vv, ok := fortiAPIPatch(o["extended-utm-log"], "LogSetting-ExtendedUtmLog"); ok {
+			if err = d.Set("extended_utm_log", vv); err != nil {
+				return fmt.Errorf("Error reading extended_utm_log: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading extended_utm_log: %v", err)
+		}
+	}
+
 	if err = d.Set("faz_override", flattenLogSettingFazOverride(o["faz-override"], d, "faz_override")); err != nil {
 		if vv, ok := fortiAPIPatch(o["faz-override"], "LogSetting-FazOverride"); ok {
 			if err = d.Set("faz_override", vv); err != nil {
@@ -531,6 +559,16 @@ func refreshObjectLogSetting(d *schema.ResourceData, o map[string]interface{}) e
 			}
 		} else {
 			return fmt.Errorf("Error reading local_in_deny_unicast: %v", err)
+		}
+	}
+
+	if err = d.Set("local_in_policy_log", flattenLogSettingLocalInPolicyLog(o["local-in-policy-log"], d, "local_in_policy_log")); err != nil {
+		if vv, ok := fortiAPIPatch(o["local-in-policy-log"], "LogSetting-LocalInPolicyLog"); ok {
+			if err = d.Set("local_in_policy_log", vv); err != nil {
+				return fmt.Errorf("Error reading local_in_policy_log: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading local_in_policy_log: %v", err)
 		}
 	}
 
@@ -707,6 +745,10 @@ func expandLogSettingExtendedLog(d *schema.ResourceData, v interface{}, pre stri
 	return v, nil
 }
 
+func expandLogSettingExtendedUtmLog(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandLogSettingFazOverride(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -732,6 +774,10 @@ func expandLogSettingLocalInDenyBroadcast(d *schema.ResourceData, v interface{},
 }
 
 func expandLogSettingLocalInDenyUnicast(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandLogSettingLocalInPolicyLog(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -848,6 +894,15 @@ func getObjectLogSetting(d *schema.ResourceData) (*map[string]interface{}, error
 		}
 	}
 
+	if v, ok := d.GetOk("extended_utm_log"); ok || d.HasChange("extended_utm_log") {
+		t, err := expandLogSettingExtendedUtmLog(d, v, "extended_utm_log")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["extended-utm-log"] = t
+		}
+	}
+
 	if v, ok := d.GetOk("faz_override"); ok || d.HasChange("faz_override") {
 		t, err := expandLogSettingFazOverride(d, v, "faz_override")
 		if err != nil {
@@ -908,6 +963,15 @@ func getObjectLogSetting(d *schema.ResourceData) (*map[string]interface{}, error
 			return &obj, err
 		} else if t != nil {
 			obj["local-in-deny-unicast"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("local_in_policy_log"); ok || d.HasChange("local_in_policy_log") {
+		t, err := expandLogSettingLocalInPolicyLog(d, v, "local_in_policy_log")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["local-in-policy-log"] = t
 		}
 	}
 

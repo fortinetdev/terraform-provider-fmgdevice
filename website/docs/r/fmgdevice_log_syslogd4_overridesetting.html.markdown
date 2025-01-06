@@ -62,9 +62,12 @@ The following arguments are supported:
 
 * `server` - Address of remote syslog server.
 * `source_ip` - Source IP address of syslog.
+* `source_ip_interface` - Source interface of syslog.
 * `ssl_min_proto_version` - Minimum supported protocol version for SSL/TLS connections (default is to follow system global setting). Valid values: `default`, `TLSv1-1`, `TLSv1-2`, `SSLv3`, `TLSv1`, `TLSv1-3`.
 
 * `status` - Enable/disable remote syslog logging. Valid values: `disable`, `enable`.
+
+* `use_management_vdom` - Enable/disable use of management VDOM as source VDOM for logs sent to syslog server. Valid values: `disable`, `enable`.
 
 * `dynamic_sort_subtable` - true or false, set this parameter to true when using dynamic for_each + toset to configure and sort sub-tables, please do not set this parameter when configuring static sub-tables.
 

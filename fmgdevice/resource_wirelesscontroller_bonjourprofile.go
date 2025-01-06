@@ -44,6 +44,11 @@ func resourceWirelessControllerBonjourProfile() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
+			"micro_location": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
 			"name": &schema.Schema{
 				Type:     schema.TypeString,
 				ForceNew: true,
@@ -244,6 +249,10 @@ func flattenWirelessControllerBonjourProfileComment(v interface{}, d *schema.Res
 	return v
 }
 
+func flattenWirelessControllerBonjourProfileMicroLocation(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenWirelessControllerBonjourProfileName(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -344,6 +353,16 @@ func refreshObjectWirelessControllerBonjourProfile(d *schema.ResourceData, o map
 		}
 	}
 
+	if err = d.Set("micro_location", flattenWirelessControllerBonjourProfileMicroLocation(o["micro-location"], d, "micro_location")); err != nil {
+		if vv, ok := fortiAPIPatch(o["micro-location"], "WirelessControllerBonjourProfile-MicroLocation"); ok {
+			if err = d.Set("micro_location", vv); err != nil {
+				return fmt.Errorf("Error reading micro_location: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading micro_location: %v", err)
+		}
+	}
+
 	if err = d.Set("name", flattenWirelessControllerBonjourProfileName(o["name"], d, "name")); err != nil {
 		if vv, ok := fortiAPIPatch(o["name"], "WirelessControllerBonjourProfile-Name"); ok {
 			if err = d.Set("name", vv); err != nil {
@@ -388,6 +407,10 @@ func flattenWirelessControllerBonjourProfileFortiTestDebug(d *schema.ResourceDat
 }
 
 func expandWirelessControllerBonjourProfileComment(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWirelessControllerBonjourProfileMicroLocation(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -473,6 +496,15 @@ func getObjectWirelessControllerBonjourProfile(d *schema.ResourceData) (*map[str
 			return &obj, err
 		} else if t != nil {
 			obj["comment"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("micro_location"); ok || d.HasChange("micro_location") {
+		t, err := expandWirelessControllerBonjourProfileMicroLocation(d, v, "micro_location")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["micro-location"] = t
 		}
 	}
 

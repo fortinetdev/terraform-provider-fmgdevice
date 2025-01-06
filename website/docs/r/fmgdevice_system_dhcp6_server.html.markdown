@@ -11,6 +11,7 @@ Configure DHCPv6 servers.
 
 ~> The following variables have sub resource. Avoid using them together, otherwise conflicts and overwrites may occur.
 >- `ip_range`: `fmgdevice_system_dhcp6_server_iprange`
+>- `options`: `fmgdevice_system_dhcp6_server_options`
 >- `prefix_range`: `fmgdevice_system_dhcp6_server_prefixrange`
 
 
@@ -54,6 +55,7 @@ The following arguments are supported:
 
 * `ip_range` - Ip-Range. The structure of `ip_range` block is documented below.
 * `lease_time` - Lease time in seconds, 0 means unlimited.
+* `options` - Options. The structure of `options` block is documented below.
 * `option1` - Option 1.
 * `option2` - Option 2.
 * `option3` - Option 3.
@@ -73,6 +75,21 @@ The `ip_range` block supports:
 * `end_ip` - End of IP range.
 * `id` - ID.
 * `start_ip` - Start of IP range.
+* `vci_match` - Enable/disable vendor class option matching. When enabled only DHCP requests with a matching VC are served with this range. Valid values: `disable`, `enable`.
+
+* `vci_string` - One or more VCI strings in quotes separated by spaces.
+
+The `options` block supports:
+
+* `code` - DHCPv6 option code.
+* `id` - ID.
+* `ip6` - DHCP option IP6s.
+* `type` - DHCPv6 option type. Valid values: `hex`, `string`, `ip6`, `fqdn`.
+
+* `value` - DHCPv6 option value (hexadecimal value must be even).
+* `vci_match` - Enable/disable vendor class option matching. When enabled only DHCP requests with a matching VCI are served with this option. Valid values: `disable`, `enable`.
+
+* `vci_string` - One or more VCI strings in quotes separated by spaces.
 
 The `prefix_range` block supports:
 

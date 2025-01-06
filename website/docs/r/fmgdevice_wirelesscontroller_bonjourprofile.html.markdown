@@ -42,6 +42,8 @@ The following arguments are supported:
 * `device_vdom` - FortiManager managed device vdom. This variable is used in the request URL. If not specified, it will inherit the variable `device_vdom` of the provider.
 
 * `comment` - Comment.
+* `micro_location` - Enable/disable Micro location for Bonjour profile (default = disable). Valid values: `disable`, `enable`.
+
 * `name` - Bonjour profile name.
 * `policy_list` - Policy-List. The structure of `policy_list` block is documented below.
 * `dynamic_sort_subtable` - true or false, set this parameter to true when using dynamic for_each + toset to configure and sort sub-tables, please do not set this parameter when configuring static sub-tables.

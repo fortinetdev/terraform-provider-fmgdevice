@@ -48,6 +48,35 @@ func resourceSystemInterfaceIpv6() *schema.Resource {
 				Type:     schema.TypeInt,
 				Optional: true,
 			},
+			"client_options": &schema.Schema{
+				Type:     schema.TypeList,
+				Optional: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"code": &schema.Schema{
+							Type:     schema.TypeInt,
+							Optional: true,
+						},
+						"id": &schema.Schema{
+							Type:     schema.TypeInt,
+							Optional: true,
+							Computed: true,
+						},
+						"ip6": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"type": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"value": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+					},
+				},
+			},
 			"dhcp6_client_options": &schema.Schema{
 				Type:     schema.TypeSet,
 				Elem:     &schema.Schema{Type: schema.TypeString},
@@ -413,6 +442,10 @@ func resourceSystemInterfaceIpv6() *schema.Resource {
 							Optional: true,
 							Computed: true,
 						},
+						"vrdst_priority": &schema.Schema{
+							Type:     schema.TypeInt,
+							Optional: true,
+						},
 						"vrdst6": &schema.Schema{
 							Type:     schema.TypeSet,
 							Elem:     &schema.Schema{Type: schema.TypeString},
@@ -559,6 +592,85 @@ func flattenSystemInterfaceIpv6Autoconf2edl(v interface{}, d *schema.ResourceDat
 }
 
 func flattenSystemInterfaceIpv6CliConn6Status2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemInterfaceIpv6ClientOptions2edl(v interface{}, d *schema.ResourceData, pre string) []map[string]interface{} {
+	if v == nil {
+		return nil
+	}
+
+	l := v.([]interface{})
+	if len(l) == 0 || l[0] == nil {
+		return nil
+	}
+
+	result := make([]map[string]interface{}, 0, len(l))
+
+	con := 0
+	for _, r := range l {
+		tmp := make(map[string]interface{})
+		i := r.(map[string]interface{})
+
+		pre_append := "" // table
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "code"
+		if _, ok := i["code"]; ok {
+			v := flattenSystemInterfaceIpv6ClientOptionsCode2edl(i["code"], d, pre_append)
+			tmp["code"] = fortiAPISubPartPatch(v, "SystemInterfaceIpv6-ClientOptions-Code")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "id"
+		if _, ok := i["id"]; ok {
+			v := flattenSystemInterfaceIpv6ClientOptionsId2edl(i["id"], d, pre_append)
+			tmp["id"] = fortiAPISubPartPatch(v, "SystemInterfaceIpv6-ClientOptions-Id")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "ip6"
+		if _, ok := i["ip6"]; ok {
+			v := flattenSystemInterfaceIpv6ClientOptionsIp62edl(i["ip6"], d, pre_append)
+			tmp["ip6"] = fortiAPISubPartPatch(v, "SystemInterfaceIpv6-ClientOptions-Ip6")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "type"
+		if _, ok := i["type"]; ok {
+			v := flattenSystemInterfaceIpv6ClientOptionsType2edl(i["type"], d, pre_append)
+			tmp["type"] = fortiAPISubPartPatch(v, "SystemInterfaceIpv6-ClientOptions-Type")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "value"
+		if _, ok := i["value"]; ok {
+			v := flattenSystemInterfaceIpv6ClientOptionsValue2edl(i["value"], d, pre_append)
+			tmp["value"] = fortiAPISubPartPatch(v, "SystemInterfaceIpv6-ClientOptions-Value")
+		}
+
+		if len(tmp) > 0 {
+			result = append(result, tmp)
+		}
+
+		con += 1
+	}
+
+	return result
+}
+
+func flattenSystemInterfaceIpv6ClientOptionsCode2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemInterfaceIpv6ClientOptionsId2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemInterfaceIpv6ClientOptionsIp62edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemInterfaceIpv6ClientOptionsType2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemInterfaceIpv6ClientOptionsValue2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -1107,6 +1219,12 @@ func flattenSystemInterfaceIpv6Vrrp62edl(v interface{}, d *schema.ResourceData, 
 			tmp["status"] = fortiAPISubPartPatch(v, "SystemInterfaceIpv6-Vrrp6-Status")
 		}
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "vrdst_priority"
+		if _, ok := i["vrdst-priority"]; ok {
+			v := flattenSystemInterfaceIpv6Vrrp6VrdstPriority2edl(i["vrdst-priority"], d, pre_append)
+			tmp["vrdst_priority"] = fortiAPISubPartPatch(v, "SystemInterfaceIpv6-Vrrp6-VrdstPriority")
+		}
+
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "vrdst6"
 		if _, ok := i["vrdst6"]; ok {
 			v := flattenSystemInterfaceIpv6Vrrp6Vrdst62edl(i["vrdst6"], d, pre_append)
@@ -1169,6 +1287,10 @@ func flattenSystemInterfaceIpv6Vrrp6Status2edl(v interface{}, d *schema.Resource
 	return v
 }
 
+func flattenSystemInterfaceIpv6Vrrp6VrdstPriority2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenSystemInterfaceIpv6Vrrp6Vrdst62edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return flattenStringList(v)
 }
@@ -1209,6 +1331,30 @@ func refreshObjectSystemInterfaceIpv6(d *schema.ResourceData, o map[string]inter
 			}
 		} else {
 			return fmt.Errorf("Error reading cli_conn6_status: %v", err)
+		}
+	}
+
+	if isImportTable() {
+		if err = d.Set("client_options", flattenSystemInterfaceIpv6ClientOptions2edl(o["client-options"], d, "client_options")); err != nil {
+			if vv, ok := fortiAPIPatch(o["client-options"], "SystemInterfaceIpv6-ClientOptions"); ok {
+				if err = d.Set("client_options", vv); err != nil {
+					return fmt.Errorf("Error reading client_options: %v", err)
+				}
+			} else {
+				return fmt.Errorf("Error reading client_options: %v", err)
+			}
+		}
+	} else {
+		if _, ok := d.GetOk("client_options"); ok {
+			if err = d.Set("client_options", flattenSystemInterfaceIpv6ClientOptions2edl(o["client-options"], d, "client_options")); err != nil {
+				if vv, ok := fortiAPIPatch(o["client-options"], "SystemInterfaceIpv6-ClientOptions"); ok {
+					if err = d.Set("client_options", vv); err != nil {
+						return fmt.Errorf("Error reading client_options: %v", err)
+					}
+				} else {
+					return fmt.Errorf("Error reading client_options: %v", err)
+				}
+			}
 		}
 	}
 
@@ -1769,6 +1915,75 @@ func expandSystemInterfaceIpv6CliConn6Status2edl(d *schema.ResourceData, v inter
 	return v, nil
 }
 
+func expandSystemInterfaceIpv6ClientOptions2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	l := v.([]interface{})
+	result := make([]map[string]interface{}, 0, len(l))
+
+	if len(l) == 0 || l[0] == nil {
+		return result, nil
+	}
+
+	con := 0
+	for _, r := range l {
+		tmp := make(map[string]interface{})
+		i := r.(map[string]interface{})
+		pre_append := "" // table
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "code"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["code"], _ = expandSystemInterfaceIpv6ClientOptionsCode2edl(d, i["code"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "id"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["id"], _ = expandSystemInterfaceIpv6ClientOptionsId2edl(d, i["id"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "ip6"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["ip6"], _ = expandSystemInterfaceIpv6ClientOptionsIp62edl(d, i["ip6"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "type"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["type"], _ = expandSystemInterfaceIpv6ClientOptionsType2edl(d, i["type"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "value"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["value"], _ = expandSystemInterfaceIpv6ClientOptionsValue2edl(d, i["value"], pre_append)
+		}
+
+		if len(tmp) > 0 {
+			result = append(result, tmp)
+		}
+
+		con += 1
+	}
+
+	return result, nil
+}
+
+func expandSystemInterfaceIpv6ClientOptionsCode2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemInterfaceIpv6ClientOptionsId2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemInterfaceIpv6ClientOptionsIp62edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemInterfaceIpv6ClientOptionsType2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemInterfaceIpv6ClientOptionsValue2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandSystemInterfaceIpv6Dhcp6ClientOptions2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return expandStringList(v.(*schema.Set).List()), nil
 }
@@ -2262,6 +2477,11 @@ func expandSystemInterfaceIpv6Vrrp62edl(d *schema.ResourceData, v interface{}, p
 			tmp["status"], _ = expandSystemInterfaceIpv6Vrrp6Status2edl(d, i["status"], pre_append)
 		}
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "vrdst_priority"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["vrdst-priority"], _ = expandSystemInterfaceIpv6Vrrp6VrdstPriority2edl(d, i["vrdst_priority"], pre_append)
+		}
+
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "vrdst6"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
 			tmp["vrdst6"], _ = expandSystemInterfaceIpv6Vrrp6Vrdst62edl(d, i["vrdst6"], pre_append)
@@ -2320,6 +2540,10 @@ func expandSystemInterfaceIpv6Vrrp6Status2edl(d *schema.ResourceData, v interfac
 	return v, nil
 }
 
+func expandSystemInterfaceIpv6Vrrp6VrdstPriority2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandSystemInterfaceIpv6Vrrp6Vrdst62edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return expandStringList(v.(*schema.Set).List()), nil
 }
@@ -2354,6 +2578,15 @@ func getObjectSystemInterfaceIpv6(d *schema.ResourceData) (*map[string]interface
 			return &obj, err
 		} else if t != nil {
 			obj["cli-conn6-status"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("client_options"); ok || d.HasChange("client_options") {
+		t, err := expandSystemInterfaceIpv6ClientOptions2edl(d, v, "client_options")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["client-options"] = t
 		}
 	}
 

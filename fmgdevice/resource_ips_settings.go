@@ -40,6 +40,11 @@ func resourceIpsSettings() *schema.Resource {
 				Computed: true,
 				ForceNew: true,
 			},
+			"ha_session_pickup": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
 			"ips_packet_quota": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
@@ -182,6 +187,10 @@ func resourceIpsSettingsRead(d *schema.ResourceData, m interface{}) error {
 	return nil
 }
 
+func flattenIpsSettingsHaSessionPickup(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenIpsSettingsIpsPacketQuota(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -204,6 +213,16 @@ func flattenIpsSettingsProxyInlineIps(v interface{}, d *schema.ResourceData, pre
 
 func refreshObjectIpsSettings(d *schema.ResourceData, o map[string]interface{}) error {
 	var err error
+
+	if err = d.Set("ha_session_pickup", flattenIpsSettingsHaSessionPickup(o["ha-session-pickup"], d, "ha_session_pickup")); err != nil {
+		if vv, ok := fortiAPIPatch(o["ha-session-pickup"], "IpsSettings-HaSessionPickup"); ok {
+			if err = d.Set("ha_session_pickup", vv); err != nil {
+				return fmt.Errorf("Error reading ha_session_pickup: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading ha_session_pickup: %v", err)
+		}
+	}
 
 	if err = d.Set("ips_packet_quota", flattenIpsSettingsIpsPacketQuota(o["ips-packet-quota"], d, "ips_packet_quota")); err != nil {
 		if vv, ok := fortiAPIPatch(o["ips-packet-quota"], "IpsSettings-IpsPacketQuota"); ok {
@@ -264,6 +283,10 @@ func flattenIpsSettingsFortiTestDebug(d *schema.ResourceData, fosdebugsn int, fo
 	log.Printf("ER List: %v", e)
 }
 
+func expandIpsSettingsHaSessionPickup(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandIpsSettingsIpsPacketQuota(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -286,6 +309,15 @@ func expandIpsSettingsProxyInlineIps(d *schema.ResourceData, v interface{}, pre 
 
 func getObjectIpsSettings(d *schema.ResourceData) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
+
+	if v, ok := d.GetOk("ha_session_pickup"); ok || d.HasChange("ha_session_pickup") {
+		t, err := expandIpsSettingsHaSessionPickup(d, v, "ha_session_pickup")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["ha-session-pickup"] = t
+		}
+	}
 
 	if v, ok := d.GetOk("ips_packet_quota"); ok || d.HasChange("ips_packet_quota") {
 		t, err := expandIpsSettingsIpsPacketQuota(d, v, "ips_packet_quota")

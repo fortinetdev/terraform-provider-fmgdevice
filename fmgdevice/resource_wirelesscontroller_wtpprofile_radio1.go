@@ -50,6 +50,11 @@ func resourceWirelessControllerWtpProfileRadio1() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"n80211mc": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
 			"airtime_fairness": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -67,34 +72,46 @@ func resourceWirelessControllerWtpProfileRadio1() *schema.Resource {
 			"ap_sniffer_addr": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"ap_sniffer_bufsize": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"ap_sniffer_chan": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
 			},
+			"ap_sniffer_chan_width": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
 			"ap_sniffer_ctl": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"ap_sniffer_data": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"ap_sniffer_mgmt_beacon": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"ap_sniffer_mgmt_other": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"ap_sniffer_mgmt_probe": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"arrp_profile": &schema.Schema{
 				Type:     schema.TypeSet,
@@ -605,6 +622,10 @@ func flattenWirelessControllerWtpProfileRadio180211D2edl(v interface{}, d *schem
 	return v
 }
 
+func flattenWirelessControllerWtpProfileRadio180211Mc2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenWirelessControllerWtpProfileRadio1AirtimeFairness2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -626,6 +647,10 @@ func flattenWirelessControllerWtpProfileRadio1ApSnifferBufsize2edl(v interface{}
 }
 
 func flattenWirelessControllerWtpProfileRadio1ApSnifferChan2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWirelessControllerWtpProfileRadio1ApSnifferChanWidth2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -962,6 +987,16 @@ func refreshObjectWirelessControllerWtpProfileRadio1(d *schema.ResourceData, o m
 		}
 	}
 
+	if err = d.Set("n80211mc", flattenWirelessControllerWtpProfileRadio180211Mc2edl(o["80211mc"], d, "n80211mc")); err != nil {
+		if vv, ok := fortiAPIPatch(o["80211mc"], "WirelessControllerWtpProfileRadio1-80211Mc"); ok {
+			if err = d.Set("n80211mc", vv); err != nil {
+				return fmt.Errorf("Error reading n80211mc: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading n80211mc: %v", err)
+		}
+	}
+
 	if err = d.Set("airtime_fairness", flattenWirelessControllerWtpProfileRadio1AirtimeFairness2edl(o["airtime-fairness"], d, "airtime_fairness")); err != nil {
 		if vv, ok := fortiAPIPatch(o["airtime-fairness"], "WirelessControllerWtpProfileRadio1-AirtimeFairness"); ok {
 			if err = d.Set("airtime_fairness", vv); err != nil {
@@ -1019,6 +1054,16 @@ func refreshObjectWirelessControllerWtpProfileRadio1(d *schema.ResourceData, o m
 			}
 		} else {
 			return fmt.Errorf("Error reading ap_sniffer_chan: %v", err)
+		}
+	}
+
+	if err = d.Set("ap_sniffer_chan_width", flattenWirelessControllerWtpProfileRadio1ApSnifferChanWidth2edl(o["ap-sniffer-chan-width"], d, "ap_sniffer_chan_width")); err != nil {
+		if vv, ok := fortiAPIPatch(o["ap-sniffer-chan-width"], "WirelessControllerWtpProfileRadio1-ApSnifferChanWidth"); ok {
+			if err = d.Set("ap_sniffer_chan_width", vv); err != nil {
+				return fmt.Errorf("Error reading ap_sniffer_chan_width: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading ap_sniffer_chan_width: %v", err)
 		}
 	}
 
@@ -1835,6 +1880,10 @@ func expandWirelessControllerWtpProfileRadio180211D2edl(d *schema.ResourceData, 
 	return v, nil
 }
 
+func expandWirelessControllerWtpProfileRadio180211Mc2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandWirelessControllerWtpProfileRadio1AirtimeFairness2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -1856,6 +1905,10 @@ func expandWirelessControllerWtpProfileRadio1ApSnifferBufsize2edl(d *schema.Reso
 }
 
 func expandWirelessControllerWtpProfileRadio1ApSnifferChan2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWirelessControllerWtpProfileRadio1ApSnifferChanWidth2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -2203,6 +2256,15 @@ func getObjectWirelessControllerWtpProfileRadio1(d *schema.ResourceData) (*map[s
 		}
 	}
 
+	if v, ok := d.GetOk("n80211mc"); ok || d.HasChange("n80211mc") {
+		t, err := expandWirelessControllerWtpProfileRadio180211Mc2edl(d, v, "n80211mc")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["80211mc"] = t
+		}
+	}
+
 	if v, ok := d.GetOk("airtime_fairness"); ok || d.HasChange("airtime_fairness") {
 		t, err := expandWirelessControllerWtpProfileRadio1AirtimeFairness2edl(d, v, "airtime_fairness")
 		if err != nil {
@@ -2254,6 +2316,15 @@ func getObjectWirelessControllerWtpProfileRadio1(d *schema.ResourceData) (*map[s
 			return &obj, err
 		} else if t != nil {
 			obj["ap-sniffer-chan"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("ap_sniffer_chan_width"); ok || d.HasChange("ap_sniffer_chan_width") {
+		t, err := expandWirelessControllerWtpProfileRadio1ApSnifferChanWidth2edl(d, v, "ap_sniffer_chan_width")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["ap-sniffer-chan-width"] = t
 		}
 	}
 

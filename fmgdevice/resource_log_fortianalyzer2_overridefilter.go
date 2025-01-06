@@ -98,6 +98,11 @@ func resourceLogFortianalyzer2OverrideFilter() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"http_transaction": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
 			"local_traffic": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -350,6 +355,10 @@ func flattenLogFortianalyzer2OverrideFilterGtp(v interface{}, d *schema.Resource
 	return v
 }
 
+func flattenLogFortianalyzer2OverrideFilterHttpTransaction(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenLogFortianalyzer2OverrideFilterLocalTraffic(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -472,6 +481,16 @@ func refreshObjectLogFortianalyzer2OverrideFilter(d *schema.ResourceData, o map[
 			}
 		} else {
 			return fmt.Errorf("Error reading gtp: %v", err)
+		}
+	}
+
+	if err = d.Set("http_transaction", flattenLogFortianalyzer2OverrideFilterHttpTransaction(o["http-transaction"], d, "http_transaction")); err != nil {
+		if vv, ok := fortiAPIPatch(o["http-transaction"], "LogFortianalyzer2OverrideFilter-HttpTransaction"); ok {
+			if err = d.Set("http_transaction", vv); err != nil {
+				return fmt.Errorf("Error reading http_transaction: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading http_transaction: %v", err)
 		}
 	}
 
@@ -632,6 +651,10 @@ func expandLogFortianalyzer2OverrideFilterGtp(d *schema.ResourceData, v interfac
 	return v, nil
 }
 
+func expandLogFortianalyzer2OverrideFilterHttpTransaction(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandLogFortianalyzer2OverrideFilterLocalTraffic(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -728,6 +751,15 @@ func getObjectLogFortianalyzer2OverrideFilter(d *schema.ResourceData) (*map[stri
 			return &obj, err
 		} else if t != nil {
 			obj["gtp"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("http_transaction"); ok || d.HasChange("http_transaction") {
+		t, err := expandLogFortianalyzer2OverrideFilterHttpTransaction(d, v, "http_transaction")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["http-transaction"] = t
 		}
 	}
 

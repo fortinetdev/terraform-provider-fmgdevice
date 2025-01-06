@@ -43,6 +43,8 @@ The following arguments are supported:
 * `failure_reason` - Upgrade failure reason. Valid values: `none`, `internal`, `timeout`, `device-type-unsupported`, `download-failed`, `device-missing`, `version-unavailable`, `staging-failed`, `reboot-failed`, `device-not-reconnected`, `node-not-ready`, `no-final-confirmation`, `no-confirmation-query`, `config-error-log-nonempty`, `node-failed`, `csf-tree-not-supported`.
 
 * `ha_reboot_controller` - Serial number of the FortiGate unit that will control the reboot process for the federated upgrade of the HA cluster.
+* `ignore_signing_errors` - Allow/reject use of FortiGate firmware images that are unsigned. Valid values: `disable`, `enable`.
+
 * `known_ha_members` - Known-Ha-Members. The structure of `known_ha_members` block is documented below.
 * `maximum_minutes` - Maximum number of minutes to allow for immediate upgrade preparation.
 * `serial` - Serial number of the node to include.

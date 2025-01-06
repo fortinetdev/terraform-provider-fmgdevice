@@ -42,8 +42,12 @@ The following arguments are supported:
 * `arps_interval` - Time between gratuitous ARPs  (1 - 20 sec). Lower to reduce failover time. Higher to reduce traffic.
 * `authentication` - Enable/disable heartbeat message authentication. Valid values: `disable`, `enable`.
 
+* `auto_virtual_mac_interface` - The physical interface that will be assigned an auto-generated virtual MAC address.
+* `backup_hbdev` - Backup heartbeat interfaces. Must be the same for all members.
 * `board_failover_tolerance` - Worker board failure failover threshold.
 * `chassis_id` - chassis id
+* `check_secondary_dev_health` - Enable/disable secondary dev health check for session load-balance in HA A-A mode. Valid values: `disable`, `enable`.
+
 * `cpu_threshold` - Dynamic weighted load balancing CPU usage weight and high and low thresholds.
 * `encryption` - Enable/disable heartbeat message encryption. Valid values: `disable`, `enable`.
 

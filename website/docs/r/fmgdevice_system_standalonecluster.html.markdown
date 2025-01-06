@@ -73,6 +73,8 @@ The following arguments are supported:
 * `group_member_id` - Cluster member ID (0 - 15).
 * `layer2_connection` - Indicate whether layer 2 connections are present among FGSP members. Valid values: `unavailable`, `available`.
 
+* `monitor_interface` - Configure a list of interfaces on which to monitor itself. Monitoring is performed on the status of the interface.
+* `pingsvr_monitor_interface` - List of pingsvr monitor interface to check for remote IP monitoring.
 * `psksecret` - Pre-shared secret for session synchronization (ASCII string or hexadecimal encoded with a leading 0x).
 * `session_sync_dev` - Offload session-sync process to kernel and sync sessions using connected interface(s) directly.
 * `standalone_group_id` - Cluster group ID (0 - 255). Must be the same for all members.

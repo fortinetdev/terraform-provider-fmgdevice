@@ -37,6 +37,8 @@ The following arguments are supported:
 * `engine_id_type` - Local SNMP engineID type (text/hex/mac). Valid values: `text`, `hex`, `mac`.
 
 * `location` - System location.
+* `non_mgmt_vdom_query` - Enable/disable allowance of SNMPv3 query from non-management vdoms. Valid values: `disable`, `enable`.
+
 * `status` - Enable/disable SNMP. Valid values: `disable`, `enable`.
 
 * `trap_free_memory_threshold` - Free memory usage when trap is sent.

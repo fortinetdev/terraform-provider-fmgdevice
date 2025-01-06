@@ -110,6 +110,12 @@ func resourceLogSyslogd2Setting() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
+			"source_ip_interface": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Computed: true,
+			},
 			"ssl_min_proto_version": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -331,6 +337,10 @@ func flattenLogSyslogd2SettingSourceIp(v interface{}, d *schema.ResourceData, pr
 	return v
 }
 
+func flattenLogSyslogd2SettingSourceIpInterface(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
 func flattenLogSyslogd2SettingSslMinProtoVersion(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -490,6 +500,16 @@ func refreshObjectLogSyslogd2Setting(d *schema.ResourceData, o map[string]interf
 		}
 	}
 
+	if err = d.Set("source_ip_interface", flattenLogSyslogd2SettingSourceIpInterface(o["source-ip-interface"], d, "source_ip_interface")); err != nil {
+		if vv, ok := fortiAPIPatch(o["source-ip-interface"], "LogSyslogd2Setting-SourceIpInterface"); ok {
+			if err = d.Set("source_ip_interface", vv); err != nil {
+				return fmt.Errorf("Error reading source_ip_interface: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading source_ip_interface: %v", err)
+		}
+	}
+
 	if err = d.Set("ssl_min_proto_version", flattenLogSyslogd2SettingSslMinProtoVersion(o["ssl-min-proto-version"], d, "ssl_min_proto_version")); err != nil {
 		if vv, ok := fortiAPIPatch(o["ssl-min-proto-version"], "LogSyslogd2Setting-SslMinProtoVersion"); ok {
 			if err = d.Set("ssl_min_proto_version", vv); err != nil {
@@ -618,6 +638,10 @@ func expandLogSyslogd2SettingSourceIp(d *schema.ResourceData, v interface{}, pre
 	return v, nil
 }
 
+func expandLogSyslogd2SettingSourceIpInterface(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
 func expandLogSyslogd2SettingSslMinProtoVersion(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -743,6 +767,15 @@ func getObjectLogSyslogd2Setting(d *schema.ResourceData) (*map[string]interface{
 			return &obj, err
 		} else if t != nil {
 			obj["source-ip"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("source_ip_interface"); ok || d.HasChange("source_ip_interface") {
+		t, err := expandLogSyslogd2SettingSourceIpInterface(d, v, "source_ip_interface")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["source-ip-interface"] = t
 		}
 	}
 

@@ -53,18 +53,22 @@ func resourceSystemStandaloneClusterClusterPeer() *schema.Resource {
 			"ike_heartbeat_interval": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"ike_monitor": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"ike_monitor_interval": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"ike_use_rfc6311": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"ipsec_tunnel_sync": &schema.Schema{
 				Type:     schema.TypeString,

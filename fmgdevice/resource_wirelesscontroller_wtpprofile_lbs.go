@@ -78,6 +78,65 @@ func resourceWirelessControllerWtpProfileLbs() *schema.Resource {
 				Type:     schema.TypeInt,
 				Optional: true,
 			},
+			"ble_rtls": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+			"ble_rtls_accumulation_interval": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+				Computed: true,
+			},
+			"ble_rtls_asset_addrgrp_list": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Computed: true,
+			},
+			"ble_rtls_asset_uuid_list1": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"ble_rtls_asset_uuid_list2": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"ble_rtls_asset_uuid_list3": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"ble_rtls_asset_uuid_list4": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"ble_rtls_protocol": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+			"ble_rtls_reporting_interval": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+				Computed: true,
+			},
+			"ble_rtls_server_fqdn": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"ble_rtls_server_path": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"ble_rtls_server_port": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+				Computed: true,
+			},
+			"ble_rtls_server_token": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 			"ekahau_blink_mode": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -380,6 +439,58 @@ func flattenWirelessControllerWtpProfileLbsAeroscoutServerPort2edl(v interface{}
 	return v
 }
 
+func flattenWirelessControllerWtpProfileLbsBleRtls2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWirelessControllerWtpProfileLbsBleRtlsAccumulationInterval2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWirelessControllerWtpProfileLbsBleRtlsAssetAddrgrpList2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
+func flattenWirelessControllerWtpProfileLbsBleRtlsAssetUuidList12edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWirelessControllerWtpProfileLbsBleRtlsAssetUuidList22edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWirelessControllerWtpProfileLbsBleRtlsAssetUuidList32edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWirelessControllerWtpProfileLbsBleRtlsAssetUuidList42edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWirelessControllerWtpProfileLbsBleRtlsProtocol2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWirelessControllerWtpProfileLbsBleRtlsReportingInterval2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWirelessControllerWtpProfileLbsBleRtlsServerFqdn2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWirelessControllerWtpProfileLbsBleRtlsServerPath2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWirelessControllerWtpProfileLbsBleRtlsServerPort2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWirelessControllerWtpProfileLbsBleRtlsServerToken2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenWirelessControllerWtpProfileLbsEkahauBlinkMode2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -572,6 +683,136 @@ func refreshObjectWirelessControllerWtpProfileLbs(d *schema.ResourceData, o map[
 			}
 		} else {
 			return fmt.Errorf("Error reading aeroscout_server_port: %v", err)
+		}
+	}
+
+	if err = d.Set("ble_rtls", flattenWirelessControllerWtpProfileLbsBleRtls2edl(o["ble-rtls"], d, "ble_rtls")); err != nil {
+		if vv, ok := fortiAPIPatch(o["ble-rtls"], "WirelessControllerWtpProfileLbs-BleRtls"); ok {
+			if err = d.Set("ble_rtls", vv); err != nil {
+				return fmt.Errorf("Error reading ble_rtls: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading ble_rtls: %v", err)
+		}
+	}
+
+	if err = d.Set("ble_rtls_accumulation_interval", flattenWirelessControllerWtpProfileLbsBleRtlsAccumulationInterval2edl(o["ble-rtls-accumulation-interval"], d, "ble_rtls_accumulation_interval")); err != nil {
+		if vv, ok := fortiAPIPatch(o["ble-rtls-accumulation-interval"], "WirelessControllerWtpProfileLbs-BleRtlsAccumulationInterval"); ok {
+			if err = d.Set("ble_rtls_accumulation_interval", vv); err != nil {
+				return fmt.Errorf("Error reading ble_rtls_accumulation_interval: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading ble_rtls_accumulation_interval: %v", err)
+		}
+	}
+
+	if err = d.Set("ble_rtls_asset_addrgrp_list", flattenWirelessControllerWtpProfileLbsBleRtlsAssetAddrgrpList2edl(o["ble-rtls-asset-addrgrp-list"], d, "ble_rtls_asset_addrgrp_list")); err != nil {
+		if vv, ok := fortiAPIPatch(o["ble-rtls-asset-addrgrp-list"], "WirelessControllerWtpProfileLbs-BleRtlsAssetAddrgrpList"); ok {
+			if err = d.Set("ble_rtls_asset_addrgrp_list", vv); err != nil {
+				return fmt.Errorf("Error reading ble_rtls_asset_addrgrp_list: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading ble_rtls_asset_addrgrp_list: %v", err)
+		}
+	}
+
+	if err = d.Set("ble_rtls_asset_uuid_list1", flattenWirelessControllerWtpProfileLbsBleRtlsAssetUuidList12edl(o["ble-rtls-asset-uuid-list1"], d, "ble_rtls_asset_uuid_list1")); err != nil {
+		if vv, ok := fortiAPIPatch(o["ble-rtls-asset-uuid-list1"], "WirelessControllerWtpProfileLbs-BleRtlsAssetUuidList1"); ok {
+			if err = d.Set("ble_rtls_asset_uuid_list1", vv); err != nil {
+				return fmt.Errorf("Error reading ble_rtls_asset_uuid_list1: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading ble_rtls_asset_uuid_list1: %v", err)
+		}
+	}
+
+	if err = d.Set("ble_rtls_asset_uuid_list2", flattenWirelessControllerWtpProfileLbsBleRtlsAssetUuidList22edl(o["ble-rtls-asset-uuid-list2"], d, "ble_rtls_asset_uuid_list2")); err != nil {
+		if vv, ok := fortiAPIPatch(o["ble-rtls-asset-uuid-list2"], "WirelessControllerWtpProfileLbs-BleRtlsAssetUuidList2"); ok {
+			if err = d.Set("ble_rtls_asset_uuid_list2", vv); err != nil {
+				return fmt.Errorf("Error reading ble_rtls_asset_uuid_list2: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading ble_rtls_asset_uuid_list2: %v", err)
+		}
+	}
+
+	if err = d.Set("ble_rtls_asset_uuid_list3", flattenWirelessControllerWtpProfileLbsBleRtlsAssetUuidList32edl(o["ble-rtls-asset-uuid-list3"], d, "ble_rtls_asset_uuid_list3")); err != nil {
+		if vv, ok := fortiAPIPatch(o["ble-rtls-asset-uuid-list3"], "WirelessControllerWtpProfileLbs-BleRtlsAssetUuidList3"); ok {
+			if err = d.Set("ble_rtls_asset_uuid_list3", vv); err != nil {
+				return fmt.Errorf("Error reading ble_rtls_asset_uuid_list3: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading ble_rtls_asset_uuid_list3: %v", err)
+		}
+	}
+
+	if err = d.Set("ble_rtls_asset_uuid_list4", flattenWirelessControllerWtpProfileLbsBleRtlsAssetUuidList42edl(o["ble-rtls-asset-uuid-list4"], d, "ble_rtls_asset_uuid_list4")); err != nil {
+		if vv, ok := fortiAPIPatch(o["ble-rtls-asset-uuid-list4"], "WirelessControllerWtpProfileLbs-BleRtlsAssetUuidList4"); ok {
+			if err = d.Set("ble_rtls_asset_uuid_list4", vv); err != nil {
+				return fmt.Errorf("Error reading ble_rtls_asset_uuid_list4: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading ble_rtls_asset_uuid_list4: %v", err)
+		}
+	}
+
+	if err = d.Set("ble_rtls_protocol", flattenWirelessControllerWtpProfileLbsBleRtlsProtocol2edl(o["ble-rtls-protocol"], d, "ble_rtls_protocol")); err != nil {
+		if vv, ok := fortiAPIPatch(o["ble-rtls-protocol"], "WirelessControllerWtpProfileLbs-BleRtlsProtocol"); ok {
+			if err = d.Set("ble_rtls_protocol", vv); err != nil {
+				return fmt.Errorf("Error reading ble_rtls_protocol: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading ble_rtls_protocol: %v", err)
+		}
+	}
+
+	if err = d.Set("ble_rtls_reporting_interval", flattenWirelessControllerWtpProfileLbsBleRtlsReportingInterval2edl(o["ble-rtls-reporting-interval"], d, "ble_rtls_reporting_interval")); err != nil {
+		if vv, ok := fortiAPIPatch(o["ble-rtls-reporting-interval"], "WirelessControllerWtpProfileLbs-BleRtlsReportingInterval"); ok {
+			if err = d.Set("ble_rtls_reporting_interval", vv); err != nil {
+				return fmt.Errorf("Error reading ble_rtls_reporting_interval: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading ble_rtls_reporting_interval: %v", err)
+		}
+	}
+
+	if err = d.Set("ble_rtls_server_fqdn", flattenWirelessControllerWtpProfileLbsBleRtlsServerFqdn2edl(o["ble-rtls-server-fqdn"], d, "ble_rtls_server_fqdn")); err != nil {
+		if vv, ok := fortiAPIPatch(o["ble-rtls-server-fqdn"], "WirelessControllerWtpProfileLbs-BleRtlsServerFqdn"); ok {
+			if err = d.Set("ble_rtls_server_fqdn", vv); err != nil {
+				return fmt.Errorf("Error reading ble_rtls_server_fqdn: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading ble_rtls_server_fqdn: %v", err)
+		}
+	}
+
+	if err = d.Set("ble_rtls_server_path", flattenWirelessControllerWtpProfileLbsBleRtlsServerPath2edl(o["ble-rtls-server-path"], d, "ble_rtls_server_path")); err != nil {
+		if vv, ok := fortiAPIPatch(o["ble-rtls-server-path"], "WirelessControllerWtpProfileLbs-BleRtlsServerPath"); ok {
+			if err = d.Set("ble_rtls_server_path", vv); err != nil {
+				return fmt.Errorf("Error reading ble_rtls_server_path: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading ble_rtls_server_path: %v", err)
+		}
+	}
+
+	if err = d.Set("ble_rtls_server_port", flattenWirelessControllerWtpProfileLbsBleRtlsServerPort2edl(o["ble-rtls-server-port"], d, "ble_rtls_server_port")); err != nil {
+		if vv, ok := fortiAPIPatch(o["ble-rtls-server-port"], "WirelessControllerWtpProfileLbs-BleRtlsServerPort"); ok {
+			if err = d.Set("ble_rtls_server_port", vv); err != nil {
+				return fmt.Errorf("Error reading ble_rtls_server_port: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading ble_rtls_server_port: %v", err)
+		}
+	}
+
+	if err = d.Set("ble_rtls_server_token", flattenWirelessControllerWtpProfileLbsBleRtlsServerToken2edl(o["ble-rtls-server-token"], d, "ble_rtls_server_token")); err != nil {
+		if vv, ok := fortiAPIPatch(o["ble-rtls-server-token"], "WirelessControllerWtpProfileLbs-BleRtlsServerToken"); ok {
+			if err = d.Set("ble_rtls_server_token", vv); err != nil {
+				return fmt.Errorf("Error reading ble_rtls_server_token: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading ble_rtls_server_token: %v", err)
 		}
 	}
 
@@ -896,6 +1137,58 @@ func expandWirelessControllerWtpProfileLbsAeroscoutServerPort2edl(d *schema.Reso
 	return v, nil
 }
 
+func expandWirelessControllerWtpProfileLbsBleRtls2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWirelessControllerWtpProfileLbsBleRtlsAccumulationInterval2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWirelessControllerWtpProfileLbsBleRtlsAssetAddrgrpList2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandWirelessControllerWtpProfileLbsBleRtlsAssetUuidList12edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWirelessControllerWtpProfileLbsBleRtlsAssetUuidList22edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWirelessControllerWtpProfileLbsBleRtlsAssetUuidList32edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWirelessControllerWtpProfileLbsBleRtlsAssetUuidList42edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWirelessControllerWtpProfileLbsBleRtlsProtocol2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWirelessControllerWtpProfileLbsBleRtlsReportingInterval2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWirelessControllerWtpProfileLbsBleRtlsServerFqdn2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWirelessControllerWtpProfileLbsBleRtlsServerPath2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWirelessControllerWtpProfileLbsBleRtlsServerPort2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWirelessControllerWtpProfileLbsBleRtlsServerToken2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandWirelessControllerWtpProfileLbsEkahauBlinkMode2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -1084,6 +1377,123 @@ func getObjectWirelessControllerWtpProfileLbs(d *schema.ResourceData) (*map[stri
 			return &obj, err
 		} else if t != nil {
 			obj["aeroscout-server-port"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("ble_rtls"); ok || d.HasChange("ble_rtls") {
+		t, err := expandWirelessControllerWtpProfileLbsBleRtls2edl(d, v, "ble_rtls")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["ble-rtls"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("ble_rtls_accumulation_interval"); ok || d.HasChange("ble_rtls_accumulation_interval") {
+		t, err := expandWirelessControllerWtpProfileLbsBleRtlsAccumulationInterval2edl(d, v, "ble_rtls_accumulation_interval")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["ble-rtls-accumulation-interval"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("ble_rtls_asset_addrgrp_list"); ok || d.HasChange("ble_rtls_asset_addrgrp_list") {
+		t, err := expandWirelessControllerWtpProfileLbsBleRtlsAssetAddrgrpList2edl(d, v, "ble_rtls_asset_addrgrp_list")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["ble-rtls-asset-addrgrp-list"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("ble_rtls_asset_uuid_list1"); ok || d.HasChange("ble_rtls_asset_uuid_list1") {
+		t, err := expandWirelessControllerWtpProfileLbsBleRtlsAssetUuidList12edl(d, v, "ble_rtls_asset_uuid_list1")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["ble-rtls-asset-uuid-list1"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("ble_rtls_asset_uuid_list2"); ok || d.HasChange("ble_rtls_asset_uuid_list2") {
+		t, err := expandWirelessControllerWtpProfileLbsBleRtlsAssetUuidList22edl(d, v, "ble_rtls_asset_uuid_list2")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["ble-rtls-asset-uuid-list2"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("ble_rtls_asset_uuid_list3"); ok || d.HasChange("ble_rtls_asset_uuid_list3") {
+		t, err := expandWirelessControllerWtpProfileLbsBleRtlsAssetUuidList32edl(d, v, "ble_rtls_asset_uuid_list3")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["ble-rtls-asset-uuid-list3"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("ble_rtls_asset_uuid_list4"); ok || d.HasChange("ble_rtls_asset_uuid_list4") {
+		t, err := expandWirelessControllerWtpProfileLbsBleRtlsAssetUuidList42edl(d, v, "ble_rtls_asset_uuid_list4")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["ble-rtls-asset-uuid-list4"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("ble_rtls_protocol"); ok || d.HasChange("ble_rtls_protocol") {
+		t, err := expandWirelessControllerWtpProfileLbsBleRtlsProtocol2edl(d, v, "ble_rtls_protocol")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["ble-rtls-protocol"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("ble_rtls_reporting_interval"); ok || d.HasChange("ble_rtls_reporting_interval") {
+		t, err := expandWirelessControllerWtpProfileLbsBleRtlsReportingInterval2edl(d, v, "ble_rtls_reporting_interval")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["ble-rtls-reporting-interval"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("ble_rtls_server_fqdn"); ok || d.HasChange("ble_rtls_server_fqdn") {
+		t, err := expandWirelessControllerWtpProfileLbsBleRtlsServerFqdn2edl(d, v, "ble_rtls_server_fqdn")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["ble-rtls-server-fqdn"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("ble_rtls_server_path"); ok || d.HasChange("ble_rtls_server_path") {
+		t, err := expandWirelessControllerWtpProfileLbsBleRtlsServerPath2edl(d, v, "ble_rtls_server_path")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["ble-rtls-server-path"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("ble_rtls_server_port"); ok || d.HasChange("ble_rtls_server_port") {
+		t, err := expandWirelessControllerWtpProfileLbsBleRtlsServerPort2edl(d, v, "ble_rtls_server_port")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["ble-rtls-server-port"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("ble_rtls_server_token"); ok || d.HasChange("ble_rtls_server_token") {
+		t, err := expandWirelessControllerWtpProfileLbsBleRtlsServerToken2edl(d, v, "ble_rtls_server_token")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["ble-rtls-server-token"] = t
 		}
 	}
 

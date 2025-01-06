@@ -81,6 +81,12 @@ The following arguments are supported:
 
 * `venue_url` - Venue name.
 * `wan_metrics` - WAN metric name.
+* `wba_charging_currency` - Three letter currency code.
+* `wba_charging_rate` - Number of currency units per kilobyte.
+* `wba_data_clearing_provider` - WBA ID of data clearing provider.
+* `wba_financial_clearing_provider` - WBA ID of financial clearing provider.
+* `wba_open_roaming` - Enable/disable WBA open roaming support. Valid values: `disable`, `enable`.
+
 * `wnm_sleep_mode` - Enable/disable wireless network management (WNM) sleep mode. Valid values: `disable`, `enable`.
 
 

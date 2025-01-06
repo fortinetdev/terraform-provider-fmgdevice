@@ -633,6 +633,35 @@ func resourceSystemInterface() *schema.Resource {
 							Type:     schema.TypeInt,
 							Optional: true,
 						},
+						"client_options": &schema.Schema{
+							Type:     schema.TypeList,
+							Optional: true,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"code": &schema.Schema{
+										Type:     schema.TypeInt,
+										Optional: true,
+									},
+									"id": &schema.Schema{
+										Type:     schema.TypeInt,
+										Optional: true,
+										Computed: true,
+									},
+									"ip6": &schema.Schema{
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+									"type": &schema.Schema{
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+									"value": &schema.Schema{
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+								},
+							},
+						},
 						"dhcp6_client_options": &schema.Schema{
 							Type:     schema.TypeSet,
 							Elem:     &schema.Schema{Type: schema.TypeString},
@@ -998,6 +1027,10 @@ func resourceSystemInterface() *schema.Resource {
 										Optional: true,
 										Computed: true,
 									},
+									"vrdst_priority": &schema.Schema{
+										Type:     schema.TypeInt,
+										Optional: true,
+									},
 									"vrdst6": &schema.Schema{
 										Type:     schema.TypeSet,
 										Elem:     &schema.Schema{Type: schema.TypeString},
@@ -1281,10 +1314,18 @@ func resourceSystemInterface() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"netflow_sample_rate": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+			},
 			"netflow_sampler": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+			},
+			"netflow_sampler_id": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
 			},
 			"np_qos_profile": &schema.Schema{
 				Type:     schema.TypeInt,
@@ -1321,6 +1362,11 @@ func resourceSystemInterface() *schema.Resource {
 			"port_mirroring": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+			},
+			"pppoe_egress_cos": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
 			},
 			"pppoe_unnumbered_negotiate": &schema.Schema{
 				Type:     schema.TypeString,
@@ -1534,6 +1580,10 @@ func resourceSystemInterface() *schema.Resource {
 				Elem:     &schema.Schema{Type: schema.TypeString},
 				Optional: true,
 				Computed: true,
+			},
+			"security_ip_auth_bypass": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
 			},
 			"security_mac_auth_bypass": &schema.Schema{
 				Type:     schema.TypeString,
@@ -1860,6 +1910,10 @@ func resourceSystemInterface() *schema.Resource {
 			},
 			"vindex": &schema.Schema{
 				Type:     schema.TypeInt,
+				Optional: true,
+			},
+			"virtual_mac": &schema.Schema{
+				Type:     schema.TypeString,
 				Optional: true,
 			},
 			"vlan_id": &schema.Schema{
@@ -2941,6 +2995,11 @@ func flattenSystemInterfaceIpv6(v interface{}, d *schema.ResourceData, pre strin
 		result["cli_conn6_status"] = flattenSystemInterfaceIpv6CliConn6Status(i["cli-conn6-status"], d, pre_append)
 	}
 
+	pre_append = pre + ".0." + "client_options"
+	if _, ok := i["client-options"]; ok {
+		result["client_options"] = flattenSystemInterfaceIpv6ClientOptions(i["client-options"], d, pre_append)
+	}
+
 	pre_append = pre + ".0." + "dhcp6_client_options"
 	if _, ok := i["dhcp6-client-options"]; ok {
 		result["dhcp6_client_options"] = flattenSystemInterfaceIpv6Dhcp6ClientOptions(i["dhcp6-client-options"], d, pre_append)
@@ -3185,6 +3244,85 @@ func flattenSystemInterfaceIpv6Autoconf(v interface{}, d *schema.ResourceData, p
 }
 
 func flattenSystemInterfaceIpv6CliConn6Status(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemInterfaceIpv6ClientOptions(v interface{}, d *schema.ResourceData, pre string) []map[string]interface{} {
+	if v == nil {
+		return nil
+	}
+
+	l := v.([]interface{})
+	if len(l) == 0 || l[0] == nil {
+		return nil
+	}
+
+	result := make([]map[string]interface{}, 0, len(l))
+
+	con := 0
+	for _, r := range l {
+		tmp := make(map[string]interface{})
+		i := r.(map[string]interface{})
+
+		pre_append := "" // table
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "code"
+		if _, ok := i["code"]; ok {
+			v := flattenSystemInterfaceIpv6ClientOptionsCode(i["code"], d, pre_append)
+			tmp["code"] = fortiAPISubPartPatch(v, "SystemInterfaceIpv6-ClientOptions-Code")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "id"
+		if _, ok := i["id"]; ok {
+			v := flattenSystemInterfaceIpv6ClientOptionsId(i["id"], d, pre_append)
+			tmp["id"] = fortiAPISubPartPatch(v, "SystemInterfaceIpv6-ClientOptions-Id")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "ip6"
+		if _, ok := i["ip6"]; ok {
+			v := flattenSystemInterfaceIpv6ClientOptionsIp6(i["ip6"], d, pre_append)
+			tmp["ip6"] = fortiAPISubPartPatch(v, "SystemInterfaceIpv6-ClientOptions-Ip6")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "type"
+		if _, ok := i["type"]; ok {
+			v := flattenSystemInterfaceIpv6ClientOptionsType(i["type"], d, pre_append)
+			tmp["type"] = fortiAPISubPartPatch(v, "SystemInterfaceIpv6-ClientOptions-Type")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "value"
+		if _, ok := i["value"]; ok {
+			v := flattenSystemInterfaceIpv6ClientOptionsValue(i["value"], d, pre_append)
+			tmp["value"] = fortiAPISubPartPatch(v, "SystemInterfaceIpv6-ClientOptions-Value")
+		}
+
+		if len(tmp) > 0 {
+			result = append(result, tmp)
+		}
+
+		con += 1
+	}
+
+	return result
+}
+
+func flattenSystemInterfaceIpv6ClientOptionsCode(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemInterfaceIpv6ClientOptionsId(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemInterfaceIpv6ClientOptionsIp6(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemInterfaceIpv6ClientOptionsType(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemInterfaceIpv6ClientOptionsValue(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -3733,6 +3871,12 @@ func flattenSystemInterfaceIpv6Vrrp6(v interface{}, d *schema.ResourceData, pre 
 			tmp["status"] = fortiAPISubPartPatch(v, "SystemInterfaceIpv6-Vrrp6-Status")
 		}
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "vrdst_priority"
+		if _, ok := i["vrdst-priority"]; ok {
+			v := flattenSystemInterfaceIpv6Vrrp6VrdstPriority(i["vrdst-priority"], d, pre_append)
+			tmp["vrdst_priority"] = fortiAPISubPartPatch(v, "SystemInterfaceIpv6-Vrrp6-VrdstPriority")
+		}
+
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "vrdst6"
 		if _, ok := i["vrdst6"]; ok {
 			v := flattenSystemInterfaceIpv6Vrrp6Vrdst6(i["vrdst6"], d, pre_append)
@@ -3792,6 +3936,10 @@ func flattenSystemInterfaceIpv6Vrrp6StartTime(v interface{}, d *schema.ResourceD
 }
 
 func flattenSystemInterfaceIpv6Vrrp6Status(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemInterfaceIpv6Vrrp6VrdstPriority(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -4122,7 +4270,15 @@ func flattenSystemInterfaceNetbiosForward(v interface{}, d *schema.ResourceData,
 	return v
 }
 
+func flattenSystemInterfaceNetflowSampleRate(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenSystemInterfaceNetflowSampler(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemInterfaceNetflowSamplerId(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -4151,6 +4307,10 @@ func flattenSystemInterfacePollingInterval(v interface{}, d *schema.ResourceData
 }
 
 func flattenSystemInterfacePortMirroring(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemInterfacePppoeEgressCos(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -4377,6 +4537,10 @@ func flattenSystemInterfaceSecurityExternalWeb(v interface{}, d *schema.Resource
 
 func flattenSystemInterfaceSecurityGroups(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return flattenStringList(v)
+}
+
+func flattenSystemInterfaceSecurityIpAuthBypass(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
 }
 
 func flattenSystemInterfaceSecurityMacAuthBypass(v interface{}, d *schema.ResourceData, pre string) interface{} {
@@ -4695,6 +4859,10 @@ func flattenSystemInterfaceVectoring(v interface{}, d *schema.ResourceData, pre 
 }
 
 func flattenSystemInterfaceVindex(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemInterfaceVirtualMac(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -6642,6 +6810,16 @@ func refreshObjectSystemInterface(d *schema.ResourceData, o map[string]interface
 		}
 	}
 
+	if err = d.Set("netflow_sample_rate", flattenSystemInterfaceNetflowSampleRate(o["netflow-sample-rate"], d, "netflow_sample_rate")); err != nil {
+		if vv, ok := fortiAPIPatch(o["netflow-sample-rate"], "SystemInterface-NetflowSampleRate"); ok {
+			if err = d.Set("netflow_sample_rate", vv); err != nil {
+				return fmt.Errorf("Error reading netflow_sample_rate: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading netflow_sample_rate: %v", err)
+		}
+	}
+
 	if err = d.Set("netflow_sampler", flattenSystemInterfaceNetflowSampler(o["netflow-sampler"], d, "netflow_sampler")); err != nil {
 		if vv, ok := fortiAPIPatch(o["netflow-sampler"], "SystemInterface-NetflowSampler"); ok {
 			if err = d.Set("netflow_sampler", vv); err != nil {
@@ -6649,6 +6827,16 @@ func refreshObjectSystemInterface(d *schema.ResourceData, o map[string]interface
 			}
 		} else {
 			return fmt.Errorf("Error reading netflow_sampler: %v", err)
+		}
+	}
+
+	if err = d.Set("netflow_sampler_id", flattenSystemInterfaceNetflowSamplerId(o["netflow-sampler-id"], d, "netflow_sampler_id")); err != nil {
+		if vv, ok := fortiAPIPatch(o["netflow-sampler-id"], "SystemInterface-NetflowSamplerId"); ok {
+			if err = d.Set("netflow_sampler_id", vv); err != nil {
+				return fmt.Errorf("Error reading netflow_sampler_id: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading netflow_sampler_id: %v", err)
 		}
 	}
 
@@ -6719,6 +6907,16 @@ func refreshObjectSystemInterface(d *schema.ResourceData, o map[string]interface
 			}
 		} else {
 			return fmt.Errorf("Error reading port_mirroring: %v", err)
+		}
+	}
+
+	if err = d.Set("pppoe_egress_cos", flattenSystemInterfacePppoeEgressCos(o["pppoe-egress-cos"], d, "pppoe_egress_cos")); err != nil {
+		if vv, ok := fortiAPIPatch(o["pppoe-egress-cos"], "SystemInterface-PppoeEgressCos"); ok {
+			if err = d.Set("pppoe_egress_cos", vv); err != nil {
+				return fmt.Errorf("Error reading pppoe_egress_cos: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading pppoe_egress_cos: %v", err)
 		}
 	}
 
@@ -7133,6 +7331,16 @@ func refreshObjectSystemInterface(d *schema.ResourceData, o map[string]interface
 			}
 		} else {
 			return fmt.Errorf("Error reading security_groups: %v", err)
+		}
+	}
+
+	if err = d.Set("security_ip_auth_bypass", flattenSystemInterfaceSecurityIpAuthBypass(o["security-ip-auth-bypass"], d, "security_ip_auth_bypass")); err != nil {
+		if vv, ok := fortiAPIPatch(o["security-ip-auth-bypass"], "SystemInterface-SecurityIpAuthBypass"); ok {
+			if err = d.Set("security_ip_auth_bypass", vv); err != nil {
+				return fmt.Errorf("Error reading security_ip_auth_bypass: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading security_ip_auth_bypass: %v", err)
 		}
 	}
 
@@ -7807,6 +8015,16 @@ func refreshObjectSystemInterface(d *schema.ResourceData, o map[string]interface
 			}
 		} else {
 			return fmt.Errorf("Error reading vindex: %v", err)
+		}
+	}
+
+	if err = d.Set("virtual_mac", flattenSystemInterfaceVirtualMac(o["virtual-mac"], d, "virtual_mac")); err != nil {
+		if vv, ok := fortiAPIPatch(o["virtual-mac"], "SystemInterface-VirtualMac"); ok {
+			if err = d.Set("virtual_mac", vv); err != nil {
+				return fmt.Errorf("Error reading virtual_mac: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading virtual_mac: %v", err)
 		}
 	}
 
@@ -8774,6 +8992,15 @@ func expandSystemInterfaceIpv6(d *schema.ResourceData, v interface{}, pre string
 	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
 		result["cli-conn6-status"], _ = expandSystemInterfaceIpv6CliConn6Status(d, i["cli_conn6_status"], pre_append)
 	}
+	pre_append = pre + ".0." + "client_options"
+	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+		t, err := expandSystemInterfaceIpv6ClientOptions(d, i["client_options"], pre_append)
+		if err != nil {
+			return result, err
+		} else if t != nil {
+			result["client-options"] = t
+		}
+	}
 	pre_append = pre + ".0." + "dhcp6_client_options"
 	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
 		result["dhcp6-client-options"], _ = expandSystemInterfaceIpv6Dhcp6ClientOptions(d, i["dhcp6_client_options"], pre_append)
@@ -8996,6 +9223,75 @@ func expandSystemInterfaceIpv6Autoconf(d *schema.ResourceData, v interface{}, pr
 }
 
 func expandSystemInterfaceIpv6CliConn6Status(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemInterfaceIpv6ClientOptions(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	l := v.([]interface{})
+	result := make([]map[string]interface{}, 0, len(l))
+
+	if len(l) == 0 || l[0] == nil {
+		return result, nil
+	}
+
+	con := 0
+	for _, r := range l {
+		tmp := make(map[string]interface{})
+		i := r.(map[string]interface{})
+		pre_append := "" // table
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "code"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["code"], _ = expandSystemInterfaceIpv6ClientOptionsCode(d, i["code"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "id"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["id"], _ = expandSystemInterfaceIpv6ClientOptionsId(d, i["id"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "ip6"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["ip6"], _ = expandSystemInterfaceIpv6ClientOptionsIp6(d, i["ip6"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "type"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["type"], _ = expandSystemInterfaceIpv6ClientOptionsType(d, i["type"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "value"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["value"], _ = expandSystemInterfaceIpv6ClientOptionsValue(d, i["value"], pre_append)
+		}
+
+		if len(tmp) > 0 {
+			result = append(result, tmp)
+		}
+
+		con += 1
+	}
+
+	return result, nil
+}
+
+func expandSystemInterfaceIpv6ClientOptionsCode(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemInterfaceIpv6ClientOptionsId(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemInterfaceIpv6ClientOptionsIp6(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemInterfaceIpv6ClientOptionsType(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemInterfaceIpv6ClientOptionsValue(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -9492,6 +9788,11 @@ func expandSystemInterfaceIpv6Vrrp6(d *schema.ResourceData, v interface{}, pre s
 			tmp["status"], _ = expandSystemInterfaceIpv6Vrrp6Status(d, i["status"], pre_append)
 		}
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "vrdst_priority"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["vrdst-priority"], _ = expandSystemInterfaceIpv6Vrrp6VrdstPriority(d, i["vrdst_priority"], pre_append)
+		}
+
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "vrdst6"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
 			tmp["vrdst6"], _ = expandSystemInterfaceIpv6Vrrp6Vrdst6(d, i["vrdst6"], pre_append)
@@ -9547,6 +9848,10 @@ func expandSystemInterfaceIpv6Vrrp6StartTime(d *schema.ResourceData, v interface
 }
 
 func expandSystemInterfaceIpv6Vrrp6Status(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemInterfaceIpv6Vrrp6VrdstPriority(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -9870,7 +10175,15 @@ func expandSystemInterfaceNetbiosForward(d *schema.ResourceData, v interface{}, 
 	return v, nil
 }
 
+func expandSystemInterfaceNetflowSampleRate(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandSystemInterfaceNetflowSampler(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemInterfaceNetflowSamplerId(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -9903,6 +10216,10 @@ func expandSystemInterfacePollingInterval(d *schema.ResourceData, v interface{},
 }
 
 func expandSystemInterfacePortMirroring(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemInterfacePppoeEgressCos(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -10124,6 +10441,10 @@ func expandSystemInterfaceSecurityExternalWeb(d *schema.ResourceData, v interfac
 
 func expandSystemInterfaceSecurityGroups(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandSystemInterfaceSecurityIpAuthBypass(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
 }
 
 func expandSystemInterfaceSecurityMacAuthBypass(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
@@ -10434,6 +10755,10 @@ func expandSystemInterfaceVectoring(d *schema.ResourceData, v interface{}, pre s
 }
 
 func expandSystemInterfaceVindex(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemInterfaceVirtualMac(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -12162,12 +12487,30 @@ func getObjectSystemInterface(d *schema.ResourceData) (*map[string]interface{}, 
 		}
 	}
 
+	if v, ok := d.GetOk("netflow_sample_rate"); ok || d.HasChange("netflow_sample_rate") {
+		t, err := expandSystemInterfaceNetflowSampleRate(d, v, "netflow_sample_rate")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["netflow-sample-rate"] = t
+		}
+	}
+
 	if v, ok := d.GetOk("netflow_sampler"); ok || d.HasChange("netflow_sampler") {
 		t, err := expandSystemInterfaceNetflowSampler(d, v, "netflow_sampler")
 		if err != nil {
 			return &obj, err
 		} else if t != nil {
 			obj["netflow-sampler"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("netflow_sampler_id"); ok || d.HasChange("netflow_sampler_id") {
+		t, err := expandSystemInterfaceNetflowSamplerId(d, v, "netflow_sampler_id")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["netflow-sampler-id"] = t
 		}
 	}
 
@@ -12240,6 +12583,15 @@ func getObjectSystemInterface(d *schema.ResourceData) (*map[string]interface{}, 
 			return &obj, err
 		} else if t != nil {
 			obj["port-mirroring"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("pppoe_egress_cos"); ok || d.HasChange("pppoe_egress_cos") {
+		t, err := expandSystemInterfacePppoeEgressCos(d, v, "pppoe_egress_cos")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["pppoe-egress-cos"] = t
 		}
 	}
 
@@ -12609,6 +12961,15 @@ func getObjectSystemInterface(d *schema.ResourceData) (*map[string]interface{}, 
 			return &obj, err
 		} else if t != nil {
 			obj["security-groups"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("security_ip_auth_bypass"); ok || d.HasChange("security_ip_auth_bypass") {
+		t, err := expandSystemInterfaceSecurityIpAuthBypass(d, v, "security_ip_auth_bypass")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["security-ip-auth-bypass"] = t
 		}
 	}
 
@@ -13203,6 +13564,15 @@ func getObjectSystemInterface(d *schema.ResourceData) (*map[string]interface{}, 
 			return &obj, err
 		} else if t != nil {
 			obj["vindex"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("virtual_mac"); ok || d.HasChange("virtual_mac") {
+		t, err := expandSystemInterfaceVirtualMac(d, v, "virtual_mac")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["virtual-mac"] = t
 		}
 	}
 

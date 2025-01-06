@@ -213,7 +213,7 @@ func resourceFirewallSshSettingRead(d *schema.ResourceData, m interface{}) error
 }
 
 func flattenFirewallSshSettingCaname(v interface{}, d *schema.ResourceData, pre string) interface{} {
-	return v
+	return convintflist2str(v, d.Get(pre))
 }
 
 func flattenFirewallSshSettingHostTrustedChecking(v interface{}, d *schema.ResourceData, pre string) interface{} {
@@ -351,7 +351,7 @@ func flattenFirewallSshSettingFortiTestDebug(d *schema.ResourceData, fosdebugsn 
 }
 
 func expandFirewallSshSettingCaname(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
-	return v, nil
+	return convstr2list(v, nil), nil
 }
 
 func expandFirewallSshSettingHostTrustedChecking(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {

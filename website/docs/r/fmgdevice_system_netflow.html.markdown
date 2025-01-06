@@ -11,6 +11,7 @@ Configure NetFlow.
 
 ~> The following variables have sub resource. Avoid using them together, otherwise conflicts and overwrites may occur.
 >- `collectors`: `fmgdevice_system_netflow_collectors`
+>- `exclusion_filters`: `fmgdevice_system_netflow_exclusionfilters`
 
 
 
@@ -46,6 +47,7 @@ The following arguments are supported:
 * `collector_ip` - Collector-Ip.
 * `collector_port` - Collector-Port.
 * `collectors` - Collectors. The structure of `collectors` block is documented below.
+* `exclusion_filters` - Exclusion-Filters. The structure of `exclusion_filters` block is documented below.
 * `inactive_flow_timeout` - Timeout for periodic report of finished flows (10 - 600 sec, default = 15).
 * `interface` - Interface.
 * `interface_select_method` - Interface-Select-Method. Valid values: `auto`, `sdwan`, `specify`.
@@ -64,6 +66,16 @@ The `collectors` block supports:
 * `interface_select_method` - Specify how to select outgoing interface to reach server. Valid values: `auto`, `sdwan`, `specify`.
 
 * `source_ip` - Source IP address for communication with the NetFlow agent.
+* `source_ip_interface` - Name of the interface used to determine the source IP for exporting packets.
+
+The `exclusion_filters` block supports:
+
+* `destination_ip` - Session destination address.
+* `destination_port` - Session destination port number or range.
+* `id` - Filter ID.
+* `protocol` - Session IP protocol (0 - 255, default = 255, meaning any).
+* `source_ip` - Session source address.
+* `source_port` - Session source port number or range.
 
 
 ## Attribute Reference

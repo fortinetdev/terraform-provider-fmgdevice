@@ -137,6 +137,7 @@ func resourceSystemCsf() *schema.Resource {
 			"file_quota": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"file_quota_warning": &schema.Schema{
 				Type:     schema.TypeInt,
@@ -165,6 +166,11 @@ func resourceSystemCsf() *schema.Resource {
 				Optional:  true,
 				Sensitive: true,
 				Computed:  true,
+			},
+			"legacy_authentication": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
 			},
 			"log_unification": &schema.Schema{
 				Type:     schema.TypeString,
@@ -544,6 +550,10 @@ func flattenSystemCsfGroupName(v interface{}, d *schema.ResourceData, pre string
 	return v
 }
 
+func flattenSystemCsfLegacyAuthentication(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenSystemCsfLogUnification(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -886,6 +896,16 @@ func refreshObjectSystemCsf(d *schema.ResourceData, o map[string]interface{}) er
 		}
 	}
 
+	if err = d.Set("legacy_authentication", flattenSystemCsfLegacyAuthentication(o["legacy-authentication"], d, "legacy_authentication")); err != nil {
+		if vv, ok := fortiAPIPatch(o["legacy-authentication"], "SystemCsf-LegacyAuthentication"); ok {
+			if err = d.Set("legacy_authentication", vv); err != nil {
+				return fmt.Errorf("Error reading legacy_authentication: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading legacy_authentication: %v", err)
+		}
+	}
+
 	if err = d.Set("log_unification", flattenSystemCsfLogUnification(o["log-unification"], d, "log_unification")); err != nil {
 		if vv, ok := fortiAPIPatch(o["log-unification"], "SystemCsf-LogUnification"); ok {
 			if err = d.Set("log_unification", vv); err != nil {
@@ -1219,6 +1239,10 @@ func expandSystemCsfGroupPassword(d *schema.ResourceData, v interface{}, pre str
 	return expandStringList(v.(*schema.Set).List()), nil
 }
 
+func expandSystemCsfLegacyAuthentication(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandSystemCsfLogUnification(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -1516,6 +1540,15 @@ func getObjectSystemCsf(d *schema.ResourceData) (*map[string]interface{}, error)
 			return &obj, err
 		} else if t != nil {
 			obj["group-password"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("legacy_authentication"); ok || d.HasChange("legacy_authentication") {
+		t, err := expandSystemCsfLegacyAuthentication(d, v, "legacy_authentication")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["legacy-authentication"] = t
 		}
 	}
 

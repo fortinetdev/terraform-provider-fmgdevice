@@ -179,7 +179,7 @@ func resourceSystemVdomRadiusServerRead(d *schema.ResourceData, m interface{}) e
 }
 
 func flattenSystemVdomRadiusServerName(v interface{}, d *schema.ResourceData, pre string) interface{} {
-	return v
+	return convintflist2str(v, d.Get(pre))
 }
 
 func flattenSystemVdomRadiusServerRadiusServerVdom(v interface{}, d *schema.ResourceData, pre string) interface{} {
@@ -233,7 +233,7 @@ func flattenSystemVdomRadiusServerFortiTestDebug(d *schema.ResourceData, fosdebu
 }
 
 func expandSystemVdomRadiusServerName(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
-	return v, nil
+	return convstr2list(v, nil), nil
 }
 
 func expandSystemVdomRadiusServerRadiusServerVdom(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {

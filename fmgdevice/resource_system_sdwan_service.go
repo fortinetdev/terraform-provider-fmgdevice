@@ -54,6 +54,10 @@ func resourceSystemSdwanService() *schema.Resource {
 				Type:     schema.TypeInt,
 				Optional: true,
 			},
+			"comment": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 			"default": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -546,6 +550,10 @@ func flattenSystemSdwanServiceBandwidthWeight2edl(v interface{}, d *schema.Resou
 	return v
 }
 
+func flattenSystemSdwanServiceComment2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenSystemSdwanServiceDefault2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -869,6 +877,16 @@ func refreshObjectSystemSdwanService(d *schema.ResourceData, o map[string]interf
 			}
 		} else {
 			return fmt.Errorf("Error reading bandwidth_weight: %v", err)
+		}
+	}
+
+	if err = d.Set("comment", flattenSystemSdwanServiceComment2edl(o["comment"], d, "comment")); err != nil {
+		if vv, ok := fortiAPIPatch(o["comment"], "SystemSdwanService-Comment"); ok {
+			if err = d.Set("comment", vv); err != nil {
+				return fmt.Errorf("Error reading comment: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading comment: %v", err)
 		}
 	}
 
@@ -1517,6 +1535,10 @@ func expandSystemSdwanServiceBandwidthWeight2edl(d *schema.ResourceData, v inter
 	return v, nil
 }
 
+func expandSystemSdwanServiceComment2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandSystemSdwanServiceDefault2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -1826,6 +1848,15 @@ func getObjectSystemSdwanService(d *schema.ResourceData) (*map[string]interface{
 			return &obj, err
 		} else if t != nil {
 			obj["bandwidth-weight"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("comment"); ok || d.HasChange("comment") {
+		t, err := expandSystemSdwanServiceComment2edl(d, v, "comment")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["comment"] = t
 		}
 	}
 

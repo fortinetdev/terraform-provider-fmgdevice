@@ -311,6 +311,8 @@ The `ports` block supports:
 * `lldp_profile` - LLDP port TLV profile.
 * `lldp_status` - LLDP transmit and receive status. Valid values: `disable`, `rx-only`, `tx-only`, `tx-rx`.
 
+* `log_mac_event` - Enable/disable logging for dynamic MAC address events. Valid values: `disable`, `enable`.
+
 * `loop_guard` - Enable/disable loop-guard on this interface, an STP optimization used to prevent network loops. Valid values: `disabled`, `enabled`.
 
 * `loop_guard_timeout` - Loop-guard timeout (0 - 120 min, default = 45).
@@ -337,6 +339,7 @@ The `ports` block supports:
 * `pause_meter` - Configure ingress pause metering rate, in kbps (default = 0, disabled).
 * `pause_meter_resume` - Resume threshold for resuming traffic on ingress port. Valid values: `25%`, `50%`, `75%`.
 
+* `pd_capable` - Powered device capable.
 * `poe_capable` - PoE capable.
 * `poe_max_power` - Poe-Max-Power.
 * `poe_mode_bt_cabable` - PoE mode IEEE 802.3BT capable.
@@ -362,6 +365,7 @@ The `ports` block supports:
 * `ptp_policy` - PTP policy configuration.
 * `ptp_status` - Enable/disable PTP policy on this FortiSwitch port. Valid values: `disable`, `enable`.
 
+* `qnq` - 802.1AD VLANs in the VDom.
 * `qos_policy` - Switch controller QoS policy from available options.
 * `restricted_auth_port` - Restricted-Auth-Port.
 * `rpvst_port` - Enable/disable inter-operability with rapid PVST on this interface. Valid values: `disabled`, `enabled`.

@@ -60,6 +60,8 @@ The following arguments are supported:
 * `proxy_fqdn` - Fully Qualified Domain Name (FQDN) that clients connect to (default = default.fqdn) to connect to the explicit web proxy.
 * `proxy_transparent_cert_inspection` - Enable/disable transparent proxy certificate inspection. Valid values: `disable`, `enable`.
 
+* `request_obs_fold` - Action when HTTP/1.x request header contains obs-fold. Valid values: `block`, `replace-with-sp`, `keep`.
+
 * `src_affinity_exempt_addr` - IPv4 source addresses to exempt proxy affinity.
 * `src_affinity_exempt_addr6` - IPv6 source addresses to exempt proxy affinity.
 * `ssl_ca_cert` - SSL CA certificate for SSL interception.

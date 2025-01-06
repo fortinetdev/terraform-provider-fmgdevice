@@ -2127,6 +2127,12 @@ func resourceRouterBgp() *schema.Resource {
 							Optional: true,
 							Computed: true,
 						},
+						"prefix_name": &schema.Schema{
+							Type:     schema.TypeSet,
+							Elem:     &schema.Schema{Type: schema.TypeString},
+							Optional: true,
+							Computed: true,
+						},
 						"route_map": &schema.Schema{
 							Type:     schema.TypeSet,
 							Elem:     &schema.Schema{Type: schema.TypeString},
@@ -4148,7 +4154,7 @@ func flattenRouterBgpNeighborConditionalAdvertise(v interface{}, d *schema.Resou
 }
 
 func flattenRouterBgpNeighborConditionalAdvertiseAdvertiseRoutemap(v interface{}, d *schema.ResourceData, pre string) interface{} {
-	return v
+	return convintflist2str(v, d.Get(pre))
 }
 
 func flattenRouterBgpNeighborConditionalAdvertiseConditionRoutemap(v interface{}, d *schema.ResourceData, pre string) interface{} {
@@ -6422,6 +6428,12 @@ func flattenRouterBgpNetwork(v interface{}, d *schema.ResourceData, pre string) 
 			tmp["prefix"] = fortiAPISubPartPatch(v, "RouterBgp-Network-Prefix")
 		}
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "prefix_name"
+		if _, ok := i["prefix-name"]; ok {
+			v := flattenRouterBgpNetworkPrefixName(i["prefix-name"], d, pre_append)
+			tmp["prefix_name"] = fortiAPISubPartPatch(v, "RouterBgp-Network-PrefixName")
+		}
+
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "route_map"
 		if _, ok := i["route-map"]; ok {
 			v := flattenRouterBgpNetworkRouteMap(i["route-map"], d, pre_append)
@@ -6451,6 +6463,10 @@ func flattenRouterBgpNetworkNetworkImportCheck(v interface{}, d *schema.Resource
 }
 
 func flattenRouterBgpNetworkPrefix(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
+func flattenRouterBgpNetworkPrefixName(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return flattenStringList(v)
 }
 
@@ -9500,7 +9516,7 @@ func expandRouterBgpNeighborConditionalAdvertise(d *schema.ResourceData, v inter
 }
 
 func expandRouterBgpNeighborConditionalAdvertiseAdvertiseRoutemap(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
-	return v, nil
+	return convstr2list(v, nil), nil
 }
 
 func expandRouterBgpNeighborConditionalAdvertiseConditionRoutemap(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
@@ -11592,6 +11608,11 @@ func expandRouterBgpNetwork(d *schema.ResourceData, v interface{}, pre string) (
 			tmp["prefix"], _ = expandRouterBgpNetworkPrefix(d, i["prefix"], pre_append)
 		}
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "prefix_name"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["prefix-name"], _ = expandRouterBgpNetworkPrefixName(d, i["prefix_name"], pre_append)
+		}
+
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "route_map"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
 			tmp["route-map"], _ = expandRouterBgpNetworkRouteMap(d, i["route_map"], pre_append)
@@ -11621,6 +11642,10 @@ func expandRouterBgpNetworkNetworkImportCheck(d *schema.ResourceData, v interfac
 
 func expandRouterBgpNetworkPrefix(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return expandStringList(v.([]interface{})), nil
+}
+
+func expandRouterBgpNetworkPrefixName(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
 }
 
 func expandRouterBgpNetworkRouteMap(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {

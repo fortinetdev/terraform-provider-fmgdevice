@@ -44,6 +44,10 @@ func resourceRouterSetting() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
+			"kernel_route_distance": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+			},
 			"show_filter": &schema.Schema{
 				Type:     schema.TypeSet,
 				Elem:     &schema.Schema{Type: schema.TypeString},
@@ -174,6 +178,10 @@ func flattenRouterSettingHostname(v interface{}, d *schema.ResourceData, pre str
 	return v
 }
 
+func flattenRouterSettingKernelRouteDistance(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenRouterSettingShowFilter(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return flattenStringList(v)
 }
@@ -188,6 +196,16 @@ func refreshObjectRouterSetting(d *schema.ResourceData, o map[string]interface{}
 			}
 		} else {
 			return fmt.Errorf("Error reading hostname: %v", err)
+		}
+	}
+
+	if err = d.Set("kernel_route_distance", flattenRouterSettingKernelRouteDistance(o["kernel-route-distance"], d, "kernel_route_distance")); err != nil {
+		if vv, ok := fortiAPIPatch(o["kernel-route-distance"], "RouterSetting-KernelRouteDistance"); ok {
+			if err = d.Set("kernel_route_distance", vv); err != nil {
+				return fmt.Errorf("Error reading kernel_route_distance: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading kernel_route_distance: %v", err)
 		}
 	}
 
@@ -214,6 +232,10 @@ func expandRouterSettingHostname(d *schema.ResourceData, v interface{}, pre stri
 	return v, nil
 }
 
+func expandRouterSettingKernelRouteDistance(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandRouterSettingShowFilter(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return expandStringList(v.(*schema.Set).List()), nil
 }
@@ -227,6 +249,15 @@ func getObjectRouterSetting(d *schema.ResourceData) (*map[string]interface{}, er
 			return &obj, err
 		} else if t != nil {
 			obj["hostname"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("kernel_route_distance"); ok || d.HasChange("kernel_route_distance") {
+		t, err := expandRouterSettingKernelRouteDistance(d, v, "kernel_route_distance")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["kernel-route-distance"] = t
 		}
 	}
 

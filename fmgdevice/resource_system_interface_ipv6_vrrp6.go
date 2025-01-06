@@ -74,6 +74,10 @@ func resourceSystemInterfaceIpv6Vrrp6() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"vrdst_priority": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+			},
 			"vrdst6": &schema.Schema{
 				Type:     schema.TypeSet,
 				Elem:     &schema.Schema{Type: schema.TypeString},
@@ -267,6 +271,10 @@ func flattenSystemInterfaceIpv6Vrrp6Status3rdl(v interface{}, d *schema.Resource
 	return v
 }
 
+func flattenSystemInterfaceIpv6Vrrp6VrdstPriority3rdl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenSystemInterfaceIpv6Vrrp6Vrdst63rdl(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return flattenStringList(v)
 }
@@ -356,6 +364,16 @@ func refreshObjectSystemInterfaceIpv6Vrrp6(d *schema.ResourceData, o map[string]
 		}
 	}
 
+	if err = d.Set("vrdst_priority", flattenSystemInterfaceIpv6Vrrp6VrdstPriority3rdl(o["vrdst-priority"], d, "vrdst_priority")); err != nil {
+		if vv, ok := fortiAPIPatch(o["vrdst-priority"], "SystemInterfaceIpv6Vrrp6-VrdstPriority"); ok {
+			if err = d.Set("vrdst_priority", vv); err != nil {
+				return fmt.Errorf("Error reading vrdst_priority: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading vrdst_priority: %v", err)
+		}
+	}
+
 	if err = d.Set("vrdst6", flattenSystemInterfaceIpv6Vrrp6Vrdst63rdl(o["vrdst6"], d, "vrdst6")); err != nil {
 		if vv, ok := fortiAPIPatch(o["vrdst6"], "SystemInterfaceIpv6Vrrp6-Vrdst6"); ok {
 			if err = d.Set("vrdst6", vv); err != nil {
@@ -430,6 +448,10 @@ func expandSystemInterfaceIpv6Vrrp6StartTime3rdl(d *schema.ResourceData, v inter
 }
 
 func expandSystemInterfaceIpv6Vrrp6Status3rdl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemInterfaceIpv6Vrrp6VrdstPriority3rdl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -512,6 +534,15 @@ func getObjectSystemInterfaceIpv6Vrrp6(d *schema.ResourceData) (*map[string]inte
 			return &obj, err
 		} else if t != nil {
 			obj["status"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("vrdst_priority"); ok || d.HasChange("vrdst_priority") {
+		t, err := expandSystemInterfaceIpv6Vrrp6VrdstPriority3rdl(d, v, "vrdst_priority")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["vrdst-priority"] = t
 		}
 	}
 

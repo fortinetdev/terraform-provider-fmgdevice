@@ -11,6 +11,7 @@ IPv6 of interface.
 
 ~> This resource is a sub resource for variable `ipv6` of resource `fmgdevice_system_interface`. Conflict and overwrite may occur if use both of them.
 The following variables have sub resource. Avoid using them together, otherwise conflicts and overwrites may occur.
+>- `client_options`: `fmgdevice_system_interface_ipv6_clientoptions`
 >- `dhcp6_iapd_list`: `fmgdevice_system_interface_ipv6_dhcp6iapdlist`
 >- `ip6_delegated_prefix_list`: `fmgdevice_system_interface_ipv6_ip6delegatedprefixlist`
 >- `ip6_extra_addr`: `fmgdevice_system_interface_ipv6_ip6extraaddr`
@@ -49,6 +50,7 @@ The following arguments are supported:
 * `autoconf` - Enable/disable address auto config. Valid values: `disable`, `enable`.
 
 * `cli_conn6_status` - Cli-Conn6-Status.
+* `client_options` - Client-Options. The structure of `client_options` block is documented below.
 * `dhcp6_client_options` - Dhcp6-Client-Options. Valid values: `rapid`, `iapd`, `iana`, `dns`, `dnsname`.
 
 * `dhcp6_iapd_list` - Dhcp6-Iapd-List. The structure of `dhcp6_iapd_list` block is documented below.
@@ -116,6 +118,15 @@ The following arguments are supported:
 * `vrrp6` - Vrrp6. The structure of `vrrp6` block is documented below.
 * `dynamic_sort_subtable` - true or false, set this parameter to true when using dynamic for_each + toset to configure and sort sub-tables, please do not set this parameter when configuring static sub-tables.
 
+The `client_options` block supports:
+
+* `code` - DHCPv6 option code.
+* `id` - ID.
+* `ip6` - DHCP option IP6s.
+* `type` - DHCPv6 option type. Valid values: `hex`, `string`, `ip6`, `fqdn`.
+
+* `value` - DHCPv6 option value (hexadecimal value must be even).
+
 The `dhcp6_iapd_list` block supports:
 
 * `iaid` - Identity association identifier.
@@ -166,6 +177,7 @@ The `vrrp6` block supports:
 * `start_time` - Startup time (1 - 255 seconds).
 * `status` - Enable/disable VRRP. Valid values: `disable`, `enable`.
 
+* `vrdst_priority` - Priority of the virtual router when the virtual router destination becomes unreachable (0 - 254).
 * `vrdst6` - Monitor the route to this destination.
 * `vrgrp` - VRRP group ID (1 - 65535).
 * `vrid` - Virtual router identifier (1 - 255).

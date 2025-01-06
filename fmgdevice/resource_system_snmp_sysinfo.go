@@ -59,6 +59,11 @@ func resourceSystemSnmpSysinfo() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
+			"non_mgmt_vdom_query": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
 			"status": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -212,6 +217,10 @@ func flattenSystemSnmpSysinfoLocation(v interface{}, d *schema.ResourceData, pre
 	return v
 }
 
+func flattenSystemSnmpSysinfoNonMgmtVdomQuery(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenSystemSnmpSysinfoStatus(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -296,6 +305,16 @@ func refreshObjectSystemSnmpSysinfo(d *schema.ResourceData, o map[string]interfa
 			}
 		} else {
 			return fmt.Errorf("Error reading location: %v", err)
+		}
+	}
+
+	if err = d.Set("non_mgmt_vdom_query", flattenSystemSnmpSysinfoNonMgmtVdomQuery(o["non-mgmt-vdom-query"], d, "non_mgmt_vdom_query")); err != nil {
+		if vv, ok := fortiAPIPatch(o["non-mgmt-vdom-query"], "SystemSnmpSysinfo-NonMgmtVdomQuery"); ok {
+			if err = d.Set("non_mgmt_vdom_query", vv); err != nil {
+				return fmt.Errorf("Error reading non_mgmt_vdom_query: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading non_mgmt_vdom_query: %v", err)
 		}
 	}
 
@@ -392,6 +411,10 @@ func expandSystemSnmpSysinfoLocation(d *schema.ResourceData, v interface{}, pre 
 	return v, nil
 }
 
+func expandSystemSnmpSysinfoNonMgmtVdomQuery(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandSystemSnmpSysinfoStatus(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -470,6 +493,15 @@ func getObjectSystemSnmpSysinfo(d *schema.ResourceData) (*map[string]interface{}
 			return &obj, err
 		} else if t != nil {
 			obj["location"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("non_mgmt_vdom_query"); ok || d.HasChange("non_mgmt_vdom_query") {
+		t, err := expandSystemSnmpSysinfoNonMgmtVdomQuery(d, v, "non_mgmt_vdom_query")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["non-mgmt-vdom-query"] = t
 		}
 	}
 

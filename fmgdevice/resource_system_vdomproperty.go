@@ -329,7 +329,7 @@ func flattenSystemVdomPropertyLogDiskQuota(v interface{}, d *schema.ResourceData
 }
 
 func flattenSystemVdomPropertyName(v interface{}, d *schema.ResourceData, pre string) interface{} {
-	return v
+	return convintflist2str(v, d.Get(pre))
 }
 
 func flattenSystemVdomPropertyOnetimeSchedule(v interface{}, d *schema.ResourceData, pre string) interface{} {
@@ -625,7 +625,7 @@ func expandSystemVdomPropertyLogDiskQuota(d *schema.ResourceData, v interface{},
 }
 
 func expandSystemVdomPropertyName(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
-	return v, nil
+	return convstr2list(v, nil), nil
 }
 
 func expandSystemVdomPropertyOnetimeSchedule(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {

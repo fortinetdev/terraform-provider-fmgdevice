@@ -34,6 +34,11 @@ func resourceSystemFederatedUpgrade() *schema.Resource {
 				Computed: true,
 				ForceNew: true,
 			},
+			"dry_run": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
 			"failure_device": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -114,6 +119,11 @@ func resourceSystemFederatedUpgrade() *schema.Resource {
 						},
 					},
 				},
+			},
+			"source": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
 			},
 			"status": &schema.Schema{
 				Type:     schema.TypeString,
@@ -226,6 +236,10 @@ func resourceSystemFederatedUpgradeRead(d *schema.ResourceData, m interface{}) e
 		return fmt.Errorf("Error reading SystemFederatedUpgrade resource from API: %v", err)
 	}
 	return nil
+}
+
+func flattenSystemFederatedUpgradeDryRun(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
 }
 
 func flattenSystemFederatedUpgradeFailureDevice(v interface{}, d *schema.ResourceData, pre string) interface{} {
@@ -396,6 +410,10 @@ func flattenSystemFederatedUpgradeNodeListUpgradePath(v interface{}, d *schema.R
 	return v
 }
 
+func flattenSystemFederatedUpgradeSource(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenSystemFederatedUpgradeStatus(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -409,6 +427,16 @@ func refreshObjectSystemFederatedUpgrade(d *schema.ResourceData, o map[string]in
 
 	if dssValue := d.Get("dynamic_sort_subtable"); dssValue == "" {
 		d.Set("dynamic_sort_subtable", "false")
+	}
+
+	if err = d.Set("dry_run", flattenSystemFederatedUpgradeDryRun(o["dry-run"], d, "dry_run")); err != nil {
+		if vv, ok := fortiAPIPatch(o["dry-run"], "SystemFederatedUpgrade-DryRun"); ok {
+			if err = d.Set("dry_run", vv); err != nil {
+				return fmt.Errorf("Error reading dry_run: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading dry_run: %v", err)
+		}
 	}
 
 	if err = d.Set("failure_device", flattenSystemFederatedUpgradeFailureDevice(o["failure-device"], d, "failure_device")); err != nil {
@@ -509,6 +537,16 @@ func refreshObjectSystemFederatedUpgrade(d *schema.ResourceData, o map[string]in
 		}
 	}
 
+	if err = d.Set("source", flattenSystemFederatedUpgradeSource(o["source"], d, "source")); err != nil {
+		if vv, ok := fortiAPIPatch(o["source"], "SystemFederatedUpgrade-Source"); ok {
+			if err = d.Set("source", vv); err != nil {
+				return fmt.Errorf("Error reading source: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading source: %v", err)
+		}
+	}
+
 	if err = d.Set("status", flattenSystemFederatedUpgradeStatus(o["status"], d, "status")); err != nil {
 		if vv, ok := fortiAPIPatch(o["status"], "SystemFederatedUpgrade-Status"); ok {
 			if err = d.Set("status", vv); err != nil {
@@ -536,6 +574,10 @@ func flattenSystemFederatedUpgradeFortiTestDebug(d *schema.ResourceData, fosdebu
 	log.Printf(strconv.Itoa(fosdebugsn))
 	e := validation.IntBetween(fosdebugbeg, fosdebugend)
 	log.Printf("ER List: %v", e)
+}
+
+func expandSystemFederatedUpgradeDryRun(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
 }
 
 func expandSystemFederatedUpgradeFailureDevice(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
@@ -687,6 +729,10 @@ func expandSystemFederatedUpgradeNodeListUpgradePath(d *schema.ResourceData, v i
 	return v, nil
 }
 
+func expandSystemFederatedUpgradeSource(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandSystemFederatedUpgradeStatus(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -697,6 +743,15 @@ func expandSystemFederatedUpgradeUpgradeId(d *schema.ResourceData, v interface{}
 
 func getObjectSystemFederatedUpgrade(d *schema.ResourceData) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
+
+	if v, ok := d.GetOk("dry_run"); ok || d.HasChange("dry_run") {
+		t, err := expandSystemFederatedUpgradeDryRun(d, v, "dry_run")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["dry-run"] = t
+		}
+	}
 
 	if v, ok := d.GetOk("failure_device"); ok || d.HasChange("failure_device") {
 		t, err := expandSystemFederatedUpgradeFailureDevice(d, v, "failure_device")
@@ -758,6 +813,15 @@ func getObjectSystemFederatedUpgrade(d *schema.ResourceData) (*map[string]interf
 			return &obj, err
 		} else if t != nil {
 			obj["node-list"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("source"); ok || d.HasChange("source") {
+		t, err := expandSystemFederatedUpgradeSource(d, v, "source")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["source"] = t
 		}
 	}
 

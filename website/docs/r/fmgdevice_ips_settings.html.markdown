@@ -31,6 +31,8 @@ The following arguments are supported:
 * `device_name` - FortiManager managed device name. This variable is used in the request URL. If not specified, it will inherit the variable `device_name` of the provider.
 * `device_vdom` - FortiManager managed device vdom. This variable is used in the request URL. If not specified, it will inherit the variable `device_vdom` of the provider.
 
+* `ha_session_pickup` - IPS HA failover session pickup preference. Valid values: `connectivity`, `security`.
+
 * `ips_packet_quota` - Maximum amount of disk space in MB for logged packets when logging to disk. Range depends on disk size.
 * `packet_log_history` - Number of packets to capture before and including the one in which the IPS signature is detected (1 - 255).
 * `packet_log_memory` - Maximum memory can be used by packet log (64 - 8192 kB).

@@ -106,6 +106,11 @@ func resourceSystemPppoeInterface() *schema.Resource {
 				Sensitive: true,
 				Computed:  true,
 			},
+			"pppoe_egress_cos": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
 			"pppoe_unnumbered_negotiate": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -321,6 +326,10 @@ func flattenSystemPppoeInterfacePadtRetryTimeout(v interface{}, d *schema.Resour
 	return v
 }
 
+func flattenSystemPppoeInterfacePppoeEgressCos(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenSystemPppoeInterfacePppoeUnnumberedNegotiate(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -456,6 +465,16 @@ func refreshObjectSystemPppoeInterface(d *schema.ResourceData, o map[string]inte
 		}
 	}
 
+	if err = d.Set("pppoe_egress_cos", flattenSystemPppoeInterfacePppoeEgressCos(o["pppoe-egress-cos"], d, "pppoe_egress_cos")); err != nil {
+		if vv, ok := fortiAPIPatch(o["pppoe-egress-cos"], "SystemPppoeInterface-PppoeEgressCos"); ok {
+			if err = d.Set("pppoe_egress_cos", vv); err != nil {
+				return fmt.Errorf("Error reading pppoe_egress_cos: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading pppoe_egress_cos: %v", err)
+		}
+	}
+
 	if err = d.Set("pppoe_unnumbered_negotiate", flattenSystemPppoeInterfacePppoeUnnumberedNegotiate(o["pppoe-unnumbered-negotiate"], d, "pppoe_unnumbered_negotiate")); err != nil {
 		if vv, ok := fortiAPIPatch(o["pppoe-unnumbered-negotiate"], "SystemPppoeInterface-PppoeUnnumberedNegotiate"); ok {
 			if err = d.Set("pppoe_unnumbered_negotiate", vv); err != nil {
@@ -545,6 +564,10 @@ func expandSystemPppoeInterfacePadtRetryTimeout(d *schema.ResourceData, v interf
 
 func expandSystemPppoeInterfacePassword(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandSystemPppoeInterfacePppoeEgressCos(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
 }
 
 func expandSystemPppoeInterfacePppoeUnnumberedNegotiate(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
@@ -676,6 +699,15 @@ func getObjectSystemPppoeInterface(d *schema.ResourceData) (*map[string]interfac
 			return &obj, err
 		} else if t != nil {
 			obj["password"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("pppoe_egress_cos"); ok || d.HasChange("pppoe_egress_cos") {
+		t, err := expandSystemPppoeInterfacePppoeEgressCos(d, v, "pppoe_egress_cos")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["pppoe-egress-cos"] = t
 		}
 	}
 

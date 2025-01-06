@@ -78,6 +78,11 @@ func resourceRouterMulticast6() *schema.Resource {
 				Computed: true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
+						"pim_use_sdwan": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+							Computed: true,
+						},
 						"register_rate_limit": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
@@ -283,7 +288,7 @@ func flattenRouterMulticast6InterfaceHelloInterval(v interface{}, d *schema.Reso
 }
 
 func flattenRouterMulticast6InterfaceName(v interface{}, d *schema.ResourceData, pre string) interface{} {
-	return v
+	return convintflist2str(v, d.Get(pre))
 }
 
 func flattenRouterMulticast6MulticastPmtu(v interface{}, d *schema.ResourceData, pre string) interface{} {
@@ -303,6 +308,11 @@ func flattenRouterMulticast6PimSmGlobal(v interface{}, d *schema.ResourceData, p
 	result := make(map[string]interface{})
 
 	pre_append := "" // complex
+	pre_append = pre + ".0." + "pim_use_sdwan"
+	if _, ok := i["pim-use-sdwan"]; ok {
+		result["pim_use_sdwan"] = flattenRouterMulticast6PimSmGlobalPimUseSdwan(i["pim-use-sdwan"], d, pre_append)
+	}
+
 	pre_append = pre + ".0." + "register_rate_limit"
 	if _, ok := i["register-rate-limit"]; ok {
 		result["register_rate_limit"] = flattenRouterMulticast6PimSmGlobalRegisterRateLimit(i["register-rate-limit"], d, pre_append)
@@ -315,6 +325,10 @@ func flattenRouterMulticast6PimSmGlobal(v interface{}, d *schema.ResourceData, p
 
 	lastresult := []map[string]interface{}{result}
 	return lastresult
+}
+
+func flattenRouterMulticast6PimSmGlobalPimUseSdwan(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
 }
 
 func flattenRouterMulticast6PimSmGlobalRegisterRateLimit(v interface{}, d *schema.ResourceData, pre string) interface{} {
@@ -502,7 +516,7 @@ func expandRouterMulticast6InterfaceHelloInterval(d *schema.ResourceData, v inte
 }
 
 func expandRouterMulticast6InterfaceName(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
-	return v, nil
+	return convstr2list(v, nil), nil
 }
 
 func expandRouterMulticast6MulticastPmtu(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
@@ -523,6 +537,10 @@ func expandRouterMulticast6PimSmGlobal(d *schema.ResourceData, v interface{}, pr
 	result := make(map[string]interface{})
 
 	pre_append := "" // complex
+	pre_append = pre + ".0." + "pim_use_sdwan"
+	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+		result["pim-use-sdwan"], _ = expandRouterMulticast6PimSmGlobalPimUseSdwan(d, i["pim_use_sdwan"], pre_append)
+	}
 	pre_append = pre + ".0." + "register_rate_limit"
 	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
 		result["register-rate-limit"], _ = expandRouterMulticast6PimSmGlobalRegisterRateLimit(d, i["register_rate_limit"], pre_append)
@@ -538,6 +556,10 @@ func expandRouterMulticast6PimSmGlobal(d *schema.ResourceData, v interface{}, pr
 	}
 
 	return result, nil
+}
+
+func expandRouterMulticast6PimSmGlobalPimUseSdwan(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
 }
 
 func expandRouterMulticast6PimSmGlobalRegisterRateLimit(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
