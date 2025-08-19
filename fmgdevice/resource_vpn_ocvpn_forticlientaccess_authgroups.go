@@ -66,6 +66,7 @@ func resourceVpnOcvpnForticlientAccessAuthGroupsCreate(d *schema.ResourceData, m
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -79,13 +80,15 @@ func resourceVpnOcvpnForticlientAccessAuthGroupsCreate(d *schema.ResourceData, m
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectVpnOcvpnForticlientAccessAuthGroups(d)
 	if err != nil {
 		return fmt.Errorf("Error creating VpnOcvpnForticlientAccessAuthGroups resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateVpnOcvpnForticlientAccessAuthGroups(obj, paradict)
-
+	_, err = c.CreateVpnOcvpnForticlientAccessAuthGroups(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating VpnOcvpnForticlientAccessAuthGroups resource: %v", err)
 	}
@@ -101,6 +104,7 @@ func resourceVpnOcvpnForticlientAccessAuthGroupsUpdate(d *schema.ResourceData, m
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -114,12 +118,15 @@ func resourceVpnOcvpnForticlientAccessAuthGroupsUpdate(d *schema.ResourceData, m
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectVpnOcvpnForticlientAccessAuthGroups(d)
 	if err != nil {
 		return fmt.Errorf("Error updating VpnOcvpnForticlientAccessAuthGroups resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateVpnOcvpnForticlientAccessAuthGroups(obj, mkey, paradict)
+	_, err = c.UpdateVpnOcvpnForticlientAccessAuthGroups(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating VpnOcvpnForticlientAccessAuthGroups resource: %v", err)
 	}
@@ -138,6 +145,7 @@ func resourceVpnOcvpnForticlientAccessAuthGroupsDelete(d *schema.ResourceData, m
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -151,7 +159,11 @@ func resourceVpnOcvpnForticlientAccessAuthGroupsDelete(d *schema.ResourceData, m
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	err = c.DeleteVpnOcvpnForticlientAccessAuthGroups(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteVpnOcvpnForticlientAccessAuthGroups(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting VpnOcvpnForticlientAccessAuthGroups resource: %v", err)
 	}

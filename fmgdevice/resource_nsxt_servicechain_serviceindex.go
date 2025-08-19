@@ -68,6 +68,7 @@ func resourceNsxtServiceChainServiceIndexCreate(d *schema.ResourceData, m interf
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -78,13 +79,15 @@ func resourceNsxtServiceChainServiceIndexCreate(d *schema.ResourceData, m interf
 	paradict["device"] = device_name
 	paradict["service_chain"] = service_chain
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectNsxtServiceChainServiceIndex(d)
 	if err != nil {
 		return fmt.Errorf("Error creating NsxtServiceChainServiceIndex resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateNsxtServiceChainServiceIndex(obj, paradict)
-
+	_, err = c.CreateNsxtServiceChainServiceIndex(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating NsxtServiceChainServiceIndex resource: %v", err)
 	}
@@ -100,6 +103,7 @@ func resourceNsxtServiceChainServiceIndexUpdate(d *schema.ResourceData, m interf
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -110,12 +114,15 @@ func resourceNsxtServiceChainServiceIndexUpdate(d *schema.ResourceData, m interf
 	paradict["device"] = device_name
 	paradict["service_chain"] = service_chain
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectNsxtServiceChainServiceIndex(d)
 	if err != nil {
 		return fmt.Errorf("Error updating NsxtServiceChainServiceIndex resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateNsxtServiceChainServiceIndex(obj, mkey, paradict)
+	_, err = c.UpdateNsxtServiceChainServiceIndex(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating NsxtServiceChainServiceIndex resource: %v", err)
 	}
@@ -134,6 +141,7 @@ func resourceNsxtServiceChainServiceIndexDelete(d *schema.ResourceData, m interf
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -144,7 +152,11 @@ func resourceNsxtServiceChainServiceIndexDelete(d *schema.ResourceData, m interf
 	paradict["device"] = device_name
 	paradict["service_chain"] = service_chain
 
-	err = c.DeleteNsxtServiceChainServiceIndex(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteNsxtServiceChainServiceIndex(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting NsxtServiceChainServiceIndex resource: %v", err)
 	}

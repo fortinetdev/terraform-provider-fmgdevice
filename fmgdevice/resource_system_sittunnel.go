@@ -85,6 +85,7 @@ func resourceSystemSitTunnelCreate(d *schema.ResourceData, m interface{}) error 
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -98,13 +99,15 @@ func resourceSystemSitTunnelCreate(d *schema.ResourceData, m interface{}) error 
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSystemSitTunnel(d)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemSitTunnel resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateSystemSitTunnel(obj, paradict)
-
+	_, err = c.CreateSystemSitTunnel(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemSitTunnel resource: %v", err)
 	}
@@ -120,6 +123,7 @@ func resourceSystemSitTunnelUpdate(d *schema.ResourceData, m interface{}) error 
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -133,12 +137,15 @@ func resourceSystemSitTunnelUpdate(d *schema.ResourceData, m interface{}) error 
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSystemSitTunnel(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemSitTunnel resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateSystemSitTunnel(obj, mkey, paradict)
+	_, err = c.UpdateSystemSitTunnel(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemSitTunnel resource: %v", err)
 	}
@@ -157,6 +164,7 @@ func resourceSystemSitTunnelDelete(d *schema.ResourceData, m interface{}) error 
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -170,7 +178,11 @@ func resourceSystemSitTunnelDelete(d *schema.ResourceData, m interface{}) error 
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	err = c.DeleteSystemSitTunnel(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteSystemSitTunnel(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting SystemSitTunnel resource: %v", err)
 	}

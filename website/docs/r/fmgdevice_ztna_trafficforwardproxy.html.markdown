@@ -26,13 +26,16 @@ The following arguments are supported:
 
 * `auth_portal` - Enable/disable authentication portal. Valid values: `disable`, `enable`.
 
+* `auth_virtual_host` - Virtual host for authentication portal.
 * `client_cert` - Enable/disable to request client certificate. Valid values: `disable`, `enable`.
 
 * `comment` - Comment.
+* `decrypted_traffic_mirror` - Decrypted traffic mirror.
 * `empty_cert_action` - Action of an empty client certificate. Valid values: `accept`, `block`, `accept-unmanageable`.
 
 * `h3_support` - Enable/disable HTTP3/QUIC support (default = disable). Valid values: `disable`, `enable`.
 
+* `host` - Virtual or real host name.
 * `interface` - interface name
 * `log_blocked_traffic` - Enable/disable logging of blocked traffic. Valid values: `disable`, `enable`.
 
@@ -105,6 +108,8 @@ The following arguments are supported:
 * `svr_pool_ttl` - Time-to-live in the server pool for idle connections to servers.
 * `user_agent_detect` - Enable/disable to detect device type by HTTP user-agent if no client certificate provided. Valid values: `disable`, `enable`.
 
+* `vip` - Virtual IP name.
+* `vip6` - Virtual IPv6 name.
 * `dynamic_sort_subtable` - true or false, set this parameter to true when using dynamic for_each + toset to configure and sort sub-tables, please do not set this parameter when configuring static sub-tables.
 
 The `quic` block supports:

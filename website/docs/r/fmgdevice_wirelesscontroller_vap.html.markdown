@@ -76,6 +76,8 @@ The following arguments are supported:
 
 * `_intf_managed_subnetwork_size` - _Intf_Managed-Subnetwork-Size. Valid values: `32`, `64`, `128`, `256`, `512`, `1024`, `2048`, `4096`, `8192`, `16384`, `32768`, `65536`.
 
+* `_intf_role` - _Intf_Role. Valid values: `lan`, `wan`, `dmz`, `undefined`.
+
 * `_is_factory_setting` - _Is_Factory_Setting. Valid values: `disable`, `enable`, `ext`.
 
 * `acct_interim_interval` - WiFi RADIUS accounting interim interval (60 - 86400 sec, default = 0).
@@ -114,6 +116,8 @@ The following arguments are supported:
 
 * `bstm_load_balancing_disassoc_timer` - Time interval for client to voluntarily leave AP before forcing a disassociation due to AP load-balancing (0 to 30, default = 10).
 * `bstm_rssi_disassoc_timer` - Time interval for client to voluntarily leave AP before forcing a disassociation due to low RSSI (0 to 2000, default = 200).
+* `called_station_id_type` - The format type of RADIUS attribute Called-Station-Id (default = mac). Valid values: `mac`, `ip`, `apname`.
+
 * `captive_portal` - Enable/disable captive portal. Valid values: `disable`, `enable`.
 
 * `captive_portal_ac_name` - Local-bridging captive portal ac-name.
@@ -151,6 +155,8 @@ The following arguments are supported:
 * `external_fast_roaming` - Enable/disable fast roaming or pre-authentication with external APs not managed by the FortiGate (default = disable). Valid values: `disable`, `enable`.
 
 * `external_logout` - URL of external authentication logout server.
+* `external_pre_auth` - Enable/disable pre-authentication with external APs not managed by the FortiGate (default = disable). Valid values: `disable`, `enable`.
+
 * `external_web` - URL of external authentication web server.
 * `external_web_format` - URL query parameter detection (default = auto-detect). Valid values: `auto-detect`, `no-query-string`, `partial-query-string`.
 
@@ -267,6 +273,8 @@ The following arguments are supported:
 * `portal_message_override_group` - Replacement message group for this VAP (only available when security is set to a captive portal type).
 * `portal_message_overrides` - Portal-Message-Overrides. The structure of `portal_message_overrides` block is documented below.
 * `portal_type` - Captive portal functionality. Configure how the captive portal authenticates users and whether it includes a disclaimer. Valid values: `auth`, `auth+disclaimer`, `disclaimer`, `email-collect`, `cmcc`, `cmcc-macauth`, `auth-mac`, `external-auth`, `external-macauth`.
+
+* `pre_auth` - Enable/disable pre-authentication, where supported by clients (default = enable). Valid values: `disable`, `enable`.
 
 * `primary_wag_profile` - Primary wireless access gateway profile name.
 * `probe_resp_suppression` - Enable/disable probe response suppression (to ignore weak signals) (default = disable). Valid values: `disable`, `enable`.
@@ -403,6 +411,8 @@ The `dynamic_mapping` block supports:
 
 * `_intf_managed_subnetwork_size` - _Intf_Managed-Subnetwork-Size. Valid values: `32`, `64`, `128`, `256`, `512`, `1024`, `2048`, `4096`, `8192`, `16384`, `32768`, `65536`.
 
+* `_intf_role` - _Intf_Role. Valid values: `lan`, `wan`, `dmz`, `undefined`.
+
 * `_is_factory_setting` - _Is_Factory_Setting. Valid values: `disable`, `enable`, `ext`.
 
 * `_scope` - _Scope. The structure of `_scope` block is documented below.
@@ -442,6 +452,8 @@ The `dynamic_mapping` block supports:
 
 * `bstm_load_balancing_disassoc_timer` - Time interval for client to voluntarily leave AP before forcing a disassociation due to AP load-balancing (0 to 30, default = 10).
 * `bstm_rssi_disassoc_timer` - Time interval for client to voluntarily leave AP before forcing a disassociation due to low RSSI (0 to 2000, default = 200).
+* `called_station_id_type` - The format type of RADIUS attribute Called-Station-Id (default = mac). Valid values: `mac`, `ip`, `apname`.
+
 * `captive_portal` - Enable/disable captive portal. Valid values: `disable`, `enable`.
 
 * `captive_portal_ac_name` - Local-bridging captive portal ac-name.
@@ -479,6 +491,8 @@ The `dynamic_mapping` block supports:
 * `external_fast_roaming` - Enable/disable fast roaming or pre-authentication with external APs not managed by the FortiGate (default = disable). Valid values: `disable`, `enable`.
 
 * `external_logout` - URL of external authentication logout server.
+* `external_pre_auth` - Enable/disable pre-authentication with external APs not managed by the FortiGate (default = disable). Valid values: `disable`, `enable`.
+
 * `external_web` - URL of external authentication web server.
 * `external_web_format` - URL query parameter detection (default = auto-detect). Valid values: `auto-detect`, `no-query-string`, `partial-query-string`.
 
@@ -593,6 +607,8 @@ The `dynamic_mapping` block supports:
 * `port_macauth_timeout` - LAN port MAC authentication idle timeout value (default = 600 sec).
 * `portal_message_override_group` - Replacement message group for this VAP (only available when security is set to a captive portal type).
 * `portal_type` - Captive portal functionality. Configure how the captive portal authenticates users and whether it includes a disclaimer. Valid values: `auth`, `auth+disclaimer`, `disclaimer`, `email-collect`, `cmcc`, `cmcc-macauth`, `auth-mac`, `external-auth`, `external-macauth`.
+
+* `pre_auth` - Enable/disable pre-authentication, where supported by clients (default = enable). Valid values: `disable`, `enable`.
 
 * `primary_wag_profile` - Primary wireless access gateway profile name.
 * `probe_resp_suppression` - Enable/disable probe response suppression (to ignore weak signals) (default = disable). Valid values: `disable`, `enable`.

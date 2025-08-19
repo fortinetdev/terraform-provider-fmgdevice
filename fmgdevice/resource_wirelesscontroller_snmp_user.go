@@ -104,6 +104,7 @@ func resourceWirelessControllerSnmpUserCreate(d *schema.ResourceData, m interfac
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -117,13 +118,15 @@ func resourceWirelessControllerSnmpUserCreate(d *schema.ResourceData, m interfac
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectWirelessControllerSnmpUser(d)
 	if err != nil {
 		return fmt.Errorf("Error creating WirelessControllerSnmpUser resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateWirelessControllerSnmpUser(obj, paradict)
-
+	_, err = c.CreateWirelessControllerSnmpUser(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating WirelessControllerSnmpUser resource: %v", err)
 	}
@@ -139,6 +142,7 @@ func resourceWirelessControllerSnmpUserUpdate(d *schema.ResourceData, m interfac
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -152,12 +156,15 @@ func resourceWirelessControllerSnmpUserUpdate(d *schema.ResourceData, m interfac
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectWirelessControllerSnmpUser(d)
 	if err != nil {
 		return fmt.Errorf("Error updating WirelessControllerSnmpUser resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateWirelessControllerSnmpUser(obj, mkey, paradict)
+	_, err = c.UpdateWirelessControllerSnmpUser(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating WirelessControllerSnmpUser resource: %v", err)
 	}
@@ -176,6 +183,7 @@ func resourceWirelessControllerSnmpUserDelete(d *schema.ResourceData, m interfac
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -189,7 +197,11 @@ func resourceWirelessControllerSnmpUserDelete(d *schema.ResourceData, m interfac
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	err = c.DeleteWirelessControllerSnmpUser(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteWirelessControllerSnmpUser(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting WirelessControllerSnmpUser resource: %v", err)
 	}

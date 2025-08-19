@@ -254,6 +254,7 @@ func resourceSwitchControllerLocationCreate(d *schema.ResourceData, m interface{
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -267,13 +268,15 @@ func resourceSwitchControllerLocationCreate(d *schema.ResourceData, m interface{
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSwitchControllerLocation(d)
 	if err != nil {
 		return fmt.Errorf("Error creating SwitchControllerLocation resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateSwitchControllerLocation(obj, paradict)
-
+	_, err = c.CreateSwitchControllerLocation(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating SwitchControllerLocation resource: %v", err)
 	}
@@ -289,6 +292,7 @@ func resourceSwitchControllerLocationUpdate(d *schema.ResourceData, m interface{
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -302,12 +306,15 @@ func resourceSwitchControllerLocationUpdate(d *schema.ResourceData, m interface{
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSwitchControllerLocation(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SwitchControllerLocation resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateSwitchControllerLocation(obj, mkey, paradict)
+	_, err = c.UpdateSwitchControllerLocation(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating SwitchControllerLocation resource: %v", err)
 	}
@@ -326,6 +333,7 @@ func resourceSwitchControllerLocationDelete(d *schema.ResourceData, m interface{
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -339,7 +347,11 @@ func resourceSwitchControllerLocationDelete(d *schema.ResourceData, m interface{
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	err = c.DeleteSwitchControllerLocation(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteSwitchControllerLocation(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting SwitchControllerLocation resource: %v", err)
 	}

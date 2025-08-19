@@ -58,6 +58,7 @@ func resourceLoadBalanceSettingWorkersCreate(d *schema.ResourceData, m interface
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -66,13 +67,15 @@ func resourceLoadBalanceSettingWorkersCreate(d *schema.ResourceData, m interface
 	}
 	paradict["device"] = device_name
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectLoadBalanceSettingWorkers(d)
 	if err != nil {
 		return fmt.Errorf("Error creating LoadBalanceSettingWorkers resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateLoadBalanceSettingWorkers(obj, paradict)
-
+	_, err = c.CreateLoadBalanceSettingWorkers(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating LoadBalanceSettingWorkers resource: %v", err)
 	}
@@ -88,6 +91,7 @@ func resourceLoadBalanceSettingWorkersUpdate(d *schema.ResourceData, m interface
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -96,12 +100,15 @@ func resourceLoadBalanceSettingWorkersUpdate(d *schema.ResourceData, m interface
 	}
 	paradict["device"] = device_name
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectLoadBalanceSettingWorkers(d)
 	if err != nil {
 		return fmt.Errorf("Error updating LoadBalanceSettingWorkers resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateLoadBalanceSettingWorkers(obj, mkey, paradict)
+	_, err = c.UpdateLoadBalanceSettingWorkers(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating LoadBalanceSettingWorkers resource: %v", err)
 	}
@@ -120,6 +127,7 @@ func resourceLoadBalanceSettingWorkersDelete(d *schema.ResourceData, m interface
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -128,7 +136,11 @@ func resourceLoadBalanceSettingWorkersDelete(d *schema.ResourceData, m interface
 	}
 	paradict["device"] = device_name
 
-	err = c.DeleteLoadBalanceSettingWorkers(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteLoadBalanceSettingWorkers(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting LoadBalanceSettingWorkers resource: %v", err)
 	}

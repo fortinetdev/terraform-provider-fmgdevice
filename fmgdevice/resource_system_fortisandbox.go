@@ -34,6 +34,16 @@ func resourceSystemFortisandbox() *schema.Resource {
 				Computed: true,
 				ForceNew: true,
 			},
+			"ca": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Computed: true,
+			},
+			"cn": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 			"email": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -78,6 +88,10 @@ func resourceSystemFortisandbox() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"vrf_select": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+			},
 		},
 	}
 }
@@ -88,6 +102,7 @@ func resourceSystemFortisandboxUpdate(d *schema.ResourceData, m interface{}) err
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -96,12 +111,15 @@ func resourceSystemFortisandboxUpdate(d *schema.ResourceData, m interface{}) err
 	}
 	paradict["device"] = device_name
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSystemFortisandbox(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemFortisandbox resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateSystemFortisandbox(obj, mkey, paradict)
+	_, err = c.UpdateSystemFortisandbox(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemFortisandbox resource: %v", err)
 	}
@@ -120,6 +138,7 @@ func resourceSystemFortisandboxDelete(d *schema.ResourceData, m interface{}) err
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -128,7 +147,11 @@ func resourceSystemFortisandboxDelete(d *schema.ResourceData, m interface{}) err
 	}
 	paradict["device"] = device_name
 
-	err = c.DeleteSystemFortisandbox(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteSystemFortisandbox(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting SystemFortisandbox resource: %v", err)
 	}
@@ -177,6 +200,14 @@ func resourceSystemFortisandboxRead(d *schema.ResourceData, m interface{}) error
 	return nil
 }
 
+func flattenSystemFortisandboxCa(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
+func flattenSystemFortisandboxCn(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenSystemFortisandboxEmail(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -217,8 +248,32 @@ func flattenSystemFortisandboxStatus(v interface{}, d *schema.ResourceData, pre 
 	return v
 }
 
+func flattenSystemFortisandboxVrfSelect(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func refreshObjectSystemFortisandbox(d *schema.ResourceData, o map[string]interface{}) error {
 	var err error
+
+	if err = d.Set("ca", flattenSystemFortisandboxCa(o["ca"], d, "ca")); err != nil {
+		if vv, ok := fortiAPIPatch(o["ca"], "SystemFortisandbox-Ca"); ok {
+			if err = d.Set("ca", vv); err != nil {
+				return fmt.Errorf("Error reading ca: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading ca: %v", err)
+		}
+	}
+
+	if err = d.Set("cn", flattenSystemFortisandboxCn(o["cn"], d, "cn")); err != nil {
+		if vv, ok := fortiAPIPatch(o["cn"], "SystemFortisandbox-Cn"); ok {
+			if err = d.Set("cn", vv); err != nil {
+				return fmt.Errorf("Error reading cn: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading cn: %v", err)
+		}
+	}
 
 	if err = d.Set("email", flattenSystemFortisandboxEmail(o["email"], d, "email")); err != nil {
 		if vv, ok := fortiAPIPatch(o["email"], "SystemFortisandbox-Email"); ok {
@@ -320,6 +375,16 @@ func refreshObjectSystemFortisandbox(d *schema.ResourceData, o map[string]interf
 		}
 	}
 
+	if err = d.Set("vrf_select", flattenSystemFortisandboxVrfSelect(o["vrf-select"], d, "vrf_select")); err != nil {
+		if vv, ok := fortiAPIPatch(o["vrf-select"], "SystemFortisandbox-VrfSelect"); ok {
+			if err = d.Set("vrf_select", vv); err != nil {
+				return fmt.Errorf("Error reading vrf_select: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading vrf_select: %v", err)
+		}
+	}
+
 	return nil
 }
 
@@ -327,6 +392,14 @@ func flattenSystemFortisandboxFortiTestDebug(d *schema.ResourceData, fosdebugsn 
 	log.Printf(strconv.Itoa(fosdebugsn))
 	e := validation.IntBetween(fosdebugbeg, fosdebugend)
 	log.Printf("ER List: %v", e)
+}
+
+func expandSystemFortisandboxCa(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandSystemFortisandboxCn(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
 }
 
 func expandSystemFortisandboxEmail(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
@@ -369,8 +442,30 @@ func expandSystemFortisandboxStatus(d *schema.ResourceData, v interface{}, pre s
 	return v, nil
 }
 
+func expandSystemFortisandboxVrfSelect(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func getObjectSystemFortisandbox(d *schema.ResourceData) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
+
+	if v, ok := d.GetOk("ca"); ok || d.HasChange("ca") {
+		t, err := expandSystemFortisandboxCa(d, v, "ca")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["ca"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("cn"); ok || d.HasChange("cn") {
+		t, err := expandSystemFortisandboxCn(d, v, "cn")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["cn"] = t
+		}
+	}
 
 	if v, ok := d.GetOk("email"); ok || d.HasChange("email") {
 		t, err := expandSystemFortisandboxEmail(d, v, "email")
@@ -459,6 +554,15 @@ func getObjectSystemFortisandbox(d *schema.ResourceData) (*map[string]interface{
 			return &obj, err
 		} else if t != nil {
 			obj["status"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("vrf_select"); ok || d.HasChange("vrf_select") {
+		t, err := expandSystemFortisandboxVrfSelect(d, v, "vrf_select")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["vrf-select"] = t
 		}
 	}
 

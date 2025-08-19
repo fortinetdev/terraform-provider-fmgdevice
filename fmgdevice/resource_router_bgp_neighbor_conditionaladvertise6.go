@@ -70,6 +70,7 @@ func resourceRouterBgpNeighborConditionalAdvertise6Create(d *schema.ResourceData
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -85,13 +86,15 @@ func resourceRouterBgpNeighborConditionalAdvertise6Create(d *schema.ResourceData
 	paradict["vdom"] = device_vdom
 	paradict["neighbor"] = neighbor
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectRouterBgpNeighborConditionalAdvertise6(d)
 	if err != nil {
 		return fmt.Errorf("Error creating RouterBgpNeighborConditionalAdvertise6 resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateRouterBgpNeighborConditionalAdvertise6(obj, paradict)
-
+	_, err = c.CreateRouterBgpNeighborConditionalAdvertise6(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating RouterBgpNeighborConditionalAdvertise6 resource: %v", err)
 	}
@@ -107,6 +110,7 @@ func resourceRouterBgpNeighborConditionalAdvertise6Update(d *schema.ResourceData
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -122,12 +126,15 @@ func resourceRouterBgpNeighborConditionalAdvertise6Update(d *schema.ResourceData
 	paradict["vdom"] = device_vdom
 	paradict["neighbor"] = neighbor
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectRouterBgpNeighborConditionalAdvertise6(d)
 	if err != nil {
 		return fmt.Errorf("Error updating RouterBgpNeighborConditionalAdvertise6 resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateRouterBgpNeighborConditionalAdvertise6(obj, mkey, paradict)
+	_, err = c.UpdateRouterBgpNeighborConditionalAdvertise6(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating RouterBgpNeighborConditionalAdvertise6 resource: %v", err)
 	}
@@ -146,6 +153,7 @@ func resourceRouterBgpNeighborConditionalAdvertise6Delete(d *schema.ResourceData
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -161,7 +169,11 @@ func resourceRouterBgpNeighborConditionalAdvertise6Delete(d *schema.ResourceData
 	paradict["vdom"] = device_vdom
 	paradict["neighbor"] = neighbor
 
-	err = c.DeleteRouterBgpNeighborConditionalAdvertise6(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteRouterBgpNeighborConditionalAdvertise6(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting RouterBgpNeighborConditionalAdvertise6 resource: %v", err)
 	}

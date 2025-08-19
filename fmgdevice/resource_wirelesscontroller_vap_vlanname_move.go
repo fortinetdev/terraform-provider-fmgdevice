@@ -73,6 +73,7 @@ func resourceWirelessControllerVapVlanNameMoveUpdate(d *schema.ResourceData, m i
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -90,13 +91,16 @@ func resourceWirelessControllerVapVlanNameMoveUpdate(d *schema.ResourceData, m i
 	paradict["vap"] = vap
 	paradict["vlan_name"] = vlan_name
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	target := d.Get("target").(string)
 	obj, err := getObjectWirelessControllerVapVlanNameMove(d)
 	if err != nil {
 		return fmt.Errorf("Error updating WirelessControllerVapVlanNameMove resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateWirelessControllerVapVlanNameMove(obj, mkey, paradict)
+	_, err = c.UpdateWirelessControllerVapVlanNameMove(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating WirelessControllerVapVlanNameMove resource: %v", err)
 	}

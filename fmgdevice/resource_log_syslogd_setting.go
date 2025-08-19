@@ -123,6 +123,10 @@ func resourceLogSyslogdSetting() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"vrf_select": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+			},
 			"dynamic_sort_subtable": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -138,6 +142,7 @@ func resourceLogSyslogdSettingUpdate(d *schema.ResourceData, m interface{}) erro
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -146,12 +151,15 @@ func resourceLogSyslogdSettingUpdate(d *schema.ResourceData, m interface{}) erro
 	}
 	paradict["device"] = device_name
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectLogSyslogdSetting(d)
 	if err != nil {
 		return fmt.Errorf("Error updating LogSyslogdSetting resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateLogSyslogdSetting(obj, mkey, paradict)
+	_, err = c.UpdateLogSyslogdSetting(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating LogSyslogdSetting resource: %v", err)
 	}
@@ -170,6 +178,7 @@ func resourceLogSyslogdSettingDelete(d *schema.ResourceData, m interface{}) erro
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -178,7 +187,11 @@ func resourceLogSyslogdSettingDelete(d *schema.ResourceData, m interface{}) erro
 	}
 	paradict["device"] = device_name
 
-	err = c.DeleteLogSyslogdSetting(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteLogSyslogdSetting(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting LogSyslogdSetting resource: %v", err)
 	}
@@ -343,6 +356,10 @@ func flattenLogSyslogdSettingSslMinProtoVersion(v interface{}, d *schema.Resourc
 }
 
 func flattenLogSyslogdSettingStatus(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenLogSyslogdSettingVrfSelect(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -527,6 +544,16 @@ func refreshObjectLogSyslogdSetting(d *schema.ResourceData, o map[string]interfa
 		}
 	}
 
+	if err = d.Set("vrf_select", flattenLogSyslogdSettingVrfSelect(o["vrf-select"], d, "vrf_select")); err != nil {
+		if vv, ok := fortiAPIPatch(o["vrf-select"], "LogSyslogdSetting-VrfSelect"); ok {
+			if err = d.Set("vrf_select", vv); err != nil {
+				return fmt.Errorf("Error reading vrf_select: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading vrf_select: %v", err)
+		}
+	}
+
 	return nil
 }
 
@@ -644,6 +671,10 @@ func expandLogSyslogdSettingSslMinProtoVersion(d *schema.ResourceData, v interfa
 }
 
 func expandLogSyslogdSettingStatus(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandLogSyslogdSettingVrfSelect(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -791,6 +822,15 @@ func getObjectLogSyslogdSetting(d *schema.ResourceData) (*map[string]interface{}
 			return &obj, err
 		} else if t != nil {
 			obj["status"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("vrf_select"); ok || d.HasChange("vrf_select") {
+		t, err := expandLogSyslogdSettingVrfSelect(d, v, "vrf_select")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["vrf-select"] = t
 		}
 	}
 

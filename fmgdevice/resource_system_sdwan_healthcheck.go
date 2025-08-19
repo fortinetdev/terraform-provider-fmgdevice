@@ -81,6 +81,17 @@ func resourceSystemSdwanHealthCheck() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"fortiguard": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+			"fortiguard_name": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Computed: true,
+			},
 			"ftp_file": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -196,10 +207,12 @@ func resourceSystemSdwanHealthCheck() *schema.Resource {
 						"jitter_threshold": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"latency_threshold": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"link_cost_factor": &schema.Schema{
 							Type:     schema.TypeSet,
@@ -309,6 +322,7 @@ func resourceSystemSdwanHealthCheckCreate(d *schema.ResourceData, m interface{})
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -322,13 +336,15 @@ func resourceSystemSdwanHealthCheckCreate(d *schema.ResourceData, m interface{})
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSystemSdwanHealthCheck(d)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemSdwanHealthCheck resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateSystemSdwanHealthCheck(obj, paradict)
-
+	_, err = c.CreateSystemSdwanHealthCheck(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemSdwanHealthCheck resource: %v", err)
 	}
@@ -344,6 +360,7 @@ func resourceSystemSdwanHealthCheckUpdate(d *schema.ResourceData, m interface{})
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -357,12 +374,15 @@ func resourceSystemSdwanHealthCheckUpdate(d *schema.ResourceData, m interface{})
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSystemSdwanHealthCheck(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemSdwanHealthCheck resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateSystemSdwanHealthCheck(obj, mkey, paradict)
+	_, err = c.UpdateSystemSdwanHealthCheck(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemSdwanHealthCheck resource: %v", err)
 	}
@@ -381,6 +401,7 @@ func resourceSystemSdwanHealthCheckDelete(d *schema.ResourceData, m interface{})
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -394,7 +415,11 @@ func resourceSystemSdwanHealthCheckDelete(d *schema.ResourceData, m interface{})
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	err = c.DeleteSystemSdwanHealthCheck(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteSystemSdwanHealthCheck(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting SystemSdwanHealthCheck resource: %v", err)
 	}
@@ -484,6 +509,14 @@ func flattenSystemSdwanHealthCheckEmbedMeasuredHealth2edl(v interface{}, d *sche
 
 func flattenSystemSdwanHealthCheckFailtime2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
+}
+
+func flattenSystemSdwanHealthCheckFortiguard2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemSdwanHealthCheckFortiguardName2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
 }
 
 func flattenSystemSdwanHealthCheckFtpFile2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
@@ -823,6 +856,26 @@ func refreshObjectSystemSdwanHealthCheck(d *schema.ResourceData, o map[string]in
 			}
 		} else {
 			return fmt.Errorf("Error reading failtime: %v", err)
+		}
+	}
+
+	if err = d.Set("fortiguard", flattenSystemSdwanHealthCheckFortiguard2edl(o["fortiguard"], d, "fortiguard")); err != nil {
+		if vv, ok := fortiAPIPatch(o["fortiguard"], "SystemSdwanHealthCheck-Fortiguard"); ok {
+			if err = d.Set("fortiguard", vv); err != nil {
+				return fmt.Errorf("Error reading fortiguard: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading fortiguard: %v", err)
+		}
+	}
+
+	if err = d.Set("fortiguard_name", flattenSystemSdwanHealthCheckFortiguardName2edl(o["fortiguard-name"], d, "fortiguard_name")); err != nil {
+		if vv, ok := fortiAPIPatch(o["fortiguard-name"], "SystemSdwanHealthCheck-FortiguardName"); ok {
+			if err = d.Set("fortiguard_name", vv); err != nil {
+				return fmt.Errorf("Error reading fortiguard_name: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading fortiguard_name: %v", err)
 		}
 	}
 
@@ -1251,6 +1304,14 @@ func expandSystemSdwanHealthCheckFailtime2edl(d *schema.ResourceData, v interfac
 	return v, nil
 }
 
+func expandSystemSdwanHealthCheckFortiguard2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemSdwanHealthCheckFortiguardName2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
 func expandSystemSdwanHealthCheckFtpFile2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -1567,6 +1628,24 @@ func getObjectSystemSdwanHealthCheck(d *schema.ResourceData) (*map[string]interf
 			return &obj, err
 		} else if t != nil {
 			obj["failtime"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("fortiguard"); ok || d.HasChange("fortiguard") {
+		t, err := expandSystemSdwanHealthCheckFortiguard2edl(d, v, "fortiguard")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["fortiguard"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("fortiguard_name"); ok || d.HasChange("fortiguard_name") {
+		t, err := expandSystemSdwanHealthCheckFortiguardName2edl(d, v, "fortiguard_name")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["fortiguard-name"] = t
 		}
 	}
 

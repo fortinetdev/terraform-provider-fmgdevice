@@ -73,6 +73,7 @@ func resourceFirewallInternetServiceExtensionEntryPortRangeCreate(d *schema.Reso
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -90,13 +91,15 @@ func resourceFirewallInternetServiceExtensionEntryPortRangeCreate(d *schema.Reso
 	paradict["internet_service_extension"] = internet_service_extension
 	paradict["entry"] = entry
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectFirewallInternetServiceExtensionEntryPortRange(d)
 	if err != nil {
 		return fmt.Errorf("Error creating FirewallInternetServiceExtensionEntryPortRange resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateFirewallInternetServiceExtensionEntryPortRange(obj, paradict)
-
+	_, err = c.CreateFirewallInternetServiceExtensionEntryPortRange(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating FirewallInternetServiceExtensionEntryPortRange resource: %v", err)
 	}
@@ -112,6 +115,7 @@ func resourceFirewallInternetServiceExtensionEntryPortRangeUpdate(d *schema.Reso
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -129,12 +133,15 @@ func resourceFirewallInternetServiceExtensionEntryPortRangeUpdate(d *schema.Reso
 	paradict["internet_service_extension"] = internet_service_extension
 	paradict["entry"] = entry
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectFirewallInternetServiceExtensionEntryPortRange(d)
 	if err != nil {
 		return fmt.Errorf("Error updating FirewallInternetServiceExtensionEntryPortRange resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateFirewallInternetServiceExtensionEntryPortRange(obj, mkey, paradict)
+	_, err = c.UpdateFirewallInternetServiceExtensionEntryPortRange(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating FirewallInternetServiceExtensionEntryPortRange resource: %v", err)
 	}
@@ -153,6 +160,7 @@ func resourceFirewallInternetServiceExtensionEntryPortRangeDelete(d *schema.Reso
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -170,7 +178,11 @@ func resourceFirewallInternetServiceExtensionEntryPortRangeDelete(d *schema.Reso
 	paradict["internet_service_extension"] = internet_service_extension
 	paradict["entry"] = entry
 
-	err = c.DeleteFirewallInternetServiceExtensionEntryPortRange(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteFirewallInternetServiceExtensionEntryPortRange(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting FirewallInternetServiceExtensionEntryPortRange resource: %v", err)
 	}

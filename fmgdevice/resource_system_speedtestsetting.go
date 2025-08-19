@@ -54,6 +54,7 @@ func resourceSystemSpeedTestSettingUpdate(d *schema.ResourceData, m interface{})
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -62,12 +63,15 @@ func resourceSystemSpeedTestSettingUpdate(d *schema.ResourceData, m interface{})
 	}
 	paradict["device"] = device_name
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSystemSpeedTestSetting(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemSpeedTestSetting resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateSystemSpeedTestSetting(obj, mkey, paradict)
+	_, err = c.UpdateSystemSpeedTestSetting(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemSpeedTestSetting resource: %v", err)
 	}
@@ -86,6 +90,7 @@ func resourceSystemSpeedTestSettingDelete(d *schema.ResourceData, m interface{})
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -94,7 +99,11 @@ func resourceSystemSpeedTestSettingDelete(d *schema.ResourceData, m interface{})
 	}
 	paradict["device"] = device_name
 
-	err = c.DeleteSystemSpeedTestSetting(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteSystemSpeedTestSetting(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting SystemSpeedTestSetting resource: %v", err)
 	}

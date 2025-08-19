@@ -71,6 +71,7 @@ func resourceWirelessControllerVapPortalMessageOverridesUpdate(d *schema.Resourc
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -86,12 +87,15 @@ func resourceWirelessControllerVapPortalMessageOverridesUpdate(d *schema.Resourc
 	paradict["vdom"] = device_vdom
 	paradict["vap"] = vap
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectWirelessControllerVapPortalMessageOverrides(d)
 	if err != nil {
 		return fmt.Errorf("Error updating WirelessControllerVapPortalMessageOverrides resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateWirelessControllerVapPortalMessageOverrides(obj, mkey, paradict)
+	_, err = c.UpdateWirelessControllerVapPortalMessageOverrides(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating WirelessControllerVapPortalMessageOverrides resource: %v", err)
 	}
@@ -110,6 +114,7 @@ func resourceWirelessControllerVapPortalMessageOverridesDelete(d *schema.Resourc
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -125,7 +130,11 @@ func resourceWirelessControllerVapPortalMessageOverridesDelete(d *schema.Resourc
 	paradict["vdom"] = device_vdom
 	paradict["vap"] = vap
 
-	err = c.DeleteWirelessControllerVapPortalMessageOverrides(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteWirelessControllerVapPortalMessageOverrides(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting WirelessControllerVapPortalMessageOverrides resource: %v", err)
 	}

@@ -80,6 +80,7 @@ func resourceSystemDnsServerCreate(d *schema.ResourceData, m interface{}) error 
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -93,13 +94,15 @@ func resourceSystemDnsServerCreate(d *schema.ResourceData, m interface{}) error 
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSystemDnsServer(d)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemDnsServer resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateSystemDnsServer(obj, paradict)
-
+	_, err = c.CreateSystemDnsServer(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemDnsServer resource: %v", err)
 	}
@@ -115,6 +118,7 @@ func resourceSystemDnsServerUpdate(d *schema.ResourceData, m interface{}) error 
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -128,12 +132,15 @@ func resourceSystemDnsServerUpdate(d *schema.ResourceData, m interface{}) error 
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSystemDnsServer(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemDnsServer resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateSystemDnsServer(obj, mkey, paradict)
+	_, err = c.UpdateSystemDnsServer(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemDnsServer resource: %v", err)
 	}
@@ -152,6 +159,7 @@ func resourceSystemDnsServerDelete(d *schema.ResourceData, m interface{}) error 
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -165,7 +173,11 @@ func resourceSystemDnsServerDelete(d *schema.ResourceData, m interface{}) error 
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	err = c.DeleteSystemDnsServer(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteSystemDnsServer(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting SystemDnsServer resource: %v", err)
 	}

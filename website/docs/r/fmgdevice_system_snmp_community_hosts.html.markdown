@@ -44,6 +44,7 @@ The following arguments are supported:
 
 * `ip` - IPv4 address of the SNMP manager (host).
 * `source_ip` - Source IPv4 address for SNMP traps.
+* `vrf_select` - VRF ID used for connection to server.
 
 
 ## Attribute Reference

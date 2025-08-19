@@ -74,6 +74,7 @@ func resourceWebProxyFastFallbackCreate(d *schema.ResourceData, m interface{}) e
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -87,13 +88,15 @@ func resourceWebProxyFastFallbackCreate(d *schema.ResourceData, m interface{}) e
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectWebProxyFastFallback(d)
 	if err != nil {
 		return fmt.Errorf("Error creating WebProxyFastFallback resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateWebProxyFastFallback(obj, paradict)
-
+	_, err = c.CreateWebProxyFastFallback(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating WebProxyFastFallback resource: %v", err)
 	}
@@ -109,6 +112,7 @@ func resourceWebProxyFastFallbackUpdate(d *schema.ResourceData, m interface{}) e
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -122,12 +126,15 @@ func resourceWebProxyFastFallbackUpdate(d *schema.ResourceData, m interface{}) e
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectWebProxyFastFallback(d)
 	if err != nil {
 		return fmt.Errorf("Error updating WebProxyFastFallback resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateWebProxyFastFallback(obj, mkey, paradict)
+	_, err = c.UpdateWebProxyFastFallback(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating WebProxyFastFallback resource: %v", err)
 	}
@@ -146,6 +153,7 @@ func resourceWebProxyFastFallbackDelete(d *schema.ResourceData, m interface{}) e
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -159,7 +167,11 @@ func resourceWebProxyFastFallbackDelete(d *schema.ResourceData, m interface{}) e
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	err = c.DeleteWebProxyFastFallback(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteWebProxyFastFallback(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting WebProxyFastFallback resource: %v", err)
 	}

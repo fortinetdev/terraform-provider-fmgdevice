@@ -56,6 +56,7 @@ func resourceLogAzureSecurityCenterSettingCustomFieldNameCreate(d *schema.Resour
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -64,13 +65,15 @@ func resourceLogAzureSecurityCenterSettingCustomFieldNameCreate(d *schema.Resour
 	}
 	paradict["device"] = device_name
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectLogAzureSecurityCenterSettingCustomFieldName(d)
 	if err != nil {
 		return fmt.Errorf("Error creating LogAzureSecurityCenterSettingCustomFieldName resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateLogAzureSecurityCenterSettingCustomFieldName(obj, paradict)
-
+	_, err = c.CreateLogAzureSecurityCenterSettingCustomFieldName(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating LogAzureSecurityCenterSettingCustomFieldName resource: %v", err)
 	}
@@ -86,6 +89,7 @@ func resourceLogAzureSecurityCenterSettingCustomFieldNameUpdate(d *schema.Resour
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -94,12 +98,15 @@ func resourceLogAzureSecurityCenterSettingCustomFieldNameUpdate(d *schema.Resour
 	}
 	paradict["device"] = device_name
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectLogAzureSecurityCenterSettingCustomFieldName(d)
 	if err != nil {
 		return fmt.Errorf("Error updating LogAzureSecurityCenterSettingCustomFieldName resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateLogAzureSecurityCenterSettingCustomFieldName(obj, mkey, paradict)
+	_, err = c.UpdateLogAzureSecurityCenterSettingCustomFieldName(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating LogAzureSecurityCenterSettingCustomFieldName resource: %v", err)
 	}
@@ -118,6 +125,7 @@ func resourceLogAzureSecurityCenterSettingCustomFieldNameDelete(d *schema.Resour
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -126,7 +134,11 @@ func resourceLogAzureSecurityCenterSettingCustomFieldNameDelete(d *schema.Resour
 	}
 	paradict["device"] = device_name
 
-	err = c.DeleteLogAzureSecurityCenterSettingCustomFieldName(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteLogAzureSecurityCenterSettingCustomFieldName(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting LogAzureSecurityCenterSettingCustomFieldName resource: %v", err)
 	}

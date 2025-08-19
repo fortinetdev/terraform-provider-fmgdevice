@@ -46,11 +46,13 @@ The following arguments are supported:
 * `ha_reboot_controller` - Serial number of the FortiGate unit that will control the reboot process for the federated upgrade of the HA cluster.
 * `ignore_signing_errors` - Allow/reject use of FortiGate firmware images that are unsigned. Valid values: `disable`, `enable`.
 
+* `initial_version` - Firmware version when the upgrade was set up.
 * `known_ha_members` - Known-Ha-Members. The structure of `known_ha_members` block is documented below.
 * `next_path_index` - The index of the next image to upgrade to.
 * `node_list` - Node-List. The structure of `node_list` block is documented below.
 * `source` - Source that set up the federated upgrade config. Valid values: `user`, `auto-firmware-upgrade`.
 
+* `starter_admin` - Admin that started the upgrade.
 * `status` - Current status of the upgrade. Valid values: `disabled`, `initialized`, `downloading`, `download-failed`, `ready`, `cancelled`, `confirmed`, `done`, `failed`, `device-disconnected`, `staging`, `final-check`, `upgrade-devices`, `coordinating`.
 
 * `upgrade_id` - Unique identifier for this upgrade.

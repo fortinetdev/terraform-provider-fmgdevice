@@ -113,6 +113,10 @@ func resourceVpnKmipServer() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
+			"vrf_select": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+			},
 			"dynamic_sort_subtable": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -127,6 +131,7 @@ func resourceVpnKmipServerCreate(d *schema.ResourceData, m interface{}) error {
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -140,13 +145,15 @@ func resourceVpnKmipServerCreate(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectVpnKmipServer(d)
 	if err != nil {
 		return fmt.Errorf("Error creating VpnKmipServer resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateVpnKmipServer(obj, paradict)
-
+	_, err = c.CreateVpnKmipServer(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating VpnKmipServer resource: %v", err)
 	}
@@ -162,6 +169,7 @@ func resourceVpnKmipServerUpdate(d *schema.ResourceData, m interface{}) error {
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -175,12 +183,15 @@ func resourceVpnKmipServerUpdate(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectVpnKmipServer(d)
 	if err != nil {
 		return fmt.Errorf("Error updating VpnKmipServer resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateVpnKmipServer(obj, mkey, paradict)
+	_, err = c.UpdateVpnKmipServer(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating VpnKmipServer resource: %v", err)
 	}
@@ -199,6 +210,7 @@ func resourceVpnKmipServerDelete(d *schema.ResourceData, m interface{}) error {
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -212,7 +224,11 @@ func resourceVpnKmipServerDelete(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	err = c.DeleteVpnKmipServer(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteVpnKmipServer(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting VpnKmipServer resource: %v", err)
 	}
@@ -379,6 +395,10 @@ func flattenVpnKmipServerUsername(v interface{}, d *schema.ResourceData, pre str
 	return v
 }
 
+func flattenVpnKmipServerVrfSelect(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func refreshObjectVpnKmipServer(d *schema.ResourceData, o map[string]interface{}) error {
 	var err error
 
@@ -477,6 +497,16 @@ func refreshObjectVpnKmipServer(d *schema.ResourceData, o map[string]interface{}
 			}
 		} else {
 			return fmt.Errorf("Error reading username: %v", err)
+		}
+	}
+
+	if err = d.Set("vrf_select", flattenVpnKmipServerVrfSelect(o["vrf-select"], d, "vrf_select")); err != nil {
+		if vv, ok := fortiAPIPatch(o["vrf-select"], "VpnKmipServer-VrfSelect"); ok {
+			if err = d.Set("vrf_select", vv); err != nil {
+				return fmt.Errorf("Error reading vrf_select: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading vrf_select: %v", err)
 		}
 	}
 
@@ -590,6 +620,10 @@ func expandVpnKmipServerUsername(d *schema.ResourceData, v interface{}, pre stri
 	return v, nil
 }
 
+func expandVpnKmipServerVrfSelect(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func getObjectVpnKmipServer(d *schema.ResourceData) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
@@ -671,6 +705,15 @@ func getObjectVpnKmipServer(d *schema.ResourceData) (*map[string]interface{}, er
 			return &obj, err
 		} else if t != nil {
 			obj["username"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("vrf_select"); ok || d.HasChange("vrf_select") {
+		t, err := expandVpnKmipServerVrfSelect(d, v, "vrf_select")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["vrf-select"] = t
 		}
 	}
 

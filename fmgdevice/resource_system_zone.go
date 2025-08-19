@@ -99,6 +99,7 @@ func resourceSystemZoneCreate(d *schema.ResourceData, m interface{}) error {
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -112,13 +113,15 @@ func resourceSystemZoneCreate(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSystemZone(d)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemZone resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateSystemZone(obj, paradict)
-
+	_, err = c.CreateSystemZone(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemZone resource: %v", err)
 	}
@@ -134,6 +137,7 @@ func resourceSystemZoneUpdate(d *schema.ResourceData, m interface{}) error {
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -147,12 +151,15 @@ func resourceSystemZoneUpdate(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSystemZone(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemZone resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateSystemZone(obj, mkey, paradict)
+	_, err = c.UpdateSystemZone(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemZone resource: %v", err)
 	}
@@ -171,6 +178,7 @@ func resourceSystemZoneDelete(d *schema.ResourceData, m interface{}) error {
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -184,7 +192,11 @@ func resourceSystemZoneDelete(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	err = c.DeleteSystemZone(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteSystemZone(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting SystemZone resource: %v", err)
 	}

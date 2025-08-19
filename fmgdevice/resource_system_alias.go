@@ -52,6 +52,7 @@ func resourceSystemAliasCreate(d *schema.ResourceData, m interface{}) error {
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -60,13 +61,15 @@ func resourceSystemAliasCreate(d *schema.ResourceData, m interface{}) error {
 	}
 	paradict["device"] = device_name
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSystemAlias(d)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemAlias resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateSystemAlias(obj, paradict)
-
+	_, err = c.CreateSystemAlias(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemAlias resource: %v", err)
 	}
@@ -82,6 +85,7 @@ func resourceSystemAliasUpdate(d *schema.ResourceData, m interface{}) error {
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -90,12 +94,15 @@ func resourceSystemAliasUpdate(d *schema.ResourceData, m interface{}) error {
 	}
 	paradict["device"] = device_name
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSystemAlias(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemAlias resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateSystemAlias(obj, mkey, paradict)
+	_, err = c.UpdateSystemAlias(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemAlias resource: %v", err)
 	}
@@ -114,6 +121,7 @@ func resourceSystemAliasDelete(d *schema.ResourceData, m interface{}) error {
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -122,7 +130,11 @@ func resourceSystemAliasDelete(d *schema.ResourceData, m interface{}) error {
 	}
 	paradict["device"] = device_name
 
-	err = c.DeleteSystemAlias(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteSystemAlias(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting SystemAlias resource: %v", err)
 	}

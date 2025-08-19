@@ -71,6 +71,7 @@ func resourceRouterRipDistanceCreate(d *schema.ResourceData, m interface{}) erro
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -84,13 +85,15 @@ func resourceRouterRipDistanceCreate(d *schema.ResourceData, m interface{}) erro
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectRouterRipDistance(d)
 	if err != nil {
 		return fmt.Errorf("Error creating RouterRipDistance resource while getting object: %v", err)
 	}
 
-	v, err := c.CreateRouterRipDistance(obj, paradict)
-
+	v, err := c.CreateRouterRipDistance(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating RouterRipDistance resource: %v", err)
 	}
@@ -115,6 +118,7 @@ func resourceRouterRipDistanceUpdate(d *schema.ResourceData, m interface{}) erro
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -128,12 +132,15 @@ func resourceRouterRipDistanceUpdate(d *schema.ResourceData, m interface{}) erro
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectRouterRipDistance(d)
 	if err != nil {
 		return fmt.Errorf("Error updating RouterRipDistance resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateRouterRipDistance(obj, mkey, paradict)
+	_, err = c.UpdateRouterRipDistance(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating RouterRipDistance resource: %v", err)
 	}
@@ -152,6 +159,7 @@ func resourceRouterRipDistanceDelete(d *schema.ResourceData, m interface{}) erro
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -165,7 +173,11 @@ func resourceRouterRipDistanceDelete(d *schema.ResourceData, m interface{}) erro
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	err = c.DeleteRouterRipDistance(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteRouterRipDistance(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting RouterRipDistance resource: %v", err)
 	}

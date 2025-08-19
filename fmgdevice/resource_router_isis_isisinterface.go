@@ -203,6 +203,7 @@ func resourceRouterIsisIsisInterfaceCreate(d *schema.ResourceData, m interface{}
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -216,13 +217,15 @@ func resourceRouterIsisIsisInterfaceCreate(d *schema.ResourceData, m interface{}
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectRouterIsisIsisInterface(d)
 	if err != nil {
 		return fmt.Errorf("Error creating RouterIsisIsisInterface resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateRouterIsisIsisInterface(obj, paradict)
-
+	_, err = c.CreateRouterIsisIsisInterface(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating RouterIsisIsisInterface resource: %v", err)
 	}
@@ -238,6 +241,7 @@ func resourceRouterIsisIsisInterfaceUpdate(d *schema.ResourceData, m interface{}
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -251,12 +255,15 @@ func resourceRouterIsisIsisInterfaceUpdate(d *schema.ResourceData, m interface{}
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectRouterIsisIsisInterface(d)
 	if err != nil {
 		return fmt.Errorf("Error updating RouterIsisIsisInterface resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateRouterIsisIsisInterface(obj, mkey, paradict)
+	_, err = c.UpdateRouterIsisIsisInterface(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating RouterIsisIsisInterface resource: %v", err)
 	}
@@ -275,6 +282,7 @@ func resourceRouterIsisIsisInterfaceDelete(d *schema.ResourceData, m interface{}
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -288,7 +296,11 @@ func resourceRouterIsisIsisInterfaceDelete(d *schema.ResourceData, m interface{}
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	err = c.DeleteRouterIsisIsisInterface(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteRouterIsisIsisInterface(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting RouterIsisIsisInterface resource: %v", err)
 	}

@@ -76,6 +76,7 @@ func resourceRouterExtcommunityListRuleCreate(d *schema.ResourceData, m interfac
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -91,13 +92,15 @@ func resourceRouterExtcommunityListRuleCreate(d *schema.ResourceData, m interfac
 	paradict["vdom"] = device_vdom
 	paradict["extcommunity_list"] = extcommunity_list
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectRouterExtcommunityListRule(d)
 	if err != nil {
 		return fmt.Errorf("Error creating RouterExtcommunityListRule resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateRouterExtcommunityListRule(obj, paradict)
-
+	_, err = c.CreateRouterExtcommunityListRule(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating RouterExtcommunityListRule resource: %v", err)
 	}
@@ -113,6 +116,7 @@ func resourceRouterExtcommunityListRuleUpdate(d *schema.ResourceData, m interfac
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -128,12 +132,15 @@ func resourceRouterExtcommunityListRuleUpdate(d *schema.ResourceData, m interfac
 	paradict["vdom"] = device_vdom
 	paradict["extcommunity_list"] = extcommunity_list
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectRouterExtcommunityListRule(d)
 	if err != nil {
 		return fmt.Errorf("Error updating RouterExtcommunityListRule resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateRouterExtcommunityListRule(obj, mkey, paradict)
+	_, err = c.UpdateRouterExtcommunityListRule(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating RouterExtcommunityListRule resource: %v", err)
 	}
@@ -152,6 +159,7 @@ func resourceRouterExtcommunityListRuleDelete(d *schema.ResourceData, m interfac
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -167,7 +175,11 @@ func resourceRouterExtcommunityListRuleDelete(d *schema.ResourceData, m interfac
 	paradict["vdom"] = device_vdom
 	paradict["extcommunity_list"] = extcommunity_list
 
-	err = c.DeleteRouterExtcommunityListRule(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteRouterExtcommunityListRule(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting RouterExtcommunityListRule resource: %v", err)
 	}

@@ -133,6 +133,7 @@ func resourceSystemInterfaceVrrpCreate(d *schema.ResourceData, m interface{}) er
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -143,13 +144,15 @@ func resourceSystemInterfaceVrrpCreate(d *schema.ResourceData, m interface{}) er
 	paradict["device"] = device_name
 	paradict["interface"] = var_interface
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSystemInterfaceVrrp(d)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemInterfaceVrrp resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateSystemInterfaceVrrp(obj, paradict)
-
+	_, err = c.CreateSystemInterfaceVrrp(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemInterfaceVrrp resource: %v", err)
 	}
@@ -165,6 +168,7 @@ func resourceSystemInterfaceVrrpUpdate(d *schema.ResourceData, m interface{}) er
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -175,12 +179,15 @@ func resourceSystemInterfaceVrrpUpdate(d *schema.ResourceData, m interface{}) er
 	paradict["device"] = device_name
 	paradict["interface"] = var_interface
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSystemInterfaceVrrp(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemInterfaceVrrp resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateSystemInterfaceVrrp(obj, mkey, paradict)
+	_, err = c.UpdateSystemInterfaceVrrp(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemInterfaceVrrp resource: %v", err)
 	}
@@ -199,6 +206,7 @@ func resourceSystemInterfaceVrrpDelete(d *schema.ResourceData, m interface{}) er
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -209,7 +217,11 @@ func resourceSystemInterfaceVrrpDelete(d *schema.ResourceData, m interface{}) er
 	paradict["device"] = device_name
 	paradict["interface"] = var_interface
 
-	err = c.DeleteSystemInterfaceVrrp(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteSystemInterfaceVrrp(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting SystemInterfaceVrrp resource: %v", err)
 	}

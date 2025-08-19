@@ -41,6 +41,7 @@ The following arguments are supported:
 * `per_session_accounting` - Enable/disable per-session accounting. Valid values: `enable`, `disable`, `traffic-log-only`.
 
 * `protects` - Special arguments for device
+* `session_table_percentage` - Percentage of main memory allocated to DPDK session table.
 * `sleep_on_idle` - Enable/disable sleep-on-idle support for all FDH engines. Valid values: `disable`, `enable`.
 
 * `status` - Enable/disable DPDK operation for the entire system. Valid values: `disable`, `enable`.

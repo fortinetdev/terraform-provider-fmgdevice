@@ -152,6 +152,10 @@ func resourceSystemSnmpUser() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"vrf_select": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+			},
 		},
 	}
 }
@@ -161,6 +165,7 @@ func resourceSystemSnmpUserCreate(d *schema.ResourceData, m interface{}) error {
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -169,13 +174,15 @@ func resourceSystemSnmpUserCreate(d *schema.ResourceData, m interface{}) error {
 	}
 	paradict["device"] = device_name
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSystemSnmpUser(d)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemSnmpUser resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateSystemSnmpUser(obj, paradict)
-
+	_, err = c.CreateSystemSnmpUser(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemSnmpUser resource: %v", err)
 	}
@@ -191,6 +198,7 @@ func resourceSystemSnmpUserUpdate(d *schema.ResourceData, m interface{}) error {
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -199,12 +207,15 @@ func resourceSystemSnmpUserUpdate(d *schema.ResourceData, m interface{}) error {
 	}
 	paradict["device"] = device_name
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSystemSnmpUser(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemSnmpUser resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateSystemSnmpUser(obj, mkey, paradict)
+	_, err = c.UpdateSystemSnmpUser(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemSnmpUser resource: %v", err)
 	}
@@ -223,6 +234,7 @@ func resourceSystemSnmpUserDelete(d *schema.ResourceData, m interface{}) error {
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -231,7 +243,11 @@ func resourceSystemSnmpUserDelete(d *schema.ResourceData, m interface{}) error {
 	}
 	paradict["device"] = device_name
 
-	err = c.DeleteSystemSnmpUser(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteSystemSnmpUser(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting SystemSnmpUser resource: %v", err)
 	}
@@ -358,6 +374,10 @@ func flattenSystemSnmpUserTrapStatus(v interface{}, d *schema.ResourceData, pre 
 
 func flattenSystemSnmpUserVdoms(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return flattenStringList(v)
+}
+
+func flattenSystemSnmpUserVrfSelect(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
 }
 
 func refreshObjectSystemSnmpUser(d *schema.ResourceData, o map[string]interface{}) error {
@@ -563,6 +583,16 @@ func refreshObjectSystemSnmpUser(d *schema.ResourceData, o map[string]interface{
 		}
 	}
 
+	if err = d.Set("vrf_select", flattenSystemSnmpUserVrfSelect(o["vrf-select"], d, "vrf_select")); err != nil {
+		if vv, ok := fortiAPIPatch(o["vrf-select"], "SystemSnmpUser-VrfSelect"); ok {
+			if err = d.Set("vrf_select", vv); err != nil {
+				return fmt.Errorf("Error reading vrf_select: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading vrf_select: %v", err)
+		}
+	}
+
 	return nil
 }
 
@@ -658,6 +688,10 @@ func expandSystemSnmpUserTrapStatus(d *schema.ResourceData, v interface{}, pre s
 
 func expandSystemSnmpUserVdoms(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandSystemSnmpUserVrfSelect(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
 }
 
 func getObjectSystemSnmpUser(d *schema.ResourceData) (*map[string]interface{}, error) {
@@ -858,6 +892,15 @@ func getObjectSystemSnmpUser(d *schema.ResourceData) (*map[string]interface{}, e
 			return &obj, err
 		} else if t != nil {
 			obj["vdoms"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("vrf_select"); ok || d.HasChange("vrf_select") {
+		t, err := expandSystemSnmpUserVrfSelect(d, v, "vrf_select")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["vrf-select"] = t
 		}
 	}
 

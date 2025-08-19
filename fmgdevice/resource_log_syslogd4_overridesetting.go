@@ -141,6 +141,10 @@ func resourceLogSyslogd4OverrideSetting() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"vrf_select": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+			},
 			"dynamic_sort_subtable": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -156,6 +160,7 @@ func resourceLogSyslogd4OverrideSettingUpdate(d *schema.ResourceData, m interfac
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -169,12 +174,15 @@ func resourceLogSyslogd4OverrideSettingUpdate(d *schema.ResourceData, m interfac
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectLogSyslogd4OverrideSetting(d)
 	if err != nil {
 		return fmt.Errorf("Error updating LogSyslogd4OverrideSetting resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateLogSyslogd4OverrideSetting(obj, mkey, paradict)
+	_, err = c.UpdateLogSyslogd4OverrideSetting(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating LogSyslogd4OverrideSetting resource: %v", err)
 	}
@@ -193,6 +201,7 @@ func resourceLogSyslogd4OverrideSettingDelete(d *schema.ResourceData, m interfac
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -206,7 +215,11 @@ func resourceLogSyslogd4OverrideSettingDelete(d *schema.ResourceData, m interfac
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	err = c.DeleteLogSyslogd4OverrideSetting(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteLogSyslogd4OverrideSetting(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting LogSyslogd4OverrideSetting resource: %v", err)
 	}
@@ -390,6 +403,10 @@ func flattenLogSyslogd4OverrideSettingStatus(v interface{}, d *schema.ResourceDa
 }
 
 func flattenLogSyslogd4OverrideSettingUseManagementVdom(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenLogSyslogd4OverrideSettingVrfSelect(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -594,6 +611,16 @@ func refreshObjectLogSyslogd4OverrideSetting(d *schema.ResourceData, o map[strin
 		}
 	}
 
+	if err = d.Set("vrf_select", flattenLogSyslogd4OverrideSettingVrfSelect(o["vrf-select"], d, "vrf_select")); err != nil {
+		if vv, ok := fortiAPIPatch(o["vrf-select"], "LogSyslogd4OverrideSetting-VrfSelect"); ok {
+			if err = d.Set("vrf_select", vv); err != nil {
+				return fmt.Errorf("Error reading vrf_select: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading vrf_select: %v", err)
+		}
+	}
+
 	return nil
 }
 
@@ -719,6 +746,10 @@ func expandLogSyslogd4OverrideSettingStatus(d *schema.ResourceData, v interface{
 }
 
 func expandLogSyslogd4OverrideSettingUseManagementVdom(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandLogSyslogd4OverrideSettingVrfSelect(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -884,6 +915,15 @@ func getObjectLogSyslogd4OverrideSetting(d *schema.ResourceData) (*map[string]in
 			return &obj, err
 		} else if t != nil {
 			obj["use-management-vdom"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("vrf_select"); ok || d.HasChange("vrf_select") {
+		t, err := expandLogSyslogd4OverrideSettingVrfSelect(d, v, "vrf_select")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["vrf-select"] = t
 		}
 	}
 

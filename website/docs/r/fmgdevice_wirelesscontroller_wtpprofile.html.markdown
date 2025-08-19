@@ -48,6 +48,9 @@ The following arguments are supported:
 
 * `_is_factory_setting` - _Is_Factory_Setting. Valid values: `disable`, `enable`, `ext`.
 
+* `admin_auth_tacacs` - Remote authentication server for admin user.
+* `admin_restrict_local` - Enable/disable local admin authentication restriction when remote authenticator is up and running (default = disable). Valid values: `disable`, `enable`.
+
 * `allowaccess` - Control management access to the managed WTP, FortiAP, or AP. Separate entries with a space. Valid values: `https`, `ssh`, `snmp`, `http`, `telnet`.
 
 * `ap_country` - Country in which this WTP, FortiAP, or AP will operate (default = NA, automatically use the country configured for the current VDOM). Valid values: `AL`, `DZ`, `AR`, `AM`, `AU`, `AT`, `AZ`, `BH`, `BD`, `BY`, `BE`, `BZ`, `BO`, `BA`, `BR`, `BN`, `BG`, `CA`, `CL`, `CN`, `CO`, `CR`, `HR`, `CY`, `CZ`, `DK`, `DO`, `EC`, `EG`, `SV`, `EE`, `FI`, `FR`, `GE`, `DE`, `GR`, `GT`, `HN`, `HK`, `HU`, `IS`, `IN`, `ID`, `IR`, `IE`, `IL`, `IT`, `JM`, `JP`, `JO`, `KZ`, `KE`, `KP`, `KR`, `KW`, `LV`, `LB`, `LI`, `LT`, `LU`, `MO`, `MK`, `MY`, `MT`, `MX`, `MC`, `MA`, `NP`, `NL`, `AN`, `NZ`, `NO`, `OM`, `PK`, `PA`, `PG`, `PE`, `PH`, `PL`, `PT`, `PR`, `QA`, `RO`, `RU`, `SA`, `SG`, `SK`, `SI`, `ZA`, `ES`, `LK`, `SE`, `CH`, `SY`, `TW`, `TH`, `TT`, `TN`, `TR`, `AE`, `UA`, `GB`, `US`, `PS`, `UY`, `UZ`, `VE`, `VN`, `YE`, `ZW`, `NA`, `BS`, `VC`, `KH`, `MV`, `AF`, `NG`, `TZ`, `ZM`, `SN`, `CI`, `GH`, `SD`, `CM`, `MW`, `AO`, `GA`, `ML`, `BJ`, `MG`, `TD`, `BW`, `LY`, `RW`, `MZ`, `GM`, `LS`, `MU`, `CG`, `UG`, `BF`, `SL`, `SO`, `CD`, `NE`, `CF`, `SZ`, `TG`, `LR`, `MR`, `DJ`, `RE`, `RS`, `ME`, `IQ`, `MD`, `KY`, `BB`, `BM`, `TC`, `VI`, `PM`, `MF`, `GD`, `IM`, `FO`, `GI`, `GL`, `TM`, `MN`, `VU`, `FJ`, `LA`, `GU`, `WF`, `MH`, `BT`, `FM`, `PF`, `NI`, `PY`, `HT`, `GY`, `AW`, `KN`, `GF`, `AS`, `MP`, `PW`, `MM`, `LC`, `GP`, `ET`, `SR`, `ZB`, `CX`, `DM`, `MQ`, `YT`, `BL`, `--`.

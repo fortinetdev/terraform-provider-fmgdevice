@@ -52,6 +52,7 @@ func resourceSystemDeviceUpgradeKnownHaMembersCreate(d *schema.ResourceData, m i
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -62,13 +63,15 @@ func resourceSystemDeviceUpgradeKnownHaMembersCreate(d *schema.ResourceData, m i
 	paradict["device"] = device_name
 	paradict["device_upgrade"] = device_upgrade
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSystemDeviceUpgradeKnownHaMembers(d)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemDeviceUpgradeKnownHaMembers resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateSystemDeviceUpgradeKnownHaMembers(obj, paradict)
-
+	_, err = c.CreateSystemDeviceUpgradeKnownHaMembers(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemDeviceUpgradeKnownHaMembers resource: %v", err)
 	}
@@ -84,6 +87,7 @@ func resourceSystemDeviceUpgradeKnownHaMembersUpdate(d *schema.ResourceData, m i
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -94,12 +98,15 @@ func resourceSystemDeviceUpgradeKnownHaMembersUpdate(d *schema.ResourceData, m i
 	paradict["device"] = device_name
 	paradict["device_upgrade"] = device_upgrade
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSystemDeviceUpgradeKnownHaMembers(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemDeviceUpgradeKnownHaMembers resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateSystemDeviceUpgradeKnownHaMembers(obj, mkey, paradict)
+	_, err = c.UpdateSystemDeviceUpgradeKnownHaMembers(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemDeviceUpgradeKnownHaMembers resource: %v", err)
 	}
@@ -118,6 +125,7 @@ func resourceSystemDeviceUpgradeKnownHaMembersDelete(d *schema.ResourceData, m i
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -128,7 +136,11 @@ func resourceSystemDeviceUpgradeKnownHaMembersDelete(d *schema.ResourceData, m i
 	paradict["device"] = device_name
 	paradict["device_upgrade"] = device_upgrade
 
-	err = c.DeleteSystemDeviceUpgradeKnownHaMembers(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteSystemDeviceUpgradeKnownHaMembers(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting SystemDeviceUpgradeKnownHaMembers resource: %v", err)
 	}

@@ -76,9 +76,11 @@ The following arguments are supported:
 * `dhcp_proxy_interface` - Specify outgoing interface to reach server.
 * `dhcp_proxy_interface_select_method` - Specify how to select outgoing interface to reach server. Valid values: `auto`, `sdwan`, `specify`.
 
+* `dhcp_proxy_vrf_select` - VRF ID used for connection to server.
 * `dhcp_server_ip` - DHCP Server IPv4 address.
 * `dhcp6_server_ip` - DHCPv6 server IPv6 address.
 * `discovered_device_timeout` - Timeout for discovered devices (1 - 365 days, default = 28).
+* `dp_load_distribution_group` - Per VDOM DP load distribution group.
 * `dp_load_distribution_method` - Per VDOM DP load distribution method. Valid values: `src-ip`, `dst-ip`, `src-dst-ip`, `src-ip-sport`, `dst-ip-dport`, `src-dst-ip-sport-dport`, `to-master`, `derived`, `to-primary`.
 
 * `dyn_addr_session_check` - Enable/disable dirty session check caused by dynamic address updates. Valid values: `disable`, `enable`.
@@ -116,6 +118,8 @@ The following arguments are supported:
 
 * `gui_default_policy_columns` - Default columns to display for policy lists on GUI.
 * `gui_dhcp_advanced` - Enable/disable advanced DHCP options on the GUI. Valid values: `disable`, `enable`.
+
+* `gui_dlp_advanced` - Enable/disable Show advanced DLP expressions on the GUI. Valid values: `disable`, `enable`.
 
 * `gui_dlp_profile` - Enable/disable Data Loss Prevention on the GUI. Valid values: `disable`, `enable`.
 
@@ -193,6 +197,8 @@ The following arguments are supported:
 
 * `gui_sslvpn` - Enable/disable SSL-VPN settings pages on the GUI. Valid values: `disable`, `enable`.
 
+* `gui_sslvpn_clients` - Enable/disable SSL-VPN clients on the GUI. Valid values: `disable`, `enable`.
+
 * `gui_sslvpn_personal_bookmarks` - Enable/disable SSL-VPN personal bookmark management on the GUI. Valid values: `disable`, `enable`.
 
 * `gui_sslvpn_realms` - Enable/disable SSL-VPN realms on the GUI. Valid values: `disable`, `enable`.
@@ -245,6 +251,8 @@ The following arguments are supported:
 * `ike_tcp_port` - TCP port for IKE/IPsec traffic (default 4500).
 * `internet_service_app_ctrl_size` - Maximum number of tuple entries (protocol, port, IP address, application ID) stored by the FortiGate unit (0 - 4294967295, default = 32768). A smaller value limits the FortiGate unit from learning about internet applications.
 * `internet_service_database_cache` - Enable/disable Internet Service database caching. Valid values: `disable`, `enable`.
+
+* `intree_ses_best_route` - Force the intree session to always use the best route. Valid values: `force`, `disable`.
 
 * `ip` - IP address and netmask.
 * `ip6` - IPv6 address prefix for NAT mode.

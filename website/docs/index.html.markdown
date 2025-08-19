@@ -23,6 +23,11 @@ provider "fmgdevice" {
 
   device_name  = "terraform-test"
   device_vdom  = "root"
+
+  # Using workspace_mode to lock/unlock on resource level(optional)
+  scopetype    = "adom"
+  adom         = "root"
+  workspace_mode = "normal"
 }
 
 # Create a firewall vip object
@@ -64,15 +69,15 @@ The FmgDevice provider offers a means of providing credentials for authenticatio
 
 ### Static credentials
 
-Static credentials can be provided by adding credential keys in-line in the FmgDevice provider block. 
+Static credentials can be provided by adding credential keys in-line in the FmgDevice provider block.
 
 There are two kinds of credentials supported for on-prem FortiManager.
 - `token` based authentication (Recommanded). User needs to generate an API token from FortiManager. *Note: Only FortiManager version >= v7.2.2 supports Token based authentication.*
-- `username/password` authentication. User provide the username and password of the administrator. 
+- `username/password` authentication. User provide the username and password of the administrator.
 
 There are two kinds of credentials supported for FortiManager Cloud.
 - Provide `fmg_cloud_token` directly. User needs to generate an FortiCloud token. *Note: The Token could be expired. Make sure the Token provided is valid.*
-- `username/password` authentication. User provide the username and password of the FortiCloud API user. The provider will generate the FortiCloud token based on username/password. 
+- `username/password` authentication. User provide the username and password of the FortiCloud API user. The provider will generate the FortiCloud token based on username/password.
 
 Usage:
 
@@ -127,7 +132,7 @@ The following arguments are supported:
 
 * `token` - (String | Optional) The token of FortiManager unit. If omitted, the `FORTIMANAGER_ACCESS_TOKEN` environment variable will be used. If neither is set, username/password will be used.
 
-* `fmg_cloud_token` - (String | Optional) The access token of FortiManager Cloud. If omitted, the `FORTIMANAGER_CLOUD_ACCESS_TOKEN` environment variable will be used. If neither is set, username/password will be used. Available only when `fmg_type` set to `forticloud`. 
+* `fmg_cloud_token` - (String | Optional) The access token of FortiManager Cloud. If omitted, the `FORTIMANAGER_CLOUD_ACCESS_TOKEN` environment variable will be used. If neither is set, username/password will be used. Available only when `fmg_type` set to `forticloud`.
 
 * `fmg_type` - (String | Optional) FortiManager type. Valid values: `on-prem`, `forticloud`. Default is `on-prem`. Set to `forticloud` if using FortiManager Cloud under FortiCloud.
 
@@ -163,7 +168,32 @@ The following arguments are supported:
 
 * `presession` - (String | Optional) The session saved earlier and within the validity period, used to reuse the previous session and assist fmgdevice_exec_workspace_action resource. See `Guides -> To Lock for Restricting Configuration Changes` for details. Default is empty.
 
-* `clean_session` - (Bool | Optional) Whether clean sessions. **Only works on workspace mode set to `disabled`.** If set to `true`, the provider will generate and logout the session for each HTTPS request. If set to `false`, the provider will generate a session for each Terraform operation. But the session will stay exist until it expires. Default is `false`.
+* `clean_session` - (Bool | Optional) Whether clean sessions. **Only works on workspace mode set to `disabled` if using resource fortimanager_exec_workspace_action.** If set to `true`, the provider will generate and logout the session for each HTTPS request. If set to `false`, the provider will generate a session for each Terraform operation. But the session will stay exist until it expires. Default is `false`.
+
+* `scopetype` - (String | Optional) The option is used to set the default scope of application of those resources managed by the provider. Valid values: `adom`, `global`. The default value is `adom`. Each resource can also set its own scope as needed, see the description of each resource for details.
+
+* `adom` - (String | Optional) Adom. This value is valid only when the `scopetype` is set to `adom`. The option is used to set the default adom of the resources managed by the provider. The default value is `root`. Each resource can also set its own adom as needed, see the description of each resource for details.
+
+* `workspace_mode` - (String | Optional) FortiManger workspace mode. If set to `normal`, FortiManager will be locked/unlocked for each resource operation. Conflict with resource `fortimanager_exec_workspace_action`. Valid opeions: `normal`, `disabled`. Default is `disabled`.
+
+```hcl
+# Configure the FortiManager provider to lock or unlock resources within a specific ADOM. If no ADOM is specified when using workspace_mode, the default value root will be applied.
+
+provider "fmgdevice" {
+  hostname     = "192.168.52.178"
+  username     = "admin"
+  password     = "admin"
+  insecure     = "false"
+  cabundlefile = "/path/yourCA.crt"
+
+  device_name  = "terraform-test"
+  device_vdom  = "root"
+
+  # Using workspace_mode to lock/unlock on resource level.
+  scopetype    = "adom"
+  adom         = "test_adom"
+  workspace_mode = "normal"
+}
 
 
 ## Release

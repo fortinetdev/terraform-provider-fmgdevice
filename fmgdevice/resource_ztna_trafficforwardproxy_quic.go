@@ -95,6 +95,7 @@ func resourceZtnaTrafficForwardProxyQuicUpdate(d *schema.ResourceData, m interfa
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -110,12 +111,15 @@ func resourceZtnaTrafficForwardProxyQuicUpdate(d *schema.ResourceData, m interfa
 	paradict["vdom"] = device_vdom
 	paradict["traffic_forward_proxy"] = traffic_forward_proxy
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectZtnaTrafficForwardProxyQuic(d)
 	if err != nil {
 		return fmt.Errorf("Error updating ZtnaTrafficForwardProxyQuic resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateZtnaTrafficForwardProxyQuic(obj, mkey, paradict)
+	_, err = c.UpdateZtnaTrafficForwardProxyQuic(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating ZtnaTrafficForwardProxyQuic resource: %v", err)
 	}
@@ -134,6 +138,7 @@ func resourceZtnaTrafficForwardProxyQuicDelete(d *schema.ResourceData, m interfa
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -149,7 +154,11 @@ func resourceZtnaTrafficForwardProxyQuicDelete(d *schema.ResourceData, m interfa
 	paradict["vdom"] = device_vdom
 	paradict["traffic_forward_proxy"] = traffic_forward_proxy
 
-	err = c.DeleteZtnaTrafficForwardProxyQuic(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteZtnaTrafficForwardProxyQuic(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting ZtnaTrafficForwardProxyQuic resource: %v", err)
 	}

@@ -39,6 +39,7 @@ The following arguments are supported:
 * `source_ip` - Source IP address for communication to TACACS+ server.
 * `status` - Enable/disable TACACS+ accounting. Valid values: `disable`, `enable`.
 
+* `vrf_select` - VRF ID used for connection to server.
 
 
 ## Attribute Reference

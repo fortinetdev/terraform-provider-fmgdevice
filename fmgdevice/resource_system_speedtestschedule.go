@@ -125,6 +125,7 @@ func resourceSystemSpeedTestScheduleCreate(d *schema.ResourceData, m interface{}
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -138,13 +139,15 @@ func resourceSystemSpeedTestScheduleCreate(d *schema.ResourceData, m interface{}
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSystemSpeedTestSchedule(d)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemSpeedTestSchedule resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateSystemSpeedTestSchedule(obj, paradict)
-
+	_, err = c.CreateSystemSpeedTestSchedule(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemSpeedTestSchedule resource: %v", err)
 	}
@@ -160,6 +163,7 @@ func resourceSystemSpeedTestScheduleUpdate(d *schema.ResourceData, m interface{}
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -173,12 +177,15 @@ func resourceSystemSpeedTestScheduleUpdate(d *schema.ResourceData, m interface{}
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSystemSpeedTestSchedule(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemSpeedTestSchedule resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateSystemSpeedTestSchedule(obj, mkey, paradict)
+	_, err = c.UpdateSystemSpeedTestSchedule(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemSpeedTestSchedule resource: %v", err)
 	}
@@ -197,6 +204,7 @@ func resourceSystemSpeedTestScheduleDelete(d *schema.ResourceData, m interface{}
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -210,7 +218,11 @@ func resourceSystemSpeedTestScheduleDelete(d *schema.ResourceData, m interface{}
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	err = c.DeleteSystemSpeedTestSchedule(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteSystemSpeedTestSchedule(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting SystemSpeedTestSchedule resource: %v", err)
 	}

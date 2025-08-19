@@ -61,6 +61,7 @@ func resourceSystemAutomationActionHttpHeadersCreate(d *schema.ResourceData, m i
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -71,13 +72,15 @@ func resourceSystemAutomationActionHttpHeadersCreate(d *schema.ResourceData, m i
 	paradict["device"] = device_name
 	paradict["automation_action"] = automation_action
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSystemAutomationActionHttpHeaders(d)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemAutomationActionHttpHeaders resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateSystemAutomationActionHttpHeaders(obj, paradict)
-
+	_, err = c.CreateSystemAutomationActionHttpHeaders(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemAutomationActionHttpHeaders resource: %v", err)
 	}
@@ -93,6 +96,7 @@ func resourceSystemAutomationActionHttpHeadersUpdate(d *schema.ResourceData, m i
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -103,12 +107,15 @@ func resourceSystemAutomationActionHttpHeadersUpdate(d *schema.ResourceData, m i
 	paradict["device"] = device_name
 	paradict["automation_action"] = automation_action
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSystemAutomationActionHttpHeaders(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemAutomationActionHttpHeaders resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateSystemAutomationActionHttpHeaders(obj, mkey, paradict)
+	_, err = c.UpdateSystemAutomationActionHttpHeaders(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemAutomationActionHttpHeaders resource: %v", err)
 	}
@@ -127,6 +134,7 @@ func resourceSystemAutomationActionHttpHeadersDelete(d *schema.ResourceData, m i
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -137,7 +145,11 @@ func resourceSystemAutomationActionHttpHeadersDelete(d *schema.ResourceData, m i
 	paradict["device"] = device_name
 	paradict["automation_action"] = automation_action
 
-	err = c.DeleteSystemAutomationActionHttpHeaders(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteSystemAutomationActionHttpHeaders(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting SystemAutomationActionHttpHeaders resource: %v", err)
 	}

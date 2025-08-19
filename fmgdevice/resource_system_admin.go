@@ -169,6 +169,13 @@ func resourceSystemAdmin() *schema.Resource {
 				ForceNew: true,
 				Optional: true,
 			},
+			"old_password": &schema.Schema{
+				Type:      schema.TypeSet,
+				Elem:      &schema.Schema{Type: schema.TypeString},
+				Optional:  true,
+				Sensitive: true,
+				Computed:  true,
+			},
 			"password": &schema.Schema{
 				Type:      schema.TypeSet,
 				Elem:      &schema.Schema{Type: schema.TypeString},
@@ -342,6 +349,7 @@ func resourceSystemAdminCreate(d *schema.ResourceData, m interface{}) error {
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -350,13 +358,15 @@ func resourceSystemAdminCreate(d *schema.ResourceData, m interface{}) error {
 	}
 	paradict["device"] = device_name
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSystemAdmin(d)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemAdmin resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateSystemAdmin(obj, paradict)
-
+	_, err = c.CreateSystemAdmin(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemAdmin resource: %v", err)
 	}
@@ -372,6 +382,7 @@ func resourceSystemAdminUpdate(d *schema.ResourceData, m interface{}) error {
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -380,12 +391,15 @@ func resourceSystemAdminUpdate(d *schema.ResourceData, m interface{}) error {
 	}
 	paradict["device"] = device_name
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSystemAdmin(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemAdmin resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateSystemAdmin(obj, mkey, paradict)
+	_, err = c.UpdateSystemAdmin(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemAdmin resource: %v", err)
 	}
@@ -404,6 +418,7 @@ func resourceSystemAdminDelete(d *schema.ResourceData, m interface{}) error {
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -412,7 +427,11 @@ func resourceSystemAdminDelete(d *schema.ResourceData, m interface{}) error {
 	}
 	paradict["device"] = device_name
 
-	err = c.DeleteSystemAdmin(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteSystemAdmin(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting SystemAdmin resource: %v", err)
 	}
@@ -1351,6 +1370,10 @@ func expandSystemAdminName(d *schema.ResourceData, v interface{}, pre string) (i
 	return v, nil
 }
 
+func expandSystemAdminOldPassword(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
 func expandSystemAdminPassword(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return expandStringList(v.(*schema.Set).List()), nil
 }
@@ -1718,6 +1741,15 @@ func getObjectSystemAdmin(d *schema.ResourceData) (*map[string]interface{}, erro
 			return &obj, err
 		} else if t != nil {
 			obj["name"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("old_password"); ok || d.HasChange("old_password") {
+		t, err := expandSystemAdminOldPassword(d, v, "old_password")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["old-password"] = t
 		}
 	}
 

@@ -16,6 +16,7 @@ Configure interfaces.
 >- `ipv6`: `fmgdevice_system_interface_ipv6`
 >- `l2tp_client_settings`: `fmgdevice_system_interface_l2tpclientsettings`
 >- `mirroring_filter`: `fmgdevice_system_interface_mirroringfilter`
+>- `phy_setting`: `fmgdevice_system_interface_physetting`
 >- `secondaryip`: `fmgdevice_system_interface_secondaryip`
 >- `tagging`: `fmgdevice_system_interface_tagging`
 >- `vrrp`: `fmgdevice_system_interface_vrrp`
@@ -116,6 +117,7 @@ The following arguments are supported:
 * `dhcp_relay_source_ip` - IP address used by the DHCP relay as its source IP.
 * `dhcp_relay_type` - DHCP relay type (regular or IPsec). Valid values: `regular`, `ipsec`.
 
+* `dhcp_relay_vrf_select` - VRF ID used for connection to server.
 * `dhcp_renew_time` - DHCP renew time in seconds (300-604800), 0 means use the renew time provided by the server.
 * `dhcp_smart_relay` - Enable/disable DHCP smart relay. Valid values: `disable`, `enable`.
 
@@ -146,6 +148,8 @@ The following arguments are supported:
 * `eip` - Eip.
 * `estimated_downstream_bandwidth` - Estimated maximum downstream bandwidth (kbps). Used to estimate link utilization.
 * `estimated_upstream_bandwidth` - Estimated maximum upstream bandwidth (kbps). Used to estimate link utilization.
+* `exclude_signatures` - Exclude IOT or OT application signatures. Valid values: `iot`, `ot`.
+
 * `explicit_ftp_proxy` - Enable/disable the explicit FTP proxy on this interface. Valid values: `disable`, `enable`.
 
 * `explicit_web_proxy` - Enable/disable the explicit web proxy on this interface. Valid values: `disable`, `enable`.
@@ -265,6 +269,7 @@ The following arguments are supported:
 * `password` - PPPoE account's password.
 * `phy_mode` - DSL physical mode. Valid values: `auto`, `adsl`, `vdsl`, `adsl-auto`, `vdsl2`, `adsl2+`, `adsl2`, `g.dmt`, `g-dmt`, `t1.413`, `t1-413`, `g.lite`, `g-lite`.
 
+* `phy_setting` - Phy-Setting. The structure of `phy_setting` block is documented below.
 * `poe` - Enable/disable PoE status. Valid values: `disable`, `enable`.
 
 * `polling_interval` - sFlow polling interval in seconds (1 - 255).
@@ -541,6 +546,8 @@ The `ipv6` block supports:
 
 * `interface_identifier` - IPv6 interface identifier.
 * `ip6_address` - Primary IPv6 address prefix. Syntax: xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx/xxx.
+* `ip6_adv_rio` - Enable/disable sending advertisements with route information option. Valid values: `disable`, `enable`.
+
 * `ip6_allowaccess` - Allow management access to the interface. Valid values: `https`, `ping`, `ssh`, `snmp`, `http`, `telnet`, `fgfm`, `capwap`, `fabric`.
 
 * `ip6_default_life` - Default life (sec).
@@ -548,6 +555,7 @@ The `ipv6` block supports:
 * `ip6_delegated_prefix_list` - Ip6-Delegated-Prefix-List. The structure of `ip6_delegated_prefix_list` block is documented below.
 * `ip6_dns_server_override` - Enable/disable using the DNS server acquired by DHCP. Valid values: `disable`, `enable`.
 
+* `ip6_dnssl_list` - Ip6-Dnssl-List. The structure of `ip6_dnssl_list` block is documented below.
 * `ip6_extra_addr` - Ip6-Extra-Addr. The structure of `ip6_extra_addr` block is documented below.
 * `ip6_hop_limit` - Hop limit (0 means unspecified).
 * `ip6_link_mtu` - IPv6 link MTU.
@@ -562,8 +570,12 @@ The `ipv6` block supports:
 * `ip6_prefix_list` - Ip6-Prefix-List. The structure of `ip6_prefix_list` block is documented below.
 * `ip6_prefix_mode` - Assigning a prefix from DHCP or RA. Valid values: `dhcp6`, `ra`.
 
+* `ip6_rdnss_list` - Ip6-Rdnss-List. The structure of `ip6_rdnss_list` block is documented below.
 * `ip6_reachable_time` - IPv6 reachable time (milliseconds; 0 means unspecified).
 * `ip6_retrans_time` - IPv6 retransmit time (milliseconds; 0 means unspecified).
+* `ip6_route_list` - Ip6-Route-List. The structure of `ip6_route_list` block is documented below.
+* `ip6_route_pref` - Set route preference to the interface (default = medium). Valid values: `medium`, `high`, `low`.
+
 * `ip6_send_adv` - Enable/disable sending advertisements about the interface. Valid values: `disable`, `enable`.
 
 * `ip6_subnet` - Subnet to routing prefix. Syntax: xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx/xxx.
@@ -614,6 +626,11 @@ The `ip6_delegated_prefix_list` block supports:
 * `subnet` - Add subnet ID to routing prefix.
 * `upstream_interface` - Name of the interface that provides delegated information.
 
+The `ip6_dnssl_list` block supports:
+
+* `dnssl_life_time` - DNS search list time in seconds (0 - 4294967295, default = 1800).
+* `domain` - Domain name.
+
 The `ip6_extra_addr` block supports:
 
 * `prefix` - IPv6 address prefix.
@@ -629,6 +646,18 @@ The `ip6_prefix_list` block supports:
 * `prefix` - IPv6 prefix.
 * `rdnss` - Recursive DNS server option.
 * `valid_life_time` - Valid life time (sec).
+
+The `ip6_rdnss_list` block supports:
+
+* `rdnss` - Recursive DNS server option.
+* `rdnss_life_time` - Recursive DNS server life time in seconds (0 - 4294967295, default = 1800).
+
+The `ip6_route_list` block supports:
+
+* `route` - IPv6 route.
+* `route_life_time` - Route life time in seconds (0 - 65535, default = 1800).
+* `route_pref` - Set route preference to the interface (default = medium). Valid values: `medium`, `high`, `low`.
+
 
 The `vrrp6` block supports:
 
@@ -674,6 +703,10 @@ The `mirroring_filter` block supports:
 * `filter_protocol` - Protocol of mirroring filter.
 * `filter_sport` - Source port of mirroring filter.
 * `filter_srcip` - Source IP and mask of mirroring filter.
+
+The `phy_setting` block supports:
+
+* `signal_ok_threshold_value` - Signal-ok-threshold value(0 - 12).
 
 The `secondaryip` block supports:
 

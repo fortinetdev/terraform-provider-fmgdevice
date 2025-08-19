@@ -80,6 +80,7 @@ func resourceSystemEvpnCreate(d *schema.ResourceData, m interface{}) error {
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -93,13 +94,15 @@ func resourceSystemEvpnCreate(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSystemEvpn(d)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemEvpn resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateSystemEvpn(obj, paradict)
-
+	_, err = c.CreateSystemEvpn(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemEvpn resource: %v", err)
 	}
@@ -115,6 +118,7 @@ func resourceSystemEvpnUpdate(d *schema.ResourceData, m interface{}) error {
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -128,12 +132,15 @@ func resourceSystemEvpnUpdate(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSystemEvpn(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemEvpn resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateSystemEvpn(obj, mkey, paradict)
+	_, err = c.UpdateSystemEvpn(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemEvpn resource: %v", err)
 	}
@@ -152,6 +159,7 @@ func resourceSystemEvpnDelete(d *schema.ResourceData, m interface{}) error {
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -165,7 +173,11 @@ func resourceSystemEvpnDelete(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	err = c.DeleteSystemEvpn(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteSystemEvpn(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting SystemEvpn resource: %v", err)
 	}

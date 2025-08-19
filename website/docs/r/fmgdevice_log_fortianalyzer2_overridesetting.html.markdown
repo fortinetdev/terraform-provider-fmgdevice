@@ -76,6 +76,7 @@ The following arguments are supported:
 * `upload_time` - Time to upload logs (hh:mm).
 * `use_management_vdom` - Enable/disable use of management VDOM IP address as source IP for logs sent to FortiAnalyzer. Valid values: `disable`, `enable`.
 
+* `vrf_select` - VRF ID used for connection to server.
 
 
 ## Attribute Reference

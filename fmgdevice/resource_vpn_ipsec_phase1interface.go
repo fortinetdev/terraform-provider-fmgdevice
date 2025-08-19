@@ -144,6 +144,11 @@ func resourceVpnIpsecPhase1Interface() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"auto_discovery_dialup_placeholder": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
 			"auto_discovery_forwarder": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -1053,6 +1058,7 @@ func resourceVpnIpsecPhase1InterfaceCreate(d *schema.ResourceData, m interface{}
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -1066,13 +1072,15 @@ func resourceVpnIpsecPhase1InterfaceCreate(d *schema.ResourceData, m interface{}
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectVpnIpsecPhase1Interface(d)
 	if err != nil {
 		return fmt.Errorf("Error creating VpnIpsecPhase1Interface resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateVpnIpsecPhase1Interface(obj, paradict)
-
+	_, err = c.CreateVpnIpsecPhase1Interface(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating VpnIpsecPhase1Interface resource: %v", err)
 	}
@@ -1088,6 +1096,7 @@ func resourceVpnIpsecPhase1InterfaceUpdate(d *schema.ResourceData, m interface{}
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -1101,12 +1110,15 @@ func resourceVpnIpsecPhase1InterfaceUpdate(d *schema.ResourceData, m interface{}
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectVpnIpsecPhase1Interface(d)
 	if err != nil {
 		return fmt.Errorf("Error updating VpnIpsecPhase1Interface resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateVpnIpsecPhase1Interface(obj, mkey, paradict)
+	_, err = c.UpdateVpnIpsecPhase1Interface(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating VpnIpsecPhase1Interface resource: %v", err)
 	}
@@ -1125,6 +1137,7 @@ func resourceVpnIpsecPhase1InterfaceDelete(d *schema.ResourceData, m interface{}
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -1138,7 +1151,11 @@ func resourceVpnIpsecPhase1InterfaceDelete(d *schema.ResourceData, m interface{}
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	err = c.DeleteVpnIpsecPhase1Interface(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteVpnIpsecPhase1Interface(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting VpnIpsecPhase1Interface resource: %v", err)
 	}
@@ -1271,6 +1288,10 @@ func flattenVpnIpsecPhase1InterfaceAuthusrgrp(v interface{}, d *schema.ResourceD
 }
 
 func flattenVpnIpsecPhase1InterfaceAutoDiscoveryCrossover(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenVpnIpsecPhase1InterfaceAutoDiscoveryDialupPlaceholder(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -2278,6 +2299,16 @@ func refreshObjectVpnIpsecPhase1Interface(d *schema.ResourceData, o map[string]i
 			}
 		} else {
 			return fmt.Errorf("Error reading auto_discovery_crossover: %v", err)
+		}
+	}
+
+	if err = d.Set("auto_discovery_dialup_placeholder", flattenVpnIpsecPhase1InterfaceAutoDiscoveryDialupPlaceholder(o["auto-discovery-dialup-placeholder"], d, "auto_discovery_dialup_placeholder")); err != nil {
+		if vv, ok := fortiAPIPatch(o["auto-discovery-dialup-placeholder"], "VpnIpsecPhase1Interface-AutoDiscoveryDialupPlaceholder"); ok {
+			if err = d.Set("auto_discovery_dialup_placeholder", vv); err != nil {
+				return fmt.Errorf("Error reading auto_discovery_dialup_placeholder: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading auto_discovery_dialup_placeholder: %v", err)
 		}
 	}
 
@@ -4148,6 +4179,10 @@ func expandVpnIpsecPhase1InterfaceAutoDiscoveryCrossover(d *schema.ResourceData,
 	return v, nil
 }
 
+func expandVpnIpsecPhase1InterfaceAutoDiscoveryDialupPlaceholder(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandVpnIpsecPhase1InterfaceAutoDiscoveryForwarder(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -5138,6 +5173,15 @@ func getObjectVpnIpsecPhase1Interface(d *schema.ResourceData) (*map[string]inter
 			return &obj, err
 		} else if t != nil {
 			obj["auto-discovery-crossover"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("auto_discovery_dialup_placeholder"); ok || d.HasChange("auto_discovery_dialup_placeholder") {
+		t, err := expandVpnIpsecPhase1InterfaceAutoDiscoveryDialupPlaceholder(d, v, "auto_discovery_dialup_placeholder")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["auto-discovery-dialup-placeholder"] = t
 		}
 	}
 

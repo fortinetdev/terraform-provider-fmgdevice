@@ -92,6 +92,7 @@ func resourceSwitchControllerInitialConfigVlansUpdate(d *schema.ResourceData, m 
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -105,12 +106,15 @@ func resourceSwitchControllerInitialConfigVlansUpdate(d *schema.ResourceData, m 
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSwitchControllerInitialConfigVlans(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SwitchControllerInitialConfigVlans resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateSwitchControllerInitialConfigVlans(obj, mkey, paradict)
+	_, err = c.UpdateSwitchControllerInitialConfigVlans(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating SwitchControllerInitialConfigVlans resource: %v", err)
 	}
@@ -129,6 +133,7 @@ func resourceSwitchControllerInitialConfigVlansDelete(d *schema.ResourceData, m 
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -142,7 +147,11 @@ func resourceSwitchControllerInitialConfigVlansDelete(d *schema.ResourceData, m 
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	err = c.DeleteSwitchControllerInitialConfigVlans(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteSwitchControllerInitialConfigVlans(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting SwitchControllerInitialConfigVlans resource: %v", err)
 	}

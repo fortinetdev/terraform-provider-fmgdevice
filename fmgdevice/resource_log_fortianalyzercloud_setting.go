@@ -140,6 +140,10 @@ func resourceLogFortianalyzerCloudSetting() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"vrf_select": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+			},
 		},
 	}
 }
@@ -150,6 +154,7 @@ func resourceLogFortianalyzerCloudSettingUpdate(d *schema.ResourceData, m interf
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -158,12 +163,15 @@ func resourceLogFortianalyzerCloudSettingUpdate(d *schema.ResourceData, m interf
 	}
 	paradict["device"] = device_name
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectLogFortianalyzerCloudSetting(d)
 	if err != nil {
 		return fmt.Errorf("Error updating LogFortianalyzerCloudSetting resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateLogFortianalyzerCloudSetting(obj, mkey, paradict)
+	_, err = c.UpdateLogFortianalyzerCloudSetting(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating LogFortianalyzerCloudSetting resource: %v", err)
 	}
@@ -182,6 +190,7 @@ func resourceLogFortianalyzerCloudSettingDelete(d *schema.ResourceData, m interf
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -190,7 +199,11 @@ func resourceLogFortianalyzerCloudSettingDelete(d *schema.ResourceData, m interf
 	}
 	paradict["device"] = device_name
 
-	err = c.DeleteLogFortianalyzerCloudSetting(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteLogFortianalyzerCloudSetting(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting LogFortianalyzerCloudSetting resource: %v", err)
 	}
@@ -328,6 +341,10 @@ func flattenLogFortianalyzerCloudSettingUploadOption(v interface{}, d *schema.Re
 }
 
 func flattenLogFortianalyzerCloudSettingUploadTime(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenLogFortianalyzerCloudSettingVrfSelect(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -564,6 +581,16 @@ func refreshObjectLogFortianalyzerCloudSetting(d *schema.ResourceData, o map[str
 		}
 	}
 
+	if err = d.Set("vrf_select", flattenLogFortianalyzerCloudSettingVrfSelect(o["vrf-select"], d, "vrf_select")); err != nil {
+		if vv, ok := fortiAPIPatch(o["vrf-select"], "LogFortianalyzerCloudSetting-VrfSelect"); ok {
+			if err = d.Set("vrf_select", vv); err != nil {
+				return fmt.Errorf("Error reading vrf_select: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading vrf_select: %v", err)
+		}
+	}
+
 	return nil
 }
 
@@ -662,6 +689,10 @@ func expandLogFortianalyzerCloudSettingUploadOption(d *schema.ResourceData, v in
 }
 
 func expandLogFortianalyzerCloudSettingUploadTime(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandLogFortianalyzerCloudSettingVrfSelect(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -872,6 +903,15 @@ func getObjectLogFortianalyzerCloudSetting(d *schema.ResourceData) (*map[string]
 			return &obj, err
 		} else if t != nil {
 			obj["upload-time"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("vrf_select"); ok || d.HasChange("vrf_select") {
+		t, err := expandLogFortianalyzerCloudSettingVrfSelect(d, v, "vrf_select")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["vrf-select"] = t
 		}
 	}
 

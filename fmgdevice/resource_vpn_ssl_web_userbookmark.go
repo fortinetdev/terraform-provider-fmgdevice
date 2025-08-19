@@ -228,6 +228,7 @@ func resourceVpnSslWebUserBookmarkCreate(d *schema.ResourceData, m interface{}) 
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -241,13 +242,15 @@ func resourceVpnSslWebUserBookmarkCreate(d *schema.ResourceData, m interface{}) 
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectVpnSslWebUserBookmark(d)
 	if err != nil {
 		return fmt.Errorf("Error creating VpnSslWebUserBookmark resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateVpnSslWebUserBookmark(obj, paradict)
-
+	_, err = c.CreateVpnSslWebUserBookmark(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating VpnSslWebUserBookmark resource: %v", err)
 	}
@@ -263,6 +266,7 @@ func resourceVpnSslWebUserBookmarkUpdate(d *schema.ResourceData, m interface{}) 
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -276,12 +280,15 @@ func resourceVpnSslWebUserBookmarkUpdate(d *schema.ResourceData, m interface{}) 
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectVpnSslWebUserBookmark(d)
 	if err != nil {
 		return fmt.Errorf("Error updating VpnSslWebUserBookmark resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateVpnSslWebUserBookmark(obj, mkey, paradict)
+	_, err = c.UpdateVpnSslWebUserBookmark(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating VpnSslWebUserBookmark resource: %v", err)
 	}
@@ -300,6 +307,7 @@ func resourceVpnSslWebUserBookmarkDelete(d *schema.ResourceData, m interface{}) 
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -313,7 +321,11 @@ func resourceVpnSslWebUserBookmarkDelete(d *schema.ResourceData, m interface{}) 
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	err = c.DeleteVpnSslWebUserBookmark(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteVpnSslWebUserBookmark(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting VpnSslWebUserBookmark resource: %v", err)
 	}

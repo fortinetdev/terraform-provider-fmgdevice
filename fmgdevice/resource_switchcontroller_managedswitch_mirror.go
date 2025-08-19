@@ -85,6 +85,7 @@ func resourceSwitchControllerManagedSwitchMirrorCreate(d *schema.ResourceData, m
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -100,13 +101,15 @@ func resourceSwitchControllerManagedSwitchMirrorCreate(d *schema.ResourceData, m
 	paradict["vdom"] = device_vdom
 	paradict["managed_switch"] = managed_switch
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSwitchControllerManagedSwitchMirror(d)
 	if err != nil {
 		return fmt.Errorf("Error creating SwitchControllerManagedSwitchMirror resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateSwitchControllerManagedSwitchMirror(obj, paradict)
-
+	_, err = c.CreateSwitchControllerManagedSwitchMirror(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating SwitchControllerManagedSwitchMirror resource: %v", err)
 	}
@@ -122,6 +125,7 @@ func resourceSwitchControllerManagedSwitchMirrorUpdate(d *schema.ResourceData, m
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -137,12 +141,15 @@ func resourceSwitchControllerManagedSwitchMirrorUpdate(d *schema.ResourceData, m
 	paradict["vdom"] = device_vdom
 	paradict["managed_switch"] = managed_switch
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSwitchControllerManagedSwitchMirror(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SwitchControllerManagedSwitchMirror resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateSwitchControllerManagedSwitchMirror(obj, mkey, paradict)
+	_, err = c.UpdateSwitchControllerManagedSwitchMirror(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating SwitchControllerManagedSwitchMirror resource: %v", err)
 	}
@@ -161,6 +168,7 @@ func resourceSwitchControllerManagedSwitchMirrorDelete(d *schema.ResourceData, m
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -176,7 +184,11 @@ func resourceSwitchControllerManagedSwitchMirrorDelete(d *schema.ResourceData, m
 	paradict["vdom"] = device_vdom
 	paradict["managed_switch"] = managed_switch
 
-	err = c.DeleteSwitchControllerManagedSwitchMirror(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteSwitchControllerManagedSwitchMirror(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting SwitchControllerManagedSwitchMirror resource: %v", err)
 	}

@@ -21,10 +21,13 @@ type Config struct {
 	Passwd        string
 	Insecure      *bool
 	CABundle      string
+	ScopeType     string
+	Adom          string
 	DeviceName    string
 	DeviceVdom    string
 	ImportOptions *schema.Set
 	FMGType       string
+	WorkspaceMode string
 
 	LogSession    bool
 	Session       string
@@ -137,7 +140,7 @@ func createFMGClient(fClient *FortiClient, c *Config) error {
 		Timeout:   time.Second * 250,
 	}
 
-	fc, err := forticlient.NewClient(auth, client)
+	fc, err := forticlient.NewClient(auth, client, c.WorkspaceMode)
 	if err != nil {
 		return err
 	}

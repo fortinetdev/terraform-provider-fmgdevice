@@ -12,6 +12,7 @@ Configure router multicast.
 ~> The following variables have sub resource. Avoid using them together, otherwise conflicts and overwrites may occur.
 >- `interface`: `fmgdevice_router_multicast_interface`
 >- `pim_sm_global`: `fmgdevice_router_multicast_pimsmglobal`
+>- `pim_sm_global_vrf`: `fmgdevice_router_multicast_pimsmglobalvrf`
 
 
 
@@ -113,6 +114,7 @@ The following arguments are supported:
 * `multicast_routing` - Enable/disable IP multicast routing. Valid values: `disable`, `enable`.
 
 * `pim_sm_global` - Pim-Sm-Global. The structure of `pim_sm_global` block is documented below.
+* `pim_sm_global_vrf` - Pim-Sm-Global-Vrf. The structure of `pim_sm_global_vrf` block is documented below.
 * `route_limit` - Maximum number of multicast routes.
 * `route_threshold` - Generate warnings when the number of multicast routes exceeds this number, must not be greater than route-limit.
 * `dynamic_sort_subtable` - true or false, set this parameter to true when using dynamic for_each + toset to configure and sort sub-tables, please do not set this parameter when configuring static sub-tables.
@@ -205,6 +207,26 @@ The `pim_sm_global` block supports:
 * `ssm` - Enable/disable source specific multicast. Valid values: `disable`, `enable`.
 
 * `ssm_range` - Groups allowed to source specific multicast.
+
+The `rp_address` block supports:
+
+* `group` - Groups to use this RP.
+* `id` - ID.
+* `ip_address` - RP router address.
+
+The `pim_sm_global_vrf` block supports:
+
+* `bsr_allow_quick_refresh` - Enable/disable accept BSR quick refresh packets from neighbors. Valid values: `disable`, `enable`.
+
+* `bsr_candidate` - Enable/disable allowing this router to become a bootstrap router (BSR). Valid values: `disable`, `enable`.
+
+* `bsr_hash` - BSR hash length (0 - 32, default = 10).
+* `bsr_interface` - Interface to advertise as candidate BSR.
+* `bsr_priority` - BSR priority (0 - 255, default = 0).
+* `cisco_crp_prefix` - Enable/disable making candidate RP compatible with old Cisco IOS. Valid values: `disable`, `enable`.
+
+* `rp_address` - Rp-Address. The structure of `rp_address` block is documented below.
+* `vrf` - VRF ID.
 
 The `rp_address` block supports:
 

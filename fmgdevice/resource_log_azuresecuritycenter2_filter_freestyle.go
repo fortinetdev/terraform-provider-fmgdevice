@@ -62,6 +62,7 @@ func resourceLogAzureSecurityCenter2FilterFreeStyleCreate(d *schema.ResourceData
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -70,13 +71,15 @@ func resourceLogAzureSecurityCenter2FilterFreeStyleCreate(d *schema.ResourceData
 	}
 	paradict["device"] = device_name
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectLogAzureSecurityCenter2FilterFreeStyle(d)
 	if err != nil {
 		return fmt.Errorf("Error creating LogAzureSecurityCenter2FilterFreeStyle resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateLogAzureSecurityCenter2FilterFreeStyle(obj, paradict)
-
+	_, err = c.CreateLogAzureSecurityCenter2FilterFreeStyle(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating LogAzureSecurityCenter2FilterFreeStyle resource: %v", err)
 	}
@@ -92,6 +95,7 @@ func resourceLogAzureSecurityCenter2FilterFreeStyleUpdate(d *schema.ResourceData
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -100,12 +104,15 @@ func resourceLogAzureSecurityCenter2FilterFreeStyleUpdate(d *schema.ResourceData
 	}
 	paradict["device"] = device_name
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectLogAzureSecurityCenter2FilterFreeStyle(d)
 	if err != nil {
 		return fmt.Errorf("Error updating LogAzureSecurityCenter2FilterFreeStyle resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateLogAzureSecurityCenter2FilterFreeStyle(obj, mkey, paradict)
+	_, err = c.UpdateLogAzureSecurityCenter2FilterFreeStyle(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating LogAzureSecurityCenter2FilterFreeStyle resource: %v", err)
 	}
@@ -124,6 +131,7 @@ func resourceLogAzureSecurityCenter2FilterFreeStyleDelete(d *schema.ResourceData
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -132,7 +140,11 @@ func resourceLogAzureSecurityCenter2FilterFreeStyleDelete(d *schema.ResourceData
 	}
 	paradict["device"] = device_name
 
-	err = c.DeleteLogAzureSecurityCenter2FilterFreeStyle(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteLogAzureSecurityCenter2FilterFreeStyle(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting LogAzureSecurityCenter2FilterFreeStyle resource: %v", err)
 	}

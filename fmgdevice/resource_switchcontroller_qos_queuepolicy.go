@@ -113,6 +113,7 @@ func resourceSwitchControllerQosQueuePolicyCreate(d *schema.ResourceData, m inte
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -126,13 +127,15 @@ func resourceSwitchControllerQosQueuePolicyCreate(d *schema.ResourceData, m inte
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSwitchControllerQosQueuePolicy(d)
 	if err != nil {
 		return fmt.Errorf("Error creating SwitchControllerQosQueuePolicy resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateSwitchControllerQosQueuePolicy(obj, paradict)
-
+	_, err = c.CreateSwitchControllerQosQueuePolicy(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating SwitchControllerQosQueuePolicy resource: %v", err)
 	}
@@ -148,6 +151,7 @@ func resourceSwitchControllerQosQueuePolicyUpdate(d *schema.ResourceData, m inte
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -161,12 +165,15 @@ func resourceSwitchControllerQosQueuePolicyUpdate(d *schema.ResourceData, m inte
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSwitchControllerQosQueuePolicy(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SwitchControllerQosQueuePolicy resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateSwitchControllerQosQueuePolicy(obj, mkey, paradict)
+	_, err = c.UpdateSwitchControllerQosQueuePolicy(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating SwitchControllerQosQueuePolicy resource: %v", err)
 	}
@@ -185,6 +192,7 @@ func resourceSwitchControllerQosQueuePolicyDelete(d *schema.ResourceData, m inte
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -198,7 +206,11 @@ func resourceSwitchControllerQosQueuePolicyDelete(d *schema.ResourceData, m inte
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	err = c.DeleteSwitchControllerQosQueuePolicy(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteSwitchControllerQosQueuePolicy(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting SwitchControllerQosQueuePolicy resource: %v", err)
 	}

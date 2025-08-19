@@ -110,6 +110,7 @@ func resourceSystemStandaloneClusterClusterPeerSessionSyncFilterUpdate(d *schema
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -120,12 +121,15 @@ func resourceSystemStandaloneClusterClusterPeerSessionSyncFilterUpdate(d *schema
 	paradict["device"] = device_name
 	paradict["cluster_peer"] = cluster_peer
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSystemStandaloneClusterClusterPeerSessionSyncFilter(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemStandaloneClusterClusterPeerSessionSyncFilter resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateSystemStandaloneClusterClusterPeerSessionSyncFilter(obj, mkey, paradict)
+	_, err = c.UpdateSystemStandaloneClusterClusterPeerSessionSyncFilter(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemStandaloneClusterClusterPeerSessionSyncFilter resource: %v", err)
 	}
@@ -144,6 +148,7 @@ func resourceSystemStandaloneClusterClusterPeerSessionSyncFilterDelete(d *schema
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -154,7 +159,11 @@ func resourceSystemStandaloneClusterClusterPeerSessionSyncFilterDelete(d *schema
 	paradict["device"] = device_name
 	paradict["cluster_peer"] = cluster_peer
 
-	err = c.DeleteSystemStandaloneClusterClusterPeerSessionSyncFilter(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteSystemStandaloneClusterClusterPeerSessionSyncFilter(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting SystemStandaloneClusterClusterPeerSessionSyncFilter resource: %v", err)
 	}

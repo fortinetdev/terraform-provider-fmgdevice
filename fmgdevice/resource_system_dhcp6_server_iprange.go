@@ -80,6 +80,7 @@ func resourceSystemDhcp6ServerIpRangeCreate(d *schema.ResourceData, m interface{
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -95,13 +96,15 @@ func resourceSystemDhcp6ServerIpRangeCreate(d *schema.ResourceData, m interface{
 	paradict["vdom"] = device_vdom
 	paradict["server"] = server
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSystemDhcp6ServerIpRange(d)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemDhcp6ServerIpRange resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateSystemDhcp6ServerIpRange(obj, paradict)
-
+	_, err = c.CreateSystemDhcp6ServerIpRange(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemDhcp6ServerIpRange resource: %v", err)
 	}
@@ -117,6 +120,7 @@ func resourceSystemDhcp6ServerIpRangeUpdate(d *schema.ResourceData, m interface{
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -132,12 +136,15 @@ func resourceSystemDhcp6ServerIpRangeUpdate(d *schema.ResourceData, m interface{
 	paradict["vdom"] = device_vdom
 	paradict["server"] = server
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSystemDhcp6ServerIpRange(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemDhcp6ServerIpRange resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateSystemDhcp6ServerIpRange(obj, mkey, paradict)
+	_, err = c.UpdateSystemDhcp6ServerIpRange(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemDhcp6ServerIpRange resource: %v", err)
 	}
@@ -156,6 +163,7 @@ func resourceSystemDhcp6ServerIpRangeDelete(d *schema.ResourceData, m interface{
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -171,7 +179,11 @@ func resourceSystemDhcp6ServerIpRangeDelete(d *schema.ResourceData, m interface{
 	paradict["vdom"] = device_vdom
 	paradict["server"] = server
 
-	err = c.DeleteSystemDhcp6ServerIpRange(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteSystemDhcp6ServerIpRange(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting SystemDhcp6ServerIpRange resource: %v", err)
 	}

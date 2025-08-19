@@ -249,6 +249,7 @@ func resourceRouterOspfAreaCreate(d *schema.ResourceData, m interface{}) error {
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -262,13 +263,15 @@ func resourceRouterOspfAreaCreate(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectRouterOspfArea(d)
 	if err != nil {
 		return fmt.Errorf("Error creating RouterOspfArea resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateRouterOspfArea(obj, paradict)
-
+	_, err = c.CreateRouterOspfArea(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating RouterOspfArea resource: %v", err)
 	}
@@ -284,6 +287,7 @@ func resourceRouterOspfAreaUpdate(d *schema.ResourceData, m interface{}) error {
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -297,12 +301,15 @@ func resourceRouterOspfAreaUpdate(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectRouterOspfArea(d)
 	if err != nil {
 		return fmt.Errorf("Error updating RouterOspfArea resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateRouterOspfArea(obj, mkey, paradict)
+	_, err = c.UpdateRouterOspfArea(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating RouterOspfArea resource: %v", err)
 	}
@@ -321,6 +328,7 @@ func resourceRouterOspfAreaDelete(d *schema.ResourceData, m interface{}) error {
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -334,7 +342,11 @@ func resourceRouterOspfAreaDelete(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	err = c.DeleteRouterOspfArea(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteRouterOspfArea(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting RouterOspfArea resource: %v", err)
 	}

@@ -52,6 +52,7 @@ The following arguments are supported:
 * `sta_locate_timer` - Time between running client presence flushes to remove clients that are listed but no longer present (0 - 86400 sec, default = 1800).
 * `sta_stats_interval` - Time between running client (station) reports (1 - 255 sec, default = 10).
 * `vap_stats_interval` - Time between running Virtual Access Point (VAP) reports (1 - 255 sec, default = 15).
+* `wids_entry_cleanup` - Time period in minutes to keep wids entry after it is gone (default = 0).
 
 
 ## Attribute Reference

@@ -180,6 +180,7 @@ func resourceReportLayoutPageUpdate(d *schema.ResourceData, m interface{}) error
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -195,12 +196,15 @@ func resourceReportLayoutPageUpdate(d *schema.ResourceData, m interface{}) error
 	paradict["vdom"] = device_vdom
 	paradict["layout"] = layout
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectReportLayoutPage(d)
 	if err != nil {
 		return fmt.Errorf("Error updating ReportLayoutPage resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateReportLayoutPage(obj, mkey, paradict)
+	_, err = c.UpdateReportLayoutPage(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating ReportLayoutPage resource: %v", err)
 	}
@@ -219,6 +223,7 @@ func resourceReportLayoutPageDelete(d *schema.ResourceData, m interface{}) error
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -234,7 +239,11 @@ func resourceReportLayoutPageDelete(d *schema.ResourceData, m interface{}) error
 	paradict["vdom"] = device_vdom
 	paradict["layout"] = layout
 
-	err = c.DeleteReportLayoutPage(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteReportLayoutPage(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting ReportLayoutPage resource: %v", err)
 	}

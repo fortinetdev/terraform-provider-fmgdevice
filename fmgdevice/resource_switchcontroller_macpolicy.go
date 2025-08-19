@@ -40,6 +40,11 @@ func resourceSwitchControllerMacPolicy() *schema.Resource {
 				Computed: true,
 				ForceNew: true,
 			},
+			"bounce_port_duration": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+				Computed: true,
+			},
 			"bounce_port_link": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -69,6 +74,11 @@ func resourceSwitchControllerMacPolicy() *schema.Resource {
 				ForceNew: true,
 				Optional: true,
 			},
+			"poe_reset": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
 			"traffic_policy": &schema.Schema{
 				Type:     schema.TypeSet,
 				Elem:     &schema.Schema{Type: schema.TypeString},
@@ -90,6 +100,7 @@ func resourceSwitchControllerMacPolicyCreate(d *schema.ResourceData, m interface
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -103,13 +114,15 @@ func resourceSwitchControllerMacPolicyCreate(d *schema.ResourceData, m interface
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSwitchControllerMacPolicy(d)
 	if err != nil {
 		return fmt.Errorf("Error creating SwitchControllerMacPolicy resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateSwitchControllerMacPolicy(obj, paradict)
-
+	_, err = c.CreateSwitchControllerMacPolicy(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating SwitchControllerMacPolicy resource: %v", err)
 	}
@@ -125,6 +138,7 @@ func resourceSwitchControllerMacPolicyUpdate(d *schema.ResourceData, m interface
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -138,12 +152,15 @@ func resourceSwitchControllerMacPolicyUpdate(d *schema.ResourceData, m interface
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSwitchControllerMacPolicy(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SwitchControllerMacPolicy resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateSwitchControllerMacPolicy(obj, mkey, paradict)
+	_, err = c.UpdateSwitchControllerMacPolicy(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating SwitchControllerMacPolicy resource: %v", err)
 	}
@@ -162,6 +179,7 @@ func resourceSwitchControllerMacPolicyDelete(d *schema.ResourceData, m interface
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -175,7 +193,11 @@ func resourceSwitchControllerMacPolicyDelete(d *schema.ResourceData, m interface
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	err = c.DeleteSwitchControllerMacPolicy(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteSwitchControllerMacPolicy(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting SwitchControllerMacPolicy resource: %v", err)
 	}
@@ -235,6 +257,10 @@ func resourceSwitchControllerMacPolicyRead(d *schema.ResourceData, m interface{}
 	return nil
 }
 
+func flattenSwitchControllerMacPolicyBouncePortDuration(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenSwitchControllerMacPolicyBouncePortLink(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -259,6 +285,10 @@ func flattenSwitchControllerMacPolicyName(v interface{}, d *schema.ResourceData,
 	return v
 }
 
+func flattenSwitchControllerMacPolicyPoeReset(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenSwitchControllerMacPolicyTrafficPolicy(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return flattenStringList(v)
 }
@@ -269,6 +299,16 @@ func flattenSwitchControllerMacPolicyVlan(v interface{}, d *schema.ResourceData,
 
 func refreshObjectSwitchControllerMacPolicy(d *schema.ResourceData, o map[string]interface{}) error {
 	var err error
+
+	if err = d.Set("bounce_port_duration", flattenSwitchControllerMacPolicyBouncePortDuration(o["bounce-port-duration"], d, "bounce_port_duration")); err != nil {
+		if vv, ok := fortiAPIPatch(o["bounce-port-duration"], "SwitchControllerMacPolicy-BouncePortDuration"); ok {
+			if err = d.Set("bounce_port_duration", vv); err != nil {
+				return fmt.Errorf("Error reading bounce_port_duration: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading bounce_port_duration: %v", err)
+		}
+	}
 
 	if err = d.Set("bounce_port_link", flattenSwitchControllerMacPolicyBouncePortLink(o["bounce-port-link"], d, "bounce_port_link")); err != nil {
 		if vv, ok := fortiAPIPatch(o["bounce-port-link"], "SwitchControllerMacPolicy-BouncePortLink"); ok {
@@ -330,6 +370,16 @@ func refreshObjectSwitchControllerMacPolicy(d *schema.ResourceData, o map[string
 		}
 	}
 
+	if err = d.Set("poe_reset", flattenSwitchControllerMacPolicyPoeReset(o["poe-reset"], d, "poe_reset")); err != nil {
+		if vv, ok := fortiAPIPatch(o["poe-reset"], "SwitchControllerMacPolicy-PoeReset"); ok {
+			if err = d.Set("poe_reset", vv); err != nil {
+				return fmt.Errorf("Error reading poe_reset: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading poe_reset: %v", err)
+		}
+	}
+
 	if err = d.Set("traffic_policy", flattenSwitchControllerMacPolicyTrafficPolicy(o["traffic-policy"], d, "traffic_policy")); err != nil {
 		if vv, ok := fortiAPIPatch(o["traffic-policy"], "SwitchControllerMacPolicy-TrafficPolicy"); ok {
 			if err = d.Set("traffic_policy", vv); err != nil {
@@ -359,6 +409,10 @@ func flattenSwitchControllerMacPolicyFortiTestDebug(d *schema.ResourceData, fosd
 	log.Printf("ER List: %v", e)
 }
 
+func expandSwitchControllerMacPolicyBouncePortDuration(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandSwitchControllerMacPolicyBouncePortLink(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -383,6 +437,10 @@ func expandSwitchControllerMacPolicyName(d *schema.ResourceData, v interface{}, 
 	return v, nil
 }
 
+func expandSwitchControllerMacPolicyPoeReset(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandSwitchControllerMacPolicyTrafficPolicy(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return expandStringList(v.(*schema.Set).List()), nil
 }
@@ -393,6 +451,15 @@ func expandSwitchControllerMacPolicyVlan(d *schema.ResourceData, v interface{}, 
 
 func getObjectSwitchControllerMacPolicy(d *schema.ResourceData) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
+
+	if v, ok := d.GetOk("bounce_port_duration"); ok || d.HasChange("bounce_port_duration") {
+		t, err := expandSwitchControllerMacPolicyBouncePortDuration(d, v, "bounce_port_duration")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["bounce-port-duration"] = t
+		}
+	}
 
 	if v, ok := d.GetOk("bounce_port_link"); ok || d.HasChange("bounce_port_link") {
 		t, err := expandSwitchControllerMacPolicyBouncePortLink(d, v, "bounce_port_link")
@@ -445,6 +512,15 @@ func getObjectSwitchControllerMacPolicy(d *schema.ResourceData) (*map[string]int
 			return &obj, err
 		} else if t != nil {
 			obj["name"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("poe_reset"); ok || d.HasChange("poe_reset") {
+		t, err := expandSwitchControllerMacPolicyPoeReset(d, v, "poe_reset")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["poe-reset"] = t
 		}
 	}
 

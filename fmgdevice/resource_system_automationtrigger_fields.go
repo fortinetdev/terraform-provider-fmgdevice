@@ -61,6 +61,7 @@ func resourceSystemAutomationTriggerFieldsCreate(d *schema.ResourceData, m inter
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -71,13 +72,15 @@ func resourceSystemAutomationTriggerFieldsCreate(d *schema.ResourceData, m inter
 	paradict["device"] = device_name
 	paradict["automation_trigger"] = automation_trigger
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSystemAutomationTriggerFields(d)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemAutomationTriggerFields resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateSystemAutomationTriggerFields(obj, paradict)
-
+	_, err = c.CreateSystemAutomationTriggerFields(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemAutomationTriggerFields resource: %v", err)
 	}
@@ -93,6 +96,7 @@ func resourceSystemAutomationTriggerFieldsUpdate(d *schema.ResourceData, m inter
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -103,12 +107,15 @@ func resourceSystemAutomationTriggerFieldsUpdate(d *schema.ResourceData, m inter
 	paradict["device"] = device_name
 	paradict["automation_trigger"] = automation_trigger
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSystemAutomationTriggerFields(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemAutomationTriggerFields resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateSystemAutomationTriggerFields(obj, mkey, paradict)
+	_, err = c.UpdateSystemAutomationTriggerFields(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemAutomationTriggerFields resource: %v", err)
 	}
@@ -127,6 +134,7 @@ func resourceSystemAutomationTriggerFieldsDelete(d *schema.ResourceData, m inter
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -137,7 +145,11 @@ func resourceSystemAutomationTriggerFieldsDelete(d *schema.ResourceData, m inter
 	paradict["device"] = device_name
 	paradict["automation_trigger"] = automation_trigger
 
-	err = c.DeleteSystemAutomationTriggerFields(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteSystemAutomationTriggerFields(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting SystemAutomationTriggerFields resource: %v", err)
 	}

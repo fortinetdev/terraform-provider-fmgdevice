@@ -65,6 +65,7 @@ func resourceVpnCertificateSettingCrlVerificationUpdate(d *schema.ResourceData, 
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -78,12 +79,15 @@ func resourceVpnCertificateSettingCrlVerificationUpdate(d *schema.ResourceData, 
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectVpnCertificateSettingCrlVerification(d)
 	if err != nil {
 		return fmt.Errorf("Error updating VpnCertificateSettingCrlVerification resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateVpnCertificateSettingCrlVerification(obj, mkey, paradict)
+	_, err = c.UpdateVpnCertificateSettingCrlVerification(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating VpnCertificateSettingCrlVerification resource: %v", err)
 	}
@@ -102,6 +106,7 @@ func resourceVpnCertificateSettingCrlVerificationDelete(d *schema.ResourceData, 
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -115,7 +120,11 @@ func resourceVpnCertificateSettingCrlVerificationDelete(d *schema.ResourceData, 
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	err = c.DeleteVpnCertificateSettingCrlVerification(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteVpnCertificateSettingCrlVerification(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting VpnCertificateSettingCrlVerification resource: %v", err)
 	}

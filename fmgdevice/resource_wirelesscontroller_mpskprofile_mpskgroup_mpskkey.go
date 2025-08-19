@@ -124,6 +124,7 @@ func resourceWirelessControllerMpskProfileMpskGroupMpskKeyCreate(d *schema.Resou
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -141,13 +142,15 @@ func resourceWirelessControllerMpskProfileMpskGroupMpskKeyCreate(d *schema.Resou
 	paradict["mpsk_profile"] = mpsk_profile
 	paradict["mpsk_group"] = mpsk_group
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectWirelessControllerMpskProfileMpskGroupMpskKey(d)
 	if err != nil {
 		return fmt.Errorf("Error creating WirelessControllerMpskProfileMpskGroupMpskKey resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateWirelessControllerMpskProfileMpskGroupMpskKey(obj, paradict)
-
+	_, err = c.CreateWirelessControllerMpskProfileMpskGroupMpskKey(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating WirelessControllerMpskProfileMpskGroupMpskKey resource: %v", err)
 	}
@@ -163,6 +166,7 @@ func resourceWirelessControllerMpskProfileMpskGroupMpskKeyUpdate(d *schema.Resou
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -180,12 +184,15 @@ func resourceWirelessControllerMpskProfileMpskGroupMpskKeyUpdate(d *schema.Resou
 	paradict["mpsk_profile"] = mpsk_profile
 	paradict["mpsk_group"] = mpsk_group
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectWirelessControllerMpskProfileMpskGroupMpskKey(d)
 	if err != nil {
 		return fmt.Errorf("Error updating WirelessControllerMpskProfileMpskGroupMpskKey resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateWirelessControllerMpskProfileMpskGroupMpskKey(obj, mkey, paradict)
+	_, err = c.UpdateWirelessControllerMpskProfileMpskGroupMpskKey(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating WirelessControllerMpskProfileMpskGroupMpskKey resource: %v", err)
 	}
@@ -204,6 +211,7 @@ func resourceWirelessControllerMpskProfileMpskGroupMpskKeyDelete(d *schema.Resou
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -221,7 +229,11 @@ func resourceWirelessControllerMpskProfileMpskGroupMpskKeyDelete(d *schema.Resou
 	paradict["mpsk_profile"] = mpsk_profile
 	paradict["mpsk_group"] = mpsk_group
 
-	err = c.DeleteWirelessControllerMpskProfileMpskGroupMpskKey(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteWirelessControllerMpskProfileMpskGroupMpskKey(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting WirelessControllerMpskProfileMpskGroupMpskKey resource: %v", err)
 	}

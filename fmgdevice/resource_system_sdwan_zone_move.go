@@ -68,6 +68,7 @@ func resourceSystemSdwanZoneMoveUpdate(d *schema.ResourceData, m interface{}) er
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -83,13 +84,16 @@ func resourceSystemSdwanZoneMoveUpdate(d *schema.ResourceData, m interface{}) er
 	paradict["vdom"] = device_vdom
 	paradict["zone"] = zone
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	target := d.Get("target").(string)
 	obj, err := getObjectSystemSdwanZoneMove(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemSdwanZoneMove resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateSystemSdwanZoneMove(obj, mkey, paradict)
+	_, err = c.UpdateSystemSdwanZoneMove(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemSdwanZoneMove resource: %v", err)
 	}

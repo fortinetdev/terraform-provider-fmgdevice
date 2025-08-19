@@ -67,6 +67,7 @@ func resourceExtenderControllerExtenderWanExtensionUpdate(d *schema.ResourceData
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -82,12 +83,15 @@ func resourceExtenderControllerExtenderWanExtensionUpdate(d *schema.ResourceData
 	paradict["vdom"] = device_vdom
 	paradict["extender"] = extender
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectExtenderControllerExtenderWanExtension(d)
 	if err != nil {
 		return fmt.Errorf("Error updating ExtenderControllerExtenderWanExtension resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateExtenderControllerExtenderWanExtension(obj, mkey, paradict)
+	_, err = c.UpdateExtenderControllerExtenderWanExtension(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating ExtenderControllerExtenderWanExtension resource: %v", err)
 	}
@@ -106,6 +110,7 @@ func resourceExtenderControllerExtenderWanExtensionDelete(d *schema.ResourceData
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -121,7 +126,11 @@ func resourceExtenderControllerExtenderWanExtensionDelete(d *schema.ResourceData
 	paradict["vdom"] = device_vdom
 	paradict["extender"] = extender
 
-	err = c.DeleteExtenderControllerExtenderWanExtension(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteExtenderControllerExtenderWanExtension(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting ExtenderControllerExtenderWanExtension resource: %v", err)
 	}

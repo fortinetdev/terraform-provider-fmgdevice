@@ -88,6 +88,7 @@ func resourceSwitchControllerManagedSwitchRemoteLogCreate(d *schema.ResourceData
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -103,13 +104,15 @@ func resourceSwitchControllerManagedSwitchRemoteLogCreate(d *schema.ResourceData
 	paradict["vdom"] = device_vdom
 	paradict["managed_switch"] = managed_switch
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSwitchControllerManagedSwitchRemoteLog(d)
 	if err != nil {
 		return fmt.Errorf("Error creating SwitchControllerManagedSwitchRemoteLog resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateSwitchControllerManagedSwitchRemoteLog(obj, paradict)
-
+	_, err = c.CreateSwitchControllerManagedSwitchRemoteLog(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating SwitchControllerManagedSwitchRemoteLog resource: %v", err)
 	}
@@ -125,6 +128,7 @@ func resourceSwitchControllerManagedSwitchRemoteLogUpdate(d *schema.ResourceData
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -140,12 +144,15 @@ func resourceSwitchControllerManagedSwitchRemoteLogUpdate(d *schema.ResourceData
 	paradict["vdom"] = device_vdom
 	paradict["managed_switch"] = managed_switch
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSwitchControllerManagedSwitchRemoteLog(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SwitchControllerManagedSwitchRemoteLog resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateSwitchControllerManagedSwitchRemoteLog(obj, mkey, paradict)
+	_, err = c.UpdateSwitchControllerManagedSwitchRemoteLog(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating SwitchControllerManagedSwitchRemoteLog resource: %v", err)
 	}
@@ -164,6 +171,7 @@ func resourceSwitchControllerManagedSwitchRemoteLogDelete(d *schema.ResourceData
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -179,7 +187,11 @@ func resourceSwitchControllerManagedSwitchRemoteLogDelete(d *schema.ResourceData
 	paradict["vdom"] = device_vdom
 	paradict["managed_switch"] = managed_switch
 
-	err = c.DeleteSwitchControllerManagedSwitchRemoteLog(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteSwitchControllerManagedSwitchRemoteLog(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting SwitchControllerManagedSwitchRemoteLog resource: %v", err)
 	}

@@ -165,6 +165,11 @@ func resourceSwitchControllerGlobal() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"switch_on_deauth": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
 			"update_user_device": &schema.Schema{
 				Type:     schema.TypeSet,
 				Elem:     &schema.Schema{Type: schema.TypeString},
@@ -201,6 +206,7 @@ func resourceSwitchControllerGlobalUpdate(d *schema.ResourceData, m interface{})
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -214,12 +220,15 @@ func resourceSwitchControllerGlobalUpdate(d *schema.ResourceData, m interface{})
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSwitchControllerGlobal(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SwitchControllerGlobal resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateSwitchControllerGlobal(obj, mkey, paradict)
+	_, err = c.UpdateSwitchControllerGlobal(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating SwitchControllerGlobal resource: %v", err)
 	}
@@ -238,6 +247,7 @@ func resourceSwitchControllerGlobalDelete(d *schema.ResourceData, m interface{})
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -251,7 +261,11 @@ func resourceSwitchControllerGlobalDelete(d *schema.ResourceData, m interface{})
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	err = c.DeleteSwitchControllerGlobal(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteSwitchControllerGlobal(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting SwitchControllerGlobal resource: %v", err)
 	}
@@ -441,6 +455,10 @@ func flattenSwitchControllerGlobalQuarantineMode(v interface{}, d *schema.Resour
 }
 
 func flattenSwitchControllerGlobalSnDnsResolution(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSwitchControllerGlobalSwitchOnDeauth(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -701,6 +719,16 @@ func refreshObjectSwitchControllerGlobal(d *schema.ResourceData, o map[string]in
 		}
 	}
 
+	if err = d.Set("switch_on_deauth", flattenSwitchControllerGlobalSwitchOnDeauth(o["switch-on-deauth"], d, "switch_on_deauth")); err != nil {
+		if vv, ok := fortiAPIPatch(o["switch-on-deauth"], "SwitchControllerGlobal-SwitchOnDeauth"); ok {
+			if err = d.Set("switch_on_deauth", vv); err != nil {
+				return fmt.Errorf("Error reading switch_on_deauth: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading switch_on_deauth: %v", err)
+		}
+	}
+
 	if err = d.Set("update_user_device", flattenSwitchControllerGlobalUpdateUserDevice(o["update-user-device"], d, "update_user_device")); err != nil {
 		if vv, ok := fortiAPIPatch(o["update-user-device"], "SwitchControllerGlobal-UpdateUserDevice"); ok {
 			if err = d.Set("update_user_device", vv); err != nil {
@@ -873,6 +901,10 @@ func expandSwitchControllerGlobalQuarantineMode(d *schema.ResourceData, v interf
 }
 
 func expandSwitchControllerGlobalSnDnsResolution(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSwitchControllerGlobalSwitchOnDeauth(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -1090,6 +1122,15 @@ func getObjectSwitchControllerGlobal(d *schema.ResourceData) (*map[string]interf
 			return &obj, err
 		} else if t != nil {
 			obj["sn-dns-resolution"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("switch_on_deauth"); ok || d.HasChange("switch_on_deauth") {
+		t, err := expandSwitchControllerGlobalSwitchOnDeauth(d, v, "switch_on_deauth")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["switch-on-deauth"] = t
 		}
 	}
 

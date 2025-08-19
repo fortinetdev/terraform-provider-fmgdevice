@@ -76,6 +76,7 @@ func resourceSwitchControllerManagedSwitchSnmpSysinfoUpdate(d *schema.ResourceDa
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -91,12 +92,15 @@ func resourceSwitchControllerManagedSwitchSnmpSysinfoUpdate(d *schema.ResourceDa
 	paradict["vdom"] = device_vdom
 	paradict["managed_switch"] = managed_switch
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSwitchControllerManagedSwitchSnmpSysinfo(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SwitchControllerManagedSwitchSnmpSysinfo resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateSwitchControllerManagedSwitchSnmpSysinfo(obj, mkey, paradict)
+	_, err = c.UpdateSwitchControllerManagedSwitchSnmpSysinfo(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating SwitchControllerManagedSwitchSnmpSysinfo resource: %v", err)
 	}
@@ -115,6 +119,7 @@ func resourceSwitchControllerManagedSwitchSnmpSysinfoDelete(d *schema.ResourceDa
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -130,7 +135,11 @@ func resourceSwitchControllerManagedSwitchSnmpSysinfoDelete(d *schema.ResourceDa
 	paradict["vdom"] = device_vdom
 	paradict["managed_switch"] = managed_switch
 
-	err = c.DeleteSwitchControllerManagedSwitchSnmpSysinfo(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteSwitchControllerManagedSwitchSnmpSysinfo(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting SwitchControllerManagedSwitchSnmpSysinfo resource: %v", err)
 	}

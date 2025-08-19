@@ -69,6 +69,7 @@ func resourceExtensionControllerFortigateProfileLanExtensionUpdate(d *schema.Res
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -84,12 +85,15 @@ func resourceExtensionControllerFortigateProfileLanExtensionUpdate(d *schema.Res
 	paradict["vdom"] = device_vdom
 	paradict["fortigate_profile"] = fortigate_profile
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectExtensionControllerFortigateProfileLanExtension(d)
 	if err != nil {
 		return fmt.Errorf("Error updating ExtensionControllerFortigateProfileLanExtension resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateExtensionControllerFortigateProfileLanExtension(obj, mkey, paradict)
+	_, err = c.UpdateExtensionControllerFortigateProfileLanExtension(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating ExtensionControllerFortigateProfileLanExtension resource: %v", err)
 	}
@@ -108,6 +112,7 @@ func resourceExtensionControllerFortigateProfileLanExtensionDelete(d *schema.Res
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -123,7 +128,11 @@ func resourceExtensionControllerFortigateProfileLanExtensionDelete(d *schema.Res
 	paradict["vdom"] = device_vdom
 	paradict["fortigate_profile"] = fortigate_profile
 
-	err = c.DeleteExtensionControllerFortigateProfileLanExtension(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteExtensionControllerFortigateProfileLanExtension(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting ExtensionControllerFortigateProfileLanExtension resource: %v", err)
 	}

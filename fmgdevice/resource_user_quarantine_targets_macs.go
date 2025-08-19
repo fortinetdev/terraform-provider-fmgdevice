@@ -77,6 +77,7 @@ func resourceUserQuarantineTargetsMacsCreate(d *schema.ResourceData, m interface
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -92,13 +93,15 @@ func resourceUserQuarantineTargetsMacsCreate(d *schema.ResourceData, m interface
 	paradict["vdom"] = device_vdom
 	paradict["targets"] = targets
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectUserQuarantineTargetsMacs(d)
 	if err != nil {
 		return fmt.Errorf("Error creating UserQuarantineTargetsMacs resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateUserQuarantineTargetsMacs(obj, paradict)
-
+	_, err = c.CreateUserQuarantineTargetsMacs(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating UserQuarantineTargetsMacs resource: %v", err)
 	}
@@ -114,6 +117,7 @@ func resourceUserQuarantineTargetsMacsUpdate(d *schema.ResourceData, m interface
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -129,12 +133,15 @@ func resourceUserQuarantineTargetsMacsUpdate(d *schema.ResourceData, m interface
 	paradict["vdom"] = device_vdom
 	paradict["targets"] = targets
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectUserQuarantineTargetsMacs(d)
 	if err != nil {
 		return fmt.Errorf("Error updating UserQuarantineTargetsMacs resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateUserQuarantineTargetsMacs(obj, mkey, paradict)
+	_, err = c.UpdateUserQuarantineTargetsMacs(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating UserQuarantineTargetsMacs resource: %v", err)
 	}
@@ -153,6 +160,7 @@ func resourceUserQuarantineTargetsMacsDelete(d *schema.ResourceData, m interface
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -168,7 +176,11 @@ func resourceUserQuarantineTargetsMacsDelete(d *schema.ResourceData, m interface
 	paradict["vdom"] = device_vdom
 	paradict["targets"] = targets
 
-	err = c.DeleteUserQuarantineTargetsMacs(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteUserQuarantineTargetsMacs(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting UserQuarantineTargetsMacs resource: %v", err)
 	}

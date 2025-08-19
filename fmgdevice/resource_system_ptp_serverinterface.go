@@ -59,6 +59,7 @@ func resourceSystemPtpServerInterfaceCreate(d *schema.ResourceData, m interface{
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -67,13 +68,15 @@ func resourceSystemPtpServerInterfaceCreate(d *schema.ResourceData, m interface{
 	}
 	paradict["device"] = device_name
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSystemPtpServerInterface(d)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemPtpServerInterface resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateSystemPtpServerInterface(obj, paradict)
-
+	_, err = c.CreateSystemPtpServerInterface(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemPtpServerInterface resource: %v", err)
 	}
@@ -89,6 +92,7 @@ func resourceSystemPtpServerInterfaceUpdate(d *schema.ResourceData, m interface{
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -97,12 +101,15 @@ func resourceSystemPtpServerInterfaceUpdate(d *schema.ResourceData, m interface{
 	}
 	paradict["device"] = device_name
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSystemPtpServerInterface(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemPtpServerInterface resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateSystemPtpServerInterface(obj, mkey, paradict)
+	_, err = c.UpdateSystemPtpServerInterface(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemPtpServerInterface resource: %v", err)
 	}
@@ -121,6 +128,7 @@ func resourceSystemPtpServerInterfaceDelete(d *schema.ResourceData, m interface{
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -129,7 +137,11 @@ func resourceSystemPtpServerInterfaceDelete(d *schema.ResourceData, m interface{
 	}
 	paradict["device"] = device_name
 
-	err = c.DeleteSystemPtpServerInterface(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteSystemPtpServerInterface(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting SystemPtpServerInterface resource: %v", err)
 	}

@@ -57,6 +57,7 @@ func resourceFirewallInternetServiceAppendUpdate(d *schema.ResourceData, m inter
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -65,12 +66,15 @@ func resourceFirewallInternetServiceAppendUpdate(d *schema.ResourceData, m inter
 	}
 	paradict["device"] = device_name
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectFirewallInternetServiceAppend(d)
 	if err != nil {
 		return fmt.Errorf("Error updating FirewallInternetServiceAppend resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateFirewallInternetServiceAppend(obj, mkey, paradict)
+	_, err = c.UpdateFirewallInternetServiceAppend(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating FirewallInternetServiceAppend resource: %v", err)
 	}
@@ -89,6 +93,7 @@ func resourceFirewallInternetServiceAppendDelete(d *schema.ResourceData, m inter
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -97,7 +102,11 @@ func resourceFirewallInternetServiceAppendDelete(d *schema.ResourceData, m inter
 	}
 	paradict["device"] = device_name
 
-	err = c.DeleteFirewallInternetServiceAppend(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteFirewallInternetServiceAppend(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting FirewallInternetServiceAppend resource: %v", err)
 	}

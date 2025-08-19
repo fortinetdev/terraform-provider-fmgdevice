@@ -108,6 +108,7 @@ func resourceWebfilterFortiguardUpdate(d *schema.ResourceData, m interface{}) er
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -116,12 +117,15 @@ func resourceWebfilterFortiguardUpdate(d *schema.ResourceData, m interface{}) er
 	}
 	paradict["device"] = device_name
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectWebfilterFortiguard(d)
 	if err != nil {
 		return fmt.Errorf("Error updating WebfilterFortiguard resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateWebfilterFortiguard(obj, mkey, paradict)
+	_, err = c.UpdateWebfilterFortiguard(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating WebfilterFortiguard resource: %v", err)
 	}
@@ -140,6 +144,7 @@ func resourceWebfilterFortiguardDelete(d *schema.ResourceData, m interface{}) er
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -148,7 +153,11 @@ func resourceWebfilterFortiguardDelete(d *schema.ResourceData, m interface{}) er
 	}
 	paradict["device"] = device_name
 
-	err = c.DeleteWebfilterFortiguard(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteWebfilterFortiguard(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting WebfilterFortiguard resource: %v", err)
 	}

@@ -65,6 +65,7 @@ The `collectors` block supports:
 
 * `source_ip` - Source IP address for communication with the NetFlow agent.
 * `source_ip_interface` - Name of the interface used to determine the source IP for exporting packets.
+* `vrf_select` - VRF ID used for connection to server.
 
 
 ## Attribute Reference

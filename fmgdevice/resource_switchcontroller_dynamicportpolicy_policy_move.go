@@ -73,6 +73,7 @@ func resourceSwitchControllerDynamicPortPolicyPolicyMoveUpdate(d *schema.Resourc
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -90,13 +91,16 @@ func resourceSwitchControllerDynamicPortPolicyPolicyMoveUpdate(d *schema.Resourc
 	paradict["dynamic_port_policy"] = dynamic_port_policy
 	paradict["policy"] = policy
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	target := d.Get("target").(string)
 	obj, err := getObjectSwitchControllerDynamicPortPolicyPolicyMove(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SwitchControllerDynamicPortPolicyPolicyMove resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateSwitchControllerDynamicPortPolicyPolicyMove(obj, mkey, paradict)
+	_, err = c.UpdateSwitchControllerDynamicPortPolicyPolicyMove(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating SwitchControllerDynamicPortPolicyPolicyMove resource: %v", err)
 	}

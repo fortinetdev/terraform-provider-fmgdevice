@@ -76,6 +76,8 @@ The following arguments are supported:
 
 * `sn_dns_resolution` - Enable/disable DNS resolution of the FortiSwitch unit's IP address with switch name. Valid values: `disable`, `enable`.
 
+* `switch_on_deauth` - No-operation/Factory-reset the managed FortiSwitch on deauthorization. Valid values: `no-op`, `factory-reset`.
+
 * `update_user_device` - Control which sources update the device user list. Valid values: `mac-cache`, `lldp`, `dhcp-snooping`, `l2-db`, `l3-db`.
 
 * `vlan_all_mode` - VLAN configuration mode, user-defined-vlans or all-possible-vlans. Valid values: `defined`, `all`.

@@ -177,6 +177,7 @@ func resourceWirelessControllerWtpRadio4Update(d *schema.ResourceData, m interfa
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -192,12 +193,15 @@ func resourceWirelessControllerWtpRadio4Update(d *schema.ResourceData, m interfa
 	paradict["vdom"] = device_vdom
 	paradict["wtp"] = wtp
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectWirelessControllerWtpRadio4(d)
 	if err != nil {
 		return fmt.Errorf("Error updating WirelessControllerWtpRadio4 resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateWirelessControllerWtpRadio4(obj, mkey, paradict)
+	_, err = c.UpdateWirelessControllerWtpRadio4(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating WirelessControllerWtpRadio4 resource: %v", err)
 	}
@@ -216,6 +220,7 @@ func resourceWirelessControllerWtpRadio4Delete(d *schema.ResourceData, m interfa
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -231,7 +236,11 @@ func resourceWirelessControllerWtpRadio4Delete(d *schema.ResourceData, m interfa
 	paradict["vdom"] = device_vdom
 	paradict["wtp"] = wtp
 
-	err = c.DeleteWirelessControllerWtpRadio4(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteWirelessControllerWtpRadio4(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting WirelessControllerWtpRadio4 resource: %v", err)
 	}

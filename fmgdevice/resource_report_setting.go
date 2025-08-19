@@ -76,6 +76,7 @@ func resourceReportSettingUpdate(d *schema.ResourceData, m interface{}) error {
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -89,12 +90,15 @@ func resourceReportSettingUpdate(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectReportSetting(d)
 	if err != nil {
 		return fmt.Errorf("Error updating ReportSetting resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateReportSetting(obj, mkey, paradict)
+	_, err = c.UpdateReportSetting(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating ReportSetting resource: %v", err)
 	}
@@ -113,6 +117,7 @@ func resourceReportSettingDelete(d *schema.ResourceData, m interface{}) error {
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -126,7 +131,11 @@ func resourceReportSettingDelete(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	err = c.DeleteReportSetting(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteReportSetting(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting ReportSetting resource: %v", err)
 	}

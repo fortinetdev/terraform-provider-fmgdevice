@@ -120,6 +120,7 @@ func resourceSwitchControllerFortilinkSettingsCreate(d *schema.ResourceData, m i
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -133,13 +134,15 @@ func resourceSwitchControllerFortilinkSettingsCreate(d *schema.ResourceData, m i
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSwitchControllerFortilinkSettings(d)
 	if err != nil {
 		return fmt.Errorf("Error creating SwitchControllerFortilinkSettings resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateSwitchControllerFortilinkSettings(obj, paradict)
-
+	_, err = c.CreateSwitchControllerFortilinkSettings(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating SwitchControllerFortilinkSettings resource: %v", err)
 	}
@@ -155,6 +158,7 @@ func resourceSwitchControllerFortilinkSettingsUpdate(d *schema.ResourceData, m i
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -168,12 +172,15 @@ func resourceSwitchControllerFortilinkSettingsUpdate(d *schema.ResourceData, m i
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSwitchControllerFortilinkSettings(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SwitchControllerFortilinkSettings resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateSwitchControllerFortilinkSettings(obj, mkey, paradict)
+	_, err = c.UpdateSwitchControllerFortilinkSettings(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating SwitchControllerFortilinkSettings resource: %v", err)
 	}
@@ -192,6 +199,7 @@ func resourceSwitchControllerFortilinkSettingsDelete(d *schema.ResourceData, m i
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -205,7 +213,11 @@ func resourceSwitchControllerFortilinkSettingsDelete(d *schema.ResourceData, m i
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	err = c.DeleteSwitchControllerFortilinkSettings(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteSwitchControllerFortilinkSettings(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting SwitchControllerFortilinkSettings resource: %v", err)
 	}

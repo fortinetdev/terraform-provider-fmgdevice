@@ -91,6 +91,7 @@ func resourceFirewallSshHostKeyCreate(d *schema.ResourceData, m interface{}) err
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -104,13 +105,15 @@ func resourceFirewallSshHostKeyCreate(d *schema.ResourceData, m interface{}) err
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectFirewallSshHostKey(d)
 	if err != nil {
 		return fmt.Errorf("Error creating FirewallSshHostKey resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateFirewallSshHostKey(obj, paradict)
-
+	_, err = c.CreateFirewallSshHostKey(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating FirewallSshHostKey resource: %v", err)
 	}
@@ -126,6 +129,7 @@ func resourceFirewallSshHostKeyUpdate(d *schema.ResourceData, m interface{}) err
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -139,12 +143,15 @@ func resourceFirewallSshHostKeyUpdate(d *schema.ResourceData, m interface{}) err
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectFirewallSshHostKey(d)
 	if err != nil {
 		return fmt.Errorf("Error updating FirewallSshHostKey resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateFirewallSshHostKey(obj, mkey, paradict)
+	_, err = c.UpdateFirewallSshHostKey(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating FirewallSshHostKey resource: %v", err)
 	}
@@ -163,6 +170,7 @@ func resourceFirewallSshHostKeyDelete(d *schema.ResourceData, m interface{}) err
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -176,7 +184,11 @@ func resourceFirewallSshHostKeyDelete(d *schema.ResourceData, m interface{}) err
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	err = c.DeleteFirewallSshHostKey(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteFirewallSshHostKey(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting FirewallSshHostKey resource: %v", err)
 	}

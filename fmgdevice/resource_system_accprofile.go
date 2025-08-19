@@ -347,6 +347,7 @@ func resourceSystemAccprofileCreate(d *schema.ResourceData, m interface{}) error
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -355,13 +356,15 @@ func resourceSystemAccprofileCreate(d *schema.ResourceData, m interface{}) error
 	}
 	paradict["device"] = device_name
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSystemAccprofile(d)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemAccprofile resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateSystemAccprofile(obj, paradict)
-
+	_, err = c.CreateSystemAccprofile(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemAccprofile resource: %v", err)
 	}
@@ -377,6 +380,7 @@ func resourceSystemAccprofileUpdate(d *schema.ResourceData, m interface{}) error
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -385,12 +389,15 @@ func resourceSystemAccprofileUpdate(d *schema.ResourceData, m interface{}) error
 	}
 	paradict["device"] = device_name
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSystemAccprofile(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemAccprofile resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateSystemAccprofile(obj, mkey, paradict)
+	_, err = c.UpdateSystemAccprofile(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemAccprofile resource: %v", err)
 	}
@@ -409,6 +416,7 @@ func resourceSystemAccprofileDelete(d *schema.ResourceData, m interface{}) error
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -417,7 +425,11 @@ func resourceSystemAccprofileDelete(d *schema.ResourceData, m interface{}) error
 	}
 	paradict["device"] = device_name
 
-	err = c.DeleteSystemAccprofile(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteSystemAccprofile(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting SystemAccprofile resource: %v", err)
 	}

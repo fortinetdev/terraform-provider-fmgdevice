@@ -90,6 +90,7 @@ func resourceSwitchControllerManagedSwitchIpSourceGuardCreate(d *schema.Resource
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -105,13 +106,15 @@ func resourceSwitchControllerManagedSwitchIpSourceGuardCreate(d *schema.Resource
 	paradict["vdom"] = device_vdom
 	paradict["managed_switch"] = managed_switch
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSwitchControllerManagedSwitchIpSourceGuard(d)
 	if err != nil {
 		return fmt.Errorf("Error creating SwitchControllerManagedSwitchIpSourceGuard resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateSwitchControllerManagedSwitchIpSourceGuard(obj, paradict)
-
+	_, err = c.CreateSwitchControllerManagedSwitchIpSourceGuard(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating SwitchControllerManagedSwitchIpSourceGuard resource: %v", err)
 	}
@@ -127,6 +130,7 @@ func resourceSwitchControllerManagedSwitchIpSourceGuardUpdate(d *schema.Resource
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -142,12 +146,15 @@ func resourceSwitchControllerManagedSwitchIpSourceGuardUpdate(d *schema.Resource
 	paradict["vdom"] = device_vdom
 	paradict["managed_switch"] = managed_switch
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSwitchControllerManagedSwitchIpSourceGuard(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SwitchControllerManagedSwitchIpSourceGuard resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateSwitchControllerManagedSwitchIpSourceGuard(obj, mkey, paradict)
+	_, err = c.UpdateSwitchControllerManagedSwitchIpSourceGuard(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating SwitchControllerManagedSwitchIpSourceGuard resource: %v", err)
 	}
@@ -166,6 +173,7 @@ func resourceSwitchControllerManagedSwitchIpSourceGuardDelete(d *schema.Resource
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -181,7 +189,11 @@ func resourceSwitchControllerManagedSwitchIpSourceGuardDelete(d *schema.Resource
 	paradict["vdom"] = device_vdom
 	paradict["managed_switch"] = managed_switch
 
-	err = c.DeleteSwitchControllerManagedSwitchIpSourceGuard(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteSwitchControllerManagedSwitchIpSourceGuard(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting SwitchControllerManagedSwitchIpSourceGuard resource: %v", err)
 	}

@@ -147,6 +147,7 @@ func resourceSwitchControllerManagedSwitchSnmpCommunityCreate(d *schema.Resource
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -162,13 +163,15 @@ func resourceSwitchControllerManagedSwitchSnmpCommunityCreate(d *schema.Resource
 	paradict["vdom"] = device_vdom
 	paradict["managed_switch"] = managed_switch
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSwitchControllerManagedSwitchSnmpCommunity(d)
 	if err != nil {
 		return fmt.Errorf("Error creating SwitchControllerManagedSwitchSnmpCommunity resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateSwitchControllerManagedSwitchSnmpCommunity(obj, paradict)
-
+	_, err = c.CreateSwitchControllerManagedSwitchSnmpCommunity(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating SwitchControllerManagedSwitchSnmpCommunity resource: %v", err)
 	}
@@ -184,6 +187,7 @@ func resourceSwitchControllerManagedSwitchSnmpCommunityUpdate(d *schema.Resource
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -199,12 +203,15 @@ func resourceSwitchControllerManagedSwitchSnmpCommunityUpdate(d *schema.Resource
 	paradict["vdom"] = device_vdom
 	paradict["managed_switch"] = managed_switch
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSwitchControllerManagedSwitchSnmpCommunity(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SwitchControllerManagedSwitchSnmpCommunity resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateSwitchControllerManagedSwitchSnmpCommunity(obj, mkey, paradict)
+	_, err = c.UpdateSwitchControllerManagedSwitchSnmpCommunity(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating SwitchControllerManagedSwitchSnmpCommunity resource: %v", err)
 	}
@@ -223,6 +230,7 @@ func resourceSwitchControllerManagedSwitchSnmpCommunityDelete(d *schema.Resource
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -238,7 +246,11 @@ func resourceSwitchControllerManagedSwitchSnmpCommunityDelete(d *schema.Resource
 	paradict["vdom"] = device_vdom
 	paradict["managed_switch"] = managed_switch
 
-	err = c.DeleteSwitchControllerManagedSwitchSnmpCommunity(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteSwitchControllerManagedSwitchSnmpCommunity(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting SwitchControllerManagedSwitchSnmpCommunity resource: %v", err)
 	}

@@ -177,6 +177,11 @@ func resourceSystemInterfaceIpv6() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"ip6_adv_rio": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
 			"ip6_allowaccess": &schema.Schema{
 				Type:     schema.TypeSet,
 				Elem:     &schema.Schema{Type: schema.TypeString},
@@ -240,6 +245,23 @@ func resourceSystemInterfaceIpv6() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+			},
+			"ip6_dnssl_list": &schema.Schema{
+				Type:     schema.TypeList,
+				Optional: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"dnssl_life_time": &schema.Schema{
+							Type:     schema.TypeInt,
+							Optional: true,
+							Computed: true,
+						},
+						"domain": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+					},
+				},
 			},
 			"ip6_extra_addr": &schema.Schema{
 				Type:     schema.TypeList,
@@ -331,6 +353,22 @@ func resourceSystemInterfaceIpv6() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"ip6_rdnss_list": &schema.Schema{
+				Type:     schema.TypeList,
+				Optional: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"rdnss": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"rdnss_life_time": &schema.Schema{
+							Type:     schema.TypeInt,
+							Optional: true,
+						},
+					},
+				},
+			},
 			"ip6_reachable_time": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
@@ -338,6 +376,31 @@ func resourceSystemInterfaceIpv6() *schema.Resource {
 			"ip6_retrans_time": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+			},
+			"ip6_route_list": &schema.Schema{
+				Type:     schema.TypeList,
+				Optional: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"route": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"route_life_time": &schema.Schema{
+							Type:     schema.TypeInt,
+							Optional: true,
+						},
+						"route_pref": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+					},
+				},
+			},
+			"ip6_route_pref": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
 			},
 			"ip6_send_adv": &schema.Schema{
 				Type:     schema.TypeString,
@@ -483,6 +546,7 @@ func resourceSystemInterfaceIpv6Update(d *schema.ResourceData, m interface{}) er
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -493,12 +557,15 @@ func resourceSystemInterfaceIpv6Update(d *schema.ResourceData, m interface{}) er
 	paradict["device"] = device_name
 	paradict["interface"] = var_interface
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSystemInterfaceIpv6(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemInterfaceIpv6 resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateSystemInterfaceIpv6(obj, mkey, paradict)
+	_, err = c.UpdateSystemInterfaceIpv6(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemInterfaceIpv6 resource: %v", err)
 	}
@@ -517,6 +584,7 @@ func resourceSystemInterfaceIpv6Delete(d *schema.ResourceData, m interface{}) er
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -527,7 +595,11 @@ func resourceSystemInterfaceIpv6Delete(d *schema.ResourceData, m interface{}) er
 	paradict["device"] = device_name
 	paradict["interface"] = var_interface
 
-	err = c.DeleteSystemInterfaceIpv6(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteSystemInterfaceIpv6(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting SystemInterfaceIpv6 resource: %v", err)
 	}
@@ -803,6 +875,10 @@ func flattenSystemInterfaceIpv6Ip6Address2edl(v interface{}, d *schema.ResourceD
 	return v
 }
 
+func flattenSystemInterfaceIpv6Ip6AdvRio2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenSystemInterfaceIpv6Ip6Allowaccess2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return flattenStringList(v)
 }
@@ -925,6 +1001,55 @@ func flattenSystemInterfaceIpv6Ip6DelegatedPrefixListUpstreamInterface2edl(v int
 }
 
 func flattenSystemInterfaceIpv6Ip6DnsServerOverride2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemInterfaceIpv6Ip6DnsslList2edl(v interface{}, d *schema.ResourceData, pre string) []map[string]interface{} {
+	if v == nil {
+		return nil
+	}
+
+	l := v.([]interface{})
+	if len(l) == 0 || l[0] == nil {
+		return nil
+	}
+
+	result := make([]map[string]interface{}, 0, len(l))
+
+	con := 0
+	for _, r := range l {
+		tmp := make(map[string]interface{})
+		i := r.(map[string]interface{})
+
+		pre_append := "" // table
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "dnssl_life_time"
+		if _, ok := i["dnssl-life-time"]; ok {
+			v := flattenSystemInterfaceIpv6Ip6DnsslListDnsslLifeTime2edl(i["dnssl-life-time"], d, pre_append)
+			tmp["dnssl_life_time"] = fortiAPISubPartPatch(v, "SystemInterfaceIpv6-Ip6DnsslList-DnsslLifeTime")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "domain"
+		if _, ok := i["domain"]; ok {
+			v := flattenSystemInterfaceIpv6Ip6DnsslListDomain2edl(i["domain"], d, pre_append)
+			tmp["domain"] = fortiAPISubPartPatch(v, "SystemInterfaceIpv6-Ip6DnsslList-Domain")
+		}
+
+		if len(tmp) > 0 {
+			result = append(result, tmp)
+		}
+
+		con += 1
+	}
+
+	return result
+}
+
+func flattenSystemInterfaceIpv6Ip6DnsslListDnsslLifeTime2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemInterfaceIpv6Ip6DnsslListDomain2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -1098,11 +1223,123 @@ func flattenSystemInterfaceIpv6Ip6PrefixMode2edl(v interface{}, d *schema.Resour
 	return v
 }
 
+func flattenSystemInterfaceIpv6Ip6RdnssList2edl(v interface{}, d *schema.ResourceData, pre string) []map[string]interface{} {
+	if v == nil {
+		return nil
+	}
+
+	l := v.([]interface{})
+	if len(l) == 0 || l[0] == nil {
+		return nil
+	}
+
+	result := make([]map[string]interface{}, 0, len(l))
+
+	con := 0
+	for _, r := range l {
+		tmp := make(map[string]interface{})
+		i := r.(map[string]interface{})
+
+		pre_append := "" // table
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "rdnss"
+		if _, ok := i["rdnss"]; ok {
+			v := flattenSystemInterfaceIpv6Ip6RdnssListRdnss2edl(i["rdnss"], d, pre_append)
+			tmp["rdnss"] = fortiAPISubPartPatch(v, "SystemInterfaceIpv6-Ip6RdnssList-Rdnss")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "rdnss_life_time"
+		if _, ok := i["rdnss-life-time"]; ok {
+			v := flattenSystemInterfaceIpv6Ip6RdnssListRdnssLifeTime2edl(i["rdnss-life-time"], d, pre_append)
+			tmp["rdnss_life_time"] = fortiAPISubPartPatch(v, "SystemInterfaceIpv6-Ip6RdnssList-RdnssLifeTime")
+		}
+
+		if len(tmp) > 0 {
+			result = append(result, tmp)
+		}
+
+		con += 1
+	}
+
+	return result
+}
+
+func flattenSystemInterfaceIpv6Ip6RdnssListRdnss2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemInterfaceIpv6Ip6RdnssListRdnssLifeTime2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenSystemInterfaceIpv6Ip6ReachableTime2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
 func flattenSystemInterfaceIpv6Ip6RetransTime2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemInterfaceIpv6Ip6RouteList2edl(v interface{}, d *schema.ResourceData, pre string) []map[string]interface{} {
+	if v == nil {
+		return nil
+	}
+
+	l := v.([]interface{})
+	if len(l) == 0 || l[0] == nil {
+		return nil
+	}
+
+	result := make([]map[string]interface{}, 0, len(l))
+
+	con := 0
+	for _, r := range l {
+		tmp := make(map[string]interface{})
+		i := r.(map[string]interface{})
+
+		pre_append := "" // table
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "route"
+		if _, ok := i["route"]; ok {
+			v := flattenSystemInterfaceIpv6Ip6RouteListRoute2edl(i["route"], d, pre_append)
+			tmp["route"] = fortiAPISubPartPatch(v, "SystemInterfaceIpv6-Ip6RouteList-Route")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "route_life_time"
+		if _, ok := i["route-life-time"]; ok {
+			v := flattenSystemInterfaceIpv6Ip6RouteListRouteLifeTime2edl(i["route-life-time"], d, pre_append)
+			tmp["route_life_time"] = fortiAPISubPartPatch(v, "SystemInterfaceIpv6-Ip6RouteList-RouteLifeTime")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "route_pref"
+		if _, ok := i["route-pref"]; ok {
+			v := flattenSystemInterfaceIpv6Ip6RouteListRoutePref2edl(i["route-pref"], d, pre_append)
+			tmp["route_pref"] = fortiAPISubPartPatch(v, "SystemInterfaceIpv6-Ip6RouteList-RoutePref")
+		}
+
+		if len(tmp) > 0 {
+			result = append(result, tmp)
+		}
+
+		con += 1
+	}
+
+	return result
+}
+
+func flattenSystemInterfaceIpv6Ip6RouteListRoute2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemInterfaceIpv6Ip6RouteListRouteLifeTime2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemInterfaceIpv6Ip6RouteListRoutePref2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemInterfaceIpv6Ip6RoutePref2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -1532,6 +1769,16 @@ func refreshObjectSystemInterfaceIpv6(d *schema.ResourceData, o map[string]inter
 		}
 	}
 
+	if err = d.Set("ip6_adv_rio", flattenSystemInterfaceIpv6Ip6AdvRio2edl(o["ip6-adv-rio"], d, "ip6_adv_rio")); err != nil {
+		if vv, ok := fortiAPIPatch(o["ip6-adv-rio"], "SystemInterfaceIpv6-Ip6AdvRio"); ok {
+			if err = d.Set("ip6_adv_rio", vv); err != nil {
+				return fmt.Errorf("Error reading ip6_adv_rio: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading ip6_adv_rio: %v", err)
+		}
+	}
+
 	if err = d.Set("ip6_allowaccess", flattenSystemInterfaceIpv6Ip6Allowaccess2edl(o["ip6-allowaccess"], d, "ip6_allowaccess")); err != nil {
 		if vv, ok := fortiAPIPatch(o["ip6-allowaccess"], "SystemInterfaceIpv6-Ip6Allowaccess"); ok {
 			if err = d.Set("ip6_allowaccess", vv); err != nil {
@@ -1593,6 +1840,30 @@ func refreshObjectSystemInterfaceIpv6(d *schema.ResourceData, o map[string]inter
 			}
 		} else {
 			return fmt.Errorf("Error reading ip6_dns_server_override: %v", err)
+		}
+	}
+
+	if isImportTable() {
+		if err = d.Set("ip6_dnssl_list", flattenSystemInterfaceIpv6Ip6DnsslList2edl(o["ip6-dnssl-list"], d, "ip6_dnssl_list")); err != nil {
+			if vv, ok := fortiAPIPatch(o["ip6-dnssl-list"], "SystemInterfaceIpv6-Ip6DnsslList"); ok {
+				if err = d.Set("ip6_dnssl_list", vv); err != nil {
+					return fmt.Errorf("Error reading ip6_dnssl_list: %v", err)
+				}
+			} else {
+				return fmt.Errorf("Error reading ip6_dnssl_list: %v", err)
+			}
+		}
+	} else {
+		if _, ok := d.GetOk("ip6_dnssl_list"); ok {
+			if err = d.Set("ip6_dnssl_list", flattenSystemInterfaceIpv6Ip6DnsslList2edl(o["ip6-dnssl-list"], d, "ip6_dnssl_list")); err != nil {
+				if vv, ok := fortiAPIPatch(o["ip6-dnssl-list"], "SystemInterfaceIpv6-Ip6DnsslList"); ok {
+					if err = d.Set("ip6_dnssl_list", vv); err != nil {
+						return fmt.Errorf("Error reading ip6_dnssl_list: %v", err)
+					}
+				} else {
+					return fmt.Errorf("Error reading ip6_dnssl_list: %v", err)
+				}
+			}
 		}
 	}
 
@@ -1724,6 +1995,30 @@ func refreshObjectSystemInterfaceIpv6(d *schema.ResourceData, o map[string]inter
 		}
 	}
 
+	if isImportTable() {
+		if err = d.Set("ip6_rdnss_list", flattenSystemInterfaceIpv6Ip6RdnssList2edl(o["ip6-rdnss-list"], d, "ip6_rdnss_list")); err != nil {
+			if vv, ok := fortiAPIPatch(o["ip6-rdnss-list"], "SystemInterfaceIpv6-Ip6RdnssList"); ok {
+				if err = d.Set("ip6_rdnss_list", vv); err != nil {
+					return fmt.Errorf("Error reading ip6_rdnss_list: %v", err)
+				}
+			} else {
+				return fmt.Errorf("Error reading ip6_rdnss_list: %v", err)
+			}
+		}
+	} else {
+		if _, ok := d.GetOk("ip6_rdnss_list"); ok {
+			if err = d.Set("ip6_rdnss_list", flattenSystemInterfaceIpv6Ip6RdnssList2edl(o["ip6-rdnss-list"], d, "ip6_rdnss_list")); err != nil {
+				if vv, ok := fortiAPIPatch(o["ip6-rdnss-list"], "SystemInterfaceIpv6-Ip6RdnssList"); ok {
+					if err = d.Set("ip6_rdnss_list", vv); err != nil {
+						return fmt.Errorf("Error reading ip6_rdnss_list: %v", err)
+					}
+				} else {
+					return fmt.Errorf("Error reading ip6_rdnss_list: %v", err)
+				}
+			}
+		}
+	}
+
 	if err = d.Set("ip6_reachable_time", flattenSystemInterfaceIpv6Ip6ReachableTime2edl(o["ip6-reachable-time"], d, "ip6_reachable_time")); err != nil {
 		if vv, ok := fortiAPIPatch(o["ip6-reachable-time"], "SystemInterfaceIpv6-Ip6ReachableTime"); ok {
 			if err = d.Set("ip6_reachable_time", vv); err != nil {
@@ -1741,6 +2036,40 @@ func refreshObjectSystemInterfaceIpv6(d *schema.ResourceData, o map[string]inter
 			}
 		} else {
 			return fmt.Errorf("Error reading ip6_retrans_time: %v", err)
+		}
+	}
+
+	if isImportTable() {
+		if err = d.Set("ip6_route_list", flattenSystemInterfaceIpv6Ip6RouteList2edl(o["ip6-route-list"], d, "ip6_route_list")); err != nil {
+			if vv, ok := fortiAPIPatch(o["ip6-route-list"], "SystemInterfaceIpv6-Ip6RouteList"); ok {
+				if err = d.Set("ip6_route_list", vv); err != nil {
+					return fmt.Errorf("Error reading ip6_route_list: %v", err)
+				}
+			} else {
+				return fmt.Errorf("Error reading ip6_route_list: %v", err)
+			}
+		}
+	} else {
+		if _, ok := d.GetOk("ip6_route_list"); ok {
+			if err = d.Set("ip6_route_list", flattenSystemInterfaceIpv6Ip6RouteList2edl(o["ip6-route-list"], d, "ip6_route_list")); err != nil {
+				if vv, ok := fortiAPIPatch(o["ip6-route-list"], "SystemInterfaceIpv6-Ip6RouteList"); ok {
+					if err = d.Set("ip6_route_list", vv); err != nil {
+						return fmt.Errorf("Error reading ip6_route_list: %v", err)
+					}
+				} else {
+					return fmt.Errorf("Error reading ip6_route_list: %v", err)
+				}
+			}
+		}
+	}
+
+	if err = d.Set("ip6_route_pref", flattenSystemInterfaceIpv6Ip6RoutePref2edl(o["ip6-route-pref"], d, "ip6_route_pref")); err != nil {
+		if vv, ok := fortiAPIPatch(o["ip6-route-pref"], "SystemInterfaceIpv6-Ip6RoutePref"); ok {
+			if err = d.Set("ip6_route_pref", vv); err != nil {
+				return fmt.Errorf("Error reading ip6_route_pref: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading ip6_route_pref: %v", err)
 		}
 	}
 
@@ -2104,6 +2433,10 @@ func expandSystemInterfaceIpv6Ip6Address2edl(d *schema.ResourceData, v interface
 	return v, nil
 }
 
+func expandSystemInterfaceIpv6Ip6AdvRio2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandSystemInterfaceIpv6Ip6Allowaccess2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return expandStringList(v.(*schema.Set).List()), nil
 }
@@ -2213,6 +2546,48 @@ func expandSystemInterfaceIpv6Ip6DelegatedPrefixListUpstreamInterface2edl(d *sch
 }
 
 func expandSystemInterfaceIpv6Ip6DnsServerOverride2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemInterfaceIpv6Ip6DnsslList2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	l := v.([]interface{})
+	result := make([]map[string]interface{}, 0, len(l))
+
+	if len(l) == 0 || l[0] == nil {
+		return result, nil
+	}
+
+	con := 0
+	for _, r := range l {
+		tmp := make(map[string]interface{})
+		i := r.(map[string]interface{})
+		pre_append := "" // table
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "dnssl_life_time"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["dnssl-life-time"], _ = expandSystemInterfaceIpv6Ip6DnsslListDnsslLifeTime2edl(d, i["dnssl_life_time"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "domain"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["domain"], _ = expandSystemInterfaceIpv6Ip6DnsslListDomain2edl(d, i["domain"], pre_append)
+		}
+
+		if len(tmp) > 0 {
+			result = append(result, tmp)
+		}
+
+		con += 1
+	}
+
+	return result, nil
+}
+
+func expandSystemInterfaceIpv6Ip6DnsslListDnsslLifeTime2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemInterfaceIpv6Ip6DnsslListDomain2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -2368,11 +2743,108 @@ func expandSystemInterfaceIpv6Ip6PrefixMode2edl(d *schema.ResourceData, v interf
 	return v, nil
 }
 
+func expandSystemInterfaceIpv6Ip6RdnssList2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	l := v.([]interface{})
+	result := make([]map[string]interface{}, 0, len(l))
+
+	if len(l) == 0 || l[0] == nil {
+		return result, nil
+	}
+
+	con := 0
+	for _, r := range l {
+		tmp := make(map[string]interface{})
+		i := r.(map[string]interface{})
+		pre_append := "" // table
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "rdnss"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["rdnss"], _ = expandSystemInterfaceIpv6Ip6RdnssListRdnss2edl(d, i["rdnss"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "rdnss_life_time"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["rdnss-life-time"], _ = expandSystemInterfaceIpv6Ip6RdnssListRdnssLifeTime2edl(d, i["rdnss_life_time"], pre_append)
+		}
+
+		if len(tmp) > 0 {
+			result = append(result, tmp)
+		}
+
+		con += 1
+	}
+
+	return result, nil
+}
+
+func expandSystemInterfaceIpv6Ip6RdnssListRdnss2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemInterfaceIpv6Ip6RdnssListRdnssLifeTime2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandSystemInterfaceIpv6Ip6ReachableTime2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
 func expandSystemInterfaceIpv6Ip6RetransTime2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemInterfaceIpv6Ip6RouteList2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	l := v.([]interface{})
+	result := make([]map[string]interface{}, 0, len(l))
+
+	if len(l) == 0 || l[0] == nil {
+		return result, nil
+	}
+
+	con := 0
+	for _, r := range l {
+		tmp := make(map[string]interface{})
+		i := r.(map[string]interface{})
+		pre_append := "" // table
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "route"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["route"], _ = expandSystemInterfaceIpv6Ip6RouteListRoute2edl(d, i["route"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "route_life_time"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["route-life-time"], _ = expandSystemInterfaceIpv6Ip6RouteListRouteLifeTime2edl(d, i["route_life_time"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "route_pref"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["route-pref"], _ = expandSystemInterfaceIpv6Ip6RouteListRoutePref2edl(d, i["route_pref"], pre_append)
+		}
+
+		if len(tmp) > 0 {
+			result = append(result, tmp)
+		}
+
+		con += 1
+	}
+
+	return result, nil
+}
+
+func expandSystemInterfaceIpv6Ip6RouteListRoute2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemInterfaceIpv6Ip6RouteListRouteLifeTime2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemInterfaceIpv6Ip6RouteListRoutePref2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemInterfaceIpv6Ip6RoutePref2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -2734,6 +3206,15 @@ func getObjectSystemInterfaceIpv6(d *schema.ResourceData) (*map[string]interface
 		}
 	}
 
+	if v, ok := d.GetOk("ip6_adv_rio"); ok || d.HasChange("ip6_adv_rio") {
+		t, err := expandSystemInterfaceIpv6Ip6AdvRio2edl(d, v, "ip6_adv_rio")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["ip6-adv-rio"] = t
+		}
+	}
+
 	if v, ok := d.GetOk("ip6_allowaccess"); ok || d.HasChange("ip6_allowaccess") {
 		t, err := expandSystemInterfaceIpv6Ip6Allowaccess2edl(d, v, "ip6_allowaccess")
 		if err != nil {
@@ -2776,6 +3257,15 @@ func getObjectSystemInterfaceIpv6(d *schema.ResourceData) (*map[string]interface
 			return &obj, err
 		} else if t != nil {
 			obj["ip6-dns-server-override"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("ip6_dnssl_list"); ok || d.HasChange("ip6_dnssl_list") {
+		t, err := expandSystemInterfaceIpv6Ip6DnsslList2edl(d, v, "ip6_dnssl_list")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["ip6-dnssl-list"] = t
 		}
 	}
 
@@ -2869,6 +3359,15 @@ func getObjectSystemInterfaceIpv6(d *schema.ResourceData) (*map[string]interface
 		}
 	}
 
+	if v, ok := d.GetOk("ip6_rdnss_list"); ok || d.HasChange("ip6_rdnss_list") {
+		t, err := expandSystemInterfaceIpv6Ip6RdnssList2edl(d, v, "ip6_rdnss_list")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["ip6-rdnss-list"] = t
+		}
+	}
+
 	if v, ok := d.GetOk("ip6_reachable_time"); ok || d.HasChange("ip6_reachable_time") {
 		t, err := expandSystemInterfaceIpv6Ip6ReachableTime2edl(d, v, "ip6_reachable_time")
 		if err != nil {
@@ -2884,6 +3383,24 @@ func getObjectSystemInterfaceIpv6(d *schema.ResourceData) (*map[string]interface
 			return &obj, err
 		} else if t != nil {
 			obj["ip6-retrans-time"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("ip6_route_list"); ok || d.HasChange("ip6_route_list") {
+		t, err := expandSystemInterfaceIpv6Ip6RouteList2edl(d, v, "ip6_route_list")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["ip6-route-list"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("ip6_route_pref"); ok || d.HasChange("ip6_route_pref") {
+		t, err := expandSystemInterfaceIpv6Ip6RoutePref2edl(d, v, "ip6_route_pref")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["ip6-route-pref"] = t
 		}
 	}
 

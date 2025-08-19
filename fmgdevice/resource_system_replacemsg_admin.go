@@ -63,6 +63,7 @@ func resourceSystemReplacemsgAdminUpdate(d *schema.ResourceData, m interface{}) 
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -71,12 +72,15 @@ func resourceSystemReplacemsgAdminUpdate(d *schema.ResourceData, m interface{}) 
 	}
 	paradict["device"] = device_name
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSystemReplacemsgAdmin(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemReplacemsgAdmin resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateSystemReplacemsgAdmin(obj, mkey, paradict)
+	_, err = c.UpdateSystemReplacemsgAdmin(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemReplacemsgAdmin resource: %v", err)
 	}
@@ -95,6 +99,7 @@ func resourceSystemReplacemsgAdminDelete(d *schema.ResourceData, m interface{}) 
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -103,7 +108,11 @@ func resourceSystemReplacemsgAdminDelete(d *schema.ResourceData, m interface{}) 
 	}
 	paradict["device"] = device_name
 
-	err = c.DeleteSystemReplacemsgAdmin(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteSystemReplacemsgAdmin(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting SystemReplacemsgAdmin resource: %v", err)
 	}

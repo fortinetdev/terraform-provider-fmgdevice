@@ -145,6 +145,11 @@ func resourceWirelessControllerVap() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"_intf_role": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
 			"_is_factory_setting": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -271,6 +276,11 @@ func resourceWirelessControllerVap() *schema.Resource {
 			},
 			"bstm_rssi_disassoc_timer": &schema.Schema{
 				Type:     schema.TypeInt,
+				Optional: true,
+				Computed: true,
+			},
+			"called_station_id_type": &schema.Schema{
+				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
 			},
@@ -463,6 +473,11 @@ func resourceWirelessControllerVap() *schema.Resource {
 							Optional: true,
 							Computed: true,
 						},
+						"_intf_role": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+							Computed: true,
+						},
 						"_is_factory_setting": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
@@ -596,6 +611,10 @@ func resourceWirelessControllerVap() *schema.Resource {
 							Type:     schema.TypeInt,
 							Optional: true,
 						},
+						"called_station_id_type": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
 						"captive_portal": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
@@ -695,6 +714,10 @@ func resourceWirelessControllerVap() *schema.Resource {
 							Optional: true,
 						},
 						"external_logout": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"external_pre_auth": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
 						},
@@ -999,6 +1022,10 @@ func resourceWirelessControllerVap() *schema.Resource {
 							Computed: true,
 						},
 						"portal_type": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"pre_auth": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
 						},
@@ -1340,6 +1367,11 @@ func resourceWirelessControllerVap() *schema.Resource {
 			"external_logout": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+			},
+			"external_pre_auth": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
 			},
 			"external_web": &schema.Schema{
 				Type:     schema.TypeString,
@@ -1768,6 +1800,11 @@ func resourceWirelessControllerVap() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
+			"pre_auth": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
 			"primary_wag_profile": &schema.Schema{
 				Type:     schema.TypeSet,
 				Elem:     &schema.Schema{Type: schema.TypeString},
@@ -2146,6 +2183,7 @@ func resourceWirelessControllerVapCreate(d *schema.ResourceData, m interface{}) 
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -2159,13 +2197,15 @@ func resourceWirelessControllerVapCreate(d *schema.ResourceData, m interface{}) 
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectWirelessControllerVap(d)
 	if err != nil {
 		return fmt.Errorf("Error creating WirelessControllerVap resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateWirelessControllerVap(obj, paradict)
-
+	_, err = c.CreateWirelessControllerVap(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating WirelessControllerVap resource: %v", err)
 	}
@@ -2181,6 +2221,7 @@ func resourceWirelessControllerVapUpdate(d *schema.ResourceData, m interface{}) 
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -2194,12 +2235,15 @@ func resourceWirelessControllerVapUpdate(d *schema.ResourceData, m interface{}) 
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectWirelessControllerVap(d)
 	if err != nil {
 		return fmt.Errorf("Error updating WirelessControllerVap resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateWirelessControllerVap(obj, mkey, paradict)
+	_, err = c.UpdateWirelessControllerVap(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating WirelessControllerVap resource: %v", err)
 	}
@@ -2218,6 +2262,7 @@ func resourceWirelessControllerVapDelete(d *schema.ResourceData, m interface{}) 
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -2231,7 +2276,11 @@ func resourceWirelessControllerVapDelete(d *schema.ResourceData, m interface{}) 
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	err = c.DeleteWirelessControllerVap(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteWirelessControllerVap(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting WirelessControllerVap resource: %v", err)
 	}
@@ -2371,6 +2420,10 @@ func flattenWirelessControllerVapIntfManagedSubnetworkSize(v interface{}, d *sch
 	return v
 }
 
+func flattenWirelessControllerVapIntfRole(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenWirelessControllerVapIsFactorySetting(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -2468,6 +2521,10 @@ func flattenWirelessControllerVapBstmLoadBalancingDisassocTimer(v interface{}, d
 }
 
 func flattenWirelessControllerVapBstmRssiDisassocTimer(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWirelessControllerVapCalledStationIdType(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -2670,6 +2727,12 @@ func flattenWirelessControllerVapDynamicMapping(v interface{}, d *schema.Resourc
 			tmp["_intf_managed_subnetwork_size"] = fortiAPISubPartPatch(v, "WirelessControllerVap-DynamicMapping-IntfManagedSubnetworkSize")
 		}
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "_intf_role"
+		if _, ok := i["_intf_role"]; ok {
+			v := flattenWirelessControllerVapDynamicMappingIntfRole(i["_intf_role"], d, pre_append)
+			tmp["_intf_role"] = fortiAPISubPartPatch(v, "WirelessControllerVap-DynamicMapping-IntfRole")
+		}
+
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "_is_factory_setting"
 		if _, ok := i["_is_factory_setting"]; ok {
 			v := flattenWirelessControllerVapDynamicMappingIsFactorySetting(i["_is_factory_setting"], d, pre_append)
@@ -2826,6 +2889,12 @@ func flattenWirelessControllerVapDynamicMapping(v interface{}, d *schema.Resourc
 			tmp["bstm_rssi_disassoc_timer"] = fortiAPISubPartPatch(v, "WirelessControllerVap-DynamicMapping-BstmRssiDisassocTimer")
 		}
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "called_station_id_type"
+		if _, ok := i["called-station-id-type"]; ok {
+			v := flattenWirelessControllerVapDynamicMappingCalledStationIdType(i["called-station-id-type"], d, pre_append)
+			tmp["called_station_id_type"] = fortiAPISubPartPatch(v, "WirelessControllerVap-DynamicMapping-CalledStationIdType")
+		}
+
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "captive_portal"
 		if _, ok := i["captive-portal"]; ok {
 			v := flattenWirelessControllerVapDynamicMappingCaptivePortal(i["captive-portal"], d, pre_append)
@@ -2956,6 +3025,12 @@ func flattenWirelessControllerVapDynamicMapping(v interface{}, d *schema.Resourc
 		if _, ok := i["external-logout"]; ok {
 			v := flattenWirelessControllerVapDynamicMappingExternalLogout(i["external-logout"], d, pre_append)
 			tmp["external_logout"] = fortiAPISubPartPatch(v, "WirelessControllerVap-DynamicMapping-ExternalLogout")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "external_pre_auth"
+		if _, ok := i["external-pre-auth"]; ok {
+			v := flattenWirelessControllerVapDynamicMappingExternalPreAuth(i["external-pre-auth"], d, pre_append)
+			tmp["external_pre_auth"] = fortiAPISubPartPatch(v, "WirelessControllerVap-DynamicMapping-ExternalPreAuth")
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "external_web"
@@ -3364,6 +3439,12 @@ func flattenWirelessControllerVapDynamicMapping(v interface{}, d *schema.Resourc
 		if _, ok := i["portal-type"]; ok {
 			v := flattenWirelessControllerVapDynamicMappingPortalType(i["portal-type"], d, pre_append)
 			tmp["portal_type"] = fortiAPISubPartPatch(v, "WirelessControllerVap-DynamicMapping-PortalType")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "pre_auth"
+		if _, ok := i["pre-auth"]; ok {
+			v := flattenWirelessControllerVapDynamicMappingPreAuth(i["pre-auth"], d, pre_append)
+			tmp["pre_auth"] = fortiAPISubPartPatch(v, "WirelessControllerVap-DynamicMapping-PreAuth")
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "primary_wag_profile"
@@ -3840,6 +3921,10 @@ func flattenWirelessControllerVapDynamicMappingIntfManagedSubnetworkSize(v inter
 	return v
 }
 
+func flattenWirelessControllerVapDynamicMappingIntfRole(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenWirelessControllerVapDynamicMappingIsFactorySetting(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -3989,6 +4074,10 @@ func flattenWirelessControllerVapDynamicMappingBstmRssiDisassocTimer(v interface
 	return v
 }
 
+func flattenWirelessControllerVapDynamicMappingCalledStationIdType(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenWirelessControllerVapDynamicMappingCaptivePortal(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -4074,6 +4163,10 @@ func flattenWirelessControllerVapDynamicMappingExternalFastRoaming(v interface{}
 }
 
 func flattenWirelessControllerVapDynamicMappingExternalLogout(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWirelessControllerVapDynamicMappingExternalPreAuth(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -4346,6 +4439,10 @@ func flattenWirelessControllerVapDynamicMappingPortalMessageOverrideGroup(v inte
 }
 
 func flattenWirelessControllerVapDynamicMappingPortalType(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWirelessControllerVapDynamicMappingPreAuth(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -4626,6 +4723,10 @@ func flattenWirelessControllerVapExternalFastRoaming(v interface{}, d *schema.Re
 }
 
 func flattenWirelessControllerVapExternalLogout(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWirelessControllerVapExternalPreAuth(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -5075,6 +5176,10 @@ func flattenWirelessControllerVapPortalMessageOverridesAuthRejectPage(v interfac
 }
 
 func flattenWirelessControllerVapPortalType(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWirelessControllerVapPreAuth(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -5635,6 +5740,16 @@ func refreshObjectWirelessControllerVap(d *schema.ResourceData, o map[string]int
 		}
 	}
 
+	if err = d.Set("_intf_role", flattenWirelessControllerVapIntfRole(o["_intf_role"], d, "_intf_role")); err != nil {
+		if vv, ok := fortiAPIPatch(o["_intf_role"], "WirelessControllerVap-IntfRole"); ok {
+			if err = d.Set("_intf_role", vv); err != nil {
+				return fmt.Errorf("Error reading _intf_role: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading _intf_role: %v", err)
+		}
+	}
+
 	if err = d.Set("_is_factory_setting", flattenWirelessControllerVapIsFactorySetting(o["_is_factory_setting"], d, "_is_factory_setting")); err != nil {
 		if vv, ok := fortiAPIPatch(o["_is_factory_setting"], "WirelessControllerVap-IsFactorySetting"); ok {
 			if err = d.Set("_is_factory_setting", vv); err != nil {
@@ -5885,6 +6000,16 @@ func refreshObjectWirelessControllerVap(d *schema.ResourceData, o map[string]int
 		}
 	}
 
+	if err = d.Set("called_station_id_type", flattenWirelessControllerVapCalledStationIdType(o["called-station-id-type"], d, "called_station_id_type")); err != nil {
+		if vv, ok := fortiAPIPatch(o["called-station-id-type"], "WirelessControllerVap-CalledStationIdType"); ok {
+			if err = d.Set("called_station_id_type", vv); err != nil {
+				return fmt.Errorf("Error reading called_station_id_type: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading called_station_id_type: %v", err)
+		}
+	}
+
 	if err = d.Set("captive_portal", flattenWirelessControllerVapCaptivePortal(o["captive-portal"], d, "captive_portal")); err != nil {
 		if vv, ok := fortiAPIPatch(o["captive-portal"], "WirelessControllerVap-CaptivePortal"); ok {
 			if err = d.Set("captive_portal", vv); err != nil {
@@ -6116,6 +6241,16 @@ func refreshObjectWirelessControllerVap(d *schema.ResourceData, o map[string]int
 			}
 		} else {
 			return fmt.Errorf("Error reading external_logout: %v", err)
+		}
+	}
+
+	if err = d.Set("external_pre_auth", flattenWirelessControllerVapExternalPreAuth(o["external-pre-auth"], d, "external_pre_auth")); err != nil {
+		if vv, ok := fortiAPIPatch(o["external-pre-auth"], "WirelessControllerVap-ExternalPreAuth"); ok {
+			if err = d.Set("external_pre_auth", vv); err != nil {
+				return fmt.Errorf("Error reading external_pre_auth: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading external_pre_auth: %v", err)
 		}
 	}
 
@@ -6868,6 +7003,16 @@ func refreshObjectWirelessControllerVap(d *schema.ResourceData, o map[string]int
 			}
 		} else {
 			return fmt.Errorf("Error reading portal_type: %v", err)
+		}
+	}
+
+	if err = d.Set("pre_auth", flattenWirelessControllerVapPreAuth(o["pre-auth"], d, "pre_auth")); err != nil {
+		if vv, ok := fortiAPIPatch(o["pre-auth"], "WirelessControllerVap-PreAuth"); ok {
+			if err = d.Set("pre_auth", vv); err != nil {
+				return fmt.Errorf("Error reading pre_auth: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading pre_auth: %v", err)
 		}
 	}
 
@@ -7638,6 +7783,10 @@ func expandWirelessControllerVapIntfManagedSubnetworkSize(d *schema.ResourceData
 	return v, nil
 }
 
+func expandWirelessControllerVapIntfRole(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandWirelessControllerVapIsFactorySetting(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -7735,6 +7884,10 @@ func expandWirelessControllerVapBstmLoadBalancingDisassocTimer(d *schema.Resourc
 }
 
 func expandWirelessControllerVapBstmRssiDisassocTimer(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWirelessControllerVapCalledStationIdType(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -7920,6 +8073,11 @@ func expandWirelessControllerVapDynamicMapping(d *schema.ResourceData, v interfa
 			tmp["_intf_managed-subnetwork-size"], _ = expandWirelessControllerVapDynamicMappingIntfManagedSubnetworkSize(d, i["_intf_managed_subnetwork_size"], pre_append)
 		}
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "_intf_role"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["_intf_role"], _ = expandWirelessControllerVapDynamicMappingIntfRole(d, i["_intf_role"], pre_append)
+		}
+
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "_is_factory_setting"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
 			tmp["_is_factory_setting"], _ = expandWirelessControllerVapDynamicMappingIsFactorySetting(d, i["_is_factory_setting"], pre_append)
@@ -8055,6 +8213,11 @@ func expandWirelessControllerVapDynamicMapping(d *schema.ResourceData, v interfa
 			tmp["bstm-rssi-disassoc-timer"], _ = expandWirelessControllerVapDynamicMappingBstmRssiDisassocTimer(d, i["bstm_rssi_disassoc_timer"], pre_append)
 		}
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "called_station_id_type"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["called-station-id-type"], _ = expandWirelessControllerVapDynamicMappingCalledStationIdType(d, i["called_station_id_type"], pre_append)
+		}
+
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "captive_portal"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
 			tmp["captive-portal"], _ = expandWirelessControllerVapDynamicMappingCaptivePortal(d, i["captive_portal"], pre_append)
@@ -8173,6 +8336,11 @@ func expandWirelessControllerVapDynamicMapping(d *schema.ResourceData, v interfa
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "external_logout"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
 			tmp["external-logout"], _ = expandWirelessControllerVapDynamicMappingExternalLogout(d, i["external_logout"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "external_pre_auth"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["external-pre-auth"], _ = expandWirelessControllerVapDynamicMappingExternalPreAuth(d, i["external_pre_auth"], pre_append)
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "external_web"
@@ -8523,6 +8691,11 @@ func expandWirelessControllerVapDynamicMapping(d *schema.ResourceData, v interfa
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "portal_type"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
 			tmp["portal-type"], _ = expandWirelessControllerVapDynamicMappingPortalType(d, i["portal_type"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "pre_auth"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["pre-auth"], _ = expandWirelessControllerVapDynamicMappingPreAuth(d, i["pre_auth"], pre_append)
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "primary_wag_profile"
@@ -8940,6 +9113,10 @@ func expandWirelessControllerVapDynamicMappingIntfManagedSubnetworkSize(d *schem
 	return v, nil
 }
 
+func expandWirelessControllerVapDynamicMappingIntfRole(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandWirelessControllerVapDynamicMappingIsFactorySetting(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -9082,6 +9259,10 @@ func expandWirelessControllerVapDynamicMappingBstmRssiDisassocTimer(d *schema.Re
 	return v, nil
 }
 
+func expandWirelessControllerVapDynamicMappingCalledStationIdType(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandWirelessControllerVapDynamicMappingCaptivePortal(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -9175,6 +9356,10 @@ func expandWirelessControllerVapDynamicMappingExternalFastRoaming(d *schema.Reso
 }
 
 func expandWirelessControllerVapDynamicMappingExternalLogout(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWirelessControllerVapDynamicMappingExternalPreAuth(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -9455,6 +9640,10 @@ func expandWirelessControllerVapDynamicMappingPortalMessageOverrideGroup(d *sche
 }
 
 func expandWirelessControllerVapDynamicMappingPortalType(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWirelessControllerVapDynamicMappingPreAuth(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -9739,6 +9928,10 @@ func expandWirelessControllerVapExternalFastRoaming(d *schema.ResourceData, v in
 }
 
 func expandWirelessControllerVapExternalLogout(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWirelessControllerVapExternalPreAuth(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -10185,6 +10378,10 @@ func expandWirelessControllerVapPortalMessageOverridesAuthRejectPage(d *schema.R
 }
 
 func expandWirelessControllerVapPortalType(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWirelessControllerVapPreAuth(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -10711,6 +10908,15 @@ func getObjectWirelessControllerVap(d *schema.ResourceData) (*map[string]interfa
 		}
 	}
 
+	if v, ok := d.GetOk("_intf_role"); ok || d.HasChange("_intf_role") {
+		t, err := expandWirelessControllerVapIntfRole(d, v, "_intf_role")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["_intf_role"] = t
+		}
+	}
+
 	if v, ok := d.GetOk("_is_factory_setting"); ok || d.HasChange("_is_factory_setting") {
 		t, err := expandWirelessControllerVapIsFactorySetting(d, v, "_is_factory_setting")
 		if err != nil {
@@ -10936,6 +11142,15 @@ func getObjectWirelessControllerVap(d *schema.ResourceData) (*map[string]interfa
 		}
 	}
 
+	if v, ok := d.GetOk("called_station_id_type"); ok || d.HasChange("called_station_id_type") {
+		t, err := expandWirelessControllerVapCalledStationIdType(d, v, "called_station_id_type")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["called-station-id-type"] = t
+		}
+	}
+
 	if v, ok := d.GetOk("captive_portal"); ok || d.HasChange("captive_portal") {
 		t, err := expandWirelessControllerVapCaptivePortal(d, v, "captive_portal")
 		if err != nil {
@@ -11149,6 +11364,15 @@ func getObjectWirelessControllerVap(d *schema.ResourceData) (*map[string]interfa
 			return &obj, err
 		} else if t != nil {
 			obj["external-logout"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("external_pre_auth"); ok || d.HasChange("external_pre_auth") {
+		t, err := expandWirelessControllerVapExternalPreAuth(d, v, "external_pre_auth")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["external-pre-auth"] = t
 		}
 	}
 
@@ -11806,6 +12030,15 @@ func getObjectWirelessControllerVap(d *schema.ResourceData) (*map[string]interfa
 			return &obj, err
 		} else if t != nil {
 			obj["portal-type"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("pre_auth"); ok || d.HasChange("pre_auth") {
+		t, err := expandWirelessControllerVapPreAuth(d, v, "pre_auth")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["pre-auth"] = t
 		}
 	}
 

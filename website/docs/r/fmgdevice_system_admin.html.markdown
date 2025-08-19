@@ -61,6 +61,7 @@ The following arguments are supported:
 * `ip6_trusthost8` - Any IPv6 address from which the administrator can connect to the FortiGate unit. Default allows access from any IPv6 address.
 * `ip6_trusthost9` - Any IPv6 address from which the administrator can connect to the FortiGate unit. Default allows access from any IPv6 address.
 * `name` - User name.
+* `old_password` - Admin user old password.
 * `password` - Admin user password.
 * `password_expire` - Password expire time.
 * `peer_auth` - Set to enable peer certificate authentication (for HTTPS admin access). Valid values: `disable`, `enable`.

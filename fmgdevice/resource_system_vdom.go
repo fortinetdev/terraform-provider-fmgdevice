@@ -60,6 +60,7 @@ func resourceSystemVdomCreate(d *schema.ResourceData, m interface{}) error {
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -68,13 +69,15 @@ func resourceSystemVdomCreate(d *schema.ResourceData, m interface{}) error {
 	}
 	paradict["device"] = device_name
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSystemVdom(d)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemVdom resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateSystemVdom(obj, paradict)
-
+	_, err = c.CreateSystemVdom(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemVdom resource: %v", err)
 	}
@@ -90,6 +93,7 @@ func resourceSystemVdomUpdate(d *schema.ResourceData, m interface{}) error {
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -98,12 +102,15 @@ func resourceSystemVdomUpdate(d *schema.ResourceData, m interface{}) error {
 	}
 	paradict["device"] = device_name
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSystemVdom(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemVdom resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateSystemVdom(obj, mkey, paradict)
+	_, err = c.UpdateSystemVdom(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemVdom resource: %v", err)
 	}
@@ -122,6 +129,7 @@ func resourceSystemVdomDelete(d *schema.ResourceData, m interface{}) error {
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -130,7 +138,11 @@ func resourceSystemVdomDelete(d *schema.ResourceData, m interface{}) error {
 	}
 	paradict["device"] = device_name
 
-	err = c.DeleteSystemVdom(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteSystemVdom(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting SystemVdom resource: %v", err)
 	}

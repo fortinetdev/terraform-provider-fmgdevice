@@ -93,6 +93,7 @@ func resourceWirelessControllerHotspot20IconCreate(d *schema.ResourceData, m int
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -106,13 +107,15 @@ func resourceWirelessControllerHotspot20IconCreate(d *schema.ResourceData, m int
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectWirelessControllerHotspot20Icon(d)
 	if err != nil {
 		return fmt.Errorf("Error creating WirelessControllerHotspot20Icon resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateWirelessControllerHotspot20Icon(obj, paradict)
-
+	_, err = c.CreateWirelessControllerHotspot20Icon(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating WirelessControllerHotspot20Icon resource: %v", err)
 	}
@@ -128,6 +131,7 @@ func resourceWirelessControllerHotspot20IconUpdate(d *schema.ResourceData, m int
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -141,12 +145,15 @@ func resourceWirelessControllerHotspot20IconUpdate(d *schema.ResourceData, m int
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectWirelessControllerHotspot20Icon(d)
 	if err != nil {
 		return fmt.Errorf("Error updating WirelessControllerHotspot20Icon resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateWirelessControllerHotspot20Icon(obj, mkey, paradict)
+	_, err = c.UpdateWirelessControllerHotspot20Icon(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating WirelessControllerHotspot20Icon resource: %v", err)
 	}
@@ -165,6 +172,7 @@ func resourceWirelessControllerHotspot20IconDelete(d *schema.ResourceData, m int
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -178,7 +186,11 @@ func resourceWirelessControllerHotspot20IconDelete(d *schema.ResourceData, m int
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	err = c.DeleteWirelessControllerHotspot20Icon(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteWirelessControllerHotspot20Icon(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting WirelessControllerHotspot20Icon resource: %v", err)
 	}

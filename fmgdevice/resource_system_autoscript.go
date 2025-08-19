@@ -75,6 +75,7 @@ func resourceSystemAutoScriptCreate(d *schema.ResourceData, m interface{}) error
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -83,13 +84,15 @@ func resourceSystemAutoScriptCreate(d *schema.ResourceData, m interface{}) error
 	}
 	paradict["device"] = device_name
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSystemAutoScript(d)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemAutoScript resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateSystemAutoScript(obj, paradict)
-
+	_, err = c.CreateSystemAutoScript(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemAutoScript resource: %v", err)
 	}
@@ -105,6 +108,7 @@ func resourceSystemAutoScriptUpdate(d *schema.ResourceData, m interface{}) error
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -113,12 +117,15 @@ func resourceSystemAutoScriptUpdate(d *schema.ResourceData, m interface{}) error
 	}
 	paradict["device"] = device_name
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSystemAutoScript(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemAutoScript resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateSystemAutoScript(obj, mkey, paradict)
+	_, err = c.UpdateSystemAutoScript(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemAutoScript resource: %v", err)
 	}
@@ -137,6 +144,7 @@ func resourceSystemAutoScriptDelete(d *schema.ResourceData, m interface{}) error
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -145,7 +153,11 @@ func resourceSystemAutoScriptDelete(d *schema.ResourceData, m interface{}) error
 	}
 	paradict["device"] = device_name
 
-	err = c.DeleteSystemAutoScript(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteSystemAutoScript(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting SystemAutoScript resource: %v", err)
 	}

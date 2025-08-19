@@ -62,6 +62,7 @@ func resourceLogSyslogd2OverrideSettingCustomFieldNameCreate(d *schema.ResourceD
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -75,13 +76,15 @@ func resourceLogSyslogd2OverrideSettingCustomFieldNameCreate(d *schema.ResourceD
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectLogSyslogd2OverrideSettingCustomFieldName(d)
 	if err != nil {
 		return fmt.Errorf("Error creating LogSyslogd2OverrideSettingCustomFieldName resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateLogSyslogd2OverrideSettingCustomFieldName(obj, paradict)
-
+	_, err = c.CreateLogSyslogd2OverrideSettingCustomFieldName(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating LogSyslogd2OverrideSettingCustomFieldName resource: %v", err)
 	}
@@ -97,6 +100,7 @@ func resourceLogSyslogd2OverrideSettingCustomFieldNameUpdate(d *schema.ResourceD
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -110,12 +114,15 @@ func resourceLogSyslogd2OverrideSettingCustomFieldNameUpdate(d *schema.ResourceD
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectLogSyslogd2OverrideSettingCustomFieldName(d)
 	if err != nil {
 		return fmt.Errorf("Error updating LogSyslogd2OverrideSettingCustomFieldName resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateLogSyslogd2OverrideSettingCustomFieldName(obj, mkey, paradict)
+	_, err = c.UpdateLogSyslogd2OverrideSettingCustomFieldName(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating LogSyslogd2OverrideSettingCustomFieldName resource: %v", err)
 	}
@@ -134,6 +141,7 @@ func resourceLogSyslogd2OverrideSettingCustomFieldNameDelete(d *schema.ResourceD
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -147,7 +155,11 @@ func resourceLogSyslogd2OverrideSettingCustomFieldNameDelete(d *schema.ResourceD
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	err = c.DeleteLogSyslogd2OverrideSettingCustomFieldName(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteLogSyslogd2OverrideSettingCustomFieldName(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting LogSyslogd2OverrideSettingCustomFieldName resource: %v", err)
 	}

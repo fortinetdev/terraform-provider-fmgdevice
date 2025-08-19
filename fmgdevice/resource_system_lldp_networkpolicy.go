@@ -322,6 +322,7 @@ func resourceSystemLldpNetworkPolicyCreate(d *schema.ResourceData, m interface{}
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -335,13 +336,15 @@ func resourceSystemLldpNetworkPolicyCreate(d *schema.ResourceData, m interface{}
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSystemLldpNetworkPolicy(d)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemLldpNetworkPolicy resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateSystemLldpNetworkPolicy(obj, paradict)
-
+	_, err = c.CreateSystemLldpNetworkPolicy(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemLldpNetworkPolicy resource: %v", err)
 	}
@@ -357,6 +360,7 @@ func resourceSystemLldpNetworkPolicyUpdate(d *schema.ResourceData, m interface{}
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -370,12 +374,15 @@ func resourceSystemLldpNetworkPolicyUpdate(d *schema.ResourceData, m interface{}
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSystemLldpNetworkPolicy(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemLldpNetworkPolicy resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateSystemLldpNetworkPolicy(obj, mkey, paradict)
+	_, err = c.UpdateSystemLldpNetworkPolicy(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemLldpNetworkPolicy resource: %v", err)
 	}
@@ -394,6 +401,7 @@ func resourceSystemLldpNetworkPolicyDelete(d *schema.ResourceData, m interface{}
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -407,7 +415,11 @@ func resourceSystemLldpNetworkPolicyDelete(d *schema.ResourceData, m interface{}
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	err = c.DeleteSystemLldpNetworkPolicy(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteSystemLldpNetworkPolicy(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting SystemLldpNetworkPolicy resource: %v", err)
 	}

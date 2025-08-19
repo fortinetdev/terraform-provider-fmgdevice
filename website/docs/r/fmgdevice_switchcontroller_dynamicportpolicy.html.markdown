@@ -63,6 +63,7 @@ The following arguments are supported:
 The `policy` block supports:
 
 * `n802_1x` - 802.1x security policy to be applied when using this policy.
+* `bounce_port_duration` - Bounce duration in seconds of a switch port where this policy is applied.
 * `bounce_port_link` - Enable/disable bouncing (administratively bring the link down, up) of a switch port where this policy is applied. Helps to clear and reassign VLAN from lldp-profile. Valid values: `disable`, `enable`.
 
 * `category` - Category of Dynamic port policy. Valid values: `device`, `interface-tag`.
@@ -78,6 +79,8 @@ The `policy` block supports:
 * `match_type` - Match and retain the devices based on the type. Valid values: `dynamic`, `override`.
 
 * `name` - Policy name.
+* `poe_reset` - Enable/disable POE reset of a switch port where this policy is applied. Valid values: `disable`, `enable`.
+
 * `qos_policy` - QoS policy to be applied when using this policy.
 * `status` - Enable/disable policy. Valid values: `disable`, `enable`.
 

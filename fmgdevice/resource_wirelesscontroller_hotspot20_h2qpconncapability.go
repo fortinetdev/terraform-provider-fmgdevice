@@ -109,6 +109,7 @@ func resourceWirelessControllerHotspot20H2QpConnCapabilityCreate(d *schema.Resou
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -122,13 +123,15 @@ func resourceWirelessControllerHotspot20H2QpConnCapabilityCreate(d *schema.Resou
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectWirelessControllerHotspot20H2QpConnCapability(d)
 	if err != nil {
 		return fmt.Errorf("Error creating WirelessControllerHotspot20H2QpConnCapability resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateWirelessControllerHotspot20H2QpConnCapability(obj, paradict)
-
+	_, err = c.CreateWirelessControllerHotspot20H2QpConnCapability(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating WirelessControllerHotspot20H2QpConnCapability resource: %v", err)
 	}
@@ -144,6 +147,7 @@ func resourceWirelessControllerHotspot20H2QpConnCapabilityUpdate(d *schema.Resou
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -157,12 +161,15 @@ func resourceWirelessControllerHotspot20H2QpConnCapabilityUpdate(d *schema.Resou
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectWirelessControllerHotspot20H2QpConnCapability(d)
 	if err != nil {
 		return fmt.Errorf("Error updating WirelessControllerHotspot20H2QpConnCapability resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateWirelessControllerHotspot20H2QpConnCapability(obj, mkey, paradict)
+	_, err = c.UpdateWirelessControllerHotspot20H2QpConnCapability(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating WirelessControllerHotspot20H2QpConnCapability resource: %v", err)
 	}
@@ -181,6 +188,7 @@ func resourceWirelessControllerHotspot20H2QpConnCapabilityDelete(d *schema.Resou
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -194,7 +202,11 @@ func resourceWirelessControllerHotspot20H2QpConnCapabilityDelete(d *schema.Resou
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	err = c.DeleteWirelessControllerHotspot20H2QpConnCapability(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteWirelessControllerHotspot20H2QpConnCapability(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting WirelessControllerHotspot20H2QpConnCapability resource: %v", err)
 	}

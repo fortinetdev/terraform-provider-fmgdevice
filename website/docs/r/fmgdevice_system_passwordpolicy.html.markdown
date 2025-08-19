@@ -36,6 +36,8 @@ The following arguments are supported:
 * `expire_day` - Number of days after which passwords expire (1 - 999 days, default = 90).
 * `expire_status` - Enable/disable password expiration. Valid values: `disable`, `enable`.
 
+* `login_lockout_upon_downgrade` - Enable/disable administrative user login lockout upon downgrade (defaut = disable). If enabled, downgrading the FortiOS firmware to a lower version where safer passwords are unsupported will lock out administrative users. Valid values: `disable`, `enable`.
+
 * `min_change_characters` - Minimum number of unique characters in new password which do not exist in old password (0 - 128, default = 0. This attribute overrides reuse-password if both are enabled).
 * `min_lower_case_letter` - Minimum number of lowercase characters in password (0 - 128, default = 0).
 * `min_non_alphanumeric` - Minimum number of non-alphanumeric characters in password (0 - 128, default = 0).

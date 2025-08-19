@@ -102,6 +102,7 @@ func resourceZtnaTrafficForwardProxyReverseServiceUpdate(d *schema.ResourceData,
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -115,12 +116,15 @@ func resourceZtnaTrafficForwardProxyReverseServiceUpdate(d *schema.ResourceData,
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectZtnaTrafficForwardProxyReverseService(d)
 	if err != nil {
 		return fmt.Errorf("Error updating ZtnaTrafficForwardProxyReverseService resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateZtnaTrafficForwardProxyReverseService(obj, mkey, paradict)
+	_, err = c.UpdateZtnaTrafficForwardProxyReverseService(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating ZtnaTrafficForwardProxyReverseService resource: %v", err)
 	}
@@ -139,6 +143,7 @@ func resourceZtnaTrafficForwardProxyReverseServiceDelete(d *schema.ResourceData,
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -152,7 +157,11 @@ func resourceZtnaTrafficForwardProxyReverseServiceDelete(d *schema.ResourceData,
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	err = c.DeleteZtnaTrafficForwardProxyReverseService(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteZtnaTrafficForwardProxyReverseService(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting ZtnaTrafficForwardProxyReverseService resource: %v", err)
 	}

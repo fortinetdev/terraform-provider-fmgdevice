@@ -90,6 +90,17 @@ func resourceWebProxyExplicit() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"interface": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Computed: true,
+			},
+			"interface_select_method": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
 			"ipv6_status": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -255,6 +266,10 @@ func resourceWebProxyExplicit() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"vrf_select": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+			},
 			"dynamic_sort_subtable": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -270,6 +285,7 @@ func resourceWebProxyExplicitUpdate(d *schema.ResourceData, m interface{}) error
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -283,12 +299,15 @@ func resourceWebProxyExplicitUpdate(d *schema.ResourceData, m interface{}) error
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectWebProxyExplicit(d)
 	if err != nil {
 		return fmt.Errorf("Error updating WebProxyExplicit resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateWebProxyExplicit(obj, mkey, paradict)
+	_, err = c.UpdateWebProxyExplicit(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating WebProxyExplicit resource: %v", err)
 	}
@@ -307,6 +326,7 @@ func resourceWebProxyExplicitDelete(d *schema.ResourceData, m interface{}) error
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -320,7 +340,11 @@ func resourceWebProxyExplicitDelete(d *schema.ResourceData, m interface{}) error
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	err = c.DeleteWebProxyExplicit(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteWebProxyExplicit(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting WebProxyExplicit resource: %v", err)
 	}
@@ -417,6 +441,14 @@ func flattenWebProxyExplicitIncomingIp(v interface{}, d *schema.ResourceData, pr
 }
 
 func flattenWebProxyExplicitIncomingIp6(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWebProxyExplicitInterface(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
+func flattenWebProxyExplicitInterfaceSelectMethod(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -625,6 +657,10 @@ func flattenWebProxyExplicitUserAgentDetect(v interface{}, d *schema.ResourceDat
 	return v
 }
 
+func flattenWebProxyExplicitVrfSelect(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func refreshObjectWebProxyExplicit(d *schema.ResourceData, o map[string]interface{}) error {
 	var err error
 
@@ -729,6 +765,26 @@ func refreshObjectWebProxyExplicit(d *schema.ResourceData, o map[string]interfac
 			}
 		} else {
 			return fmt.Errorf("Error reading incoming_ip6: %v", err)
+		}
+	}
+
+	if err = d.Set("interface", flattenWebProxyExplicitInterface(o["interface"], d, "interface")); err != nil {
+		if vv, ok := fortiAPIPatch(o["interface"], "WebProxyExplicit-Interface"); ok {
+			if err = d.Set("interface", vv); err != nil {
+				return fmt.Errorf("Error reading interface: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading interface: %v", err)
+		}
+	}
+
+	if err = d.Set("interface_select_method", flattenWebProxyExplicitInterfaceSelectMethod(o["interface-select-method"], d, "interface_select_method")); err != nil {
+		if vv, ok := fortiAPIPatch(o["interface-select-method"], "WebProxyExplicit-InterfaceSelectMethod"); ok {
+			if err = d.Set("interface_select_method", vv); err != nil {
+				return fmt.Errorf("Error reading interface_select_method: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading interface_select_method: %v", err)
 		}
 	}
 
@@ -996,6 +1052,16 @@ func refreshObjectWebProxyExplicit(d *schema.ResourceData, o map[string]interfac
 		}
 	}
 
+	if err = d.Set("vrf_select", flattenWebProxyExplicitVrfSelect(o["vrf-select"], d, "vrf_select")); err != nil {
+		if vv, ok := fortiAPIPatch(o["vrf-select"], "WebProxyExplicit-VrfSelect"); ok {
+			if err = d.Set("vrf_select", vv); err != nil {
+				return fmt.Errorf("Error reading vrf_select: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading vrf_select: %v", err)
+		}
+	}
+
 	return nil
 }
 
@@ -1042,6 +1108,14 @@ func expandWebProxyExplicitIncomingIp(d *schema.ResourceData, v interface{}, pre
 }
 
 func expandWebProxyExplicitIncomingIp6(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWebProxyExplicitInterface(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandWebProxyExplicitInterfaceSelectMethod(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -1237,6 +1311,10 @@ func expandWebProxyExplicitUserAgentDetect(d *schema.ResourceData, v interface{}
 	return v, nil
 }
 
+func expandWebProxyExplicitVrfSelect(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func getObjectWebProxyExplicit(d *schema.ResourceData) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
@@ -1327,6 +1405,24 @@ func getObjectWebProxyExplicit(d *schema.ResourceData) (*map[string]interface{},
 			return &obj, err
 		} else if t != nil {
 			obj["incoming-ip6"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("interface"); ok || d.HasChange("interface") {
+		t, err := expandWebProxyExplicitInterface(d, v, "interface")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["interface"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("interface_select_method"); ok || d.HasChange("interface_select_method") {
+		t, err := expandWebProxyExplicitInterfaceSelectMethod(d, v, "interface_select_method")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["interface-select-method"] = t
 		}
 	}
 
@@ -1552,6 +1648,15 @@ func getObjectWebProxyExplicit(d *schema.ResourceData) (*map[string]interface{},
 			return &obj, err
 		} else if t != nil {
 			obj["user-agent-detect"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("vrf_select"); ok || d.HasChange("vrf_select") {
+		t, err := expandWebProxyExplicitVrfSelect(d, v, "vrf_select")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["vrf-select"] = t
 		}
 	}
 

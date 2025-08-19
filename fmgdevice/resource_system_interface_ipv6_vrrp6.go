@@ -107,6 +107,7 @@ func resourceSystemInterfaceIpv6Vrrp6Create(d *schema.ResourceData, m interface{
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -117,13 +118,15 @@ func resourceSystemInterfaceIpv6Vrrp6Create(d *schema.ResourceData, m interface{
 	paradict["device"] = device_name
 	paradict["interface"] = var_interface
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSystemInterfaceIpv6Vrrp6(d)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemInterfaceIpv6Vrrp6 resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateSystemInterfaceIpv6Vrrp6(obj, paradict)
-
+	_, err = c.CreateSystemInterfaceIpv6Vrrp6(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemInterfaceIpv6Vrrp6 resource: %v", err)
 	}
@@ -139,6 +142,7 @@ func resourceSystemInterfaceIpv6Vrrp6Update(d *schema.ResourceData, m interface{
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -149,12 +153,15 @@ func resourceSystemInterfaceIpv6Vrrp6Update(d *schema.ResourceData, m interface{
 	paradict["device"] = device_name
 	paradict["interface"] = var_interface
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSystemInterfaceIpv6Vrrp6(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemInterfaceIpv6Vrrp6 resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateSystemInterfaceIpv6Vrrp6(obj, mkey, paradict)
+	_, err = c.UpdateSystemInterfaceIpv6Vrrp6(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemInterfaceIpv6Vrrp6 resource: %v", err)
 	}
@@ -173,6 +180,7 @@ func resourceSystemInterfaceIpv6Vrrp6Delete(d *schema.ResourceData, m interface{
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -183,7 +191,11 @@ func resourceSystemInterfaceIpv6Vrrp6Delete(d *schema.ResourceData, m interface{
 	paradict["device"] = device_name
 	paradict["interface"] = var_interface
 
-	err = c.DeleteSystemInterfaceIpv6Vrrp6(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteSystemInterfaceIpv6Vrrp6(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting SystemInterfaceIpv6Vrrp6 resource: %v", err)
 	}

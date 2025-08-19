@@ -191,6 +191,7 @@ func resourceSwitchControllerLocationAddressCivicUpdate(d *schema.ResourceData, 
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -206,12 +207,15 @@ func resourceSwitchControllerLocationAddressCivicUpdate(d *schema.ResourceData, 
 	paradict["vdom"] = device_vdom
 	paradict["location"] = location
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSwitchControllerLocationAddressCivic(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SwitchControllerLocationAddressCivic resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateSwitchControllerLocationAddressCivic(obj, mkey, paradict)
+	_, err = c.UpdateSwitchControllerLocationAddressCivic(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating SwitchControllerLocationAddressCivic resource: %v", err)
 	}
@@ -230,6 +234,7 @@ func resourceSwitchControllerLocationAddressCivicDelete(d *schema.ResourceData, 
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -245,7 +250,11 @@ func resourceSwitchControllerLocationAddressCivicDelete(d *schema.ResourceData, 
 	paradict["vdom"] = device_vdom
 	paradict["location"] = location
 
-	err = c.DeleteSwitchControllerLocationAddressCivic(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteSwitchControllerLocationAddressCivic(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting SwitchControllerLocationAddressCivic resource: %v", err)
 	}

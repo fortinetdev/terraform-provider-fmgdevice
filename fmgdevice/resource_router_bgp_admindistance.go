@@ -71,6 +71,7 @@ func resourceRouterBgpAdminDistanceCreate(d *schema.ResourceData, m interface{})
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -84,13 +85,15 @@ func resourceRouterBgpAdminDistanceCreate(d *schema.ResourceData, m interface{})
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectRouterBgpAdminDistance(d)
 	if err != nil {
 		return fmt.Errorf("Error creating RouterBgpAdminDistance resource while getting object: %v", err)
 	}
 
-	v, err := c.CreateRouterBgpAdminDistance(obj, paradict)
-
+	v, err := c.CreateRouterBgpAdminDistance(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating RouterBgpAdminDistance resource: %v", err)
 	}
@@ -115,6 +118,7 @@ func resourceRouterBgpAdminDistanceUpdate(d *schema.ResourceData, m interface{})
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -128,12 +132,15 @@ func resourceRouterBgpAdminDistanceUpdate(d *schema.ResourceData, m interface{})
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectRouterBgpAdminDistance(d)
 	if err != nil {
 		return fmt.Errorf("Error updating RouterBgpAdminDistance resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateRouterBgpAdminDistance(obj, mkey, paradict)
+	_, err = c.UpdateRouterBgpAdminDistance(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating RouterBgpAdminDistance resource: %v", err)
 	}
@@ -152,6 +159,7 @@ func resourceRouterBgpAdminDistanceDelete(d *schema.ResourceData, m interface{})
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -165,7 +173,11 @@ func resourceRouterBgpAdminDistanceDelete(d *schema.ResourceData, m interface{})
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	err = c.DeleteRouterBgpAdminDistance(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteRouterBgpAdminDistance(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting RouterBgpAdminDistance resource: %v", err)
 	}

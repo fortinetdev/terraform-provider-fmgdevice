@@ -77,6 +77,7 @@ func resourceSystemLinkMonitorServerListCreate(d *schema.ResourceData, m interfa
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -92,13 +93,15 @@ func resourceSystemLinkMonitorServerListCreate(d *schema.ResourceData, m interfa
 	paradict["vdom"] = device_vdom
 	paradict["link_monitor"] = link_monitor
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSystemLinkMonitorServerList(d)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemLinkMonitorServerList resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateSystemLinkMonitorServerList(obj, paradict)
-
+	_, err = c.CreateSystemLinkMonitorServerList(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemLinkMonitorServerList resource: %v", err)
 	}
@@ -114,6 +117,7 @@ func resourceSystemLinkMonitorServerListUpdate(d *schema.ResourceData, m interfa
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -129,12 +133,15 @@ func resourceSystemLinkMonitorServerListUpdate(d *schema.ResourceData, m interfa
 	paradict["vdom"] = device_vdom
 	paradict["link_monitor"] = link_monitor
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSystemLinkMonitorServerList(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemLinkMonitorServerList resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateSystemLinkMonitorServerList(obj, mkey, paradict)
+	_, err = c.UpdateSystemLinkMonitorServerList(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemLinkMonitorServerList resource: %v", err)
 	}
@@ -153,6 +160,7 @@ func resourceSystemLinkMonitorServerListDelete(d *schema.ResourceData, m interfa
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -168,7 +176,11 @@ func resourceSystemLinkMonitorServerListDelete(d *schema.ResourceData, m interfa
 	paradict["vdom"] = device_vdom
 	paradict["link_monitor"] = link_monitor
 
-	err = c.DeleteSystemLinkMonitorServerList(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteSystemLinkMonitorServerList(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting SystemLinkMonitorServerList resource: %v", err)
 	}

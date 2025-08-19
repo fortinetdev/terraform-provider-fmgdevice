@@ -213,6 +213,7 @@ func resourceSwitchControllerLldpProfileCreate(d *schema.ResourceData, m interfa
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -226,13 +227,15 @@ func resourceSwitchControllerLldpProfileCreate(d *schema.ResourceData, m interfa
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSwitchControllerLldpProfile(d)
 	if err != nil {
 		return fmt.Errorf("Error creating SwitchControllerLldpProfile resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateSwitchControllerLldpProfile(obj, paradict)
-
+	_, err = c.CreateSwitchControllerLldpProfile(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating SwitchControllerLldpProfile resource: %v", err)
 	}
@@ -248,6 +251,7 @@ func resourceSwitchControllerLldpProfileUpdate(d *schema.ResourceData, m interfa
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -261,12 +265,15 @@ func resourceSwitchControllerLldpProfileUpdate(d *schema.ResourceData, m interfa
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSwitchControllerLldpProfile(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SwitchControllerLldpProfile resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateSwitchControllerLldpProfile(obj, mkey, paradict)
+	_, err = c.UpdateSwitchControllerLldpProfile(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating SwitchControllerLldpProfile resource: %v", err)
 	}
@@ -285,6 +292,7 @@ func resourceSwitchControllerLldpProfileDelete(d *schema.ResourceData, m interfa
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -298,7 +306,11 @@ func resourceSwitchControllerLldpProfileDelete(d *schema.ResourceData, m interfa
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	err = c.DeleteSwitchControllerLldpProfile(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteSwitchControllerLldpProfile(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting SwitchControllerLldpProfile resource: %v", err)
 	}

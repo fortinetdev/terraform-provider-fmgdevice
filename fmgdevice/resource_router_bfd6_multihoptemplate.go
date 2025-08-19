@@ -92,6 +92,7 @@ func resourceRouterBfd6MultihopTemplateCreate(d *schema.ResourceData, m interfac
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -105,13 +106,15 @@ func resourceRouterBfd6MultihopTemplateCreate(d *schema.ResourceData, m interfac
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectRouterBfd6MultihopTemplate(d)
 	if err != nil {
 		return fmt.Errorf("Error creating RouterBfd6MultihopTemplate resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateRouterBfd6MultihopTemplate(obj, paradict)
-
+	_, err = c.CreateRouterBfd6MultihopTemplate(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating RouterBfd6MultihopTemplate resource: %v", err)
 	}
@@ -127,6 +130,7 @@ func resourceRouterBfd6MultihopTemplateUpdate(d *schema.ResourceData, m interfac
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -140,12 +144,15 @@ func resourceRouterBfd6MultihopTemplateUpdate(d *schema.ResourceData, m interfac
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectRouterBfd6MultihopTemplate(d)
 	if err != nil {
 		return fmt.Errorf("Error updating RouterBfd6MultihopTemplate resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateRouterBfd6MultihopTemplate(obj, mkey, paradict)
+	_, err = c.UpdateRouterBfd6MultihopTemplate(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating RouterBfd6MultihopTemplate resource: %v", err)
 	}
@@ -164,6 +171,7 @@ func resourceRouterBfd6MultihopTemplateDelete(d *schema.ResourceData, m interfac
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -177,7 +185,11 @@ func resourceRouterBfd6MultihopTemplateDelete(d *schema.ResourceData, m interfac
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	err = c.DeleteRouterBfd6MultihopTemplate(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteRouterBfd6MultihopTemplate(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting RouterBfd6MultihopTemplate resource: %v", err)
 	}

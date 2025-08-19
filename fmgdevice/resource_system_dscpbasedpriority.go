@@ -57,6 +57,7 @@ func resourceSystemDscpBasedPriorityCreate(d *schema.ResourceData, m interface{}
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -65,13 +66,15 @@ func resourceSystemDscpBasedPriorityCreate(d *schema.ResourceData, m interface{}
 	}
 	paradict["device"] = device_name
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSystemDscpBasedPriority(d)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemDscpBasedPriority resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateSystemDscpBasedPriority(obj, paradict)
-
+	_, err = c.CreateSystemDscpBasedPriority(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemDscpBasedPriority resource: %v", err)
 	}
@@ -87,6 +90,7 @@ func resourceSystemDscpBasedPriorityUpdate(d *schema.ResourceData, m interface{}
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -95,12 +99,15 @@ func resourceSystemDscpBasedPriorityUpdate(d *schema.ResourceData, m interface{}
 	}
 	paradict["device"] = device_name
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSystemDscpBasedPriority(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemDscpBasedPriority resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateSystemDscpBasedPriority(obj, mkey, paradict)
+	_, err = c.UpdateSystemDscpBasedPriority(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemDscpBasedPriority resource: %v", err)
 	}
@@ -119,6 +126,7 @@ func resourceSystemDscpBasedPriorityDelete(d *schema.ResourceData, m interface{}
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -127,7 +135,11 @@ func resourceSystemDscpBasedPriorityDelete(d *schema.ResourceData, m interface{}
 	}
 	paradict["device"] = device_name
 
-	err = c.DeleteSystemDscpBasedPriority(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteSystemDscpBasedPriority(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting SystemDscpBasedPriority resource: %v", err)
 	}

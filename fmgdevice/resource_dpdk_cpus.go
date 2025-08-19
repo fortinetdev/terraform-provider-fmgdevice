@@ -73,6 +73,7 @@ func resourceDpdkCpusUpdate(d *schema.ResourceData, m interface{}) error {
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -81,12 +82,15 @@ func resourceDpdkCpusUpdate(d *schema.ResourceData, m interface{}) error {
 	}
 	paradict["device"] = device_name
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectDpdkCpus(d)
 	if err != nil {
 		return fmt.Errorf("Error updating DpdkCpus resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateDpdkCpus(obj, mkey, paradict)
+	_, err = c.UpdateDpdkCpus(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating DpdkCpus resource: %v", err)
 	}
@@ -105,6 +109,7 @@ func resourceDpdkCpusDelete(d *schema.ResourceData, m interface{}) error {
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -113,7 +118,11 @@ func resourceDpdkCpusDelete(d *schema.ResourceData, m interface{}) error {
 	}
 	paradict["device"] = device_name
 
-	err = c.DeleteDpdkCpus(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteDpdkCpus(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting DpdkCpus resource: %v", err)
 	}

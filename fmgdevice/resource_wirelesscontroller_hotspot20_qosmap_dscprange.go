@@ -73,6 +73,7 @@ func resourceWirelessControllerHotspot20QosMapDscpRangeCreate(d *schema.Resource
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -88,13 +89,15 @@ func resourceWirelessControllerHotspot20QosMapDscpRangeCreate(d *schema.Resource
 	paradict["vdom"] = device_vdom
 	paradict["qos_map"] = qos_map
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectWirelessControllerHotspot20QosMapDscpRange(d)
 	if err != nil {
 		return fmt.Errorf("Error creating WirelessControllerHotspot20QosMapDscpRange resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateWirelessControllerHotspot20QosMapDscpRange(obj, paradict)
-
+	_, err = c.CreateWirelessControllerHotspot20QosMapDscpRange(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating WirelessControllerHotspot20QosMapDscpRange resource: %v", err)
 	}
@@ -110,6 +113,7 @@ func resourceWirelessControllerHotspot20QosMapDscpRangeUpdate(d *schema.Resource
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -125,12 +129,15 @@ func resourceWirelessControllerHotspot20QosMapDscpRangeUpdate(d *schema.Resource
 	paradict["vdom"] = device_vdom
 	paradict["qos_map"] = qos_map
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectWirelessControllerHotspot20QosMapDscpRange(d)
 	if err != nil {
 		return fmt.Errorf("Error updating WirelessControllerHotspot20QosMapDscpRange resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateWirelessControllerHotspot20QosMapDscpRange(obj, mkey, paradict)
+	_, err = c.UpdateWirelessControllerHotspot20QosMapDscpRange(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating WirelessControllerHotspot20QosMapDscpRange resource: %v", err)
 	}
@@ -149,6 +156,7 @@ func resourceWirelessControllerHotspot20QosMapDscpRangeDelete(d *schema.Resource
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -164,7 +172,11 @@ func resourceWirelessControllerHotspot20QosMapDscpRangeDelete(d *schema.Resource
 	paradict["vdom"] = device_vdom
 	paradict["qos_map"] = qos_map
 
-	err = c.DeleteWirelessControllerHotspot20QosMapDscpRange(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteWirelessControllerHotspot20QosMapDscpRange(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting WirelessControllerHotspot20QosMapDscpRange resource: %v", err)
 	}

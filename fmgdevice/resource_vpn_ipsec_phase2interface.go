@@ -314,6 +314,7 @@ func resourceVpnIpsecPhase2InterfaceCreate(d *schema.ResourceData, m interface{}
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -327,13 +328,15 @@ func resourceVpnIpsecPhase2InterfaceCreate(d *schema.ResourceData, m interface{}
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectVpnIpsecPhase2Interface(d)
 	if err != nil {
 		return fmt.Errorf("Error creating VpnIpsecPhase2Interface resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateVpnIpsecPhase2Interface(obj, paradict)
-
+	_, err = c.CreateVpnIpsecPhase2Interface(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating VpnIpsecPhase2Interface resource: %v", err)
 	}
@@ -349,6 +352,7 @@ func resourceVpnIpsecPhase2InterfaceUpdate(d *schema.ResourceData, m interface{}
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -362,12 +366,15 @@ func resourceVpnIpsecPhase2InterfaceUpdate(d *schema.ResourceData, m interface{}
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectVpnIpsecPhase2Interface(d)
 	if err != nil {
 		return fmt.Errorf("Error updating VpnIpsecPhase2Interface resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateVpnIpsecPhase2Interface(obj, mkey, paradict)
+	_, err = c.UpdateVpnIpsecPhase2Interface(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating VpnIpsecPhase2Interface resource: %v", err)
 	}
@@ -386,6 +393,7 @@ func resourceVpnIpsecPhase2InterfaceDelete(d *schema.ResourceData, m interface{}
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -399,7 +407,11 @@ func resourceVpnIpsecPhase2InterfaceDelete(d *schema.ResourceData, m interface{}
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	err = c.DeleteVpnIpsecPhase2Interface(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteVpnIpsecPhase2Interface(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting VpnIpsecPhase2Interface resource: %v", err)
 	}

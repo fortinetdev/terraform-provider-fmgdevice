@@ -92,6 +92,7 @@ func resourceSystemSpeedTestServerHostCreate(d *schema.ResourceData, m interface
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -107,13 +108,15 @@ func resourceSystemSpeedTestServerHostCreate(d *schema.ResourceData, m interface
 	paradict["vdom"] = device_vdom
 	paradict["speed_test_server"] = speed_test_server
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSystemSpeedTestServerHost(d)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemSpeedTestServerHost resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateSystemSpeedTestServerHost(obj, paradict)
-
+	_, err = c.CreateSystemSpeedTestServerHost(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemSpeedTestServerHost resource: %v", err)
 	}
@@ -129,6 +132,7 @@ func resourceSystemSpeedTestServerHostUpdate(d *schema.ResourceData, m interface
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -144,12 +148,15 @@ func resourceSystemSpeedTestServerHostUpdate(d *schema.ResourceData, m interface
 	paradict["vdom"] = device_vdom
 	paradict["speed_test_server"] = speed_test_server
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSystemSpeedTestServerHost(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemSpeedTestServerHost resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateSystemSpeedTestServerHost(obj, mkey, paradict)
+	_, err = c.UpdateSystemSpeedTestServerHost(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemSpeedTestServerHost resource: %v", err)
 	}
@@ -168,6 +175,7 @@ func resourceSystemSpeedTestServerHostDelete(d *schema.ResourceData, m interface
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -183,7 +191,11 @@ func resourceSystemSpeedTestServerHostDelete(d *schema.ResourceData, m interface
 	paradict["vdom"] = device_vdom
 	paradict["speed_test_server"] = speed_test_server
 
-	err = c.DeleteSystemSpeedTestServerHost(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteSystemSpeedTestServerHost(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting SystemSpeedTestServerHost resource: %v", err)
 	}

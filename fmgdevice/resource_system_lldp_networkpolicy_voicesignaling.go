@@ -78,6 +78,7 @@ func resourceSystemLldpNetworkPolicyVoiceSignalingUpdate(d *schema.ResourceData,
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -93,12 +94,15 @@ func resourceSystemLldpNetworkPolicyVoiceSignalingUpdate(d *schema.ResourceData,
 	paradict["vdom"] = device_vdom
 	paradict["network_policy"] = network_policy
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSystemLldpNetworkPolicyVoiceSignaling(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemLldpNetworkPolicyVoiceSignaling resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateSystemLldpNetworkPolicyVoiceSignaling(obj, mkey, paradict)
+	_, err = c.UpdateSystemLldpNetworkPolicyVoiceSignaling(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemLldpNetworkPolicyVoiceSignaling resource: %v", err)
 	}
@@ -117,6 +121,7 @@ func resourceSystemLldpNetworkPolicyVoiceSignalingDelete(d *schema.ResourceData,
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -132,7 +137,11 @@ func resourceSystemLldpNetworkPolicyVoiceSignalingDelete(d *schema.ResourceData,
 	paradict["vdom"] = device_vdom
 	paradict["network_policy"] = network_policy
 
-	err = c.DeleteSystemLldpNetworkPolicyVoiceSignaling(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteSystemLldpNetworkPolicyVoiceSignaling(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting SystemLldpNetworkPolicyVoiceSignaling resource: %v", err)
 	}

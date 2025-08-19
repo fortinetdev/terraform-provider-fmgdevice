@@ -66,6 +66,11 @@ func resourceSwitchControllerDynamicPortPolicy() *schema.Resource {
 							Optional: true,
 							Computed: true,
 						},
+						"bounce_port_duration": &schema.Schema{
+							Type:     schema.TypeInt,
+							Optional: true,
+							Computed: true,
+						},
 						"bounce_port_link": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
@@ -121,6 +126,11 @@ func resourceSwitchControllerDynamicPortPolicy() *schema.Resource {
 							Type:     schema.TypeString,
 							Optional: true,
 						},
+						"poe_reset": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+							Computed: true,
+						},
 						"qos_policy": &schema.Schema{
 							Type:     schema.TypeSet,
 							Elem:     &schema.Schema{Type: schema.TypeString},
@@ -159,6 +169,7 @@ func resourceSwitchControllerDynamicPortPolicyCreate(d *schema.ResourceData, m i
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -172,13 +183,15 @@ func resourceSwitchControllerDynamicPortPolicyCreate(d *schema.ResourceData, m i
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSwitchControllerDynamicPortPolicy(d)
 	if err != nil {
 		return fmt.Errorf("Error creating SwitchControllerDynamicPortPolicy resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateSwitchControllerDynamicPortPolicy(obj, paradict)
-
+	_, err = c.CreateSwitchControllerDynamicPortPolicy(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating SwitchControllerDynamicPortPolicy resource: %v", err)
 	}
@@ -194,6 +207,7 @@ func resourceSwitchControllerDynamicPortPolicyUpdate(d *schema.ResourceData, m i
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -207,12 +221,15 @@ func resourceSwitchControllerDynamicPortPolicyUpdate(d *schema.ResourceData, m i
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSwitchControllerDynamicPortPolicy(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SwitchControllerDynamicPortPolicy resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateSwitchControllerDynamicPortPolicy(obj, mkey, paradict)
+	_, err = c.UpdateSwitchControllerDynamicPortPolicy(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating SwitchControllerDynamicPortPolicy resource: %v", err)
 	}
@@ -231,6 +248,7 @@ func resourceSwitchControllerDynamicPortPolicyDelete(d *schema.ResourceData, m i
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -244,7 +262,11 @@ func resourceSwitchControllerDynamicPortPolicyDelete(d *schema.ResourceData, m i
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	err = c.DeleteSwitchControllerDynamicPortPolicy(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteSwitchControllerDynamicPortPolicy(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting SwitchControllerDynamicPortPolicy resource: %v", err)
 	}
@@ -341,6 +363,12 @@ func flattenSwitchControllerDynamicPortPolicyPolicy(v interface{}, d *schema.Res
 			tmp["n802_1x"] = fortiAPISubPartPatch(v, "SwitchControllerDynamicPortPolicy-Policy-8021X")
 		}
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "bounce_port_duration"
+		if _, ok := i["bounce-port-duration"]; ok {
+			v := flattenSwitchControllerDynamicPortPolicyPolicyBouncePortDuration(i["bounce-port-duration"], d, pre_append)
+			tmp["bounce_port_duration"] = fortiAPISubPartPatch(v, "SwitchControllerDynamicPortPolicy-Policy-BouncePortDuration")
+		}
+
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "bounce_port_link"
 		if _, ok := i["bounce-port-link"]; ok {
 			v := flattenSwitchControllerDynamicPortPolicyPolicyBouncePortLink(i["bounce-port-link"], d, pre_append)
@@ -413,6 +441,12 @@ func flattenSwitchControllerDynamicPortPolicyPolicy(v interface{}, d *schema.Res
 			tmp["name"] = fortiAPISubPartPatch(v, "SwitchControllerDynamicPortPolicy-Policy-Name")
 		}
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "poe_reset"
+		if _, ok := i["poe-reset"]; ok {
+			v := flattenSwitchControllerDynamicPortPolicyPolicyPoeReset(i["poe-reset"], d, pre_append)
+			tmp["poe_reset"] = fortiAPISubPartPatch(v, "SwitchControllerDynamicPortPolicy-Policy-PoeReset")
+		}
+
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "qos_policy"
 		if _, ok := i["qos-policy"]; ok {
 			v := flattenSwitchControllerDynamicPortPolicyPolicyQosPolicy(i["qos-policy"], d, pre_append)
@@ -449,6 +483,10 @@ func flattenSwitchControllerDynamicPortPolicyPolicy(v interface{}, d *schema.Res
 
 func flattenSwitchControllerDynamicPortPolicyPolicy8021X(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return flattenStringList(v)
+}
+
+func flattenSwitchControllerDynamicPortPolicyPolicyBouncePortDuration(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
 }
 
 func flattenSwitchControllerDynamicPortPolicyPolicyBouncePortLink(v interface{}, d *schema.ResourceData, pre string) interface{} {
@@ -496,6 +534,10 @@ func flattenSwitchControllerDynamicPortPolicyPolicyMatchType(v interface{}, d *s
 }
 
 func flattenSwitchControllerDynamicPortPolicyPolicyName(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSwitchControllerDynamicPortPolicyPolicyPoeReset(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -616,6 +658,11 @@ func expandSwitchControllerDynamicPortPolicyPolicy(d *schema.ResourceData, v int
 			tmp["802-1x"], _ = expandSwitchControllerDynamicPortPolicyPolicy8021X(d, i["n802_1x"], pre_append)
 		}
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "bounce_port_duration"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["bounce-port-duration"], _ = expandSwitchControllerDynamicPortPolicyPolicyBouncePortDuration(d, i["bounce_port_duration"], pre_append)
+		}
+
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "bounce_port_link"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
 			tmp["bounce-port-link"], _ = expandSwitchControllerDynamicPortPolicyPolicyBouncePortLink(d, i["bounce_port_link"], pre_append)
@@ -676,6 +723,11 @@ func expandSwitchControllerDynamicPortPolicyPolicy(d *schema.ResourceData, v int
 			tmp["name"], _ = expandSwitchControllerDynamicPortPolicyPolicyName(d, i["name"], pre_append)
 		}
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "poe_reset"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["poe-reset"], _ = expandSwitchControllerDynamicPortPolicyPolicyPoeReset(d, i["poe_reset"], pre_append)
+		}
+
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "qos_policy"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
 			tmp["qos-policy"], _ = expandSwitchControllerDynamicPortPolicyPolicyQosPolicy(d, i["qos_policy"], pre_append)
@@ -708,6 +760,10 @@ func expandSwitchControllerDynamicPortPolicyPolicy(d *schema.ResourceData, v int
 
 func expandSwitchControllerDynamicPortPolicyPolicy8021X(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandSwitchControllerDynamicPortPolicyPolicyBouncePortDuration(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
 }
 
 func expandSwitchControllerDynamicPortPolicyPolicyBouncePortLink(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
@@ -755,6 +811,10 @@ func expandSwitchControllerDynamicPortPolicyPolicyMatchType(d *schema.ResourceDa
 }
 
 func expandSwitchControllerDynamicPortPolicyPolicyName(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSwitchControllerDynamicPortPolicyPolicyPoeReset(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 

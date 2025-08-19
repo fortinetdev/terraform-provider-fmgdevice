@@ -107,6 +107,12 @@ func resourceSystemVdomDns() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"source_ip_interface": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Computed: true,
+			},
 			"ssl_certificate": &schema.Schema{
 				Type:     schema.TypeSet,
 				Elem:     &schema.Schema{Type: schema.TypeString},
@@ -118,6 +124,10 @@ func resourceSystemVdomDns() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"vrf_select": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+			},
 		},
 	}
 }
@@ -128,6 +138,7 @@ func resourceSystemVdomDnsUpdate(d *schema.ResourceData, m interface{}) error {
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -141,12 +152,15 @@ func resourceSystemVdomDnsUpdate(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSystemVdomDns(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemVdomDns resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateSystemVdomDns(obj, mkey, paradict)
+	_, err = c.UpdateSystemVdomDns(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemVdomDns resource: %v", err)
 	}
@@ -165,6 +179,7 @@ func resourceSystemVdomDnsDelete(d *schema.ResourceData, m interface{}) error {
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -178,7 +193,11 @@ func resourceSystemVdomDnsDelete(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	err = c.DeleteSystemVdomDns(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteSystemVdomDns(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting SystemVdomDns resource: %v", err)
 	}
@@ -290,11 +309,19 @@ func flattenSystemVdomDnsSourceIp(v interface{}, d *schema.ResourceData, pre str
 	return v
 }
 
+func flattenSystemVdomDnsSourceIpInterface(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
 func flattenSystemVdomDnsSslCertificate(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return flattenStringList(v)
 }
 
 func flattenSystemVdomDnsVdomDns(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemVdomDnsVrfSelect(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -431,6 +458,16 @@ func refreshObjectSystemVdomDns(d *schema.ResourceData, o map[string]interface{}
 		}
 	}
 
+	if err = d.Set("source_ip_interface", flattenSystemVdomDnsSourceIpInterface(o["source-ip-interface"], d, "source_ip_interface")); err != nil {
+		if vv, ok := fortiAPIPatch(o["source-ip-interface"], "SystemVdomDns-SourceIpInterface"); ok {
+			if err = d.Set("source_ip_interface", vv); err != nil {
+				return fmt.Errorf("Error reading source_ip_interface: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading source_ip_interface: %v", err)
+		}
+	}
+
 	if err = d.Set("ssl_certificate", flattenSystemVdomDnsSslCertificate(o["ssl-certificate"], d, "ssl_certificate")); err != nil {
 		if vv, ok := fortiAPIPatch(o["ssl-certificate"], "SystemVdomDns-SslCertificate"); ok {
 			if err = d.Set("ssl_certificate", vv); err != nil {
@@ -448,6 +485,16 @@ func refreshObjectSystemVdomDns(d *schema.ResourceData, o map[string]interface{}
 			}
 		} else {
 			return fmt.Errorf("Error reading vdom_dns: %v", err)
+		}
+	}
+
+	if err = d.Set("vrf_select", flattenSystemVdomDnsVrfSelect(o["vrf-select"], d, "vrf_select")); err != nil {
+		if vv, ok := fortiAPIPatch(o["vrf-select"], "SystemVdomDns-VrfSelect"); ok {
+			if err = d.Set("vrf_select", vv); err != nil {
+				return fmt.Errorf("Error reading vrf_select: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading vrf_select: %v", err)
 		}
 	}
 
@@ -512,11 +559,19 @@ func expandSystemVdomDnsSourceIp(d *schema.ResourceData, v interface{}, pre stri
 	return v, nil
 }
 
+func expandSystemVdomDnsSourceIpInterface(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
 func expandSystemVdomDnsSslCertificate(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return expandStringList(v.(*schema.Set).List()), nil
 }
 
 func expandSystemVdomDnsVdomDns(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemVdomDnsVrfSelect(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -640,6 +695,15 @@ func getObjectSystemVdomDns(d *schema.ResourceData) (*map[string]interface{}, er
 		}
 	}
 
+	if v, ok := d.GetOk("source_ip_interface"); ok || d.HasChange("source_ip_interface") {
+		t, err := expandSystemVdomDnsSourceIpInterface(d, v, "source_ip_interface")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["source-ip-interface"] = t
+		}
+	}
+
 	if v, ok := d.GetOk("ssl_certificate"); ok || d.HasChange("ssl_certificate") {
 		t, err := expandSystemVdomDnsSslCertificate(d, v, "ssl_certificate")
 		if err != nil {
@@ -655,6 +719,15 @@ func getObjectSystemVdomDns(d *schema.ResourceData) (*map[string]interface{}, er
 			return &obj, err
 		} else if t != nil {
 			obj["vdom-dns"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("vrf_select"); ok || d.HasChange("vrf_select") {
+		t, err := expandSystemVdomDnsVrfSelect(d, v, "vrf_select")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["vrf-select"] = t
 		}
 	}
 

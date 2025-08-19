@@ -70,6 +70,7 @@ func resourceSystemArpTableCreate(d *schema.ResourceData, m interface{}) error {
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -83,13 +84,15 @@ func resourceSystemArpTableCreate(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSystemArpTable(d)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemArpTable resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateSystemArpTable(obj, paradict)
-
+	_, err = c.CreateSystemArpTable(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemArpTable resource: %v", err)
 	}
@@ -105,6 +108,7 @@ func resourceSystemArpTableUpdate(d *schema.ResourceData, m interface{}) error {
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -118,12 +122,15 @@ func resourceSystemArpTableUpdate(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSystemArpTable(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemArpTable resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateSystemArpTable(obj, mkey, paradict)
+	_, err = c.UpdateSystemArpTable(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemArpTable resource: %v", err)
 	}
@@ -142,6 +149,7 @@ func resourceSystemArpTableDelete(d *schema.ResourceData, m interface{}) error {
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -155,7 +163,11 @@ func resourceSystemArpTableDelete(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	err = c.DeleteSystemArpTable(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteSystemArpTable(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting SystemArpTable resource: %v", err)
 	}

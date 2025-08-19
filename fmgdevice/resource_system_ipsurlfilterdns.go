@@ -58,6 +58,7 @@ func resourceSystemIpsUrlfilterDnsCreate(d *schema.ResourceData, m interface{}) 
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -66,13 +67,15 @@ func resourceSystemIpsUrlfilterDnsCreate(d *schema.ResourceData, m interface{}) 
 	}
 	paradict["device"] = device_name
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSystemIpsUrlfilterDns(d)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemIpsUrlfilterDns resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateSystemIpsUrlfilterDns(obj, paradict)
-
+	_, err = c.CreateSystemIpsUrlfilterDns(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemIpsUrlfilterDns resource: %v", err)
 	}
@@ -88,6 +91,7 @@ func resourceSystemIpsUrlfilterDnsUpdate(d *schema.ResourceData, m interface{}) 
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -96,12 +100,15 @@ func resourceSystemIpsUrlfilterDnsUpdate(d *schema.ResourceData, m interface{}) 
 	}
 	paradict["device"] = device_name
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSystemIpsUrlfilterDns(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemIpsUrlfilterDns resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateSystemIpsUrlfilterDns(obj, mkey, paradict)
+	_, err = c.UpdateSystemIpsUrlfilterDns(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemIpsUrlfilterDns resource: %v", err)
 	}
@@ -120,6 +127,7 @@ func resourceSystemIpsUrlfilterDnsDelete(d *schema.ResourceData, m interface{}) 
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -128,7 +136,11 @@ func resourceSystemIpsUrlfilterDnsDelete(d *schema.ResourceData, m interface{}) 
 	}
 	paradict["device"] = device_name
 
-	err = c.DeleteSystemIpsUrlfilterDns(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteSystemIpsUrlfilterDns(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting SystemIpsUrlfilterDns resource: %v", err)
 	}

@@ -65,6 +65,7 @@ func resourceSystemInterfaceTaggingCreate(d *schema.ResourceData, m interface{})
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -75,13 +76,15 @@ func resourceSystemInterfaceTaggingCreate(d *schema.ResourceData, m interface{})
 	paradict["device"] = device_name
 	paradict["interface"] = var_interface
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSystemInterfaceTagging(d)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemInterfaceTagging resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateSystemInterfaceTagging(obj, paradict)
-
+	_, err = c.CreateSystemInterfaceTagging(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemInterfaceTagging resource: %v", err)
 	}
@@ -97,6 +100,7 @@ func resourceSystemInterfaceTaggingUpdate(d *schema.ResourceData, m interface{})
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -107,12 +111,15 @@ func resourceSystemInterfaceTaggingUpdate(d *schema.ResourceData, m interface{})
 	paradict["device"] = device_name
 	paradict["interface"] = var_interface
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSystemInterfaceTagging(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemInterfaceTagging resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateSystemInterfaceTagging(obj, mkey, paradict)
+	_, err = c.UpdateSystemInterfaceTagging(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemInterfaceTagging resource: %v", err)
 	}
@@ -131,6 +138,7 @@ func resourceSystemInterfaceTaggingDelete(d *schema.ResourceData, m interface{})
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -141,7 +149,11 @@ func resourceSystemInterfaceTaggingDelete(d *schema.ResourceData, m interface{})
 	paradict["device"] = device_name
 	paradict["interface"] = var_interface
 
-	err = c.DeleteSystemInterfaceTagging(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteSystemInterfaceTagging(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting SystemInterfaceTagging resource: %v", err)
 	}

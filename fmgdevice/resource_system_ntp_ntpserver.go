@@ -37,6 +37,7 @@ func resourceSystemNtpNtpserver() *schema.Resource {
 			"authentication": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"fosid": &schema.Schema{
 				Type:     schema.TypeInt,
@@ -85,6 +86,10 @@ func resourceSystemNtpNtpserver() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
+			"vrf_select": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+			},
 		},
 	}
 }
@@ -94,6 +99,7 @@ func resourceSystemNtpNtpserverCreate(d *schema.ResourceData, m interface{}) err
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -102,13 +108,15 @@ func resourceSystemNtpNtpserverCreate(d *schema.ResourceData, m interface{}) err
 	}
 	paradict["device"] = device_name
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSystemNtpNtpserver(d)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemNtpNtpserver resource while getting object: %v", err)
 	}
 
-	v, err := c.CreateSystemNtpNtpserver(obj, paradict)
-
+	v, err := c.CreateSystemNtpNtpserver(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemNtpNtpserver resource: %v", err)
 	}
@@ -133,6 +141,7 @@ func resourceSystemNtpNtpserverUpdate(d *schema.ResourceData, m interface{}) err
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -141,12 +150,15 @@ func resourceSystemNtpNtpserverUpdate(d *schema.ResourceData, m interface{}) err
 	}
 	paradict["device"] = device_name
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSystemNtpNtpserver(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemNtpNtpserver resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateSystemNtpNtpserver(obj, mkey, paradict)
+	_, err = c.UpdateSystemNtpNtpserver(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemNtpNtpserver resource: %v", err)
 	}
@@ -165,6 +177,7 @@ func resourceSystemNtpNtpserverDelete(d *schema.ResourceData, m interface{}) err
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -173,7 +186,11 @@ func resourceSystemNtpNtpserverDelete(d *schema.ResourceData, m interface{}) err
 	}
 	paradict["device"] = device_name
 
-	err = c.DeleteSystemNtpNtpserver(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteSystemNtpNtpserver(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting SystemNtpNtpserver resource: %v", err)
 	}
@@ -255,6 +272,10 @@ func flattenSystemNtpNtpserverNtpv32edl(v interface{}, d *schema.ResourceData, p
 }
 
 func flattenSystemNtpNtpserverServer2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemNtpNtpserverVrfSelect2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -351,6 +372,16 @@ func refreshObjectSystemNtpNtpserver(d *schema.ResourceData, o map[string]interf
 		}
 	}
 
+	if err = d.Set("vrf_select", flattenSystemNtpNtpserverVrfSelect2edl(o["vrf-select"], d, "vrf_select")); err != nil {
+		if vv, ok := fortiAPIPatch(o["vrf-select"], "SystemNtpNtpserver-VrfSelect"); ok {
+			if err = d.Set("vrf_select", vv); err != nil {
+				return fmt.Errorf("Error reading vrf_select: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading vrf_select: %v", err)
+		}
+	}
+
 	return nil
 }
 
@@ -397,6 +428,10 @@ func expandSystemNtpNtpserverNtpv32edl(d *schema.ResourceData, v interface{}, pr
 }
 
 func expandSystemNtpNtpserverServer2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemNtpNtpserverVrfSelect2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -490,6 +525,15 @@ func getObjectSystemNtpNtpserver(d *schema.ResourceData) (*map[string]interface{
 			return &obj, err
 		} else if t != nil {
 			obj["server"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("vrf_select"); ok || d.HasChange("vrf_select") {
+		t, err := expandSystemNtpNtpserverVrfSelect2edl(d, v, "vrf_select")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["vrf-select"] = t
 		}
 	}
 

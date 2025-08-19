@@ -68,6 +68,7 @@ func resourceVpnSslSettingsAuthenticationRuleMoveUpdate(d *schema.ResourceData, 
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -83,13 +84,16 @@ func resourceVpnSslSettingsAuthenticationRuleMoveUpdate(d *schema.ResourceData, 
 	paradict["vdom"] = device_vdom
 	paradict["authentication_rule"] = authentication_rule
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	target := d.Get("target").(string)
 	obj, err := getObjectVpnSslSettingsAuthenticationRuleMove(d)
 	if err != nil {
 		return fmt.Errorf("Error updating VpnSslSettingsAuthenticationRuleMove resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateVpnSslSettingsAuthenticationRuleMove(obj, mkey, paradict)
+	_, err = c.UpdateVpnSslSettingsAuthenticationRuleMove(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating VpnSslSettingsAuthenticationRuleMove resource: %v", err)
 	}

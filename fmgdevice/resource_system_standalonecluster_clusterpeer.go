@@ -178,6 +178,7 @@ func resourceSystemStandaloneClusterClusterPeerCreate(d *schema.ResourceData, m 
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -186,13 +187,15 @@ func resourceSystemStandaloneClusterClusterPeerCreate(d *schema.ResourceData, m 
 	}
 	paradict["device"] = device_name
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSystemStandaloneClusterClusterPeer(d)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemStandaloneClusterClusterPeer resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateSystemStandaloneClusterClusterPeer(obj, paradict)
-
+	_, err = c.CreateSystemStandaloneClusterClusterPeer(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemStandaloneClusterClusterPeer resource: %v", err)
 	}
@@ -208,6 +211,7 @@ func resourceSystemStandaloneClusterClusterPeerUpdate(d *schema.ResourceData, m 
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -216,12 +220,15 @@ func resourceSystemStandaloneClusterClusterPeerUpdate(d *schema.ResourceData, m 
 	}
 	paradict["device"] = device_name
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSystemStandaloneClusterClusterPeer(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemStandaloneClusterClusterPeer resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateSystemStandaloneClusterClusterPeer(obj, mkey, paradict)
+	_, err = c.UpdateSystemStandaloneClusterClusterPeer(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemStandaloneClusterClusterPeer resource: %v", err)
 	}
@@ -240,6 +247,7 @@ func resourceSystemStandaloneClusterClusterPeerDelete(d *schema.ResourceData, m 
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -248,7 +256,11 @@ func resourceSystemStandaloneClusterClusterPeerDelete(d *schema.ResourceData, m 
 	}
 	paradict["device"] = device_name
 
-	err = c.DeleteSystemStandaloneClusterClusterPeer(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteSystemStandaloneClusterClusterPeer(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting SystemStandaloneClusterClusterPeer resource: %v", err)
 	}

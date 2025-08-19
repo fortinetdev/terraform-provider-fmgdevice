@@ -65,6 +65,7 @@ func resourceWirelessControllerWtpProfileSplitTunnelingAclCreate(d *schema.Resou
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -80,13 +81,15 @@ func resourceWirelessControllerWtpProfileSplitTunnelingAclCreate(d *schema.Resou
 	paradict["vdom"] = device_vdom
 	paradict["wtp_profile"] = wtp_profile
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectWirelessControllerWtpProfileSplitTunnelingAcl(d)
 	if err != nil {
 		return fmt.Errorf("Error creating WirelessControllerWtpProfileSplitTunnelingAcl resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateWirelessControllerWtpProfileSplitTunnelingAcl(obj, paradict)
-
+	_, err = c.CreateWirelessControllerWtpProfileSplitTunnelingAcl(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating WirelessControllerWtpProfileSplitTunnelingAcl resource: %v", err)
 	}
@@ -102,6 +105,7 @@ func resourceWirelessControllerWtpProfileSplitTunnelingAclUpdate(d *schema.Resou
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -117,12 +121,15 @@ func resourceWirelessControllerWtpProfileSplitTunnelingAclUpdate(d *schema.Resou
 	paradict["vdom"] = device_vdom
 	paradict["wtp_profile"] = wtp_profile
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectWirelessControllerWtpProfileSplitTunnelingAcl(d)
 	if err != nil {
 		return fmt.Errorf("Error updating WirelessControllerWtpProfileSplitTunnelingAcl resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateWirelessControllerWtpProfileSplitTunnelingAcl(obj, mkey, paradict)
+	_, err = c.UpdateWirelessControllerWtpProfileSplitTunnelingAcl(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating WirelessControllerWtpProfileSplitTunnelingAcl resource: %v", err)
 	}
@@ -141,6 +148,7 @@ func resourceWirelessControllerWtpProfileSplitTunnelingAclDelete(d *schema.Resou
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -156,7 +164,11 @@ func resourceWirelessControllerWtpProfileSplitTunnelingAclDelete(d *schema.Resou
 	paradict["vdom"] = device_vdom
 	paradict["wtp_profile"] = wtp_profile
 
-	err = c.DeleteWirelessControllerWtpProfileSplitTunnelingAcl(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteWirelessControllerWtpProfileSplitTunnelingAcl(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting WirelessControllerWtpProfileSplitTunnelingAcl resource: %v", err)
 	}

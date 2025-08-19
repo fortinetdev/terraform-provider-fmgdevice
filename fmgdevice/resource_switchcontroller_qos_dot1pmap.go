@@ -103,6 +103,7 @@ func resourceSwitchControllerQosDot1PMapCreate(d *schema.ResourceData, m interfa
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -116,13 +117,15 @@ func resourceSwitchControllerQosDot1PMapCreate(d *schema.ResourceData, m interfa
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSwitchControllerQosDot1PMap(d)
 	if err != nil {
 		return fmt.Errorf("Error creating SwitchControllerQosDot1PMap resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateSwitchControllerQosDot1PMap(obj, paradict)
-
+	_, err = c.CreateSwitchControllerQosDot1PMap(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating SwitchControllerQosDot1PMap resource: %v", err)
 	}
@@ -138,6 +141,7 @@ func resourceSwitchControllerQosDot1PMapUpdate(d *schema.ResourceData, m interfa
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -151,12 +155,15 @@ func resourceSwitchControllerQosDot1PMapUpdate(d *schema.ResourceData, m interfa
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSwitchControllerQosDot1PMap(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SwitchControllerQosDot1PMap resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateSwitchControllerQosDot1PMap(obj, mkey, paradict)
+	_, err = c.UpdateSwitchControllerQosDot1PMap(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating SwitchControllerQosDot1PMap resource: %v", err)
 	}
@@ -175,6 +182,7 @@ func resourceSwitchControllerQosDot1PMapDelete(d *schema.ResourceData, m interfa
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -188,7 +196,11 @@ func resourceSwitchControllerQosDot1PMapDelete(d *schema.ResourceData, m interfa
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	err = c.DeleteSwitchControllerQosDot1PMap(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteSwitchControllerQosDot1PMap(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting SwitchControllerQosDot1PMap resource: %v", err)
 	}

@@ -80,6 +80,7 @@ func resourceSystemIpamRulesCreate(d *schema.ResourceData, m interface{}) error 
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -88,13 +89,15 @@ func resourceSystemIpamRulesCreate(d *schema.ResourceData, m interface{}) error 
 	}
 	paradict["device"] = device_name
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSystemIpamRules(d)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemIpamRules resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateSystemIpamRules(obj, paradict)
-
+	_, err = c.CreateSystemIpamRules(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemIpamRules resource: %v", err)
 	}
@@ -110,6 +113,7 @@ func resourceSystemIpamRulesUpdate(d *schema.ResourceData, m interface{}) error 
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -118,12 +122,15 @@ func resourceSystemIpamRulesUpdate(d *schema.ResourceData, m interface{}) error 
 	}
 	paradict["device"] = device_name
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSystemIpamRules(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemIpamRules resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateSystemIpamRules(obj, mkey, paradict)
+	_, err = c.UpdateSystemIpamRules(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemIpamRules resource: %v", err)
 	}
@@ -142,6 +149,7 @@ func resourceSystemIpamRulesDelete(d *schema.ResourceData, m interface{}) error 
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -150,7 +158,11 @@ func resourceSystemIpamRulesDelete(d *schema.ResourceData, m interface{}) error 
 	}
 	paradict["device"] = device_name
 
-	err = c.DeleteSystemIpamRules(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteSystemIpamRules(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting SystemIpamRules resource: %v", err)
 	}

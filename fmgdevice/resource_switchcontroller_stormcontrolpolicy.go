@@ -83,6 +83,7 @@ func resourceSwitchControllerStormControlPolicyCreate(d *schema.ResourceData, m 
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -96,13 +97,15 @@ func resourceSwitchControllerStormControlPolicyCreate(d *schema.ResourceData, m 
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSwitchControllerStormControlPolicy(d)
 	if err != nil {
 		return fmt.Errorf("Error creating SwitchControllerStormControlPolicy resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateSwitchControllerStormControlPolicy(obj, paradict)
-
+	_, err = c.CreateSwitchControllerStormControlPolicy(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating SwitchControllerStormControlPolicy resource: %v", err)
 	}
@@ -118,6 +121,7 @@ func resourceSwitchControllerStormControlPolicyUpdate(d *schema.ResourceData, m 
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -131,12 +135,15 @@ func resourceSwitchControllerStormControlPolicyUpdate(d *schema.ResourceData, m 
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSwitchControllerStormControlPolicy(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SwitchControllerStormControlPolicy resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateSwitchControllerStormControlPolicy(obj, mkey, paradict)
+	_, err = c.UpdateSwitchControllerStormControlPolicy(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating SwitchControllerStormControlPolicy resource: %v", err)
 	}
@@ -155,6 +162,7 @@ func resourceSwitchControllerStormControlPolicyDelete(d *schema.ResourceData, m 
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -168,7 +176,11 @@ func resourceSwitchControllerStormControlPolicyDelete(d *schema.ResourceData, m 
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	err = c.DeleteSwitchControllerStormControlPolicy(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteSwitchControllerStormControlPolicy(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting SwitchControllerStormControlPolicy resource: %v", err)
 	}

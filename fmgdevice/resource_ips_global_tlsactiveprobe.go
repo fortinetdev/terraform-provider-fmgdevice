@@ -69,6 +69,7 @@ func resourceIpsGlobalTlsActiveProbeUpdate(d *schema.ResourceData, m interface{}
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -77,12 +78,15 @@ func resourceIpsGlobalTlsActiveProbeUpdate(d *schema.ResourceData, m interface{}
 	}
 	paradict["device"] = device_name
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectIpsGlobalTlsActiveProbe(d)
 	if err != nil {
 		return fmt.Errorf("Error updating IpsGlobalTlsActiveProbe resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateIpsGlobalTlsActiveProbe(obj, mkey, paradict)
+	_, err = c.UpdateIpsGlobalTlsActiveProbe(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating IpsGlobalTlsActiveProbe resource: %v", err)
 	}
@@ -101,6 +105,7 @@ func resourceIpsGlobalTlsActiveProbeDelete(d *schema.ResourceData, m interface{}
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -109,7 +114,11 @@ func resourceIpsGlobalTlsActiveProbeDelete(d *schema.ResourceData, m interface{}
 	}
 	paradict["device"] = device_name
 
-	err = c.DeleteIpsGlobalTlsActiveProbe(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteIpsGlobalTlsActiveProbe(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting IpsGlobalTlsActiveProbe resource: %v", err)
 	}

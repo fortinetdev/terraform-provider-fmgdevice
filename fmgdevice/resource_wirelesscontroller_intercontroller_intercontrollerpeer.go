@@ -63,6 +63,7 @@ func resourceWirelessControllerInterControllerInterControllerPeerCreate(d *schem
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -71,13 +72,15 @@ func resourceWirelessControllerInterControllerInterControllerPeerCreate(d *schem
 	}
 	paradict["device"] = device_name
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectWirelessControllerInterControllerInterControllerPeer(d)
 	if err != nil {
 		return fmt.Errorf("Error creating WirelessControllerInterControllerInterControllerPeer resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateWirelessControllerInterControllerInterControllerPeer(obj, paradict)
-
+	_, err = c.CreateWirelessControllerInterControllerInterControllerPeer(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating WirelessControllerInterControllerInterControllerPeer resource: %v", err)
 	}
@@ -93,6 +96,7 @@ func resourceWirelessControllerInterControllerInterControllerPeerUpdate(d *schem
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -101,12 +105,15 @@ func resourceWirelessControllerInterControllerInterControllerPeerUpdate(d *schem
 	}
 	paradict["device"] = device_name
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectWirelessControllerInterControllerInterControllerPeer(d)
 	if err != nil {
 		return fmt.Errorf("Error updating WirelessControllerInterControllerInterControllerPeer resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateWirelessControllerInterControllerInterControllerPeer(obj, mkey, paradict)
+	_, err = c.UpdateWirelessControllerInterControllerInterControllerPeer(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating WirelessControllerInterControllerInterControllerPeer resource: %v", err)
 	}
@@ -125,6 +132,7 @@ func resourceWirelessControllerInterControllerInterControllerPeerDelete(d *schem
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -133,7 +141,11 @@ func resourceWirelessControllerInterControllerInterControllerPeerDelete(d *schem
 	}
 	paradict["device"] = device_name
 
-	err = c.DeleteWirelessControllerInterControllerInterControllerPeer(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteWirelessControllerInterControllerInterControllerPeer(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting WirelessControllerInterControllerInterControllerPeer resource: %v", err)
 	}

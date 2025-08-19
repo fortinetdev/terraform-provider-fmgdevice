@@ -57,6 +57,10 @@ func resourceSystemFederatedUpgrade() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"initial_version": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 			"known_ha_members": &schema.Schema{
 				Type:     schema.TypeList,
 				Optional: true,
@@ -125,6 +129,10 @@ func resourceSystemFederatedUpgrade() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"starter_admin": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 			"status": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -149,6 +157,7 @@ func resourceSystemFederatedUpgradeUpdate(d *schema.ResourceData, m interface{})
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -157,12 +166,15 @@ func resourceSystemFederatedUpgradeUpdate(d *schema.ResourceData, m interface{})
 	}
 	paradict["device"] = device_name
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSystemFederatedUpgrade(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemFederatedUpgrade resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateSystemFederatedUpgrade(obj, mkey, paradict)
+	_, err = c.UpdateSystemFederatedUpgrade(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemFederatedUpgrade resource: %v", err)
 	}
@@ -181,6 +193,7 @@ func resourceSystemFederatedUpgradeDelete(d *schema.ResourceData, m interface{})
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -189,7 +202,11 @@ func resourceSystemFederatedUpgradeDelete(d *schema.ResourceData, m interface{})
 	}
 	paradict["device"] = device_name
 
-	err = c.DeleteSystemFederatedUpgrade(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteSystemFederatedUpgrade(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting SystemFederatedUpgrade resource: %v", err)
 	}
@@ -255,6 +272,10 @@ func flattenSystemFederatedUpgradeHaRebootController(v interface{}, d *schema.Re
 }
 
 func flattenSystemFederatedUpgradeIgnoreSigningErrors(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemFederatedUpgradeInitialVersion(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -414,6 +435,10 @@ func flattenSystemFederatedUpgradeSource(v interface{}, d *schema.ResourceData, 
 	return v
 }
 
+func flattenSystemFederatedUpgradeStarterAdmin(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenSystemFederatedUpgradeStatus(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -476,6 +501,16 @@ func refreshObjectSystemFederatedUpgrade(d *schema.ResourceData, o map[string]in
 			}
 		} else {
 			return fmt.Errorf("Error reading ignore_signing_errors: %v", err)
+		}
+	}
+
+	if err = d.Set("initial_version", flattenSystemFederatedUpgradeInitialVersion(o["initial-version"], d, "initial_version")); err != nil {
+		if vv, ok := fortiAPIPatch(o["initial-version"], "SystemFederatedUpgrade-InitialVersion"); ok {
+			if err = d.Set("initial_version", vv); err != nil {
+				return fmt.Errorf("Error reading initial_version: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading initial_version: %v", err)
 		}
 	}
 
@@ -547,6 +582,16 @@ func refreshObjectSystemFederatedUpgrade(d *schema.ResourceData, o map[string]in
 		}
 	}
 
+	if err = d.Set("starter_admin", flattenSystemFederatedUpgradeStarterAdmin(o["starter-admin"], d, "starter_admin")); err != nil {
+		if vv, ok := fortiAPIPatch(o["starter-admin"], "SystemFederatedUpgrade-StarterAdmin"); ok {
+			if err = d.Set("starter_admin", vv); err != nil {
+				return fmt.Errorf("Error reading starter_admin: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading starter_admin: %v", err)
+		}
+	}
+
 	if err = d.Set("status", flattenSystemFederatedUpgradeStatus(o["status"], d, "status")); err != nil {
 		if vv, ok := fortiAPIPatch(o["status"], "SystemFederatedUpgrade-Status"); ok {
 			if err = d.Set("status", vv); err != nil {
@@ -593,6 +638,10 @@ func expandSystemFederatedUpgradeHaRebootController(d *schema.ResourceData, v in
 }
 
 func expandSystemFederatedUpgradeIgnoreSigningErrors(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemFederatedUpgradeInitialVersion(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -733,6 +782,10 @@ func expandSystemFederatedUpgradeSource(d *schema.ResourceData, v interface{}, p
 	return v, nil
 }
 
+func expandSystemFederatedUpgradeStarterAdmin(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandSystemFederatedUpgradeStatus(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -789,6 +842,15 @@ func getObjectSystemFederatedUpgrade(d *schema.ResourceData) (*map[string]interf
 		}
 	}
 
+	if v, ok := d.GetOk("initial_version"); ok || d.HasChange("initial_version") {
+		t, err := expandSystemFederatedUpgradeInitialVersion(d, v, "initial_version")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["initial-version"] = t
+		}
+	}
+
 	if v, ok := d.GetOk("known_ha_members"); ok || d.HasChange("known_ha_members") {
 		t, err := expandSystemFederatedUpgradeKnownHaMembers(d, v, "known_ha_members")
 		if err != nil {
@@ -822,6 +884,15 @@ func getObjectSystemFederatedUpgrade(d *schema.ResourceData) (*map[string]interf
 			return &obj, err
 		} else if t != nil {
 			obj["source"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("starter_admin"); ok || d.HasChange("starter_admin") {
+		t, err := expandSystemFederatedUpgradeStarterAdmin(d, v, "starter_admin")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["starter-admin"] = t
 		}
 	}
 

@@ -80,6 +80,7 @@ func resourceSystemVdomSflowCollectorsCreate(d *schema.ResourceData, m interface
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -93,13 +94,15 @@ func resourceSystemVdomSflowCollectorsCreate(d *schema.ResourceData, m interface
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSystemVdomSflowCollectors(d)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemVdomSflowCollectors resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateSystemVdomSflowCollectors(obj, paradict)
-
+	_, err = c.CreateSystemVdomSflowCollectors(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemVdomSflowCollectors resource: %v", err)
 	}
@@ -115,6 +118,7 @@ func resourceSystemVdomSflowCollectorsUpdate(d *schema.ResourceData, m interface
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -128,12 +132,15 @@ func resourceSystemVdomSflowCollectorsUpdate(d *schema.ResourceData, m interface
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSystemVdomSflowCollectors(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemVdomSflowCollectors resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateSystemVdomSflowCollectors(obj, mkey, paradict)
+	_, err = c.UpdateSystemVdomSflowCollectors(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemVdomSflowCollectors resource: %v", err)
 	}
@@ -152,6 +159,7 @@ func resourceSystemVdomSflowCollectorsDelete(d *schema.ResourceData, m interface
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -165,7 +173,11 @@ func resourceSystemVdomSflowCollectorsDelete(d *schema.ResourceData, m interface
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	err = c.DeleteSystemVdomSflowCollectors(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteSystemVdomSflowCollectors(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting SystemVdomSflowCollectors resource: %v", err)
 	}

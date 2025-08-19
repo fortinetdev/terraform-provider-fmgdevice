@@ -137,6 +137,7 @@ func resourceLogFortiguardFilterUpdate(d *schema.ResourceData, m interface{}) er
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -145,12 +146,15 @@ func resourceLogFortiguardFilterUpdate(d *schema.ResourceData, m interface{}) er
 	}
 	paradict["device"] = device_name
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectLogFortiguardFilter(d)
 	if err != nil {
 		return fmt.Errorf("Error updating LogFortiguardFilter resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateLogFortiguardFilter(obj, mkey, paradict)
+	_, err = c.UpdateLogFortiguardFilter(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating LogFortiguardFilter resource: %v", err)
 	}
@@ -169,6 +173,7 @@ func resourceLogFortiguardFilterDelete(d *schema.ResourceData, m interface{}) er
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -177,7 +182,11 @@ func resourceLogFortiguardFilterDelete(d *schema.ResourceData, m interface{}) er
 	}
 	paradict["device"] = device_name
 
-	err = c.DeleteLogFortiguardFilter(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteLogFortiguardFilter(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting LogFortiguardFilter resource: %v", err)
 	}

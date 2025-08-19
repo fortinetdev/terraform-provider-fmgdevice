@@ -54,6 +54,8 @@ The following arguments are supported:
 * `est_client_cert` - Certificate used to authenticate this FortiGate to EST server.
 * `est_http_password` - HTTP Authentication password for signing via EST.
 * `est_http_username` - HTTP Authentication username for signing via EST.
+* `est_regeneration_method` - EST behavioral options during re-enrollment. Valid values: `create-new-key`, `use-existing-key`.
+
 * `est_server` - Address and port for EST server (e.g. https://example.com:1234).
 * `est_server_cert` - EST server's certificate must be verifiable by this certificate to be authenticated.
 * `est_srp_password` - EST SRP authentication password.

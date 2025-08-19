@@ -67,6 +67,17 @@ func resourceSystemAutomationStitch() *schema.Resource {
 					},
 				},
 			},
+			"condition": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Computed: true,
+			},
+			"condition_logic": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
 			"description": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -107,6 +118,7 @@ func resourceSystemAutomationStitchCreate(d *schema.ResourceData, m interface{})
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -115,13 +127,15 @@ func resourceSystemAutomationStitchCreate(d *schema.ResourceData, m interface{})
 	}
 	paradict["device"] = device_name
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSystemAutomationStitch(d)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemAutomationStitch resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateSystemAutomationStitch(obj, paradict)
-
+	_, err = c.CreateSystemAutomationStitch(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemAutomationStitch resource: %v", err)
 	}
@@ -137,6 +151,7 @@ func resourceSystemAutomationStitchUpdate(d *schema.ResourceData, m interface{})
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -145,12 +160,15 @@ func resourceSystemAutomationStitchUpdate(d *schema.ResourceData, m interface{})
 	}
 	paradict["device"] = device_name
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSystemAutomationStitch(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemAutomationStitch resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateSystemAutomationStitch(obj, mkey, paradict)
+	_, err = c.UpdateSystemAutomationStitch(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemAutomationStitch resource: %v", err)
 	}
@@ -169,6 +187,7 @@ func resourceSystemAutomationStitchDelete(d *schema.ResourceData, m interface{})
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -177,7 +196,11 @@ func resourceSystemAutomationStitchDelete(d *schema.ResourceData, m interface{})
 	}
 	paradict["device"] = device_name
 
-	err = c.DeleteSystemAutomationStitch(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteSystemAutomationStitch(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting SystemAutomationStitch resource: %v", err)
 	}
@@ -299,6 +322,14 @@ func flattenSystemAutomationStitchActionsRequired(v interface{}, d *schema.Resou
 	return v
 }
 
+func flattenSystemAutomationStitchCondition(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
+func flattenSystemAutomationStitchConditionLogic(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenSystemAutomationStitchDescription(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -357,6 +388,26 @@ func refreshObjectSystemAutomationStitch(d *schema.ResourceData, o map[string]in
 					return fmt.Errorf("Error reading actions: %v", err)
 				}
 			}
+		}
+	}
+
+	if err = d.Set("condition", flattenSystemAutomationStitchCondition(o["condition"], d, "condition")); err != nil {
+		if vv, ok := fortiAPIPatch(o["condition"], "SystemAutomationStitch-Condition"); ok {
+			if err = d.Set("condition", vv); err != nil {
+				return fmt.Errorf("Error reading condition: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading condition: %v", err)
+		}
+	}
+
+	if err = d.Set("condition_logic", flattenSystemAutomationStitchConditionLogic(o["condition-logic"], d, "condition_logic")); err != nil {
+		if vv, ok := fortiAPIPatch(o["condition-logic"], "SystemAutomationStitch-ConditionLogic"); ok {
+			if err = d.Set("condition_logic", vv); err != nil {
+				return fmt.Errorf("Error reading condition_logic: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading condition_logic: %v", err)
 		}
 	}
 
@@ -483,6 +534,14 @@ func expandSystemAutomationStitchActionsRequired(d *schema.ResourceData, v inter
 	return v, nil
 }
 
+func expandSystemAutomationStitchCondition(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandSystemAutomationStitchConditionLogic(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandSystemAutomationStitchDescription(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -521,6 +580,24 @@ func getObjectSystemAutomationStitch(d *schema.ResourceData) (*map[string]interf
 			return &obj, err
 		} else if t != nil {
 			obj["actions"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("condition"); ok || d.HasChange("condition") {
+		t, err := expandSystemAutomationStitchCondition(d, v, "condition")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["condition"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("condition_logic"); ok || d.HasChange("condition_logic") {
+		t, err := expandSystemAutomationStitchConditionLogic(d, v, "condition_logic")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["condition-logic"] = t
 		}
 	}
 

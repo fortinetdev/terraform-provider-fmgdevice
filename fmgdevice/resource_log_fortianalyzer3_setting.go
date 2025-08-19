@@ -160,6 +160,10 @@ func resourceLogFortianalyzer3Setting() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
+			"vrf_select": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+			},
 		},
 	}
 }
@@ -170,6 +174,7 @@ func resourceLogFortianalyzer3SettingUpdate(d *schema.ResourceData, m interface{
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -178,12 +183,15 @@ func resourceLogFortianalyzer3SettingUpdate(d *schema.ResourceData, m interface{
 	}
 	paradict["device"] = device_name
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectLogFortianalyzer3Setting(d)
 	if err != nil {
 		return fmt.Errorf("Error updating LogFortianalyzer3Setting resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateLogFortianalyzer3Setting(obj, mkey, paradict)
+	_, err = c.UpdateLogFortianalyzer3Setting(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating LogFortianalyzer3Setting resource: %v", err)
 	}
@@ -202,6 +210,7 @@ func resourceLogFortianalyzer3SettingDelete(d *schema.ResourceData, m interface{
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -210,7 +219,11 @@ func resourceLogFortianalyzer3SettingDelete(d *schema.ResourceData, m interface{
 	}
 	paradict["device"] = device_name
 
-	err = c.DeleteLogFortianalyzer3Setting(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteLogFortianalyzer3Setting(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting LogFortianalyzer3Setting resource: %v", err)
 	}
@@ -368,6 +381,10 @@ func flattenLogFortianalyzer3SettingUploadOption(v interface{}, d *schema.Resour
 }
 
 func flattenLogFortianalyzer3SettingUploadTime(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenLogFortianalyzer3SettingVrfSelect(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -654,6 +671,16 @@ func refreshObjectLogFortianalyzer3Setting(d *schema.ResourceData, o map[string]
 		}
 	}
 
+	if err = d.Set("vrf_select", flattenLogFortianalyzer3SettingVrfSelect(o["vrf-select"], d, "vrf_select")); err != nil {
+		if vv, ok := fortiAPIPatch(o["vrf-select"], "LogFortianalyzer3Setting-VrfSelect"); ok {
+			if err = d.Set("vrf_select", vv); err != nil {
+				return fmt.Errorf("Error reading vrf_select: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading vrf_select: %v", err)
+		}
+	}
+
 	return nil
 }
 
@@ -772,6 +799,10 @@ func expandLogFortianalyzer3SettingUploadOption(d *schema.ResourceData, v interf
 }
 
 func expandLogFortianalyzer3SettingUploadTime(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandLogFortianalyzer3SettingVrfSelect(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -1027,6 +1058,15 @@ func getObjectLogFortianalyzer3Setting(d *schema.ResourceData) (*map[string]inte
 			return &obj, err
 		} else if t != nil {
 			obj["upload-time"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("vrf_select"); ok || d.HasChange("vrf_select") {
+		t, err := expandLogFortianalyzer3SettingVrfSelect(d, v, "vrf_select")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["vrf-select"] = t
 		}
 	}
 

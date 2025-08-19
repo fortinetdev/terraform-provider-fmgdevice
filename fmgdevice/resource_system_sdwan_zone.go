@@ -75,6 +75,7 @@ func resourceSystemSdwanZoneCreate(d *schema.ResourceData, m interface{}) error 
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -88,13 +89,15 @@ func resourceSystemSdwanZoneCreate(d *schema.ResourceData, m interface{}) error 
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSystemSdwanZone(d)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemSdwanZone resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateSystemSdwanZone(obj, paradict)
-
+	_, err = c.CreateSystemSdwanZone(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemSdwanZone resource: %v", err)
 	}
@@ -110,6 +113,7 @@ func resourceSystemSdwanZoneUpdate(d *schema.ResourceData, m interface{}) error 
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -123,12 +127,15 @@ func resourceSystemSdwanZoneUpdate(d *schema.ResourceData, m interface{}) error 
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSystemSdwanZone(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemSdwanZone resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateSystemSdwanZone(obj, mkey, paradict)
+	_, err = c.UpdateSystemSdwanZone(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemSdwanZone resource: %v", err)
 	}
@@ -147,6 +154,7 @@ func resourceSystemSdwanZoneDelete(d *schema.ResourceData, m interface{}) error 
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -160,7 +168,11 @@ func resourceSystemSdwanZoneDelete(d *schema.ResourceData, m interface{}) error 
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	err = c.DeleteSystemSdwanZone(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteSystemSdwanZone(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting SystemSdwanZone resource: %v", err)
 	}

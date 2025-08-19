@@ -211,6 +211,7 @@ func resourceWanoptContentDeliveryNetworkRuleCreate(d *schema.ResourceData, m in
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -219,13 +220,15 @@ func resourceWanoptContentDeliveryNetworkRuleCreate(d *schema.ResourceData, m in
 	}
 	paradict["device"] = device_name
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectWanoptContentDeliveryNetworkRule(d)
 	if err != nil {
 		return fmt.Errorf("Error creating WanoptContentDeliveryNetworkRule resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateWanoptContentDeliveryNetworkRule(obj, paradict)
-
+	_, err = c.CreateWanoptContentDeliveryNetworkRule(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating WanoptContentDeliveryNetworkRule resource: %v", err)
 	}
@@ -241,6 +244,7 @@ func resourceWanoptContentDeliveryNetworkRuleUpdate(d *schema.ResourceData, m in
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -249,12 +253,15 @@ func resourceWanoptContentDeliveryNetworkRuleUpdate(d *schema.ResourceData, m in
 	}
 	paradict["device"] = device_name
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectWanoptContentDeliveryNetworkRule(d)
 	if err != nil {
 		return fmt.Errorf("Error updating WanoptContentDeliveryNetworkRule resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateWanoptContentDeliveryNetworkRule(obj, mkey, paradict)
+	_, err = c.UpdateWanoptContentDeliveryNetworkRule(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating WanoptContentDeliveryNetworkRule resource: %v", err)
 	}
@@ -273,6 +280,7 @@ func resourceWanoptContentDeliveryNetworkRuleDelete(d *schema.ResourceData, m in
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -281,7 +289,11 @@ func resourceWanoptContentDeliveryNetworkRuleDelete(d *schema.ResourceData, m in
 	}
 	paradict["device"] = device_name
 
-	err = c.DeleteWanoptContentDeliveryNetworkRule(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteWanoptContentDeliveryNetworkRule(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting WanoptContentDeliveryNetworkRule resource: %v", err)
 	}

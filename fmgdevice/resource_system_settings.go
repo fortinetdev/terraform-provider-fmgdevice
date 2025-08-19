@@ -166,6 +166,10 @@ func resourceSystemSettings() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"dhcp_proxy_vrf_select": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+			},
 			"dhcp_server_ip": &schema.Schema{
 				Type:     schema.TypeSet,
 				Elem:     &schema.Schema{Type: schema.TypeString},
@@ -180,6 +184,12 @@ func resourceSystemSettings() *schema.Resource {
 			},
 			"discovered_device_timeout": &schema.Schema{
 				Type:     schema.TypeInt,
+				Optional: true,
+				Computed: true,
+			},
+			"dp_load_distribution_group": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
 				Optional: true,
 				Computed: true,
 			},
@@ -282,6 +292,11 @@ func resourceSystemSettings() *schema.Resource {
 				Computed: true,
 			},
 			"gui_dhcp_advanced": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+			"gui_dlp_advanced": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
@@ -470,6 +485,11 @@ func resourceSystemSettings() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"gui_sslvpn_clients": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
 			"gui_sslvpn_personal_bookmarks": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -604,6 +624,11 @@ func resourceSystemSettings() *schema.Resource {
 				Computed: true,
 			},
 			"internet_service_database_cache": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+			"intree_ses_best_route": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
@@ -843,6 +868,7 @@ func resourceSystemSettingsUpdate(d *schema.ResourceData, m interface{}) error {
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -856,12 +882,15 @@ func resourceSystemSettingsUpdate(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSystemSettings(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemSettings resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateSystemSettings(obj, mkey, paradict)
+	_, err = c.UpdateSystemSettings(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemSettings resource: %v", err)
 	}
@@ -880,6 +909,7 @@ func resourceSystemSettingsDelete(d *schema.ResourceData, m interface{}) error {
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -893,7 +923,11 @@ func resourceSystemSettingsDelete(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	err = c.DeleteSystemSettings(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteSystemSettings(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting SystemSettings resource: %v", err)
 	}
@@ -1057,6 +1091,10 @@ func flattenSystemSettingsDhcpProxyInterfaceSelectMethod(v interface{}, d *schem
 	return v
 }
 
+func flattenSystemSettingsDhcpProxyVrfSelect(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenSystemSettingsDhcpServerIp(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return flattenStringList(v)
 }
@@ -1067,6 +1105,10 @@ func flattenSystemSettingsDhcp6ServerIp(v interface{}, d *schema.ResourceData, p
 
 func flattenSystemSettingsDiscoveredDeviceTimeout(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
+}
+
+func flattenSystemSettingsDpLoadDistributionGroup(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
 }
 
 func flattenSystemSettingsDpLoadDistributionMethod(v interface{}, d *schema.ResourceData, pre string) interface{} {
@@ -1150,6 +1192,10 @@ func flattenSystemSettingsGuiDefaultPolicyColumns(v interface{}, d *schema.Resou
 }
 
 func flattenSystemSettingsGuiDhcpAdvanced(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemSettingsGuiDlpAdvanced(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -1305,6 +1351,10 @@ func flattenSystemSettingsGuiSslvpn(v interface{}, d *schema.ResourceData, pre s
 	return v
 }
 
+func flattenSystemSettingsGuiSslvpnClients(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenSystemSettingsGuiSslvpnPersonalBookmarks(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -1414,6 +1464,10 @@ func flattenSystemSettingsInternetServiceAppCtrlSize(v interface{}, d *schema.Re
 }
 
 func flattenSystemSettingsInternetServiceDatabaseCache(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemSettingsIntreeSesBestRoute(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -1864,6 +1918,16 @@ func refreshObjectSystemSettings(d *schema.ResourceData, o map[string]interface{
 		}
 	}
 
+	if err = d.Set("dhcp_proxy_vrf_select", flattenSystemSettingsDhcpProxyVrfSelect(o["dhcp-proxy-vrf-select"], d, "dhcp_proxy_vrf_select")); err != nil {
+		if vv, ok := fortiAPIPatch(o["dhcp-proxy-vrf-select"], "SystemSettings-DhcpProxyVrfSelect"); ok {
+			if err = d.Set("dhcp_proxy_vrf_select", vv); err != nil {
+				return fmt.Errorf("Error reading dhcp_proxy_vrf_select: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading dhcp_proxy_vrf_select: %v", err)
+		}
+	}
+
 	if err = d.Set("dhcp_server_ip", flattenSystemSettingsDhcpServerIp(o["dhcp-server-ip"], d, "dhcp_server_ip")); err != nil {
 		if vv, ok := fortiAPIPatch(o["dhcp-server-ip"], "SystemSettings-DhcpServerIp"); ok {
 			if err = d.Set("dhcp_server_ip", vv); err != nil {
@@ -1891,6 +1955,16 @@ func refreshObjectSystemSettings(d *schema.ResourceData, o map[string]interface{
 			}
 		} else {
 			return fmt.Errorf("Error reading discovered_device_timeout: %v", err)
+		}
+	}
+
+	if err = d.Set("dp_load_distribution_group", flattenSystemSettingsDpLoadDistributionGroup(o["dp-load-distribution-group"], d, "dp_load_distribution_group")); err != nil {
+		if vv, ok := fortiAPIPatch(o["dp-load-distribution-group"], "SystemSettings-DpLoadDistributionGroup"); ok {
+			if err = d.Set("dp_load_distribution_group", vv); err != nil {
+				return fmt.Errorf("Error reading dp_load_distribution_group: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading dp_load_distribution_group: %v", err)
 		}
 	}
 
@@ -2101,6 +2175,16 @@ func refreshObjectSystemSettings(d *schema.ResourceData, o map[string]interface{
 			}
 		} else {
 			return fmt.Errorf("Error reading gui_dhcp_advanced: %v", err)
+		}
+	}
+
+	if err = d.Set("gui_dlp_advanced", flattenSystemSettingsGuiDlpAdvanced(o["gui-dlp-advanced"], d, "gui_dlp_advanced")); err != nil {
+		if vv, ok := fortiAPIPatch(o["gui-dlp-advanced"], "SystemSettings-GuiDlpAdvanced"); ok {
+			if err = d.Set("gui_dlp_advanced", vv); err != nil {
+				return fmt.Errorf("Error reading gui_dlp_advanced: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading gui_dlp_advanced: %v", err)
 		}
 	}
 
@@ -2484,6 +2568,16 @@ func refreshObjectSystemSettings(d *schema.ResourceData, o map[string]interface{
 		}
 	}
 
+	if err = d.Set("gui_sslvpn_clients", flattenSystemSettingsGuiSslvpnClients(o["gui-sslvpn-clients"], d, "gui_sslvpn_clients")); err != nil {
+		if vv, ok := fortiAPIPatch(o["gui-sslvpn-clients"], "SystemSettings-GuiSslvpnClients"); ok {
+			if err = d.Set("gui_sslvpn_clients", vv); err != nil {
+				return fmt.Errorf("Error reading gui_sslvpn_clients: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading gui_sslvpn_clients: %v", err)
+		}
+	}
+
 	if err = d.Set("gui_sslvpn_personal_bookmarks", flattenSystemSettingsGuiSslvpnPersonalBookmarks(o["gui-sslvpn-personal-bookmarks"], d, "gui_sslvpn_personal_bookmarks")); err != nil {
 		if vv, ok := fortiAPIPatch(o["gui-sslvpn-personal-bookmarks"], "SystemSettings-GuiSslvpnPersonalBookmarks"); ok {
 			if err = d.Set("gui_sslvpn_personal_bookmarks", vv); err != nil {
@@ -2761,6 +2855,16 @@ func refreshObjectSystemSettings(d *schema.ResourceData, o map[string]interface{
 			}
 		} else {
 			return fmt.Errorf("Error reading internet_service_database_cache: %v", err)
+		}
+	}
+
+	if err = d.Set("intree_ses_best_route", flattenSystemSettingsIntreeSesBestRoute(o["intree-ses-best-route"], d, "intree_ses_best_route")); err != nil {
+		if vv, ok := fortiAPIPatch(o["intree-ses-best-route"], "SystemSettings-IntreeSesBestRoute"); ok {
+			if err = d.Set("intree_ses_best_route", vv); err != nil {
+				return fmt.Errorf("Error reading intree_ses_best_route: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading intree_ses_best_route: %v", err)
 		}
 	}
 
@@ -3337,6 +3441,10 @@ func expandSystemSettingsDhcpProxyInterfaceSelectMethod(d *schema.ResourceData, 
 	return v, nil
 }
 
+func expandSystemSettingsDhcpProxyVrfSelect(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandSystemSettingsDhcpServerIp(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return expandStringList(v.(*schema.Set).List()), nil
 }
@@ -3347,6 +3455,10 @@ func expandSystemSettingsDhcp6ServerIp(d *schema.ResourceData, v interface{}, pr
 
 func expandSystemSettingsDiscoveredDeviceTimeout(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
+}
+
+func expandSystemSettingsDpLoadDistributionGroup(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
 }
 
 func expandSystemSettingsDpLoadDistributionMethod(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
@@ -3430,6 +3542,10 @@ func expandSystemSettingsGuiDefaultPolicyColumns(d *schema.ResourceData, v inter
 }
 
 func expandSystemSettingsGuiDhcpAdvanced(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemSettingsGuiDlpAdvanced(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -3585,6 +3701,10 @@ func expandSystemSettingsGuiSslvpn(d *schema.ResourceData, v interface{}, pre st
 	return v, nil
 }
 
+func expandSystemSettingsGuiSslvpnClients(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandSystemSettingsGuiSslvpnPersonalBookmarks(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -3694,6 +3814,10 @@ func expandSystemSettingsInternetServiceAppCtrlSize(d *schema.ResourceData, v in
 }
 
 func expandSystemSettingsInternetServiceDatabaseCache(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemSettingsIntreeSesBestRoute(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -4118,6 +4242,15 @@ func getObjectSystemSettings(d *schema.ResourceData) (*map[string]interface{}, e
 		}
 	}
 
+	if v, ok := d.GetOk("dhcp_proxy_vrf_select"); ok || d.HasChange("dhcp_proxy_vrf_select") {
+		t, err := expandSystemSettingsDhcpProxyVrfSelect(d, v, "dhcp_proxy_vrf_select")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["dhcp-proxy-vrf-select"] = t
+		}
+	}
+
 	if v, ok := d.GetOk("dhcp_server_ip"); ok || d.HasChange("dhcp_server_ip") {
 		t, err := expandSystemSettingsDhcpServerIp(d, v, "dhcp_server_ip")
 		if err != nil {
@@ -4142,6 +4275,15 @@ func getObjectSystemSettings(d *schema.ResourceData) (*map[string]interface{}, e
 			return &obj, err
 		} else if t != nil {
 			obj["discovered-device-timeout"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("dp_load_distribution_group"); ok || d.HasChange("dp_load_distribution_group") {
+		t, err := expandSystemSettingsDpLoadDistributionGroup(d, v, "dp_load_distribution_group")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["dp-load-distribution-group"] = t
 		}
 	}
 
@@ -4331,6 +4473,15 @@ func getObjectSystemSettings(d *schema.ResourceData) (*map[string]interface{}, e
 			return &obj, err
 		} else if t != nil {
 			obj["gui-dhcp-advanced"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("gui_dlp_advanced"); ok || d.HasChange("gui_dlp_advanced") {
+		t, err := expandSystemSettingsGuiDlpAdvanced(d, v, "gui_dlp_advanced")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["gui-dlp-advanced"] = t
 		}
 	}
 
@@ -4676,6 +4827,15 @@ func getObjectSystemSettings(d *schema.ResourceData) (*map[string]interface{}, e
 		}
 	}
 
+	if v, ok := d.GetOk("gui_sslvpn_clients"); ok || d.HasChange("gui_sslvpn_clients") {
+		t, err := expandSystemSettingsGuiSslvpnClients(d, v, "gui_sslvpn_clients")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["gui-sslvpn-clients"] = t
+		}
+	}
+
 	if v, ok := d.GetOk("gui_sslvpn_personal_bookmarks"); ok || d.HasChange("gui_sslvpn_personal_bookmarks") {
 		t, err := expandSystemSettingsGuiSslvpnPersonalBookmarks(d, v, "gui_sslvpn_personal_bookmarks")
 		if err != nil {
@@ -4925,6 +5085,15 @@ func getObjectSystemSettings(d *schema.ResourceData) (*map[string]interface{}, e
 			return &obj, err
 		} else if t != nil {
 			obj["internet-service-database-cache"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("intree_ses_best_route"); ok || d.HasChange("intree_ses_best_route") {
+		t, err := expandSystemSettingsIntreeSesBestRoute(d, v, "intree_ses_best_route")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["intree-ses-best-route"] = t
 		}
 	}
 

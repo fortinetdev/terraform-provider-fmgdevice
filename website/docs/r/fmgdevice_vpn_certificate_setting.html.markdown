@@ -84,6 +84,7 @@ The following arguments are supported:
 
 * `subject_set` - When searching for a matching certificate, control how to do RDN set matching with certificate subject name (default = subset). Valid values: `subset`, `superset`.
 
+* `vrf_select` - VRF ID used for connection to server.
 
 The `crl_verification` block supports:
 

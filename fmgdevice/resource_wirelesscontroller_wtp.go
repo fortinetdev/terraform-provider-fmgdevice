@@ -71,6 +71,10 @@ func resourceWirelessControllerWtp() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"comment": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 			"coordinate_latitude": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -908,6 +912,7 @@ func resourceWirelessControllerWtpCreate(d *schema.ResourceData, m interface{}) 
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -921,13 +926,15 @@ func resourceWirelessControllerWtpCreate(d *schema.ResourceData, m interface{}) 
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectWirelessControllerWtp(d)
 	if err != nil {
 		return fmt.Errorf("Error creating WirelessControllerWtp resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateWirelessControllerWtp(obj, paradict)
-
+	_, err = c.CreateWirelessControllerWtp(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating WirelessControllerWtp resource: %v", err)
 	}
@@ -943,6 +950,7 @@ func resourceWirelessControllerWtpUpdate(d *schema.ResourceData, m interface{}) 
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -956,12 +964,15 @@ func resourceWirelessControllerWtpUpdate(d *schema.ResourceData, m interface{}) 
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectWirelessControllerWtp(d)
 	if err != nil {
 		return fmt.Errorf("Error updating WirelessControllerWtp resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateWirelessControllerWtp(obj, mkey, paradict)
+	_, err = c.UpdateWirelessControllerWtp(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating WirelessControllerWtp resource: %v", err)
 	}
@@ -980,6 +991,7 @@ func resourceWirelessControllerWtpDelete(d *schema.ResourceData, m interface{}) 
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -993,7 +1005,11 @@ func resourceWirelessControllerWtpDelete(d *schema.ResourceData, m interface{}) 
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	err = c.DeleteWirelessControllerWtp(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteWirelessControllerWtp(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting WirelessControllerWtp resource: %v", err)
 	}
@@ -1075,6 +1091,10 @@ func flattenWirelessControllerWtpBleMinorId(v interface{}, d *schema.ResourceDat
 
 func flattenWirelessControllerWtpBonjourProfile(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return flattenStringList(v)
+}
+
+func flattenWirelessControllerWtpComment(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
 }
 
 func flattenWirelessControllerWtpCoordinateLatitude(v interface{}, d *schema.ResourceData, pre string) interface{} {
@@ -2538,6 +2558,16 @@ func refreshObjectWirelessControllerWtp(d *schema.ResourceData, o map[string]int
 		}
 	}
 
+	if err = d.Set("comment", flattenWirelessControllerWtpComment(o["comment"], d, "comment")); err != nil {
+		if vv, ok := fortiAPIPatch(o["comment"], "WirelessControllerWtp-Comment"); ok {
+			if err = d.Set("comment", vv); err != nil {
+				return fmt.Errorf("Error reading comment: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading comment: %v", err)
+		}
+	}
+
 	if err = d.Set("coordinate_latitude", flattenWirelessControllerWtpCoordinateLatitude(o["coordinate-latitude"], d, "coordinate_latitude")); err != nil {
 		if vv, ok := fortiAPIPatch(o["coordinate-latitude"], "WirelessControllerWtp-CoordinateLatitude"); ok {
 			if err = d.Set("coordinate_latitude", vv); err != nil {
@@ -3033,6 +3063,10 @@ func expandWirelessControllerWtpBleMinorId(d *schema.ResourceData, v interface{}
 
 func expandWirelessControllerWtpBonjourProfile(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandWirelessControllerWtpComment(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
 }
 
 func expandWirelessControllerWtpCoordinateLatitude(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
@@ -4357,6 +4391,15 @@ func getObjectWirelessControllerWtp(d *schema.ResourceData) (*map[string]interfa
 			return &obj, err
 		} else if t != nil {
 			obj["bonjour-profile"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("comment"); ok || d.HasChange("comment") {
+		t, err := expandWirelessControllerWtpComment(d, v, "comment")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["comment"] = t
 		}
 	}
 

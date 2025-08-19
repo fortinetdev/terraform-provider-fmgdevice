@@ -9,8 +9,10 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	forticlient "github.com/terraform-providers/terraform-provider-fmgdevice/sdk/sdkcore"
 )
 
 func validateConvIPMask2CIDR(oNewIP, oOldIP string) string {
@@ -172,6 +174,31 @@ func escapeFilter(filter string) string {
 	filter = strings.ReplaceAll(filter, "\\", "\\\\")
 	filter = "filter=" + filter
 	return filter
+}
+
+func adomChecking(c *Config, d *schema.ResourceData) (string, error) {
+	cst := c.ScopeType
+	cadom := c.Adom
+	st := d.Get("scopetype").(string)
+	adom := d.Get("adom").(string)
+
+	if st == "inherit" || st == "" {
+		if cst == "global" {
+			return "global", nil
+		}
+		return "adom/" + cadom, nil
+	} else if st == "global" {
+		return "global", nil
+	} else if st == "adom" {
+		if adom == "" {
+			err := fmt.Errorf("Empty adom")
+			return "", err
+		}
+		return "adom/" + adom, nil
+	}
+
+	err := fmt.Errorf("unknown adom configuration error")
+	return "", err
 }
 
 func getVariable(c *Config, d *schema.ResourceData, varName string) (string, error) {
@@ -535,4 +562,34 @@ func checkScopeId(idStr string) (string, error) {
 func formatPath(inputPath string) string {
 	inputPath = strings.ReplaceAll(inputPath, "//", "/")
 	return strings.Trim(inputPath, "/")
+}
+
+func lockWorkspace(c *forticlient.FortiSDKClient, adomv string) (err error) {
+	// Check lock status
+	maxLoop := 10
+	for _ = range maxLoop {
+		_, err = c.CreateUpdateExecWorkspaceAction(adomv, "lock", "", "") // !!lock device only
+		if err != nil {
+			time.Sleep(time.Second)
+			continue
+		}
+		break
+	}
+
+	return err
+}
+
+func unlockWorkspace(c *forticlient.FortiSDKClient, adomv string) (err error) {
+	// Commit workspace
+	_, err = c.CreateUpdateExecWorkspaceAction(adomv, "commit", "", "")
+	if err != nil {
+		err = fmt.Errorf("Error commit workspace: %v", err)
+		return
+	}
+	// Unlock workspace
+	_, err = c.CreateUpdateExecWorkspaceAction(adomv, "unlock", "", "")
+	if err != nil {
+		err = fmt.Errorf("Error unlock workspace: %v", err)
+	}
+	return err
 }

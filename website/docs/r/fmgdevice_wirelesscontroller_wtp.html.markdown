@@ -50,6 +50,7 @@ The following arguments are supported:
 * `ble_major_id` - Override BLE Major ID.
 * `ble_minor_id` - Override BLE Minor ID.
 * `bonjour_profile` - Bonjour profile name.
+* `comment` - Comment.
 * `coordinate_latitude` - WTP latitude coordinate.
 * `coordinate_longitude` - WTP longitude coordinate.
 * `firmware_provision` - Firmware version to provision to this FortiAP on bootup (major.minor.build, i.e. 6.2.1234).

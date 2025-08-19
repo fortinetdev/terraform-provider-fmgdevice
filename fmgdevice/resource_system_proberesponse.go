@@ -78,6 +78,7 @@ func resourceSystemProbeResponseUpdate(d *schema.ResourceData, m interface{}) er
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -86,12 +87,15 @@ func resourceSystemProbeResponseUpdate(d *schema.ResourceData, m interface{}) er
 	}
 	paradict["device"] = device_name
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSystemProbeResponse(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemProbeResponse resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateSystemProbeResponse(obj, mkey, paradict)
+	_, err = c.UpdateSystemProbeResponse(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemProbeResponse resource: %v", err)
 	}
@@ -110,6 +114,7 @@ func resourceSystemProbeResponseDelete(d *schema.ResourceData, m interface{}) er
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -118,7 +123,11 @@ func resourceSystemProbeResponseDelete(d *schema.ResourceData, m interface{}) er
 	}
 	paradict["device"] = device_name
 
-	err = c.DeleteSystemProbeResponse(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteSystemProbeResponse(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting SystemProbeResponse resource: %v", err)
 	}

@@ -79,6 +79,7 @@ func resourceVpnKmipServerServerListCreate(d *schema.ResourceData, m interface{}
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -94,13 +95,15 @@ func resourceVpnKmipServerServerListCreate(d *schema.ResourceData, m interface{}
 	paradict["vdom"] = device_vdom
 	paradict["kmip_server"] = kmip_server
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectVpnKmipServerServerList(d)
 	if err != nil {
 		return fmt.Errorf("Error creating VpnKmipServerServerList resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateVpnKmipServerServerList(obj, paradict)
-
+	_, err = c.CreateVpnKmipServerServerList(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating VpnKmipServerServerList resource: %v", err)
 	}
@@ -116,6 +119,7 @@ func resourceVpnKmipServerServerListUpdate(d *schema.ResourceData, m interface{}
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -131,12 +135,15 @@ func resourceVpnKmipServerServerListUpdate(d *schema.ResourceData, m interface{}
 	paradict["vdom"] = device_vdom
 	paradict["kmip_server"] = kmip_server
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectVpnKmipServerServerList(d)
 	if err != nil {
 		return fmt.Errorf("Error updating VpnKmipServerServerList resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateVpnKmipServerServerList(obj, mkey, paradict)
+	_, err = c.UpdateVpnKmipServerServerList(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating VpnKmipServerServerList resource: %v", err)
 	}
@@ -155,6 +162,7 @@ func resourceVpnKmipServerServerListDelete(d *schema.ResourceData, m interface{}
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -170,7 +178,11 @@ func resourceVpnKmipServerServerListDelete(d *schema.ResourceData, m interface{}
 	paradict["vdom"] = device_vdom
 	paradict["kmip_server"] = kmip_server
 
-	err = c.DeleteVpnKmipServerServerList(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteVpnKmipServerServerList(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting VpnKmipServerServerList resource: %v", err)
 	}

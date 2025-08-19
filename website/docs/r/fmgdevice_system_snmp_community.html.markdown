@@ -87,6 +87,7 @@ The `hosts` block supports:
 
 * `ip` - IPv4 address of the SNMP manager (host).
 * `source_ip` - Source IPv4 address for SNMP traps.
+* `vrf_select` - VRF ID used for connection to server.
 
 The `hosts6` block supports:
 
@@ -100,6 +101,7 @@ The `hosts6` block supports:
 
 * `ipv6` - SNMP manager IPv6 address prefix.
 * `source_ipv6` - Source IPv6 address for SNMP traps.
+* `vrf_select` - VRF ID used for connection to server.
 
 
 ## Attribute Reference

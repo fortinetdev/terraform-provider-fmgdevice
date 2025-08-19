@@ -89,6 +89,7 @@ func resourceZtnaTrafficForwardProxyReverseServiceRemoteServersCreate(d *schema.
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -102,13 +103,15 @@ func resourceZtnaTrafficForwardProxyReverseServiceRemoteServersCreate(d *schema.
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectZtnaTrafficForwardProxyReverseServiceRemoteServers(d)
 	if err != nil {
 		return fmt.Errorf("Error creating ZtnaTrafficForwardProxyReverseServiceRemoteServers resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateZtnaTrafficForwardProxyReverseServiceRemoteServers(obj, paradict)
-
+	_, err = c.CreateZtnaTrafficForwardProxyReverseServiceRemoteServers(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating ZtnaTrafficForwardProxyReverseServiceRemoteServers resource: %v", err)
 	}
@@ -124,6 +127,7 @@ func resourceZtnaTrafficForwardProxyReverseServiceRemoteServersUpdate(d *schema.
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -137,12 +141,15 @@ func resourceZtnaTrafficForwardProxyReverseServiceRemoteServersUpdate(d *schema.
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectZtnaTrafficForwardProxyReverseServiceRemoteServers(d)
 	if err != nil {
 		return fmt.Errorf("Error updating ZtnaTrafficForwardProxyReverseServiceRemoteServers resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateZtnaTrafficForwardProxyReverseServiceRemoteServers(obj, mkey, paradict)
+	_, err = c.UpdateZtnaTrafficForwardProxyReverseServiceRemoteServers(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating ZtnaTrafficForwardProxyReverseServiceRemoteServers resource: %v", err)
 	}
@@ -161,6 +168,7 @@ func resourceZtnaTrafficForwardProxyReverseServiceRemoteServersDelete(d *schema.
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -174,7 +182,11 @@ func resourceZtnaTrafficForwardProxyReverseServiceRemoteServersDelete(d *schema.
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	err = c.DeleteZtnaTrafficForwardProxyReverseServiceRemoteServers(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteZtnaTrafficForwardProxyReverseServiceRemoteServers(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting ZtnaTrafficForwardProxyReverseServiceRemoteServers resource: %v", err)
 	}

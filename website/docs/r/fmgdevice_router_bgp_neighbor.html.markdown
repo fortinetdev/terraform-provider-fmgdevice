@@ -244,6 +244,16 @@ The following arguments are supported:
 
 * `route_server_client6` - Enable/disable IPv6 AS route server client. Valid values: `disable`, `enable`.
 
+* `rr_attr_allow_change` - Enable/disable allowing change of route attributes when advertising to IPv4 route reflector clients. Valid values: `disable`, `enable`.
+
+* `rr_attr_allow_change_evpn` - Enable/disable allowing change of route attributes when advertising to L2VPN EVPN route reflector clients. Valid values: `disable`, `enable`.
+
+* `rr_attr_allow_change_vpnv4` - Enable/disable allowing change of route attributes when advertising to VPNv4 route reflector clients. Valid values: `disable`, `enable`.
+
+* `rr_attr_allow_change_vpnv6` - Enable/disable allowing change of route attributes when advertising to VPNv6 route reflector clients. Valid values: `disable`, `enable`.
+
+* `rr_attr_allow_change6` - Enable/disable allowing change of route attributes when advertising to IPv6 route reflector clients. Valid values: `disable`, `enable`.
+
 * `send_community` - IPv4 Send community attribute to neighbor. Valid values: `disable`, `standard`, `extended`, `both`.
 
 * `send_community_evpn` - Enable/disable sending community attribute to neighbor for L2VPN EVPN address family. Valid values: `disable`, `standard`, `extended`, `both`.

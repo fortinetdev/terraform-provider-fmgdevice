@@ -45,6 +45,17 @@ func resourceWirelessControllerWtpProfile() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"admin_auth_tacacs": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Computed: true,
+			},
+			"admin_restrict_local": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
 			"allowaccess": &schema.Schema{
 				Type:     schema.TypeSet,
 				Elem:     &schema.Schema{Type: schema.TypeString},
@@ -2446,6 +2457,7 @@ func resourceWirelessControllerWtpProfileCreate(d *schema.ResourceData, m interf
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -2459,13 +2471,15 @@ func resourceWirelessControllerWtpProfileCreate(d *schema.ResourceData, m interf
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectWirelessControllerWtpProfile(d)
 	if err != nil {
 		return fmt.Errorf("Error creating WirelessControllerWtpProfile resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateWirelessControllerWtpProfile(obj, paradict)
-
+	_, err = c.CreateWirelessControllerWtpProfile(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating WirelessControllerWtpProfile resource: %v", err)
 	}
@@ -2481,6 +2495,7 @@ func resourceWirelessControllerWtpProfileUpdate(d *schema.ResourceData, m interf
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -2494,12 +2509,15 @@ func resourceWirelessControllerWtpProfileUpdate(d *schema.ResourceData, m interf
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectWirelessControllerWtpProfile(d)
 	if err != nil {
 		return fmt.Errorf("Error updating WirelessControllerWtpProfile resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateWirelessControllerWtpProfile(obj, mkey, paradict)
+	_, err = c.UpdateWirelessControllerWtpProfile(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating WirelessControllerWtpProfile resource: %v", err)
 	}
@@ -2518,6 +2536,7 @@ func resourceWirelessControllerWtpProfileDelete(d *schema.ResourceData, m interf
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -2531,7 +2550,11 @@ func resourceWirelessControllerWtpProfileDelete(d *schema.ResourceData, m interf
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	err = c.DeleteWirelessControllerWtpProfile(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteWirelessControllerWtpProfile(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting WirelessControllerWtpProfile resource: %v", err)
 	}
@@ -2592,6 +2615,14 @@ func resourceWirelessControllerWtpProfileRead(d *schema.ResourceData, m interfac
 }
 
 func flattenWirelessControllerWtpProfileIsFactorySetting(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWirelessControllerWtpProfileAdminAuthTacacs(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
+func flattenWirelessControllerWtpProfileAdminRestrictLocal(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -6926,6 +6957,26 @@ func refreshObjectWirelessControllerWtpProfile(d *schema.ResourceData, o map[str
 		}
 	}
 
+	if err = d.Set("admin_auth_tacacs", flattenWirelessControllerWtpProfileAdminAuthTacacs(o["admin-auth-tacacs+"], d, "admin_auth_tacacs")); err != nil {
+		if vv, ok := fortiAPIPatch(o["admin-auth-tacacs+"], "WirelessControllerWtpProfile-AdminAuthTacacs"); ok {
+			if err = d.Set("admin_auth_tacacs", vv); err != nil {
+				return fmt.Errorf("Error reading admin_auth_tacacs: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading admin_auth_tacacs: %v", err)
+		}
+	}
+
+	if err = d.Set("admin_restrict_local", flattenWirelessControllerWtpProfileAdminRestrictLocal(o["admin-restrict-local"], d, "admin_restrict_local")); err != nil {
+		if vv, ok := fortiAPIPatch(o["admin-restrict-local"], "WirelessControllerWtpProfile-AdminRestrictLocal"); ok {
+			if err = d.Set("admin_restrict_local", vv); err != nil {
+				return fmt.Errorf("Error reading admin_restrict_local: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading admin_restrict_local: %v", err)
+		}
+	}
+
 	if err = d.Set("allowaccess", flattenWirelessControllerWtpProfileAllowaccess(o["allowaccess"], d, "allowaccess")); err != nil {
 		if vv, ok := fortiAPIPatch(o["allowaccess"], "WirelessControllerWtpProfile-Allowaccess"); ok {
 			if err = d.Set("allowaccess", vv); err != nil {
@@ -7556,6 +7607,14 @@ func flattenWirelessControllerWtpProfileFortiTestDebug(d *schema.ResourceData, f
 }
 
 func expandWirelessControllerWtpProfileIsFactorySetting(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWirelessControllerWtpProfileAdminAuthTacacs(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandWirelessControllerWtpProfileAdminRestrictLocal(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -11548,6 +11607,24 @@ func getObjectWirelessControllerWtpProfile(d *schema.ResourceData) (*map[string]
 			return &obj, err
 		} else if t != nil {
 			obj["_is_factory_setting"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("admin_auth_tacacs"); ok || d.HasChange("admin_auth_tacacs") {
+		t, err := expandWirelessControllerWtpProfileAdminAuthTacacs(d, v, "admin_auth_tacacs")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["admin-auth-tacacs+"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("admin_restrict_local"); ok || d.HasChange("admin_restrict_local") {
+		t, err := expandWirelessControllerWtpProfileAdminRestrictLocal(d, v, "admin_restrict_local")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["admin-restrict-local"] = t
 		}
 	}
 

@@ -51,6 +51,9 @@ The following arguments are supported:
 
 * `incoming_ip` - Restrict the explicit HTTP proxy to only accept sessions from this IP address. An interface must have this IP address.
 * `incoming_ip6` - Restrict the explicit web proxy to only accept sessions from this IPv6 address. An interface must have this IPv6 address.
+* `interface` - Specify outgoing interface to reach server.
+* `interface_select_method` - Specify how to select outgoing interface to reach server. Valid values: `sdwan`, `specify`.
+
 * `ipv6_status` - Enable/disable allowing an IPv6 web proxy destination in policies and all IPv6 related entries in this command. Valid values: `disable`, `enable`.
 
 * `message_upon_server_error` - Enable/disable displaying a replacement message when a server error is detected. Valid values: `disable`, `enable`.
@@ -91,6 +94,7 @@ The following arguments are supported:
 
 * `user_agent_detect` - Enable/disable to detect device type by HTTP user-agent if no client certificate provided. Valid values: `disable`, `enable`.
 
+* `vrf_select` - VRF ID used for connection to server.
 * `dynamic_sort_subtable` - true or false, set this parameter to true when using dynamic for_each + toset to configure and sort sub-tables, please do not set this parameter when configuring static sub-tables.
 
 The `pac_policy` block supports:

@@ -69,6 +69,7 @@ func resourceWanoptContentDeliveryNetworkRuleRulesMatchEntriesCreate(d *schema.R
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -81,13 +82,15 @@ func resourceWanoptContentDeliveryNetworkRuleRulesMatchEntriesCreate(d *schema.R
 	paradict["content_delivery_network_rule"] = content_delivery_network_rule
 	paradict["rules"] = rules
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectWanoptContentDeliveryNetworkRuleRulesMatchEntries(d)
 	if err != nil {
 		return fmt.Errorf("Error creating WanoptContentDeliveryNetworkRuleRulesMatchEntries resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateWanoptContentDeliveryNetworkRuleRulesMatchEntries(obj, paradict)
-
+	_, err = c.CreateWanoptContentDeliveryNetworkRuleRulesMatchEntries(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating WanoptContentDeliveryNetworkRuleRulesMatchEntries resource: %v", err)
 	}
@@ -103,6 +106,7 @@ func resourceWanoptContentDeliveryNetworkRuleRulesMatchEntriesUpdate(d *schema.R
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -115,12 +119,15 @@ func resourceWanoptContentDeliveryNetworkRuleRulesMatchEntriesUpdate(d *schema.R
 	paradict["content_delivery_network_rule"] = content_delivery_network_rule
 	paradict["rules"] = rules
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectWanoptContentDeliveryNetworkRuleRulesMatchEntries(d)
 	if err != nil {
 		return fmt.Errorf("Error updating WanoptContentDeliveryNetworkRuleRulesMatchEntries resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateWanoptContentDeliveryNetworkRuleRulesMatchEntries(obj, mkey, paradict)
+	_, err = c.UpdateWanoptContentDeliveryNetworkRuleRulesMatchEntries(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating WanoptContentDeliveryNetworkRuleRulesMatchEntries resource: %v", err)
 	}
@@ -139,6 +146,7 @@ func resourceWanoptContentDeliveryNetworkRuleRulesMatchEntriesDelete(d *schema.R
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -151,7 +159,11 @@ func resourceWanoptContentDeliveryNetworkRuleRulesMatchEntriesDelete(d *schema.R
 	paradict["content_delivery_network_rule"] = content_delivery_network_rule
 	paradict["rules"] = rules
 
-	err = c.DeleteWanoptContentDeliveryNetworkRuleRulesMatchEntries(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteWanoptContentDeliveryNetworkRuleRulesMatchEntries(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting WanoptContentDeliveryNetworkRuleRulesMatchEntries resource: %v", err)
 	}

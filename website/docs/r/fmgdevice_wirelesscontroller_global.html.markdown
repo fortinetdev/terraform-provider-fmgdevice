@@ -57,6 +57,7 @@ The following arguments are supported:
 * `max_rogue_sta` - Maximum number of rogue stations stored on the controller (default = 0).
 * `max_sta_cap` - Maximum number of station cap stored on the controller (default = 0).
 * `max_sta_cap_wtp` - Maximum number of station cap's wtp info stored on the controller (1 - 16, default = 8).
+* `max_wids_entry` - Maximum number of wids entries stored on the controller (default = 0).
 * `mesh_eth_type` - Mesh Ethernet identifier included in backhaul packets (0 - 65535, default = 8755).
 * `nac_interval` - Interval in seconds between two WiFi network access control (NAC) checks (10 - 600, default = 120).
 * `name` - Name of the wireless controller.

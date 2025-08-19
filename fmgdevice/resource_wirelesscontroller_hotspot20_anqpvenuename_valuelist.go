@@ -68,6 +68,7 @@ func resourceWirelessControllerHotspot20AnqpVenueNameValueListCreate(d *schema.R
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -83,13 +84,15 @@ func resourceWirelessControllerHotspot20AnqpVenueNameValueListCreate(d *schema.R
 	paradict["vdom"] = device_vdom
 	paradict["anqp_venue_name"] = anqp_venue_name
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectWirelessControllerHotspot20AnqpVenueNameValueList(d)
 	if err != nil {
 		return fmt.Errorf("Error creating WirelessControllerHotspot20AnqpVenueNameValueList resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateWirelessControllerHotspot20AnqpVenueNameValueList(obj, paradict)
-
+	_, err = c.CreateWirelessControllerHotspot20AnqpVenueNameValueList(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating WirelessControllerHotspot20AnqpVenueNameValueList resource: %v", err)
 	}
@@ -105,6 +108,7 @@ func resourceWirelessControllerHotspot20AnqpVenueNameValueListUpdate(d *schema.R
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -120,12 +124,15 @@ func resourceWirelessControllerHotspot20AnqpVenueNameValueListUpdate(d *schema.R
 	paradict["vdom"] = device_vdom
 	paradict["anqp_venue_name"] = anqp_venue_name
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectWirelessControllerHotspot20AnqpVenueNameValueList(d)
 	if err != nil {
 		return fmt.Errorf("Error updating WirelessControllerHotspot20AnqpVenueNameValueList resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateWirelessControllerHotspot20AnqpVenueNameValueList(obj, mkey, paradict)
+	_, err = c.UpdateWirelessControllerHotspot20AnqpVenueNameValueList(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating WirelessControllerHotspot20AnqpVenueNameValueList resource: %v", err)
 	}
@@ -144,6 +151,7 @@ func resourceWirelessControllerHotspot20AnqpVenueNameValueListDelete(d *schema.R
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -159,7 +167,11 @@ func resourceWirelessControllerHotspot20AnqpVenueNameValueListDelete(d *schema.R
 	paradict["vdom"] = device_vdom
 	paradict["anqp_venue_name"] = anqp_venue_name
 
-	err = c.DeleteWirelessControllerHotspot20AnqpVenueNameValueList(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteWirelessControllerHotspot20AnqpVenueNameValueList(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting WirelessControllerHotspot20AnqpVenueNameValueList resource: %v", err)
 	}

@@ -205,6 +205,34 @@ func resourceSystemStandaloneCluster() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"monitor_prefix": &schema.Schema{
+				Type:     schema.TypeList,
+				Optional: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"id": &schema.Schema{
+							Type:     schema.TypeInt,
+							Optional: true,
+						},
+						"prefix": &schema.Schema{
+							Type:     schema.TypeList,
+							Elem:     &schema.Schema{Type: schema.TypeString},
+							Optional: true,
+							Computed: true,
+						},
+						"vdom": &schema.Schema{
+							Type:     schema.TypeSet,
+							Elem:     &schema.Schema{Type: schema.TypeString},
+							Optional: true,
+							Computed: true,
+						},
+						"vrf": &schema.Schema{
+							Type:     schema.TypeInt,
+							Optional: true,
+						},
+					},
+				},
+			},
 			"pingsvr_monitor_interface": &schema.Schema{
 				Type:     schema.TypeSet,
 				Elem:     &schema.Schema{Type: schema.TypeString},
@@ -243,6 +271,7 @@ func resourceSystemStandaloneClusterUpdate(d *schema.ResourceData, m interface{}
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -251,12 +280,15 @@ func resourceSystemStandaloneClusterUpdate(d *schema.ResourceData, m interface{}
 	}
 	paradict["device"] = device_name
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSystemStandaloneCluster(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemStandaloneCluster resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateSystemStandaloneCluster(obj, mkey, paradict)
+	_, err = c.UpdateSystemStandaloneCluster(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemStandaloneCluster resource: %v", err)
 	}
@@ -275,6 +307,7 @@ func resourceSystemStandaloneClusterDelete(d *schema.ResourceData, m interface{}
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -283,7 +316,11 @@ func resourceSystemStandaloneClusterDelete(d *schema.ResourceData, m interface{}
 	}
 	paradict["device"] = device_name
 
-	err = c.DeleteSystemStandaloneCluster(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteSystemStandaloneCluster(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting SystemStandaloneCluster resource: %v", err)
 	}
@@ -652,6 +689,75 @@ func flattenSystemStandaloneClusterMonitorInterface(v interface{}, d *schema.Res
 	return flattenStringList(v)
 }
 
+func flattenSystemStandaloneClusterMonitorPrefix(v interface{}, d *schema.ResourceData, pre string) []map[string]interface{} {
+	if v == nil {
+		return nil
+	}
+
+	l := v.([]interface{})
+	if len(l) == 0 || l[0] == nil {
+		return nil
+	}
+
+	result := make([]map[string]interface{}, 0, len(l))
+
+	con := 0
+	for _, r := range l {
+		tmp := make(map[string]interface{})
+		i := r.(map[string]interface{})
+
+		pre_append := "" // table
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "id"
+		if _, ok := i["id"]; ok {
+			v := flattenSystemStandaloneClusterMonitorPrefixId(i["id"], d, pre_append)
+			tmp["id"] = fortiAPISubPartPatch(v, "SystemStandaloneCluster-MonitorPrefix-Id")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "prefix"
+		if _, ok := i["prefix"]; ok {
+			v := flattenSystemStandaloneClusterMonitorPrefixPrefix(i["prefix"], d, pre_append)
+			tmp["prefix"] = fortiAPISubPartPatch(v, "SystemStandaloneCluster-MonitorPrefix-Prefix")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "vdom"
+		if _, ok := i["vdom"]; ok {
+			v := flattenSystemStandaloneClusterMonitorPrefixVdom(i["vdom"], d, pre_append)
+			tmp["vdom"] = fortiAPISubPartPatch(v, "SystemStandaloneCluster-MonitorPrefix-Vdom")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "vrf"
+		if _, ok := i["vrf"]; ok {
+			v := flattenSystemStandaloneClusterMonitorPrefixVrf(i["vrf"], d, pre_append)
+			tmp["vrf"] = fortiAPISubPartPatch(v, "SystemStandaloneCluster-MonitorPrefix-Vrf")
+		}
+
+		if len(tmp) > 0 {
+			result = append(result, tmp)
+		}
+
+		con += 1
+	}
+
+	return result
+}
+
+func flattenSystemStandaloneClusterMonitorPrefixId(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemStandaloneClusterMonitorPrefixPrefix(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
+func flattenSystemStandaloneClusterMonitorPrefixVdom(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
+func flattenSystemStandaloneClusterMonitorPrefixVrf(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenSystemStandaloneClusterPingsvrMonitorInterface(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return flattenStringList(v)
 }
@@ -752,6 +858,30 @@ func refreshObjectSystemStandaloneCluster(d *schema.ResourceData, o map[string]i
 			}
 		} else {
 			return fmt.Errorf("Error reading monitor_interface: %v", err)
+		}
+	}
+
+	if isImportTable() {
+		if err = d.Set("monitor_prefix", flattenSystemStandaloneClusterMonitorPrefix(o["monitor-prefix"], d, "monitor_prefix")); err != nil {
+			if vv, ok := fortiAPIPatch(o["monitor-prefix"], "SystemStandaloneCluster-MonitorPrefix"); ok {
+				if err = d.Set("monitor_prefix", vv); err != nil {
+					return fmt.Errorf("Error reading monitor_prefix: %v", err)
+				}
+			} else {
+				return fmt.Errorf("Error reading monitor_prefix: %v", err)
+			}
+		}
+	} else {
+		if _, ok := d.GetOk("monitor_prefix"); ok {
+			if err = d.Set("monitor_prefix", flattenSystemStandaloneClusterMonitorPrefix(o["monitor-prefix"], d, "monitor_prefix")); err != nil {
+				if vv, ok := fortiAPIPatch(o["monitor-prefix"], "SystemStandaloneCluster-MonitorPrefix"); ok {
+					if err = d.Set("monitor_prefix", vv); err != nil {
+						return fmt.Errorf("Error reading monitor_prefix: %v", err)
+					}
+				} else {
+					return fmt.Errorf("Error reading monitor_prefix: %v", err)
+				}
+			}
 		}
 	}
 
@@ -1091,6 +1221,66 @@ func expandSystemStandaloneClusterMonitorInterface(d *schema.ResourceData, v int
 	return expandStringList(v.(*schema.Set).List()), nil
 }
 
+func expandSystemStandaloneClusterMonitorPrefix(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	l := v.([]interface{})
+	result := make([]map[string]interface{}, 0, len(l))
+
+	if len(l) == 0 || l[0] == nil {
+		return result, nil
+	}
+
+	con := 0
+	for _, r := range l {
+		tmp := make(map[string]interface{})
+		i := r.(map[string]interface{})
+		pre_append := "" // table
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "id"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["id"], _ = expandSystemStandaloneClusterMonitorPrefixId(d, i["id"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "prefix"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["prefix"], _ = expandSystemStandaloneClusterMonitorPrefixPrefix(d, i["prefix"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "vdom"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["vdom"], _ = expandSystemStandaloneClusterMonitorPrefixVdom(d, i["vdom"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "vrf"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["vrf"], _ = expandSystemStandaloneClusterMonitorPrefixVrf(d, i["vrf"], pre_append)
+		}
+
+		if len(tmp) > 0 {
+			result = append(result, tmp)
+		}
+
+		con += 1
+	}
+
+	return result, nil
+}
+
+func expandSystemStandaloneClusterMonitorPrefixId(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemStandaloneClusterMonitorPrefixPrefix(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.([]interface{})), nil
+}
+
+func expandSystemStandaloneClusterMonitorPrefixVdom(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandSystemStandaloneClusterMonitorPrefixVrf(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandSystemStandaloneClusterPingsvrMonitorInterface(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return expandStringList(v.(*schema.Set).List()), nil
 }
@@ -1170,6 +1360,15 @@ func getObjectSystemStandaloneCluster(d *schema.ResourceData) (*map[string]inter
 			return &obj, err
 		} else if t != nil {
 			obj["monitor-interface"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("monitor_prefix"); ok || d.HasChange("monitor_prefix") {
+		t, err := expandSystemStandaloneClusterMonitorPrefix(d, v, "monitor_prefix")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["monitor-prefix"] = t
 		}
 	}
 

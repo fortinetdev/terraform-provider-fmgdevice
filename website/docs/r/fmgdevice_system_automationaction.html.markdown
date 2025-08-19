@@ -63,6 +63,7 @@ The following arguments are supported:
 * `delay` - Delay.
 * `email_body` - Email body.
 * `description` - Description.
+* `duration` - Maximum running time for this script in seconds.
 * `email_from` - Email sender name.
 * `email_subject` - Email subject.
 * `email_to` - Email addresses.
@@ -88,6 +89,7 @@ The following arguments are supported:
 * `port` - Protocol port.
 * `protocol` - Request protocol. Valid values: `http`, `https`.
 
+* `regular_expression` - Regular expression string.
 * `replacement_message` - Enable/disable replacement message. Valid values: `disable`, `enable`.
 
 * `replacemsg_group` - Replacement message group.

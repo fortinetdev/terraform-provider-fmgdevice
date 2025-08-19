@@ -68,6 +68,7 @@ func resourceWebfilterIpsUrlfilterSettingUpdate(d *schema.ResourceData, m interf
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -81,12 +82,15 @@ func resourceWebfilterIpsUrlfilterSettingUpdate(d *schema.ResourceData, m interf
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectWebfilterIpsUrlfilterSetting(d)
 	if err != nil {
 		return fmt.Errorf("Error updating WebfilterIpsUrlfilterSetting resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateWebfilterIpsUrlfilterSetting(obj, mkey, paradict)
+	_, err = c.UpdateWebfilterIpsUrlfilterSetting(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating WebfilterIpsUrlfilterSetting resource: %v", err)
 	}
@@ -105,6 +109,7 @@ func resourceWebfilterIpsUrlfilterSettingDelete(d *schema.ResourceData, m interf
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -118,7 +123,11 @@ func resourceWebfilterIpsUrlfilterSettingDelete(d *schema.ResourceData, m interf
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	err = c.DeleteWebfilterIpsUrlfilterSetting(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteWebfilterIpsUrlfilterSetting(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting WebfilterIpsUrlfilterSetting resource: %v", err)
 	}

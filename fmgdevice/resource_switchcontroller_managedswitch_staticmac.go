@@ -83,6 +83,7 @@ func resourceSwitchControllerManagedSwitchStaticMacCreate(d *schema.ResourceData
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -98,13 +99,15 @@ func resourceSwitchControllerManagedSwitchStaticMacCreate(d *schema.ResourceData
 	paradict["vdom"] = device_vdom
 	paradict["managed_switch"] = managed_switch
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSwitchControllerManagedSwitchStaticMac(d)
 	if err != nil {
 		return fmt.Errorf("Error creating SwitchControllerManagedSwitchStaticMac resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateSwitchControllerManagedSwitchStaticMac(obj, paradict)
-
+	_, err = c.CreateSwitchControllerManagedSwitchStaticMac(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating SwitchControllerManagedSwitchStaticMac resource: %v", err)
 	}
@@ -120,6 +123,7 @@ func resourceSwitchControllerManagedSwitchStaticMacUpdate(d *schema.ResourceData
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -135,12 +139,15 @@ func resourceSwitchControllerManagedSwitchStaticMacUpdate(d *schema.ResourceData
 	paradict["vdom"] = device_vdom
 	paradict["managed_switch"] = managed_switch
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSwitchControllerManagedSwitchStaticMac(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SwitchControllerManagedSwitchStaticMac resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateSwitchControllerManagedSwitchStaticMac(obj, mkey, paradict)
+	_, err = c.UpdateSwitchControllerManagedSwitchStaticMac(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating SwitchControllerManagedSwitchStaticMac resource: %v", err)
 	}
@@ -159,6 +166,7 @@ func resourceSwitchControllerManagedSwitchStaticMacDelete(d *schema.ResourceData
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -174,7 +182,11 @@ func resourceSwitchControllerManagedSwitchStaticMacDelete(d *schema.ResourceData
 	paradict["vdom"] = device_vdom
 	paradict["managed_switch"] = managed_switch
 
-	err = c.DeleteSwitchControllerManagedSwitchStaticMac(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteSwitchControllerManagedSwitchStaticMac(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting SwitchControllerManagedSwitchStaticMac resource: %v", err)
 	}

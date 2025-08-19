@@ -56,6 +56,7 @@ func resourceLogSyslogd3SettingCustomFieldNameCreate(d *schema.ResourceData, m i
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -64,13 +65,15 @@ func resourceLogSyslogd3SettingCustomFieldNameCreate(d *schema.ResourceData, m i
 	}
 	paradict["device"] = device_name
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectLogSyslogd3SettingCustomFieldName(d)
 	if err != nil {
 		return fmt.Errorf("Error creating LogSyslogd3SettingCustomFieldName resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateLogSyslogd3SettingCustomFieldName(obj, paradict)
-
+	_, err = c.CreateLogSyslogd3SettingCustomFieldName(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating LogSyslogd3SettingCustomFieldName resource: %v", err)
 	}
@@ -86,6 +89,7 @@ func resourceLogSyslogd3SettingCustomFieldNameUpdate(d *schema.ResourceData, m i
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -94,12 +98,15 @@ func resourceLogSyslogd3SettingCustomFieldNameUpdate(d *schema.ResourceData, m i
 	}
 	paradict["device"] = device_name
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectLogSyslogd3SettingCustomFieldName(d)
 	if err != nil {
 		return fmt.Errorf("Error updating LogSyslogd3SettingCustomFieldName resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateLogSyslogd3SettingCustomFieldName(obj, mkey, paradict)
+	_, err = c.UpdateLogSyslogd3SettingCustomFieldName(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating LogSyslogd3SettingCustomFieldName resource: %v", err)
 	}
@@ -118,6 +125,7 @@ func resourceLogSyslogd3SettingCustomFieldNameDelete(d *schema.ResourceData, m i
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -126,7 +134,11 @@ func resourceLogSyslogd3SettingCustomFieldNameDelete(d *schema.ResourceData, m i
 	}
 	paradict["device"] = device_name
 
-	err = c.DeleteLogSyslogd3SettingCustomFieldName(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteLogSyslogd3SettingCustomFieldName(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting LogSyslogd3SettingCustomFieldName resource: %v", err)
 	}

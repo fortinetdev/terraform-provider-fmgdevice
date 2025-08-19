@@ -32,6 +32,7 @@ The following arguments are supported:
 * `device_name` - FortiManager managed device name. This variable is used in the request URL. If not specified, it will inherit the variable `device_name` of the provider.
 * `device_vdom` - FortiManager managed device vdom. This variable is used in the request URL. If not specified, it will inherit the variable `device_vdom` of the provider.
 
+* `bounce_port_duration` - Bounce duration in seconds of a switch port where this mac-policy is applied.
 * `bounce_port_link` - Enable/disable bouncing (administratively bring the link down, up) of a switch port where this mac-policy is applied. Valid values: `disable`, `enable`.
 
 * `fmgcount` - Enable/disable packet count on the NAC device. Valid values: `disable`, `enable`.
@@ -41,6 +42,8 @@ The following arguments are supported:
 
 * `fortilink` - FortiLink interface for which this MAC policy belongs to.
 * `name` - MAC policy name.
+* `poe_reset` - Enable/disable POE reset of a switch port where this mac-policy is applied. Valid values: `disable`, `enable`.
+
 * `traffic_policy` - Traffic policy to be applied when using this MAC policy.
 * `vlan` - Ingress traffic VLAN assignment for the MAC address matching this MAC policy.
 

@@ -82,6 +82,7 @@ func resourceVpnQkdCreate(d *schema.ResourceData, m interface{}) error {
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -95,13 +96,15 @@ func resourceVpnQkdCreate(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectVpnQkd(d)
 	if err != nil {
 		return fmt.Errorf("Error creating VpnQkd resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateVpnQkd(obj, paradict)
-
+	_, err = c.CreateVpnQkd(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating VpnQkd resource: %v", err)
 	}
@@ -117,6 +120,7 @@ func resourceVpnQkdUpdate(d *schema.ResourceData, m interface{}) error {
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -130,12 +134,15 @@ func resourceVpnQkdUpdate(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectVpnQkd(d)
 	if err != nil {
 		return fmt.Errorf("Error updating VpnQkd resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateVpnQkd(obj, mkey, paradict)
+	_, err = c.UpdateVpnQkd(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating VpnQkd resource: %v", err)
 	}
@@ -154,6 +161,7 @@ func resourceVpnQkdDelete(d *schema.ResourceData, m interface{}) error {
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -167,7 +175,11 @@ func resourceVpnQkdDelete(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	err = c.DeleteVpnQkd(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteVpnQkd(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting VpnQkd resource: %v", err)
 	}

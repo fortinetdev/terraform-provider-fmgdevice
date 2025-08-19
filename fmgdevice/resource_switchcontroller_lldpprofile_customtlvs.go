@@ -72,6 +72,7 @@ func resourceSwitchControllerLldpProfileCustomTlvsCreate(d *schema.ResourceData,
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -87,13 +88,15 @@ func resourceSwitchControllerLldpProfileCustomTlvsCreate(d *schema.ResourceData,
 	paradict["vdom"] = device_vdom
 	paradict["lldp_profile"] = lldp_profile
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSwitchControllerLldpProfileCustomTlvs(d)
 	if err != nil {
 		return fmt.Errorf("Error creating SwitchControllerLldpProfileCustomTlvs resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateSwitchControllerLldpProfileCustomTlvs(obj, paradict)
-
+	_, err = c.CreateSwitchControllerLldpProfileCustomTlvs(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating SwitchControllerLldpProfileCustomTlvs resource: %v", err)
 	}
@@ -109,6 +112,7 @@ func resourceSwitchControllerLldpProfileCustomTlvsUpdate(d *schema.ResourceData,
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -124,12 +128,15 @@ func resourceSwitchControllerLldpProfileCustomTlvsUpdate(d *schema.ResourceData,
 	paradict["vdom"] = device_vdom
 	paradict["lldp_profile"] = lldp_profile
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSwitchControllerLldpProfileCustomTlvs(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SwitchControllerLldpProfileCustomTlvs resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateSwitchControllerLldpProfileCustomTlvs(obj, mkey, paradict)
+	_, err = c.UpdateSwitchControllerLldpProfileCustomTlvs(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating SwitchControllerLldpProfileCustomTlvs resource: %v", err)
 	}
@@ -148,6 +155,7 @@ func resourceSwitchControllerLldpProfileCustomTlvsDelete(d *schema.ResourceData,
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -163,7 +171,11 @@ func resourceSwitchControllerLldpProfileCustomTlvsDelete(d *schema.ResourceData,
 	paradict["vdom"] = device_vdom
 	paradict["lldp_profile"] = lldp_profile
 
-	err = c.DeleteSwitchControllerLldpProfileCustomTlvs(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteSwitchControllerLldpProfileCustomTlvs(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting SwitchControllerLldpProfileCustomTlvs resource: %v", err)
 	}

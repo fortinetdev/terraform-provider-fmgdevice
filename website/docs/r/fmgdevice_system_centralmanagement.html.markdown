@@ -80,6 +80,7 @@ The following arguments are supported:
 * `use_elbc_vdom` - Enable/disable use of special ELBC config sync VDOM to connect to FortiManager. Valid values: `disable`, `enable`.
 
 * `vdom` - Virtual domain (VDOM) name to use when communicating with FortiManager.
+* `vrf_select` - VRF ID used for connection to server.
 * `dynamic_sort_subtable` - true or false, set this parameter to true when using dynamic for_each + toset to configure and sort sub-tables, please do not set this parameter when configuring static sub-tables.
 
 The `server_list` block supports:

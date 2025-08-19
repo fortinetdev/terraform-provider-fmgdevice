@@ -58,6 +58,7 @@ func resourceSwitchControllerVirtualPortPoolCreate(d *schema.ResourceData, m int
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -71,13 +72,15 @@ func resourceSwitchControllerVirtualPortPoolCreate(d *schema.ResourceData, m int
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSwitchControllerVirtualPortPool(d)
 	if err != nil {
 		return fmt.Errorf("Error creating SwitchControllerVirtualPortPool resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateSwitchControllerVirtualPortPool(obj, paradict)
-
+	_, err = c.CreateSwitchControllerVirtualPortPool(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating SwitchControllerVirtualPortPool resource: %v", err)
 	}
@@ -93,6 +96,7 @@ func resourceSwitchControllerVirtualPortPoolUpdate(d *schema.ResourceData, m int
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -106,12 +110,15 @@ func resourceSwitchControllerVirtualPortPoolUpdate(d *schema.ResourceData, m int
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSwitchControllerVirtualPortPool(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SwitchControllerVirtualPortPool resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateSwitchControllerVirtualPortPool(obj, mkey, paradict)
+	_, err = c.UpdateSwitchControllerVirtualPortPool(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating SwitchControllerVirtualPortPool resource: %v", err)
 	}
@@ -130,6 +137,7 @@ func resourceSwitchControllerVirtualPortPoolDelete(d *schema.ResourceData, m int
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -143,7 +151,11 @@ func resourceSwitchControllerVirtualPortPoolDelete(d *schema.ResourceData, m int
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	err = c.DeleteSwitchControllerVirtualPortPool(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteSwitchControllerVirtualPortPool(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting SwitchControllerVirtualPortPool resource: %v", err)
 	}

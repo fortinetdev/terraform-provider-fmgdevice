@@ -31,6 +31,7 @@ The following arguments are supported:
 
 * `cache_mem_percent` - Maximum percentage of available memory allocated to caching (1 - 15).
 * `chunk_size` - Maximum fingerprint chunk size. Caution, changing this setting will flush the entire database.
+* `config_builder_timeout` - Maximum time allowed for building a single DLP profile (default 60 seconds).
 * `db_mode` - Behavior when the maximum size is reached. Valid values: `stop-adding`, `remove-modified-then-oldest`, `remove-oldest`.
 
 * `size` - Maximum total size of files within the storage (MB).

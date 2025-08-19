@@ -71,6 +71,10 @@ func resourceLogTacacsAccounting2Setting() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"vrf_select": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+			},
 		},
 	}
 }
@@ -81,6 +85,7 @@ func resourceLogTacacsAccounting2SettingUpdate(d *schema.ResourceData, m interfa
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -94,12 +99,15 @@ func resourceLogTacacsAccounting2SettingUpdate(d *schema.ResourceData, m interfa
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectLogTacacsAccounting2Setting(d)
 	if err != nil {
 		return fmt.Errorf("Error updating LogTacacsAccounting2Setting resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateLogTacacsAccounting2Setting(obj, mkey, paradict)
+	_, err = c.UpdateLogTacacsAccounting2Setting(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating LogTacacsAccounting2Setting resource: %v", err)
 	}
@@ -118,6 +126,7 @@ func resourceLogTacacsAccounting2SettingDelete(d *schema.ResourceData, m interfa
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -131,7 +140,11 @@ func resourceLogTacacsAccounting2SettingDelete(d *schema.ResourceData, m interfa
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	err = c.DeleteLogTacacsAccounting2Setting(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteLogTacacsAccounting2Setting(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting LogTacacsAccounting2Setting resource: %v", err)
 	}
@@ -211,6 +224,10 @@ func flattenLogTacacsAccounting2SettingStatus(v interface{}, d *schema.ResourceD
 	return v
 }
 
+func flattenLogTacacsAccounting2SettingVrfSelect(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func refreshObjectLogTacacsAccounting2Setting(d *schema.ResourceData, o map[string]interface{}) error {
 	var err error
 
@@ -264,6 +281,16 @@ func refreshObjectLogTacacsAccounting2Setting(d *schema.ResourceData, o map[stri
 		}
 	}
 
+	if err = d.Set("vrf_select", flattenLogTacacsAccounting2SettingVrfSelect(o["vrf-select"], d, "vrf_select")); err != nil {
+		if vv, ok := fortiAPIPatch(o["vrf-select"], "LogTacacsAccounting2Setting-VrfSelect"); ok {
+			if err = d.Set("vrf_select", vv); err != nil {
+				return fmt.Errorf("Error reading vrf_select: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading vrf_select: %v", err)
+		}
+	}
+
 	return nil
 }
 
@@ -294,6 +321,10 @@ func expandLogTacacsAccounting2SettingSourceIp(d *schema.ResourceData, v interfa
 }
 
 func expandLogTacacsAccounting2SettingStatus(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandLogTacacsAccounting2SettingVrfSelect(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -351,6 +382,15 @@ func getObjectLogTacacsAccounting2Setting(d *schema.ResourceData) (*map[string]i
 			return &obj, err
 		} else if t != nil {
 			obj["status"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("vrf_select"); ok || d.HasChange("vrf_select") {
+		t, err := expandLogTacacsAccounting2SettingVrfSelect(d, v, "vrf_select")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["vrf-select"] = t
 		}
 	}
 

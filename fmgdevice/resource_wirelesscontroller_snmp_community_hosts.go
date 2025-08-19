@@ -64,6 +64,7 @@ func resourceWirelessControllerSnmpCommunityHostsCreate(d *schema.ResourceData, 
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -79,13 +80,15 @@ func resourceWirelessControllerSnmpCommunityHostsCreate(d *schema.ResourceData, 
 	paradict["vdom"] = device_vdom
 	paradict["community"] = community
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectWirelessControllerSnmpCommunityHosts(d)
 	if err != nil {
 		return fmt.Errorf("Error creating WirelessControllerSnmpCommunityHosts resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateWirelessControllerSnmpCommunityHosts(obj, paradict)
-
+	_, err = c.CreateWirelessControllerSnmpCommunityHosts(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating WirelessControllerSnmpCommunityHosts resource: %v", err)
 	}
@@ -101,6 +104,7 @@ func resourceWirelessControllerSnmpCommunityHostsUpdate(d *schema.ResourceData, 
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -116,12 +120,15 @@ func resourceWirelessControllerSnmpCommunityHostsUpdate(d *schema.ResourceData, 
 	paradict["vdom"] = device_vdom
 	paradict["community"] = community
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectWirelessControllerSnmpCommunityHosts(d)
 	if err != nil {
 		return fmt.Errorf("Error updating WirelessControllerSnmpCommunityHosts resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateWirelessControllerSnmpCommunityHosts(obj, mkey, paradict)
+	_, err = c.UpdateWirelessControllerSnmpCommunityHosts(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating WirelessControllerSnmpCommunityHosts resource: %v", err)
 	}
@@ -140,6 +147,7 @@ func resourceWirelessControllerSnmpCommunityHostsDelete(d *schema.ResourceData, 
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -155,7 +163,11 @@ func resourceWirelessControllerSnmpCommunityHostsDelete(d *schema.ResourceData, 
 	paradict["vdom"] = device_vdom
 	paradict["community"] = community
 
-	err = c.DeleteWirelessControllerSnmpCommunityHosts(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteWirelessControllerSnmpCommunityHosts(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting WirelessControllerSnmpCommunityHosts resource: %v", err)
 	}

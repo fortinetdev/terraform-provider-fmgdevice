@@ -80,6 +80,7 @@ func resourceSystemIpv6TunnelCreate(d *schema.ResourceData, m interface{}) error
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -93,13 +94,15 @@ func resourceSystemIpv6TunnelCreate(d *schema.ResourceData, m interface{}) error
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSystemIpv6Tunnel(d)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemIpv6Tunnel resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateSystemIpv6Tunnel(obj, paradict)
-
+	_, err = c.CreateSystemIpv6Tunnel(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemIpv6Tunnel resource: %v", err)
 	}
@@ -115,6 +118,7 @@ func resourceSystemIpv6TunnelUpdate(d *schema.ResourceData, m interface{}) error
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -128,12 +132,15 @@ func resourceSystemIpv6TunnelUpdate(d *schema.ResourceData, m interface{}) error
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSystemIpv6Tunnel(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemIpv6Tunnel resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateSystemIpv6Tunnel(obj, mkey, paradict)
+	_, err = c.UpdateSystemIpv6Tunnel(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemIpv6Tunnel resource: %v", err)
 	}
@@ -152,6 +159,7 @@ func resourceSystemIpv6TunnelDelete(d *schema.ResourceData, m interface{}) error
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -165,7 +173,11 @@ func resourceSystemIpv6TunnelDelete(d *schema.ResourceData, m interface{}) error
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	err = c.DeleteSystemIpv6Tunnel(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteSystemIpv6Tunnel(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting SystemIpv6Tunnel resource: %v", err)
 	}

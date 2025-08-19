@@ -75,6 +75,10 @@ func resourceSystemVdomNetflowCollectors() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"vrf_select": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+			},
 		},
 	}
 }
@@ -84,6 +88,7 @@ func resourceSystemVdomNetflowCollectorsCreate(d *schema.ResourceData, m interfa
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -97,13 +102,15 @@ func resourceSystemVdomNetflowCollectorsCreate(d *schema.ResourceData, m interfa
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSystemVdomNetflowCollectors(d)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemVdomNetflowCollectors resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateSystemVdomNetflowCollectors(obj, paradict)
-
+	_, err = c.CreateSystemVdomNetflowCollectors(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemVdomNetflowCollectors resource: %v", err)
 	}
@@ -119,6 +126,7 @@ func resourceSystemVdomNetflowCollectorsUpdate(d *schema.ResourceData, m interfa
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -132,12 +140,15 @@ func resourceSystemVdomNetflowCollectorsUpdate(d *schema.ResourceData, m interfa
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSystemVdomNetflowCollectors(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemVdomNetflowCollectors resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateSystemVdomNetflowCollectors(obj, mkey, paradict)
+	_, err = c.UpdateSystemVdomNetflowCollectors(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemVdomNetflowCollectors resource: %v", err)
 	}
@@ -156,6 +167,7 @@ func resourceSystemVdomNetflowCollectorsDelete(d *schema.ResourceData, m interfa
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -169,7 +181,11 @@ func resourceSystemVdomNetflowCollectorsDelete(d *schema.ResourceData, m interfa
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	err = c.DeleteSystemVdomNetflowCollectors(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteSystemVdomNetflowCollectors(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting SystemVdomNetflowCollectors resource: %v", err)
 	}
@@ -257,6 +273,10 @@ func flattenSystemVdomNetflowCollectorsSourceIpInterface2edl(v interface{}, d *s
 	return flattenStringList(v)
 }
 
+func flattenSystemVdomNetflowCollectorsVrfSelect2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func refreshObjectSystemVdomNetflowCollectors(d *schema.ResourceData, o map[string]interface{}) error {
 	var err error
 
@@ -330,6 +350,16 @@ func refreshObjectSystemVdomNetflowCollectors(d *schema.ResourceData, o map[stri
 		}
 	}
 
+	if err = d.Set("vrf_select", flattenSystemVdomNetflowCollectorsVrfSelect2edl(o["vrf-select"], d, "vrf_select")); err != nil {
+		if vv, ok := fortiAPIPatch(o["vrf-select"], "SystemVdomNetflowCollectors-VrfSelect"); ok {
+			if err = d.Set("vrf_select", vv); err != nil {
+				return fmt.Errorf("Error reading vrf_select: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading vrf_select: %v", err)
+		}
+	}
+
 	return nil
 }
 
@@ -365,6 +395,10 @@ func expandSystemVdomNetflowCollectorsSourceIp2edl(d *schema.ResourceData, v int
 
 func expandSystemVdomNetflowCollectorsSourceIpInterface2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandSystemVdomNetflowCollectorsVrfSelect2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
 }
 
 func getObjectSystemVdomNetflowCollectors(d *schema.ResourceData) (*map[string]interface{}, error) {
@@ -430,6 +464,15 @@ func getObjectSystemVdomNetflowCollectors(d *schema.ResourceData) (*map[string]i
 			return &obj, err
 		} else if t != nil {
 			obj["source-ip-interface"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("vrf_select"); ok || d.HasChange("vrf_select") {
+		t, err := expandSystemVdomNetflowCollectorsVrfSelect2edl(d, v, "vrf_select")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["vrf-select"] = t
 		}
 	}
 

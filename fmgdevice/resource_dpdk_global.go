@@ -73,6 +73,10 @@ func resourceDpdkGlobal() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
+			"session_table_percentage": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+			},
 			"sleep_on_idle": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -93,6 +97,7 @@ func resourceDpdkGlobalUpdate(d *schema.ResourceData, m interface{}) error {
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -101,12 +106,15 @@ func resourceDpdkGlobalUpdate(d *schema.ResourceData, m interface{}) error {
 	}
 	paradict["device"] = device_name
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectDpdkGlobal(d)
 	if err != nil {
 		return fmt.Errorf("Error updating DpdkGlobal resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateDpdkGlobal(obj, mkey, paradict)
+	_, err = c.UpdateDpdkGlobal(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating DpdkGlobal resource: %v", err)
 	}
@@ -125,6 +133,7 @@ func resourceDpdkGlobalDelete(d *schema.ResourceData, m interface{}) error {
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -133,7 +142,11 @@ func resourceDpdkGlobalDelete(d *schema.ResourceData, m interface{}) error {
 	}
 	paradict["device"] = device_name
 
-	err = c.DeleteDpdkGlobal(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteDpdkGlobal(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting DpdkGlobal resource: %v", err)
 	}
@@ -211,6 +224,10 @@ func flattenDpdkGlobalPerSessionAccounting(v interface{}, d *schema.ResourceData
 }
 
 func flattenDpdkGlobalProtects(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenDpdkGlobalSessionTablePercentage(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -305,6 +322,16 @@ func refreshObjectDpdkGlobal(d *schema.ResourceData, o map[string]interface{}) e
 		}
 	}
 
+	if err = d.Set("session_table_percentage", flattenDpdkGlobalSessionTablePercentage(o["session-table-percentage"], d, "session_table_percentage")); err != nil {
+		if vv, ok := fortiAPIPatch(o["session-table-percentage"], "DpdkGlobal-SessionTablePercentage"); ok {
+			if err = d.Set("session_table_percentage", vv); err != nil {
+				return fmt.Errorf("Error reading session_table_percentage: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading session_table_percentage: %v", err)
+		}
+	}
+
 	if err = d.Set("sleep_on_idle", flattenDpdkGlobalSleepOnIdle(o["sleep-on-idle"], d, "sleep_on_idle")); err != nil {
 		if vv, ok := fortiAPIPatch(o["sleep-on-idle"], "DpdkGlobal-SleepOnIdle"); ok {
 			if err = d.Set("sleep_on_idle", vv); err != nil {
@@ -363,6 +390,10 @@ func expandDpdkGlobalPerSessionAccounting(d *schema.ResourceData, v interface{},
 }
 
 func expandDpdkGlobalProtects(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandDpdkGlobalSessionTablePercentage(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -446,6 +477,15 @@ func getObjectDpdkGlobal(d *schema.ResourceData) (*map[string]interface{}, error
 			return &obj, err
 		} else if t != nil {
 			obj["protects"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("session_table_percentage"); ok || d.HasChange("session_table_percentage") {
+		t, err := expandDpdkGlobalSessionTablePercentage(d, v, "session_table_percentage")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["session-table-percentage"] = t
 		}
 	}
 

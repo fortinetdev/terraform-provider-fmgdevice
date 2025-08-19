@@ -64,6 +64,7 @@ func resourceUserSettingAuthPortsCreate(d *schema.ResourceData, m interface{}) e
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -77,13 +78,15 @@ func resourceUserSettingAuthPortsCreate(d *schema.ResourceData, m interface{}) e
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectUserSettingAuthPorts(d)
 	if err != nil {
 		return fmt.Errorf("Error creating UserSettingAuthPorts resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateUserSettingAuthPorts(obj, paradict)
-
+	_, err = c.CreateUserSettingAuthPorts(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating UserSettingAuthPorts resource: %v", err)
 	}
@@ -99,6 +102,7 @@ func resourceUserSettingAuthPortsUpdate(d *schema.ResourceData, m interface{}) e
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -112,12 +116,15 @@ func resourceUserSettingAuthPortsUpdate(d *schema.ResourceData, m interface{}) e
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectUserSettingAuthPorts(d)
 	if err != nil {
 		return fmt.Errorf("Error updating UserSettingAuthPorts resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateUserSettingAuthPorts(obj, mkey, paradict)
+	_, err = c.UpdateUserSettingAuthPorts(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating UserSettingAuthPorts resource: %v", err)
 	}
@@ -136,6 +143,7 @@ func resourceUserSettingAuthPortsDelete(d *schema.ResourceData, m interface{}) e
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -149,7 +157,11 @@ func resourceUserSettingAuthPortsDelete(d *schema.ResourceData, m interface{}) e
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	err = c.DeleteUserSettingAuthPorts(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteUserSettingAuthPorts(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting UserSettingAuthPorts resource: %v", err)
 	}

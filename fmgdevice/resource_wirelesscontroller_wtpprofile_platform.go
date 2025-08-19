@@ -72,6 +72,7 @@ func resourceWirelessControllerWtpProfilePlatformUpdate(d *schema.ResourceData, 
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -87,12 +88,15 @@ func resourceWirelessControllerWtpProfilePlatformUpdate(d *schema.ResourceData, 
 	paradict["vdom"] = device_vdom
 	paradict["wtp_profile"] = wtp_profile
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectWirelessControllerWtpProfilePlatform(d)
 	if err != nil {
 		return fmt.Errorf("Error updating WirelessControllerWtpProfilePlatform resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateWirelessControllerWtpProfilePlatform(obj, mkey, paradict)
+	_, err = c.UpdateWirelessControllerWtpProfilePlatform(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating WirelessControllerWtpProfilePlatform resource: %v", err)
 	}
@@ -111,6 +115,7 @@ func resourceWirelessControllerWtpProfilePlatformDelete(d *schema.ResourceData, 
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -126,7 +131,11 @@ func resourceWirelessControllerWtpProfilePlatformDelete(d *schema.ResourceData, 
 	paradict["vdom"] = device_vdom
 	paradict["wtp_profile"] = wtp_profile
 
-	err = c.DeleteWirelessControllerWtpProfilePlatform(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteWirelessControllerWtpProfilePlatform(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting WirelessControllerWtpProfilePlatform resource: %v", err)
 	}

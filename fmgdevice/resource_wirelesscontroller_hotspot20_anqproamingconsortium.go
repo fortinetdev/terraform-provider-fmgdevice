@@ -79,6 +79,7 @@ func resourceWirelessControllerHotspot20AnqpRoamingConsortiumCreate(d *schema.Re
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -92,13 +93,15 @@ func resourceWirelessControllerHotspot20AnqpRoamingConsortiumCreate(d *schema.Re
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectWirelessControllerHotspot20AnqpRoamingConsortium(d)
 	if err != nil {
 		return fmt.Errorf("Error creating WirelessControllerHotspot20AnqpRoamingConsortium resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateWirelessControllerHotspot20AnqpRoamingConsortium(obj, paradict)
-
+	_, err = c.CreateWirelessControllerHotspot20AnqpRoamingConsortium(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating WirelessControllerHotspot20AnqpRoamingConsortium resource: %v", err)
 	}
@@ -114,6 +117,7 @@ func resourceWirelessControllerHotspot20AnqpRoamingConsortiumUpdate(d *schema.Re
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -127,12 +131,15 @@ func resourceWirelessControllerHotspot20AnqpRoamingConsortiumUpdate(d *schema.Re
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectWirelessControllerHotspot20AnqpRoamingConsortium(d)
 	if err != nil {
 		return fmt.Errorf("Error updating WirelessControllerHotspot20AnqpRoamingConsortium resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateWirelessControllerHotspot20AnqpRoamingConsortium(obj, mkey, paradict)
+	_, err = c.UpdateWirelessControllerHotspot20AnqpRoamingConsortium(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating WirelessControllerHotspot20AnqpRoamingConsortium resource: %v", err)
 	}
@@ -151,6 +158,7 @@ func resourceWirelessControllerHotspot20AnqpRoamingConsortiumDelete(d *schema.Re
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -164,7 +172,11 @@ func resourceWirelessControllerHotspot20AnqpRoamingConsortiumDelete(d *schema.Re
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	err = c.DeleteWirelessControllerHotspot20AnqpRoamingConsortium(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteWirelessControllerHotspot20AnqpRoamingConsortium(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting WirelessControllerHotspot20AnqpRoamingConsortium resource: %v", err)
 	}

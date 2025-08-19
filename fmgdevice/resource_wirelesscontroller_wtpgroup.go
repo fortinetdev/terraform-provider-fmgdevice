@@ -68,6 +68,7 @@ func resourceWirelessControllerWtpGroupCreate(d *schema.ResourceData, m interfac
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -81,13 +82,15 @@ func resourceWirelessControllerWtpGroupCreate(d *schema.ResourceData, m interfac
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectWirelessControllerWtpGroup(d)
 	if err != nil {
 		return fmt.Errorf("Error creating WirelessControllerWtpGroup resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateWirelessControllerWtpGroup(obj, paradict)
-
+	_, err = c.CreateWirelessControllerWtpGroup(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating WirelessControllerWtpGroup resource: %v", err)
 	}
@@ -103,6 +106,7 @@ func resourceWirelessControllerWtpGroupUpdate(d *schema.ResourceData, m interfac
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -116,12 +120,15 @@ func resourceWirelessControllerWtpGroupUpdate(d *schema.ResourceData, m interfac
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectWirelessControllerWtpGroup(d)
 	if err != nil {
 		return fmt.Errorf("Error updating WirelessControllerWtpGroup resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateWirelessControllerWtpGroup(obj, mkey, paradict)
+	_, err = c.UpdateWirelessControllerWtpGroup(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating WirelessControllerWtpGroup resource: %v", err)
 	}
@@ -140,6 +147,7 @@ func resourceWirelessControllerWtpGroupDelete(d *schema.ResourceData, m interfac
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -153,7 +161,11 @@ func resourceWirelessControllerWtpGroupDelete(d *schema.ResourceData, m interfac
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	err = c.DeleteWirelessControllerWtpGroup(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteWirelessControllerWtpGroup(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting WirelessControllerWtpGroup resource: %v", err)
 	}

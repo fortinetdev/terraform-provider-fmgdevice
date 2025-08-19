@@ -84,6 +84,7 @@ func resourceNsxtServiceChainCreate(d *schema.ResourceData, m interface{}) error
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -92,13 +93,15 @@ func resourceNsxtServiceChainCreate(d *schema.ResourceData, m interface{}) error
 	}
 	paradict["device"] = device_name
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectNsxtServiceChain(d)
 	if err != nil {
 		return fmt.Errorf("Error creating NsxtServiceChain resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateNsxtServiceChain(obj, paradict)
-
+	_, err = c.CreateNsxtServiceChain(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating NsxtServiceChain resource: %v", err)
 	}
@@ -114,6 +117,7 @@ func resourceNsxtServiceChainUpdate(d *schema.ResourceData, m interface{}) error
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -122,12 +126,15 @@ func resourceNsxtServiceChainUpdate(d *schema.ResourceData, m interface{}) error
 	}
 	paradict["device"] = device_name
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectNsxtServiceChain(d)
 	if err != nil {
 		return fmt.Errorf("Error updating NsxtServiceChain resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateNsxtServiceChain(obj, mkey, paradict)
+	_, err = c.UpdateNsxtServiceChain(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating NsxtServiceChain resource: %v", err)
 	}
@@ -146,6 +153,7 @@ func resourceNsxtServiceChainDelete(d *schema.ResourceData, m interface{}) error
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -154,7 +162,11 @@ func resourceNsxtServiceChainDelete(d *schema.ResourceData, m interface{}) error
 	}
 	paradict["device"] = device_name
 
-	err = c.DeleteNsxtServiceChain(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteNsxtServiceChain(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting NsxtServiceChain resource: %v", err)
 	}

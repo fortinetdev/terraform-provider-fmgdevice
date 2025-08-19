@@ -185,6 +185,10 @@ func resourceLogFortianalyzer3OverrideSetting() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"vrf_select": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+			},
 		},
 	}
 }
@@ -195,6 +199,7 @@ func resourceLogFortianalyzer3OverrideSettingUpdate(d *schema.ResourceData, m in
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -208,12 +213,15 @@ func resourceLogFortianalyzer3OverrideSettingUpdate(d *schema.ResourceData, m in
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectLogFortianalyzer3OverrideSetting(d)
 	if err != nil {
 		return fmt.Errorf("Error updating LogFortianalyzer3OverrideSetting resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateLogFortianalyzer3OverrideSetting(obj, mkey, paradict)
+	_, err = c.UpdateLogFortianalyzer3OverrideSetting(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating LogFortianalyzer3OverrideSetting resource: %v", err)
 	}
@@ -232,6 +240,7 @@ func resourceLogFortianalyzer3OverrideSettingDelete(d *schema.ResourceData, m in
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -245,7 +254,11 @@ func resourceLogFortianalyzer3OverrideSettingDelete(d *schema.ResourceData, m in
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	err = c.DeleteLogFortianalyzer3OverrideSetting(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteLogFortianalyzer3OverrideSetting(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting LogFortianalyzer3OverrideSetting resource: %v", err)
 	}
@@ -422,6 +435,10 @@ func flattenLogFortianalyzer3OverrideSettingUploadTime(v interface{}, d *schema.
 }
 
 func flattenLogFortianalyzer3OverrideSettingUseManagementVdom(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenLogFortianalyzer3OverrideSettingVrfSelect(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -728,6 +745,16 @@ func refreshObjectLogFortianalyzer3OverrideSetting(d *schema.ResourceData, o map
 		}
 	}
 
+	if err = d.Set("vrf_select", flattenLogFortianalyzer3OverrideSettingVrfSelect(o["vrf-select"], d, "vrf_select")); err != nil {
+		if vv, ok := fortiAPIPatch(o["vrf-select"], "LogFortianalyzer3OverrideSetting-VrfSelect"); ok {
+			if err = d.Set("vrf_select", vv); err != nil {
+				return fmt.Errorf("Error reading vrf_select: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading vrf_select: %v", err)
+		}
+	}
+
 	return nil
 }
 
@@ -854,6 +881,10 @@ func expandLogFortianalyzer3OverrideSettingUploadTime(d *schema.ResourceData, v 
 }
 
 func expandLogFortianalyzer3OverrideSettingUseManagementVdom(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandLogFortianalyzer3OverrideSettingVrfSelect(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -1127,6 +1158,15 @@ func getObjectLogFortianalyzer3OverrideSetting(d *schema.ResourceData) (*map[str
 			return &obj, err
 		} else if t != nil {
 			obj["use-management-vdom"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("vrf_select"); ok || d.HasChange("vrf_select") {
+		t, err := expandLogFortianalyzer3OverrideSettingVrfSelect(d, v, "vrf_select")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["vrf-select"] = t
 		}
 	}
 

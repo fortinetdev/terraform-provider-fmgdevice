@@ -143,6 +143,7 @@ func resourceLogFortiguardOverrideFilterUpdate(d *schema.ResourceData, m interfa
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -156,12 +157,15 @@ func resourceLogFortiguardOverrideFilterUpdate(d *schema.ResourceData, m interfa
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectLogFortiguardOverrideFilter(d)
 	if err != nil {
 		return fmt.Errorf("Error updating LogFortiguardOverrideFilter resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateLogFortiguardOverrideFilter(obj, mkey, paradict)
+	_, err = c.UpdateLogFortiguardOverrideFilter(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating LogFortiguardOverrideFilter resource: %v", err)
 	}
@@ -180,6 +184,7 @@ func resourceLogFortiguardOverrideFilterDelete(d *schema.ResourceData, m interfa
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -193,7 +198,11 @@ func resourceLogFortiguardOverrideFilterDelete(d *schema.ResourceData, m interfa
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	err = c.DeleteLogFortiguardOverrideFilter(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteLogFortiguardOverrideFilter(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting LogFortiguardOverrideFilter resource: %v", err)
 	}

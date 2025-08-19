@@ -79,6 +79,7 @@ func resourceSwitchControllerManagedSwitchIgmpSnoopingVlansCreate(d *schema.Reso
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -94,13 +95,15 @@ func resourceSwitchControllerManagedSwitchIgmpSnoopingVlansCreate(d *schema.Reso
 	paradict["vdom"] = device_vdom
 	paradict["managed_switch"] = managed_switch
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSwitchControllerManagedSwitchIgmpSnoopingVlans(d)
 	if err != nil {
 		return fmt.Errorf("Error creating SwitchControllerManagedSwitchIgmpSnoopingVlans resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateSwitchControllerManagedSwitchIgmpSnoopingVlans(obj, paradict)
-
+	_, err = c.CreateSwitchControllerManagedSwitchIgmpSnoopingVlans(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating SwitchControllerManagedSwitchIgmpSnoopingVlans resource: %v", err)
 	}
@@ -116,6 +119,7 @@ func resourceSwitchControllerManagedSwitchIgmpSnoopingVlansUpdate(d *schema.Reso
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -131,12 +135,15 @@ func resourceSwitchControllerManagedSwitchIgmpSnoopingVlansUpdate(d *schema.Reso
 	paradict["vdom"] = device_vdom
 	paradict["managed_switch"] = managed_switch
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSwitchControllerManagedSwitchIgmpSnoopingVlans(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SwitchControllerManagedSwitchIgmpSnoopingVlans resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateSwitchControllerManagedSwitchIgmpSnoopingVlans(obj, mkey, paradict)
+	_, err = c.UpdateSwitchControllerManagedSwitchIgmpSnoopingVlans(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating SwitchControllerManagedSwitchIgmpSnoopingVlans resource: %v", err)
 	}
@@ -155,6 +162,7 @@ func resourceSwitchControllerManagedSwitchIgmpSnoopingVlansDelete(d *schema.Reso
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -170,7 +178,11 @@ func resourceSwitchControllerManagedSwitchIgmpSnoopingVlansDelete(d *schema.Reso
 	paradict["vdom"] = device_vdom
 	paradict["managed_switch"] = managed_switch
 
-	err = c.DeleteSwitchControllerManagedSwitchIgmpSnoopingVlans(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteSwitchControllerManagedSwitchIgmpSnoopingVlans(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting SwitchControllerManagedSwitchIgmpSnoopingVlans resource: %v", err)
 	}

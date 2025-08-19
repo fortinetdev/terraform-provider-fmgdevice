@@ -53,6 +53,7 @@ The following arguments are supported:
 * `report_type` - Security Rating report. Valid values: `posture`, `coverage`, `optimization`, `any`.
 
 * `serial` - Fabric connector serial number.
+* `stitch_name` - Triggering stitch name.
 * `trigger_datetime` - Trigger date and time (YYYY-MM-DD HH:MM:SS).
 * `trigger_day` - Day within a month to trigger.
 * `trigger_frequency` - Scheduled trigger frequency (default = daily). Valid values: `daily`, `weekly`, `once`, `monthly`, `hourly`.

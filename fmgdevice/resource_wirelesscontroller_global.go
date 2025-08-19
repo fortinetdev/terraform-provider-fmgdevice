@@ -138,6 +138,10 @@ func resourceWirelessControllerGlobal() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"max_wids_entry": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+			},
 			"mesh_eth_type": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
@@ -191,6 +195,7 @@ func resourceWirelessControllerGlobalUpdate(d *schema.ResourceData, m interface{
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -199,12 +204,15 @@ func resourceWirelessControllerGlobalUpdate(d *schema.ResourceData, m interface{
 	}
 	paradict["device"] = device_name
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectWirelessControllerGlobal(d)
 	if err != nil {
 		return fmt.Errorf("Error updating WirelessControllerGlobal resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateWirelessControllerGlobal(obj, mkey, paradict)
+	_, err = c.UpdateWirelessControllerGlobal(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating WirelessControllerGlobal resource: %v", err)
 	}
@@ -223,6 +231,7 @@ func resourceWirelessControllerGlobalDelete(d *schema.ResourceData, m interface{
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -231,7 +240,11 @@ func resourceWirelessControllerGlobalDelete(d *schema.ResourceData, m interface{
 	}
 	paradict["device"] = device_name
 
-	err = c.DeleteWirelessControllerGlobal(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteWirelessControllerGlobal(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting WirelessControllerGlobal resource: %v", err)
 	}
@@ -365,6 +378,10 @@ func flattenWirelessControllerGlobalMaxStaCap(v interface{}, d *schema.ResourceD
 }
 
 func flattenWirelessControllerGlobalMaxStaCapWtp(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWirelessControllerGlobalMaxWidsEntry(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -627,6 +644,16 @@ func refreshObjectWirelessControllerGlobal(d *schema.ResourceData, o map[string]
 		}
 	}
 
+	if err = d.Set("max_wids_entry", flattenWirelessControllerGlobalMaxWidsEntry(o["max-wids-entry"], d, "max_wids_entry")); err != nil {
+		if vv, ok := fortiAPIPatch(o["max-wids-entry"], "WirelessControllerGlobal-MaxWidsEntry"); ok {
+			if err = d.Set("max_wids_entry", vv); err != nil {
+				return fmt.Errorf("Error reading max_wids_entry: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading max_wids_entry: %v", err)
+		}
+	}
+
 	if err = d.Set("mesh_eth_type", flattenWirelessControllerGlobalMeshEthType(o["mesh-eth-type"], d, "mesh_eth_type")); err != nil {
 		if vv, ok := fortiAPIPatch(o["mesh-eth-type"], "WirelessControllerGlobal-MeshEthType"); ok {
 			if err = d.Set("mesh_eth_type", vv); err != nil {
@@ -811,6 +838,10 @@ func expandWirelessControllerGlobalMaxStaCap(d *schema.ResourceData, v interface
 }
 
 func expandWirelessControllerGlobalMaxStaCapWtp(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWirelessControllerGlobalMaxWidsEntry(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -1048,6 +1079,15 @@ func getObjectWirelessControllerGlobal(d *schema.ResourceData) (*map[string]inte
 			return &obj, err
 		} else if t != nil {
 			obj["max-sta-cap-wtp"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("max_wids_entry"); ok || d.HasChange("max_wids_entry") {
+		t, err := expandWirelessControllerGlobalMaxWidsEntry(d, v, "max_wids_entry")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["max-wids-entry"] = t
 		}
 	}
 

@@ -62,6 +62,7 @@ func resourceCertificateRemoteCreate(d *schema.ResourceData, m interface{}) erro
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -70,13 +71,15 @@ func resourceCertificateRemoteCreate(d *schema.ResourceData, m interface{}) erro
 	}
 	paradict["device"] = device_name
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectCertificateRemote(d)
 	if err != nil {
 		return fmt.Errorf("Error creating CertificateRemote resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateCertificateRemote(obj, paradict)
-
+	_, err = c.CreateCertificateRemote(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating CertificateRemote resource: %v", err)
 	}
@@ -92,6 +95,7 @@ func resourceCertificateRemoteUpdate(d *schema.ResourceData, m interface{}) erro
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -100,12 +104,15 @@ func resourceCertificateRemoteUpdate(d *schema.ResourceData, m interface{}) erro
 	}
 	paradict["device"] = device_name
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectCertificateRemote(d)
 	if err != nil {
 		return fmt.Errorf("Error updating CertificateRemote resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateCertificateRemote(obj, mkey, paradict)
+	_, err = c.UpdateCertificateRemote(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating CertificateRemote resource: %v", err)
 	}
@@ -124,6 +131,7 @@ func resourceCertificateRemoteDelete(d *schema.ResourceData, m interface{}) erro
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -132,7 +140,11 @@ func resourceCertificateRemoteDelete(d *schema.ResourceData, m interface{}) erro
 	}
 	paradict["device"] = device_name
 
-	err = c.DeleteCertificateRemote(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteCertificateRemote(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting CertificateRemote resource: %v", err)
 	}

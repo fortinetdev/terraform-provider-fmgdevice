@@ -29,6 +29,8 @@ The following arguments are supported:
 
 * `device_name` - FortiManager managed device name. This variable is used in the request URL. If not specified, it will inherit the variable `device_name` of the provider.
 
+* `ca` - The CA that signs remote FortiSandbox certificate, empty for no check.
+* `cn` - The CN of remote server certificate, case sensitive, empty for no check.
 * `email` - Notifier email address.
 * `enc_algorithm` - Configure the level of SSL protection for secure communication with FortiSandbox. Valid values: `default`, `high`, `low`, `disable`.
 
@@ -45,6 +47,7 @@ The following arguments are supported:
 
 * `status` - Enable/disable FortiSandbox. Valid values: `disable`, `enable`.
 
+* `vrf_select` - VRF ID used for connection to server.
 
 
 ## Attribute Reference

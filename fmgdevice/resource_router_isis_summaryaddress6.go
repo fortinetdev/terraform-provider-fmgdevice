@@ -64,6 +64,7 @@ func resourceRouterIsisSummaryAddress6Create(d *schema.ResourceData, m interface
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -77,13 +78,15 @@ func resourceRouterIsisSummaryAddress6Create(d *schema.ResourceData, m interface
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectRouterIsisSummaryAddress6(d)
 	if err != nil {
 		return fmt.Errorf("Error creating RouterIsisSummaryAddress6 resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateRouterIsisSummaryAddress6(obj, paradict)
-
+	_, err = c.CreateRouterIsisSummaryAddress6(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating RouterIsisSummaryAddress6 resource: %v", err)
 	}
@@ -99,6 +102,7 @@ func resourceRouterIsisSummaryAddress6Update(d *schema.ResourceData, m interface
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -112,12 +116,15 @@ func resourceRouterIsisSummaryAddress6Update(d *schema.ResourceData, m interface
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectRouterIsisSummaryAddress6(d)
 	if err != nil {
 		return fmt.Errorf("Error updating RouterIsisSummaryAddress6 resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateRouterIsisSummaryAddress6(obj, mkey, paradict)
+	_, err = c.UpdateRouterIsisSummaryAddress6(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating RouterIsisSummaryAddress6 resource: %v", err)
 	}
@@ -136,6 +143,7 @@ func resourceRouterIsisSummaryAddress6Delete(d *schema.ResourceData, m interface
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -149,7 +157,11 @@ func resourceRouterIsisSummaryAddress6Delete(d *schema.ResourceData, m interface
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	err = c.DeleteRouterIsisSummaryAddress6(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteRouterIsisSummaryAddress6(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting RouterIsisSummaryAddress6 resource: %v", err)
 	}

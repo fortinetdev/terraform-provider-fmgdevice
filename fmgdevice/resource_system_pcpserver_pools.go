@@ -145,6 +145,7 @@ func resourceSystemPcpServerPoolsCreate(d *schema.ResourceData, m interface{}) e
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -158,13 +159,15 @@ func resourceSystemPcpServerPoolsCreate(d *schema.ResourceData, m interface{}) e
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSystemPcpServerPools(d)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemPcpServerPools resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateSystemPcpServerPools(obj, paradict)
-
+	_, err = c.CreateSystemPcpServerPools(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemPcpServerPools resource: %v", err)
 	}
@@ -180,6 +183,7 @@ func resourceSystemPcpServerPoolsUpdate(d *schema.ResourceData, m interface{}) e
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -193,12 +197,15 @@ func resourceSystemPcpServerPoolsUpdate(d *schema.ResourceData, m interface{}) e
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSystemPcpServerPools(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemPcpServerPools resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateSystemPcpServerPools(obj, mkey, paradict)
+	_, err = c.UpdateSystemPcpServerPools(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemPcpServerPools resource: %v", err)
 	}
@@ -217,6 +224,7 @@ func resourceSystemPcpServerPoolsDelete(d *schema.ResourceData, m interface{}) e
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -230,7 +238,11 @@ func resourceSystemPcpServerPoolsDelete(d *schema.ResourceData, m interface{}) e
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	err = c.DeleteSystemPcpServerPools(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteSystemPcpServerPools(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting SystemPcpServerPools resource: %v", err)
 	}

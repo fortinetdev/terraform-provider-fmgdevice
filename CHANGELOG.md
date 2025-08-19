@@ -1,4 +1,53 @@
-## 1.2.0 (Unreleased)
+## 1.3.0 (Unreleased)
+
+## 1.2.0 (August 19, 2025)
+
+IMPROVEMENTS:
+* Support fortiManager version 7.6.2;
+* Support workspace_mode parameter to lock/unlock on resource level;
+* Fix session handling issues for the resource `json_generic_api`;
+* Correct the `json_generic_api` output to return string for proper decoding;
+* Update the `fmg_token` handling to to use request headers instead of URLs.
+* Fix inconsistant results in the `ztna_webportal` resource;
+* Fix mkey handling issues in certain resources;
+* Fix an issue where default values were being changed to null when not explicitly provided in a task.
+
+FEATURES:
+
+* **New Resource:** `resource_casb_attributematch`
+* **New Resource:** `resource_casb_attributematch_attribute`
+* **New Resource:** `resource_casb_attributematch_move`
+* **New Resource:** `resource_loadbalance_workergroup`
+* **New Resource:** `resource_router_multicast_pimsmglobalvrf`
+* **New Resource:** `resource_router_multicast_pimsmglobalvrf_rpaddress`
+* **New Resource:** `resource_system_automationcondition`
+* **New Resource:** `resource_system_healthcheckfortiguard`
+* **New Resource:** `resource_system_healthcheckfortiguard_move`
+* **New Resource:** `resource_system_interface_ipv6_ip6dnssllist`
+* **New Resource:** `resource_system_interface_ipv6_ip6rdnsslist`
+* **New Resource:** `resource_system_interface_ipv6_ip6routelist`
+* **New Resource:** `resource_system_interface_physetting`
+* **New Resource:** `resource_system_ngfwsettings`
+* **New Resource:** `resource_system_sdnvpn`
+* **New Resource:** `resource_system_securityrating_controls`
+* **New Resource:** `resource_system_securityrating_settings`
+* **New Resource:** `resource_system_standalonecluster_monitorprefix`
+* **New Resource:** `resource_webfilter_ftgdlocalrisk`
+* **New Resource:** `resource_webfilter_ftgdrisklevel`
+* **New Resource:** `resource_ztna_reverseconnector`
+* **New Resource:** `resource_ztna_webportal`
+* **New Resource:** `resource_ztna_webportalbookmark`
+* **New Resource:** `resource_ztna_webportalbookmark_bookmarks`
+* **New Resource:** `resource_ztna_webportalbookmark_bookmarks_move`
+* **New Resource:** `resource_ztna_webproxy`
+* **New Resource:** `resource_ztna_webproxy_apigateway`
+* **New Resource:** `resource_ztna_webproxy_apigateway6`
+* **New Resource:** `resource_ztna_webproxy_apigateway6_quic`
+* **New Resource:** `resource_ztna_webproxy_apigateway6_realservers`
+* **New Resource:** `resource_ztna_webproxy_apigateway6_sslciphersuites`
+* **New Resource:** `resource_ztna_webproxy_apigateway_quic`
+* **New Resource:** `resource_ztna_webproxy_apigateway_realservers`
+* **New Resource:** `resource_ztna_webproxy_apigateway_sslciphersuites`
 
 ## 1.1.0 (Jan 06, 2025)
 

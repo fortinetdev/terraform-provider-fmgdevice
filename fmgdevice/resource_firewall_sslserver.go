@@ -119,6 +119,7 @@ func resourceFirewallSslServerCreate(d *schema.ResourceData, m interface{}) erro
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -132,13 +133,15 @@ func resourceFirewallSslServerCreate(d *schema.ResourceData, m interface{}) erro
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectFirewallSslServer(d)
 	if err != nil {
 		return fmt.Errorf("Error creating FirewallSslServer resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateFirewallSslServer(obj, paradict)
-
+	_, err = c.CreateFirewallSslServer(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating FirewallSslServer resource: %v", err)
 	}
@@ -154,6 +157,7 @@ func resourceFirewallSslServerUpdate(d *schema.ResourceData, m interface{}) erro
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -167,12 +171,15 @@ func resourceFirewallSslServerUpdate(d *schema.ResourceData, m interface{}) erro
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectFirewallSslServer(d)
 	if err != nil {
 		return fmt.Errorf("Error updating FirewallSslServer resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateFirewallSslServer(obj, mkey, paradict)
+	_, err = c.UpdateFirewallSslServer(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating FirewallSslServer resource: %v", err)
 	}
@@ -191,6 +198,7 @@ func resourceFirewallSslServerDelete(d *schema.ResourceData, m interface{}) erro
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -204,7 +212,11 @@ func resourceFirewallSslServerDelete(d *schema.ResourceData, m interface{}) erro
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	err = c.DeleteFirewallSslServer(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteFirewallSslServer(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting FirewallSslServer resource: %v", err)
 	}

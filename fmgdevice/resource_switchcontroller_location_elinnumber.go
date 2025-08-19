@@ -63,6 +63,7 @@ func resourceSwitchControllerLocationElinNumberUpdate(d *schema.ResourceData, m 
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -78,12 +79,15 @@ func resourceSwitchControllerLocationElinNumberUpdate(d *schema.ResourceData, m 
 	paradict["vdom"] = device_vdom
 	paradict["location"] = location
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSwitchControllerLocationElinNumber(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SwitchControllerLocationElinNumber resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateSwitchControllerLocationElinNumber(obj, mkey, paradict)
+	_, err = c.UpdateSwitchControllerLocationElinNumber(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating SwitchControllerLocationElinNumber resource: %v", err)
 	}
@@ -102,6 +106,7 @@ func resourceSwitchControllerLocationElinNumberDelete(d *schema.ResourceData, m 
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -117,7 +122,11 @@ func resourceSwitchControllerLocationElinNumberDelete(d *schema.ResourceData, m 
 	paradict["vdom"] = device_vdom
 	paradict["location"] = location
 
-	err = c.DeleteSwitchControllerLocationElinNumber(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteSwitchControllerLocationElinNumber(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting SwitchControllerLocationElinNumber resource: %v", err)
 	}

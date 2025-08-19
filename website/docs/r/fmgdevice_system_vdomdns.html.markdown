@@ -48,9 +48,11 @@ The following arguments are supported:
 * `server_select_method` - Specify how configured servers are prioritized. Valid values: `least-rtt`, `failover`.
 
 * `source_ip` - Source IP for communications with the DNS server.
+* `source_ip_interface` - IP address of the specified interface as the source IP address.
 * `ssl_certificate` - Name of local certificate for SSL connections.
 * `vdom_dns` - Enable/disable configuring DNS servers for the current VDOM. Valid values: `disable`, `enable`.
 
+* `vrf_select` - VRF ID used for connection to server.
 
 
 ## Attribute Reference

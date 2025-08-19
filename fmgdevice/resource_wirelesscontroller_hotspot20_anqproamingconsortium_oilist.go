@@ -67,6 +67,7 @@ func resourceWirelessControllerHotspot20AnqpRoamingConsortiumOiListCreate(d *sch
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -82,13 +83,15 @@ func resourceWirelessControllerHotspot20AnqpRoamingConsortiumOiListCreate(d *sch
 	paradict["vdom"] = device_vdom
 	paradict["anqp_roaming_consortium"] = anqp_roaming_consortium
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectWirelessControllerHotspot20AnqpRoamingConsortiumOiList(d)
 	if err != nil {
 		return fmt.Errorf("Error creating WirelessControllerHotspot20AnqpRoamingConsortiumOiList resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateWirelessControllerHotspot20AnqpRoamingConsortiumOiList(obj, paradict)
-
+	_, err = c.CreateWirelessControllerHotspot20AnqpRoamingConsortiumOiList(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating WirelessControllerHotspot20AnqpRoamingConsortiumOiList resource: %v", err)
 	}
@@ -104,6 +107,7 @@ func resourceWirelessControllerHotspot20AnqpRoamingConsortiumOiListUpdate(d *sch
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -119,12 +123,15 @@ func resourceWirelessControllerHotspot20AnqpRoamingConsortiumOiListUpdate(d *sch
 	paradict["vdom"] = device_vdom
 	paradict["anqp_roaming_consortium"] = anqp_roaming_consortium
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectWirelessControllerHotspot20AnqpRoamingConsortiumOiList(d)
 	if err != nil {
 		return fmt.Errorf("Error updating WirelessControllerHotspot20AnqpRoamingConsortiumOiList resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateWirelessControllerHotspot20AnqpRoamingConsortiumOiList(obj, mkey, paradict)
+	_, err = c.UpdateWirelessControllerHotspot20AnqpRoamingConsortiumOiList(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating WirelessControllerHotspot20AnqpRoamingConsortiumOiList resource: %v", err)
 	}
@@ -143,6 +150,7 @@ func resourceWirelessControllerHotspot20AnqpRoamingConsortiumOiListDelete(d *sch
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -158,7 +166,11 @@ func resourceWirelessControllerHotspot20AnqpRoamingConsortiumOiListDelete(d *sch
 	paradict["vdom"] = device_vdom
 	paradict["anqp_roaming_consortium"] = anqp_roaming_consortium
 
-	err = c.DeleteWirelessControllerHotspot20AnqpRoamingConsortiumOiList(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteWirelessControllerHotspot20AnqpRoamingConsortiumOiList(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting WirelessControllerHotspot20AnqpRoamingConsortiumOiList resource: %v", err)
 	}

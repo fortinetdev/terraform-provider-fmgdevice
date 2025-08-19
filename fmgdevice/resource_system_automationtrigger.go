@@ -112,6 +112,12 @@ func resourceSystemAutomationTrigger() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
+			"stitch_name": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Computed: true,
+			},
 			"trigger_datetime": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -164,6 +170,7 @@ func resourceSystemAutomationTriggerCreate(d *schema.ResourceData, m interface{}
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -172,13 +179,15 @@ func resourceSystemAutomationTriggerCreate(d *schema.ResourceData, m interface{}
 	}
 	paradict["device"] = device_name
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSystemAutomationTrigger(d)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemAutomationTrigger resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateSystemAutomationTrigger(obj, paradict)
-
+	_, err = c.CreateSystemAutomationTrigger(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemAutomationTrigger resource: %v", err)
 	}
@@ -194,6 +203,7 @@ func resourceSystemAutomationTriggerUpdate(d *schema.ResourceData, m interface{}
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -202,12 +212,15 @@ func resourceSystemAutomationTriggerUpdate(d *schema.ResourceData, m interface{}
 	}
 	paradict["device"] = device_name
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSystemAutomationTrigger(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemAutomationTrigger resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateSystemAutomationTrigger(obj, mkey, paradict)
+	_, err = c.UpdateSystemAutomationTrigger(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemAutomationTrigger resource: %v", err)
 	}
@@ -226,6 +239,7 @@ func resourceSystemAutomationTriggerDelete(d *schema.ResourceData, m interface{}
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -234,7 +248,11 @@ func resourceSystemAutomationTriggerDelete(d *schema.ResourceData, m interface{}
 	}
 	paradict["device"] = device_name
 
-	err = c.DeleteSystemAutomationTrigger(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteSystemAutomationTrigger(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting SystemAutomationTrigger resource: %v", err)
 	}
@@ -392,6 +410,10 @@ func flattenSystemAutomationTriggerReportType(v interface{}, d *schema.ResourceD
 
 func flattenSystemAutomationTriggerSerial(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
+}
+
+func flattenSystemAutomationTriggerStitchName(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
 }
 
 func flattenSystemAutomationTriggerTriggerDatetime(v interface{}, d *schema.ResourceData, pre string) interface{} {
@@ -587,6 +609,16 @@ func refreshObjectSystemAutomationTrigger(d *schema.ResourceData, o map[string]i
 		}
 	}
 
+	if err = d.Set("stitch_name", flattenSystemAutomationTriggerStitchName(o["stitch-name"], d, "stitch_name")); err != nil {
+		if vv, ok := fortiAPIPatch(o["stitch-name"], "SystemAutomationTrigger-StitchName"); ok {
+			if err = d.Set("stitch_name", vv); err != nil {
+				return fmt.Errorf("Error reading stitch_name: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading stitch_name: %v", err)
+		}
+	}
+
 	if err = d.Set("trigger_datetime", flattenSystemAutomationTriggerTriggerDatetime(o["trigger-datetime"], d, "trigger_datetime")); err != nil {
 		if vv, ok := fortiAPIPatch(o["trigger-datetime"], "SystemAutomationTrigger-TriggerDatetime"); ok {
 			if err = d.Set("trigger_datetime", vv); err != nil {
@@ -779,6 +811,10 @@ func expandSystemAutomationTriggerSerial(d *schema.ResourceData, v interface{}, 
 	return v, nil
 }
 
+func expandSystemAutomationTriggerStitchName(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
 func expandSystemAutomationTriggerTriggerDatetime(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -937,6 +973,15 @@ func getObjectSystemAutomationTrigger(d *schema.ResourceData) (*map[string]inter
 			return &obj, err
 		} else if t != nil {
 			obj["serial"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("stitch_name"); ok || d.HasChange("stitch_name") {
+		t, err := expandSystemAutomationTriggerStitchName(d, v, "stitch_name")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["stitch-name"] = t
 		}
 	}
 

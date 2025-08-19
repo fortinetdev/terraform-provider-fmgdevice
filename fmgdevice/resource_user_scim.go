@@ -40,6 +40,11 @@ func resourceUserScim() *schema.Resource {
 				Computed: true,
 				ForceNew: true,
 			},
+			"auth_method": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
 			"base_url": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -74,8 +79,21 @@ func resourceUserScim() *schema.Resource {
 				ForceNew: true,
 				Optional: true,
 			},
+			"secret": &schema.Schema{
+				Type:      schema.TypeSet,
+				Elem:      &schema.Schema{Type: schema.TypeString},
+				Optional:  true,
+				Sensitive: true,
+				Computed:  true,
+			},
 			"status": &schema.Schema{
 				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+			"token_certificate": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
 				Optional: true,
 				Computed: true,
 			},
@@ -88,6 +106,7 @@ func resourceUserScimCreate(d *schema.ResourceData, m interface{}) error {
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -101,13 +120,15 @@ func resourceUserScimCreate(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectUserScim(d)
 	if err != nil {
 		return fmt.Errorf("Error creating UserScim resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateUserScim(obj, paradict)
-
+	_, err = c.CreateUserScim(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating UserScim resource: %v", err)
 	}
@@ -123,6 +144,7 @@ func resourceUserScimUpdate(d *schema.ResourceData, m interface{}) error {
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -136,12 +158,15 @@ func resourceUserScimUpdate(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectUserScim(d)
 	if err != nil {
 		return fmt.Errorf("Error updating UserScim resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateUserScim(obj, mkey, paradict)
+	_, err = c.UpdateUserScim(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating UserScim resource: %v", err)
 	}
@@ -160,6 +185,7 @@ func resourceUserScimDelete(d *schema.ResourceData, m interface{}) error {
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -173,7 +199,11 @@ func resourceUserScimDelete(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	err = c.DeleteUserScim(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteUserScim(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting UserScim resource: %v", err)
 	}
@@ -233,6 +263,10 @@ func resourceUserScimRead(d *schema.ResourceData, m interface{}) error {
 	return nil
 }
 
+func flattenUserScimAuthMethod(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenUserScimBaseUrl(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -265,8 +299,22 @@ func flattenUserScimStatus(v interface{}, d *schema.ResourceData, pre string) in
 	return v
 }
 
+func flattenUserScimTokenCertificate(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
 func refreshObjectUserScim(d *schema.ResourceData, o map[string]interface{}) error {
 	var err error
+
+	if err = d.Set("auth_method", flattenUserScimAuthMethod(o["auth-method"], d, "auth_method")); err != nil {
+		if vv, ok := fortiAPIPatch(o["auth-method"], "UserScim-AuthMethod"); ok {
+			if err = d.Set("auth_method", vv); err != nil {
+				return fmt.Errorf("Error reading auth_method: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading auth_method: %v", err)
+		}
+	}
 
 	if err = d.Set("base_url", flattenUserScimBaseUrl(o["base-url"], d, "base_url")); err != nil {
 		if vv, ok := fortiAPIPatch(o["base-url"], "UserScim-BaseUrl"); ok {
@@ -348,6 +396,16 @@ func refreshObjectUserScim(d *schema.ResourceData, o map[string]interface{}) err
 		}
 	}
 
+	if err = d.Set("token_certificate", flattenUserScimTokenCertificate(o["token-certificate"], d, "token_certificate")); err != nil {
+		if vv, ok := fortiAPIPatch(o["token-certificate"], "UserScim-TokenCertificate"); ok {
+			if err = d.Set("token_certificate", vv); err != nil {
+				return fmt.Errorf("Error reading token_certificate: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading token_certificate: %v", err)
+		}
+	}
+
 	return nil
 }
 
@@ -355,6 +413,10 @@ func flattenUserScimFortiTestDebug(d *schema.ResourceData, fosdebugsn int, fosde
 	log.Printf(strconv.Itoa(fosdebugsn))
 	e := validation.IntBetween(fosdebugbeg, fosdebugend)
 	log.Printf("ER List: %v", e)
+}
+
+func expandUserScimAuthMethod(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
 }
 
 func expandUserScimBaseUrl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
@@ -385,12 +447,29 @@ func expandUserScimName(d *schema.ResourceData, v interface{}, pre string) (inte
 	return v, nil
 }
 
+func expandUserScimSecret(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
 func expandUserScimStatus(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
+func expandUserScimTokenCertificate(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
 func getObjectUserScim(d *schema.ResourceData) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
+
+	if v, ok := d.GetOk("auth_method"); ok || d.HasChange("auth_method") {
+		t, err := expandUserScimAuthMethod(d, v, "auth_method")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["auth-method"] = t
+		}
+	}
 
 	if v, ok := d.GetOk("base_url"); ok || d.HasChange("base_url") {
 		t, err := expandUserScimBaseUrl(d, v, "base_url")
@@ -455,12 +534,30 @@ func getObjectUserScim(d *schema.ResourceData) (*map[string]interface{}, error) 
 		}
 	}
 
+	if v, ok := d.GetOk("secret"); ok || d.HasChange("secret") {
+		t, err := expandUserScimSecret(d, v, "secret")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["secret"] = t
+		}
+	}
+
 	if v, ok := d.GetOk("status"); ok || d.HasChange("status") {
 		t, err := expandUserScimStatus(d, v, "status")
 		if err != nil {
 			return &obj, err
 		} else if t != nil {
 			obj["status"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("token_certificate"); ok || d.HasChange("token_certificate") {
+		t, err := expandUserScimTokenCertificate(d, v, "token_certificate")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["token-certificate"] = t
 		}
 	}
 

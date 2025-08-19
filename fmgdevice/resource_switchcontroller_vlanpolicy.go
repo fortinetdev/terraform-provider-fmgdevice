@@ -92,6 +92,7 @@ func resourceSwitchControllerVlanPolicyCreate(d *schema.ResourceData, m interfac
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -105,13 +106,15 @@ func resourceSwitchControllerVlanPolicyCreate(d *schema.ResourceData, m interfac
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSwitchControllerVlanPolicy(d)
 	if err != nil {
 		return fmt.Errorf("Error creating SwitchControllerVlanPolicy resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateSwitchControllerVlanPolicy(obj, paradict)
-
+	_, err = c.CreateSwitchControllerVlanPolicy(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating SwitchControllerVlanPolicy resource: %v", err)
 	}
@@ -127,6 +130,7 @@ func resourceSwitchControllerVlanPolicyUpdate(d *schema.ResourceData, m interfac
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -140,12 +144,15 @@ func resourceSwitchControllerVlanPolicyUpdate(d *schema.ResourceData, m interfac
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSwitchControllerVlanPolicy(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SwitchControllerVlanPolicy resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateSwitchControllerVlanPolicy(obj, mkey, paradict)
+	_, err = c.UpdateSwitchControllerVlanPolicy(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating SwitchControllerVlanPolicy resource: %v", err)
 	}
@@ -164,6 +171,7 @@ func resourceSwitchControllerVlanPolicyDelete(d *schema.ResourceData, m interfac
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -177,7 +185,11 @@ func resourceSwitchControllerVlanPolicyDelete(d *schema.ResourceData, m interfac
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	err = c.DeleteSwitchControllerVlanPolicy(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteSwitchControllerVlanPolicy(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting SwitchControllerVlanPolicy resource: %v", err)
 	}

@@ -112,6 +112,7 @@ func resourceWirelessControllerHotspot20AnqpNaiRealmNaiListCreate(d *schema.Reso
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -127,13 +128,15 @@ func resourceWirelessControllerHotspot20AnqpNaiRealmNaiListCreate(d *schema.Reso
 	paradict["vdom"] = device_vdom
 	paradict["anqp_nai_realm"] = anqp_nai_realm
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectWirelessControllerHotspot20AnqpNaiRealmNaiList(d)
 	if err != nil {
 		return fmt.Errorf("Error creating WirelessControllerHotspot20AnqpNaiRealmNaiList resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateWirelessControllerHotspot20AnqpNaiRealmNaiList(obj, paradict)
-
+	_, err = c.CreateWirelessControllerHotspot20AnqpNaiRealmNaiList(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating WirelessControllerHotspot20AnqpNaiRealmNaiList resource: %v", err)
 	}
@@ -149,6 +152,7 @@ func resourceWirelessControllerHotspot20AnqpNaiRealmNaiListUpdate(d *schema.Reso
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -164,12 +168,15 @@ func resourceWirelessControllerHotspot20AnqpNaiRealmNaiListUpdate(d *schema.Reso
 	paradict["vdom"] = device_vdom
 	paradict["anqp_nai_realm"] = anqp_nai_realm
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectWirelessControllerHotspot20AnqpNaiRealmNaiList(d)
 	if err != nil {
 		return fmt.Errorf("Error updating WirelessControllerHotspot20AnqpNaiRealmNaiList resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateWirelessControllerHotspot20AnqpNaiRealmNaiList(obj, mkey, paradict)
+	_, err = c.UpdateWirelessControllerHotspot20AnqpNaiRealmNaiList(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating WirelessControllerHotspot20AnqpNaiRealmNaiList resource: %v", err)
 	}
@@ -188,6 +195,7 @@ func resourceWirelessControllerHotspot20AnqpNaiRealmNaiListDelete(d *schema.Reso
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -203,7 +211,11 @@ func resourceWirelessControllerHotspot20AnqpNaiRealmNaiListDelete(d *schema.Reso
 	paradict["vdom"] = device_vdom
 	paradict["anqp_nai_realm"] = anqp_nai_realm
 
-	err = c.DeleteWirelessControllerHotspot20AnqpNaiRealmNaiList(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteWirelessControllerHotspot20AnqpNaiRealmNaiList(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting WirelessControllerHotspot20AnqpNaiRealmNaiList resource: %v", err)
 	}

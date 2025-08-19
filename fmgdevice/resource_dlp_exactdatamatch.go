@@ -92,6 +92,7 @@ func resourceDlpExactDataMatchCreate(d *schema.ResourceData, m interface{}) erro
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -105,13 +106,15 @@ func resourceDlpExactDataMatchCreate(d *schema.ResourceData, m interface{}) erro
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectDlpExactDataMatch(d)
 	if err != nil {
 		return fmt.Errorf("Error creating DlpExactDataMatch resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateDlpExactDataMatch(obj, paradict)
-
+	_, err = c.CreateDlpExactDataMatch(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating DlpExactDataMatch resource: %v", err)
 	}
@@ -127,6 +130,7 @@ func resourceDlpExactDataMatchUpdate(d *schema.ResourceData, m interface{}) erro
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -140,12 +144,15 @@ func resourceDlpExactDataMatchUpdate(d *schema.ResourceData, m interface{}) erro
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectDlpExactDataMatch(d)
 	if err != nil {
 		return fmt.Errorf("Error updating DlpExactDataMatch resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateDlpExactDataMatch(obj, mkey, paradict)
+	_, err = c.UpdateDlpExactDataMatch(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating DlpExactDataMatch resource: %v", err)
 	}
@@ -164,6 +171,7 @@ func resourceDlpExactDataMatchDelete(d *schema.ResourceData, m interface{}) erro
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -177,7 +185,11 @@ func resourceDlpExactDataMatchDelete(d *schema.ResourceData, m interface{}) erro
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	err = c.DeleteDlpExactDataMatch(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteDlpExactDataMatch(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting DlpExactDataMatch resource: %v", err)
 	}

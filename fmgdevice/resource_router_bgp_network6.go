@@ -75,6 +75,7 @@ func resourceRouterBgpNetwork6Create(d *schema.ResourceData, m interface{}) erro
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -88,13 +89,15 @@ func resourceRouterBgpNetwork6Create(d *schema.ResourceData, m interface{}) erro
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectRouterBgpNetwork6(d)
 	if err != nil {
 		return fmt.Errorf("Error creating RouterBgpNetwork6 resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateRouterBgpNetwork6(obj, paradict)
-
+	_, err = c.CreateRouterBgpNetwork6(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating RouterBgpNetwork6 resource: %v", err)
 	}
@@ -110,6 +113,7 @@ func resourceRouterBgpNetwork6Update(d *schema.ResourceData, m interface{}) erro
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -123,12 +127,15 @@ func resourceRouterBgpNetwork6Update(d *schema.ResourceData, m interface{}) erro
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectRouterBgpNetwork6(d)
 	if err != nil {
 		return fmt.Errorf("Error updating RouterBgpNetwork6 resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateRouterBgpNetwork6(obj, mkey, paradict)
+	_, err = c.UpdateRouterBgpNetwork6(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating RouterBgpNetwork6 resource: %v", err)
 	}
@@ -147,6 +154,7 @@ func resourceRouterBgpNetwork6Delete(d *schema.ResourceData, m interface{}) erro
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -160,7 +168,11 @@ func resourceRouterBgpNetwork6Delete(d *schema.ResourceData, m interface{}) erro
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	err = c.DeleteRouterBgpNetwork6(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteRouterBgpNetwork6(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting RouterBgpNetwork6 resource: %v", err)
 	}

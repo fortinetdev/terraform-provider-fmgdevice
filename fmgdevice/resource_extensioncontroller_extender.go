@@ -143,7 +143,55 @@ func resourceExtensionControllerExtender() *schema.Resource {
 							Optional: true,
 							Computed: true,
 						},
+						"modem1_pdn1_interface": &schema.Schema{
+							Type:     schema.TypeSet,
+							Elem:     &schema.Schema{Type: schema.TypeString},
+							Optional: true,
+							Computed: true,
+						},
+						"modem1_pdn2_interface": &schema.Schema{
+							Type:     schema.TypeSet,
+							Elem:     &schema.Schema{Type: schema.TypeString},
+							Optional: true,
+							Computed: true,
+						},
+						"modem1_pdn3_interface": &schema.Schema{
+							Type:     schema.TypeSet,
+							Elem:     &schema.Schema{Type: schema.TypeString},
+							Optional: true,
+							Computed: true,
+						},
+						"modem1_pdn4_interface": &schema.Schema{
+							Type:     schema.TypeSet,
+							Elem:     &schema.Schema{Type: schema.TypeString},
+							Optional: true,
+							Computed: true,
+						},
 						"modem2_extension": &schema.Schema{
+							Type:     schema.TypeSet,
+							Elem:     &schema.Schema{Type: schema.TypeString},
+							Optional: true,
+							Computed: true,
+						},
+						"modem2_pdn1_interface": &schema.Schema{
+							Type:     schema.TypeSet,
+							Elem:     &schema.Schema{Type: schema.TypeString},
+							Optional: true,
+							Computed: true,
+						},
+						"modem2_pdn2_interface": &schema.Schema{
+							Type:     schema.TypeSet,
+							Elem:     &schema.Schema{Type: schema.TypeString},
+							Optional: true,
+							Computed: true,
+						},
+						"modem2_pdn3_interface": &schema.Schema{
+							Type:     schema.TypeSet,
+							Elem:     &schema.Schema{Type: schema.TypeString},
+							Optional: true,
+							Computed: true,
+						},
+						"modem2_pdn4_interface": &schema.Schema{
 							Type:     schema.TypeSet,
 							Elem:     &schema.Schema{Type: schema.TypeString},
 							Optional: true,
@@ -161,6 +209,7 @@ func resourceExtensionControllerExtenderCreate(d *schema.ResourceData, m interfa
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -174,13 +223,15 @@ func resourceExtensionControllerExtenderCreate(d *schema.ResourceData, m interfa
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectExtensionControllerExtender(d)
 	if err != nil {
 		return fmt.Errorf("Error creating ExtensionControllerExtender resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateExtensionControllerExtender(obj, paradict)
-
+	_, err = c.CreateExtensionControllerExtender(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating ExtensionControllerExtender resource: %v", err)
 	}
@@ -196,6 +247,7 @@ func resourceExtensionControllerExtenderUpdate(d *schema.ResourceData, m interfa
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -209,12 +261,15 @@ func resourceExtensionControllerExtenderUpdate(d *schema.ResourceData, m interfa
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectExtensionControllerExtender(d)
 	if err != nil {
 		return fmt.Errorf("Error updating ExtensionControllerExtender resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateExtensionControllerExtender(obj, mkey, paradict)
+	_, err = c.UpdateExtensionControllerExtender(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating ExtensionControllerExtender resource: %v", err)
 	}
@@ -233,6 +288,7 @@ func resourceExtensionControllerExtenderDelete(d *schema.ResourceData, m interfa
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -246,7 +302,11 @@ func resourceExtensionControllerExtenderDelete(d *schema.ResourceData, m interfa
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	err = c.DeleteExtensionControllerExtender(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteExtensionControllerExtender(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting ExtensionControllerExtender resource: %v", err)
 	}
@@ -388,9 +448,49 @@ func flattenExtensionControllerExtenderWanExtension(v interface{}, d *schema.Res
 		result["modem1_extension"] = flattenExtensionControllerExtenderWanExtensionModem1Extension(i["modem1-extension"], d, pre_append)
 	}
 
+	pre_append = pre + ".0." + "modem1_pdn1_interface"
+	if _, ok := i["modem1-pdn1-interface"]; ok {
+		result["modem1_pdn1_interface"] = flattenExtensionControllerExtenderWanExtensionModem1Pdn1Interface(i["modem1-pdn1-interface"], d, pre_append)
+	}
+
+	pre_append = pre + ".0." + "modem1_pdn2_interface"
+	if _, ok := i["modem1-pdn2-interface"]; ok {
+		result["modem1_pdn2_interface"] = flattenExtensionControllerExtenderWanExtensionModem1Pdn2Interface(i["modem1-pdn2-interface"], d, pre_append)
+	}
+
+	pre_append = pre + ".0." + "modem1_pdn3_interface"
+	if _, ok := i["modem1-pdn3-interface"]; ok {
+		result["modem1_pdn3_interface"] = flattenExtensionControllerExtenderWanExtensionModem1Pdn3Interface(i["modem1-pdn3-interface"], d, pre_append)
+	}
+
+	pre_append = pre + ".0." + "modem1_pdn4_interface"
+	if _, ok := i["modem1-pdn4-interface"]; ok {
+		result["modem1_pdn4_interface"] = flattenExtensionControllerExtenderWanExtensionModem1Pdn4Interface(i["modem1-pdn4-interface"], d, pre_append)
+	}
+
 	pre_append = pre + ".0." + "modem2_extension"
 	if _, ok := i["modem2-extension"]; ok {
 		result["modem2_extension"] = flattenExtensionControllerExtenderWanExtensionModem2Extension(i["modem2-extension"], d, pre_append)
+	}
+
+	pre_append = pre + ".0." + "modem2_pdn1_interface"
+	if _, ok := i["modem2-pdn1-interface"]; ok {
+		result["modem2_pdn1_interface"] = flattenExtensionControllerExtenderWanExtensionModem2Pdn1Interface(i["modem2-pdn1-interface"], d, pre_append)
+	}
+
+	pre_append = pre + ".0." + "modem2_pdn2_interface"
+	if _, ok := i["modem2-pdn2-interface"]; ok {
+		result["modem2_pdn2_interface"] = flattenExtensionControllerExtenderWanExtensionModem2Pdn2Interface(i["modem2-pdn2-interface"], d, pre_append)
+	}
+
+	pre_append = pre + ".0." + "modem2_pdn3_interface"
+	if _, ok := i["modem2-pdn3-interface"]; ok {
+		result["modem2_pdn3_interface"] = flattenExtensionControllerExtenderWanExtensionModem2Pdn3Interface(i["modem2-pdn3-interface"], d, pre_append)
+	}
+
+	pre_append = pre + ".0." + "modem2_pdn4_interface"
+	if _, ok := i["modem2-pdn4-interface"]; ok {
+		result["modem2_pdn4_interface"] = flattenExtensionControllerExtenderWanExtensionModem2Pdn4Interface(i["modem2-pdn4-interface"], d, pre_append)
 	}
 
 	lastresult := []map[string]interface{}{result}
@@ -401,7 +501,39 @@ func flattenExtensionControllerExtenderWanExtensionModem1Extension(v interface{}
 	return flattenStringList(v)
 }
 
+func flattenExtensionControllerExtenderWanExtensionModem1Pdn1Interface(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
+func flattenExtensionControllerExtenderWanExtensionModem1Pdn2Interface(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
+func flattenExtensionControllerExtenderWanExtensionModem1Pdn3Interface(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
+func flattenExtensionControllerExtenderWanExtensionModem1Pdn4Interface(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
 func flattenExtensionControllerExtenderWanExtensionModem2Extension(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
+func flattenExtensionControllerExtenderWanExtensionModem2Pdn1Interface(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
+func flattenExtensionControllerExtenderWanExtensionModem2Pdn2Interface(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
+func flattenExtensionControllerExtenderWanExtensionModem2Pdn3Interface(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
+func flattenExtensionControllerExtenderWanExtensionModem2Pdn4Interface(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return flattenStringList(v)
 }
 
@@ -697,9 +829,41 @@ func expandExtensionControllerExtenderWanExtension(d *schema.ResourceData, v int
 	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
 		result["modem1-extension"], _ = expandExtensionControllerExtenderWanExtensionModem1Extension(d, i["modem1_extension"], pre_append)
 	}
+	pre_append = pre + ".0." + "modem1_pdn1_interface"
+	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+		result["modem1-pdn1-interface"], _ = expandExtensionControllerExtenderWanExtensionModem1Pdn1Interface(d, i["modem1_pdn1_interface"], pre_append)
+	}
+	pre_append = pre + ".0." + "modem1_pdn2_interface"
+	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+		result["modem1-pdn2-interface"], _ = expandExtensionControllerExtenderWanExtensionModem1Pdn2Interface(d, i["modem1_pdn2_interface"], pre_append)
+	}
+	pre_append = pre + ".0." + "modem1_pdn3_interface"
+	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+		result["modem1-pdn3-interface"], _ = expandExtensionControllerExtenderWanExtensionModem1Pdn3Interface(d, i["modem1_pdn3_interface"], pre_append)
+	}
+	pre_append = pre + ".0." + "modem1_pdn4_interface"
+	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+		result["modem1-pdn4-interface"], _ = expandExtensionControllerExtenderWanExtensionModem1Pdn4Interface(d, i["modem1_pdn4_interface"], pre_append)
+	}
 	pre_append = pre + ".0." + "modem2_extension"
 	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
 		result["modem2-extension"], _ = expandExtensionControllerExtenderWanExtensionModem2Extension(d, i["modem2_extension"], pre_append)
+	}
+	pre_append = pre + ".0." + "modem2_pdn1_interface"
+	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+		result["modem2-pdn1-interface"], _ = expandExtensionControllerExtenderWanExtensionModem2Pdn1Interface(d, i["modem2_pdn1_interface"], pre_append)
+	}
+	pre_append = pre + ".0." + "modem2_pdn2_interface"
+	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+		result["modem2-pdn2-interface"], _ = expandExtensionControllerExtenderWanExtensionModem2Pdn2Interface(d, i["modem2_pdn2_interface"], pre_append)
+	}
+	pre_append = pre + ".0." + "modem2_pdn3_interface"
+	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+		result["modem2-pdn3-interface"], _ = expandExtensionControllerExtenderWanExtensionModem2Pdn3Interface(d, i["modem2_pdn3_interface"], pre_append)
+	}
+	pre_append = pre + ".0." + "modem2_pdn4_interface"
+	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+		result["modem2-pdn4-interface"], _ = expandExtensionControllerExtenderWanExtensionModem2Pdn4Interface(d, i["modem2_pdn4_interface"], pre_append)
 	}
 
 	return result, nil
@@ -709,7 +873,39 @@ func expandExtensionControllerExtenderWanExtensionModem1Extension(d *schema.Reso
 	return expandStringList(v.(*schema.Set).List()), nil
 }
 
+func expandExtensionControllerExtenderWanExtensionModem1Pdn1Interface(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandExtensionControllerExtenderWanExtensionModem1Pdn2Interface(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandExtensionControllerExtenderWanExtensionModem1Pdn3Interface(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandExtensionControllerExtenderWanExtensionModem1Pdn4Interface(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
 func expandExtensionControllerExtenderWanExtensionModem2Extension(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandExtensionControllerExtenderWanExtensionModem2Pdn1Interface(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandExtensionControllerExtenderWanExtensionModem2Pdn2Interface(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandExtensionControllerExtenderWanExtensionModem2Pdn3Interface(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandExtensionControllerExtenderWanExtensionModem2Pdn4Interface(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return expandStringList(v.(*schema.Set).List()), nil
 }
 

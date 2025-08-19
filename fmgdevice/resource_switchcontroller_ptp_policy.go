@@ -59,6 +59,7 @@ func resourceSwitchControllerPtpPolicyCreate(d *schema.ResourceData, m interface
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -72,13 +73,15 @@ func resourceSwitchControllerPtpPolicyCreate(d *schema.ResourceData, m interface
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSwitchControllerPtpPolicy(d)
 	if err != nil {
 		return fmt.Errorf("Error creating SwitchControllerPtpPolicy resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateSwitchControllerPtpPolicy(obj, paradict)
-
+	_, err = c.CreateSwitchControllerPtpPolicy(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating SwitchControllerPtpPolicy resource: %v", err)
 	}
@@ -94,6 +97,7 @@ func resourceSwitchControllerPtpPolicyUpdate(d *schema.ResourceData, m interface
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -107,12 +111,15 @@ func resourceSwitchControllerPtpPolicyUpdate(d *schema.ResourceData, m interface
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSwitchControllerPtpPolicy(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SwitchControllerPtpPolicy resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateSwitchControllerPtpPolicy(obj, mkey, paradict)
+	_, err = c.UpdateSwitchControllerPtpPolicy(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating SwitchControllerPtpPolicy resource: %v", err)
 	}
@@ -131,6 +138,7 @@ func resourceSwitchControllerPtpPolicyDelete(d *schema.ResourceData, m interface
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -144,7 +152,11 @@ func resourceSwitchControllerPtpPolicyDelete(d *schema.ResourceData, m interface
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	err = c.DeleteSwitchControllerPtpPolicy(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteSwitchControllerPtpPolicy(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting SwitchControllerPtpPolicy resource: %v", err)
 	}

@@ -17,6 +17,8 @@ The following arguments are supported:
 * `device_name` - FortiManager managed device name. This variable is used in the request URL. If not specified, it will inherit the variable `device_name` of the provider.
 * `device_vdom` - FortiManager managed device vdom. This variable is used in the request URL. If not specified, it will inherit the variable `device_vdom` of the provider.
 
+* `auth_method` - TLS client authentication methods (default = bearer token). Valid values: `token`, `base`.
+
 * `base_url` - Server URL to receive SCIM create, read, update, delete (CRUD) requests.
 * `certificate` - Certificate name.
 * `client_authentication_method` - TLS client authentication methods (default = bearer token). Valid values: `token`, `base`.
@@ -26,8 +28,10 @@ The following arguments are supported:
 * `client_secret_token` - Client secret token for authentication.
 * `fosid` - SCIM client ID.
 * `name` - SCIM client name.
+* `secret` - Secret for token verification or base authentication.
 * `status` - Enable/disable System for Cross-domain Identity Management (SCIM). Valid values: `disable`, `enable`.
 
+* `token_certificate` - Certificate for token verification.
 
 
 ## Attribute Reference

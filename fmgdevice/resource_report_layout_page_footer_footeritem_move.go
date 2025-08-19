@@ -73,6 +73,7 @@ func resourceReportLayoutPageFooterFooterItemMoveUpdate(d *schema.ResourceData, 
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -90,13 +91,16 @@ func resourceReportLayoutPageFooterFooterItemMoveUpdate(d *schema.ResourceData, 
 	paradict["layout"] = layout
 	paradict["footer_item"] = footer_item
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	target := d.Get("target").(string)
 	obj, err := getObjectReportLayoutPageFooterFooterItemMove(d)
 	if err != nil {
 		return fmt.Errorf("Error updating ReportLayoutPageFooterFooterItemMove resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateReportLayoutPageFooterFooterItemMove(obj, mkey, paradict)
+	_, err = c.UpdateReportLayoutPageFooterFooterItemMove(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating ReportLayoutPageFooterFooterItemMove resource: %v", err)
 	}

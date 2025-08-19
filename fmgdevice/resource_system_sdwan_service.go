@@ -393,6 +393,7 @@ func resourceSystemSdwanServiceCreate(d *schema.ResourceData, m interface{}) err
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -406,13 +407,15 @@ func resourceSystemSdwanServiceCreate(d *schema.ResourceData, m interface{}) err
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSystemSdwanService(d)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemSdwanService resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateSystemSdwanService(obj, paradict)
-
+	_, err = c.CreateSystemSdwanService(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemSdwanService resource: %v", err)
 	}
@@ -428,6 +431,7 @@ func resourceSystemSdwanServiceUpdate(d *schema.ResourceData, m interface{}) err
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -441,12 +445,15 @@ func resourceSystemSdwanServiceUpdate(d *schema.ResourceData, m interface{}) err
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSystemSdwanService(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemSdwanService resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateSystemSdwanService(obj, mkey, paradict)
+	_, err = c.UpdateSystemSdwanService(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemSdwanService resource: %v", err)
 	}
@@ -465,6 +472,7 @@ func resourceSystemSdwanServiceDelete(d *schema.ResourceData, m interface{}) err
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -478,7 +486,11 @@ func resourceSystemSdwanServiceDelete(d *schema.ResourceData, m interface{}) err
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	err = c.DeleteSystemSdwanService(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteSystemSdwanService(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting SystemSdwanService resource: %v", err)
 	}

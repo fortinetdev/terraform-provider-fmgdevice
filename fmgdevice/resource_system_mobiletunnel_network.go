@@ -71,6 +71,7 @@ func resourceSystemMobileTunnelNetworkCreate(d *schema.ResourceData, m interface
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -86,13 +87,15 @@ func resourceSystemMobileTunnelNetworkCreate(d *schema.ResourceData, m interface
 	paradict["vdom"] = device_vdom
 	paradict["mobile_tunnel"] = mobile_tunnel
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSystemMobileTunnelNetwork(d)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemMobileTunnelNetwork resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateSystemMobileTunnelNetwork(obj, paradict)
-
+	_, err = c.CreateSystemMobileTunnelNetwork(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemMobileTunnelNetwork resource: %v", err)
 	}
@@ -108,6 +111,7 @@ func resourceSystemMobileTunnelNetworkUpdate(d *schema.ResourceData, m interface
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -123,12 +127,15 @@ func resourceSystemMobileTunnelNetworkUpdate(d *schema.ResourceData, m interface
 	paradict["vdom"] = device_vdom
 	paradict["mobile_tunnel"] = mobile_tunnel
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSystemMobileTunnelNetwork(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemMobileTunnelNetwork resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateSystemMobileTunnelNetwork(obj, mkey, paradict)
+	_, err = c.UpdateSystemMobileTunnelNetwork(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemMobileTunnelNetwork resource: %v", err)
 	}
@@ -147,6 +154,7 @@ func resourceSystemMobileTunnelNetworkDelete(d *schema.ResourceData, m interface
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -162,7 +170,11 @@ func resourceSystemMobileTunnelNetworkDelete(d *schema.ResourceData, m interface
 	paradict["vdom"] = device_vdom
 	paradict["mobile_tunnel"] = mobile_tunnel
 
-	err = c.DeleteSystemMobileTunnelNetwork(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteSystemMobileTunnelNetwork(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting SystemMobileTunnelNetwork resource: %v", err)
 	}

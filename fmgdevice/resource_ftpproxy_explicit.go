@@ -98,6 +98,7 @@ func resourceFtpProxyExplicitUpdate(d *schema.ResourceData, m interface{}) error
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -111,12 +112,15 @@ func resourceFtpProxyExplicitUpdate(d *schema.ResourceData, m interface{}) error
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectFtpProxyExplicit(d)
 	if err != nil {
 		return fmt.Errorf("Error updating FtpProxyExplicit resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateFtpProxyExplicit(obj, mkey, paradict)
+	_, err = c.UpdateFtpProxyExplicit(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating FtpProxyExplicit resource: %v", err)
 	}
@@ -135,6 +139,7 @@ func resourceFtpProxyExplicitDelete(d *schema.ResourceData, m interface{}) error
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -148,7 +153,11 @@ func resourceFtpProxyExplicitDelete(d *schema.ResourceData, m interface{}) error
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	err = c.DeleteFtpProxyExplicit(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteFtpProxyExplicit(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting FtpProxyExplicit resource: %v", err)
 	}

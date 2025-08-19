@@ -65,6 +65,7 @@ func resourceSystemCsfFabricConnectorCreate(d *schema.ResourceData, m interface{
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -73,13 +74,15 @@ func resourceSystemCsfFabricConnectorCreate(d *schema.ResourceData, m interface{
 	}
 	paradict["device"] = device_name
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSystemCsfFabricConnector(d)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemCsfFabricConnector resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateSystemCsfFabricConnector(obj, paradict)
-
+	_, err = c.CreateSystemCsfFabricConnector(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemCsfFabricConnector resource: %v", err)
 	}
@@ -95,6 +98,7 @@ func resourceSystemCsfFabricConnectorUpdate(d *schema.ResourceData, m interface{
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -103,12 +107,15 @@ func resourceSystemCsfFabricConnectorUpdate(d *schema.ResourceData, m interface{
 	}
 	paradict["device"] = device_name
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSystemCsfFabricConnector(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemCsfFabricConnector resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateSystemCsfFabricConnector(obj, mkey, paradict)
+	_, err = c.UpdateSystemCsfFabricConnector(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemCsfFabricConnector resource: %v", err)
 	}
@@ -127,6 +134,7 @@ func resourceSystemCsfFabricConnectorDelete(d *schema.ResourceData, m interface{
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -135,7 +143,11 @@ func resourceSystemCsfFabricConnectorDelete(d *schema.ResourceData, m interface{
 	}
 	paradict["device"] = device_name
 
-	err = c.DeleteSystemCsfFabricConnector(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteSystemCsfFabricConnector(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting SystemCsfFabricConnector resource: %v", err)
 	}

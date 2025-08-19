@@ -62,6 +62,7 @@ func resourceLogSyslogd3FilterFreeStyleCreate(d *schema.ResourceData, m interfac
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -70,13 +71,15 @@ func resourceLogSyslogd3FilterFreeStyleCreate(d *schema.ResourceData, m interfac
 	}
 	paradict["device"] = device_name
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectLogSyslogd3FilterFreeStyle(d)
 	if err != nil {
 		return fmt.Errorf("Error creating LogSyslogd3FilterFreeStyle resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateLogSyslogd3FilterFreeStyle(obj, paradict)
-
+	_, err = c.CreateLogSyslogd3FilterFreeStyle(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating LogSyslogd3FilterFreeStyle resource: %v", err)
 	}
@@ -92,6 +95,7 @@ func resourceLogSyslogd3FilterFreeStyleUpdate(d *schema.ResourceData, m interfac
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -100,12 +104,15 @@ func resourceLogSyslogd3FilterFreeStyleUpdate(d *schema.ResourceData, m interfac
 	}
 	paradict["device"] = device_name
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectLogSyslogd3FilterFreeStyle(d)
 	if err != nil {
 		return fmt.Errorf("Error updating LogSyslogd3FilterFreeStyle resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateLogSyslogd3FilterFreeStyle(obj, mkey, paradict)
+	_, err = c.UpdateLogSyslogd3FilterFreeStyle(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating LogSyslogd3FilterFreeStyle resource: %v", err)
 	}
@@ -124,6 +131,7 @@ func resourceLogSyslogd3FilterFreeStyleDelete(d *schema.ResourceData, m interfac
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -132,7 +140,11 @@ func resourceLogSyslogd3FilterFreeStyleDelete(d *schema.ResourceData, m interfac
 	}
 	paradict["device"] = device_name
 
-	err = c.DeleteLogSyslogd3FilterFreeStyle(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteLogSyslogd3FilterFreeStyle(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting LogSyslogd3FilterFreeStyle resource: %v", err)
 	}

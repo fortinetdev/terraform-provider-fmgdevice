@@ -58,6 +58,7 @@ func resourceSystemHaMonitorUpdate(d *schema.ResourceData, m interface{}) error 
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -66,12 +67,15 @@ func resourceSystemHaMonitorUpdate(d *schema.ResourceData, m interface{}) error 
 	}
 	paradict["device"] = device_name
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSystemHaMonitor(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemHaMonitor resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateSystemHaMonitor(obj, mkey, paradict)
+	_, err = c.UpdateSystemHaMonitor(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemHaMonitor resource: %v", err)
 	}
@@ -90,6 +94,7 @@ func resourceSystemHaMonitorDelete(d *schema.ResourceData, m interface{}) error 
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -98,7 +103,11 @@ func resourceSystemHaMonitorDelete(d *schema.ResourceData, m interface{}) error 
 	}
 	paradict["device"] = device_name
 
-	err = c.DeleteSystemHaMonitor(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteSystemHaMonitor(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting SystemHaMonitor resource: %v", err)
 	}

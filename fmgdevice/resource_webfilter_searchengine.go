@@ -79,6 +79,7 @@ func resourceWebfilterSearchEngineCreate(d *schema.ResourceData, m interface{}) 
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -92,13 +93,15 @@ func resourceWebfilterSearchEngineCreate(d *schema.ResourceData, m interface{}) 
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectWebfilterSearchEngine(d)
 	if err != nil {
 		return fmt.Errorf("Error creating WebfilterSearchEngine resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateWebfilterSearchEngine(obj, paradict)
-
+	_, err = c.CreateWebfilterSearchEngine(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating WebfilterSearchEngine resource: %v", err)
 	}
@@ -114,6 +117,7 @@ func resourceWebfilterSearchEngineUpdate(d *schema.ResourceData, m interface{}) 
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -127,12 +131,15 @@ func resourceWebfilterSearchEngineUpdate(d *schema.ResourceData, m interface{}) 
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectWebfilterSearchEngine(d)
 	if err != nil {
 		return fmt.Errorf("Error updating WebfilterSearchEngine resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateWebfilterSearchEngine(obj, mkey, paradict)
+	_, err = c.UpdateWebfilterSearchEngine(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating WebfilterSearchEngine resource: %v", err)
 	}
@@ -151,6 +158,7 @@ func resourceWebfilterSearchEngineDelete(d *schema.ResourceData, m interface{}) 
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -164,7 +172,11 @@ func resourceWebfilterSearchEngineDelete(d *schema.ResourceData, m interface{}) 
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	err = c.DeleteWebfilterSearchEngine(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteWebfilterSearchEngine(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting WebfilterSearchEngine resource: %v", err)
 	}

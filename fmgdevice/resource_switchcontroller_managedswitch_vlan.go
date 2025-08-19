@@ -64,6 +64,7 @@ func resourceSwitchControllerManagedSwitchVlanCreate(d *schema.ResourceData, m i
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -79,13 +80,15 @@ func resourceSwitchControllerManagedSwitchVlanCreate(d *schema.ResourceData, m i
 	paradict["vdom"] = device_vdom
 	paradict["managed_switch"] = managed_switch
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSwitchControllerManagedSwitchVlan(d)
 	if err != nil {
 		return fmt.Errorf("Error creating SwitchControllerManagedSwitchVlan resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateSwitchControllerManagedSwitchVlan(obj, paradict)
-
+	_, err = c.CreateSwitchControllerManagedSwitchVlan(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating SwitchControllerManagedSwitchVlan resource: %v", err)
 	}
@@ -101,6 +104,7 @@ func resourceSwitchControllerManagedSwitchVlanUpdate(d *schema.ResourceData, m i
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -116,12 +120,15 @@ func resourceSwitchControllerManagedSwitchVlanUpdate(d *schema.ResourceData, m i
 	paradict["vdom"] = device_vdom
 	paradict["managed_switch"] = managed_switch
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSwitchControllerManagedSwitchVlan(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SwitchControllerManagedSwitchVlan resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateSwitchControllerManagedSwitchVlan(obj, mkey, paradict)
+	_, err = c.UpdateSwitchControllerManagedSwitchVlan(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating SwitchControllerManagedSwitchVlan resource: %v", err)
 	}
@@ -140,6 +147,7 @@ func resourceSwitchControllerManagedSwitchVlanDelete(d *schema.ResourceData, m i
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -155,7 +163,11 @@ func resourceSwitchControllerManagedSwitchVlanDelete(d *schema.ResourceData, m i
 	paradict["vdom"] = device_vdom
 	paradict["managed_switch"] = managed_switch
 
-	err = c.DeleteSwitchControllerManagedSwitchVlan(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteSwitchControllerManagedSwitchVlan(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting SwitchControllerManagedSwitchVlan resource: %v", err)
 	}

@@ -72,6 +72,7 @@ func resourceReportLayoutBodyItemParametersCreate(d *schema.ResourceData, m inte
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -89,13 +90,15 @@ func resourceReportLayoutBodyItemParametersCreate(d *schema.ResourceData, m inte
 	paradict["layout"] = layout
 	paradict["body_item"] = body_item
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectReportLayoutBodyItemParameters(d)
 	if err != nil {
 		return fmt.Errorf("Error creating ReportLayoutBodyItemParameters resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateReportLayoutBodyItemParameters(obj, paradict)
-
+	_, err = c.CreateReportLayoutBodyItemParameters(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating ReportLayoutBodyItemParameters resource: %v", err)
 	}
@@ -111,6 +114,7 @@ func resourceReportLayoutBodyItemParametersUpdate(d *schema.ResourceData, m inte
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -128,12 +132,15 @@ func resourceReportLayoutBodyItemParametersUpdate(d *schema.ResourceData, m inte
 	paradict["layout"] = layout
 	paradict["body_item"] = body_item
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectReportLayoutBodyItemParameters(d)
 	if err != nil {
 		return fmt.Errorf("Error updating ReportLayoutBodyItemParameters resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateReportLayoutBodyItemParameters(obj, mkey, paradict)
+	_, err = c.UpdateReportLayoutBodyItemParameters(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating ReportLayoutBodyItemParameters resource: %v", err)
 	}
@@ -152,6 +159,7 @@ func resourceReportLayoutBodyItemParametersDelete(d *schema.ResourceData, m inte
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -169,7 +177,11 @@ func resourceReportLayoutBodyItemParametersDelete(d *schema.ResourceData, m inte
 	paradict["layout"] = layout
 	paradict["body_item"] = body_item
 
-	err = c.DeleteReportLayoutBodyItemParameters(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteReportLayoutBodyItemParameters(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting ReportLayoutBodyItemParameters resource: %v", err)
 	}

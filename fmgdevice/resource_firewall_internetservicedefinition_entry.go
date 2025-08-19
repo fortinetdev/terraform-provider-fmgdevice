@@ -91,6 +91,7 @@ func resourceFirewallInternetServiceDefinitionEntryCreate(d *schema.ResourceData
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -101,13 +102,15 @@ func resourceFirewallInternetServiceDefinitionEntryCreate(d *schema.ResourceData
 	paradict["device"] = device_name
 	paradict["internet_service_definition"] = internet_service_definition
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectFirewallInternetServiceDefinitionEntry(d)
 	if err != nil {
 		return fmt.Errorf("Error creating FirewallInternetServiceDefinitionEntry resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateFirewallInternetServiceDefinitionEntry(obj, paradict)
-
+	_, err = c.CreateFirewallInternetServiceDefinitionEntry(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating FirewallInternetServiceDefinitionEntry resource: %v", err)
 	}
@@ -123,6 +126,7 @@ func resourceFirewallInternetServiceDefinitionEntryUpdate(d *schema.ResourceData
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -133,12 +137,15 @@ func resourceFirewallInternetServiceDefinitionEntryUpdate(d *schema.ResourceData
 	paradict["device"] = device_name
 	paradict["internet_service_definition"] = internet_service_definition
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectFirewallInternetServiceDefinitionEntry(d)
 	if err != nil {
 		return fmt.Errorf("Error updating FirewallInternetServiceDefinitionEntry resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateFirewallInternetServiceDefinitionEntry(obj, mkey, paradict)
+	_, err = c.UpdateFirewallInternetServiceDefinitionEntry(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating FirewallInternetServiceDefinitionEntry resource: %v", err)
 	}
@@ -157,6 +164,7 @@ func resourceFirewallInternetServiceDefinitionEntryDelete(d *schema.ResourceData
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -167,7 +175,11 @@ func resourceFirewallInternetServiceDefinitionEntryDelete(d *schema.ResourceData
 	paradict["device"] = device_name
 	paradict["internet_service_definition"] = internet_service_definition
 
-	err = c.DeleteFirewallInternetServiceDefinitionEntry(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteFirewallInternetServiceDefinitionEntry(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting FirewallInternetServiceDefinitionEntry resource: %v", err)
 	}

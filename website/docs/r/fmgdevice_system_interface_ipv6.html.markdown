@@ -14,8 +14,11 @@ The following variables have sub resource. Avoid using them together, otherwise 
 >- `client_options`: `fmgdevice_system_interface_ipv6_clientoptions`
 >- `dhcp6_iapd_list`: `fmgdevice_system_interface_ipv6_dhcp6iapdlist`
 >- `ip6_delegated_prefix_list`: `fmgdevice_system_interface_ipv6_ip6delegatedprefixlist`
+>- `ip6_dnssl_list`: `fmgdevice_system_interface_ipv6_ip6dnssllist`
 >- `ip6_extra_addr`: `fmgdevice_system_interface_ipv6_ip6extraaddr`
 >- `ip6_prefix_list`: `fmgdevice_system_interface_ipv6_ip6prefixlist`
+>- `ip6_rdnss_list`: `fmgdevice_system_interface_ipv6_ip6rdnsslist`
+>- `ip6_route_list`: `fmgdevice_system_interface_ipv6_ip6routelist`
 >- `vrrp6`: `fmgdevice_system_interface_ipv6_vrrp6`
 
 
@@ -74,6 +77,8 @@ The following arguments are supported:
 
 * `interface_identifier` - IPv6 interface identifier.
 * `ip6_address` - Primary IPv6 address prefix. Syntax: xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx/xxx.
+* `ip6_adv_rio` - Enable/disable sending advertisements with route information option. Valid values: `disable`, `enable`.
+
 * `ip6_allowaccess` - Allow management access to the interface. Valid values: `https`, `ping`, `ssh`, `snmp`, `http`, `telnet`, `fgfm`, `capwap`, `fabric`.
 
 * `ip6_default_life` - Default life (sec).
@@ -81,6 +86,7 @@ The following arguments are supported:
 * `ip6_delegated_prefix_list` - Ip6-Delegated-Prefix-List. The structure of `ip6_delegated_prefix_list` block is documented below.
 * `ip6_dns_server_override` - Enable/disable using the DNS server acquired by DHCP. Valid values: `disable`, `enable`.
 
+* `ip6_dnssl_list` - Ip6-Dnssl-List. The structure of `ip6_dnssl_list` block is documented below.
 * `ip6_extra_addr` - Ip6-Extra-Addr. The structure of `ip6_extra_addr` block is documented below.
 * `ip6_hop_limit` - Hop limit (0 means unspecified).
 * `ip6_link_mtu` - IPv6 link MTU.
@@ -95,8 +101,12 @@ The following arguments are supported:
 * `ip6_prefix_list` - Ip6-Prefix-List. The structure of `ip6_prefix_list` block is documented below.
 * `ip6_prefix_mode` - Assigning a prefix from DHCP or RA. Valid values: `dhcp6`, `ra`.
 
+* `ip6_rdnss_list` - Ip6-Rdnss-List. The structure of `ip6_rdnss_list` block is documented below.
 * `ip6_reachable_time` - IPv6 reachable time (milliseconds; 0 means unspecified).
 * `ip6_retrans_time` - IPv6 retransmit time (milliseconds; 0 means unspecified).
+* `ip6_route_list` - Ip6-Route-List. The structure of `ip6_route_list` block is documented below.
+* `ip6_route_pref` - Set route preference to the interface (default = medium). Valid values: `medium`, `high`, `low`.
+
 * `ip6_send_adv` - Enable/disable sending advertisements about the interface. Valid values: `disable`, `enable`.
 
 * `ip6_subnet` - Subnet to routing prefix. Syntax: xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx/xxx.
@@ -148,6 +158,11 @@ The `ip6_delegated_prefix_list` block supports:
 * `subnet` - Add subnet ID to routing prefix.
 * `upstream_interface` - Name of the interface that provides delegated information.
 
+The `ip6_dnssl_list` block supports:
+
+* `dnssl_life_time` - DNS search list time in seconds (0 - 4294967295, default = 1800).
+* `domain` - Domain name.
+
 The `ip6_extra_addr` block supports:
 
 * `prefix` - IPv6 address prefix.
@@ -163,6 +178,18 @@ The `ip6_prefix_list` block supports:
 * `prefix` - IPv6 prefix.
 * `rdnss` - Recursive DNS server option.
 * `valid_life_time` - Valid life time (sec).
+
+The `ip6_rdnss_list` block supports:
+
+* `rdnss` - Recursive DNS server option.
+* `rdnss_life_time` - Recursive DNS server life time in seconds (0 - 4294967295, default = 1800).
+
+The `ip6_route_list` block supports:
+
+* `route` - IPv6 route.
+* `route_life_time` - Route life time in seconds (0 - 65535, default = 1800).
+* `route_pref` - Set route preference to the interface (default = medium). Valid values: `medium`, `high`, `low`.
+
 
 The `vrrp6` block supports:
 

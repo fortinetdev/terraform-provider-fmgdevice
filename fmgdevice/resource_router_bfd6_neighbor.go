@@ -60,6 +60,7 @@ func resourceRouterBfd6NeighborCreate(d *schema.ResourceData, m interface{}) err
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -73,13 +74,15 @@ func resourceRouterBfd6NeighborCreate(d *schema.ResourceData, m interface{}) err
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectRouterBfd6Neighbor(d)
 	if err != nil {
 		return fmt.Errorf("Error creating RouterBfd6Neighbor resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateRouterBfd6Neighbor(obj, paradict)
-
+	_, err = c.CreateRouterBfd6Neighbor(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating RouterBfd6Neighbor resource: %v", err)
 	}
@@ -95,6 +98,7 @@ func resourceRouterBfd6NeighborUpdate(d *schema.ResourceData, m interface{}) err
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -108,12 +112,15 @@ func resourceRouterBfd6NeighborUpdate(d *schema.ResourceData, m interface{}) err
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectRouterBfd6Neighbor(d)
 	if err != nil {
 		return fmt.Errorf("Error updating RouterBfd6Neighbor resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateRouterBfd6Neighbor(obj, mkey, paradict)
+	_, err = c.UpdateRouterBfd6Neighbor(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating RouterBfd6Neighbor resource: %v", err)
 	}
@@ -132,6 +139,7 @@ func resourceRouterBfd6NeighborDelete(d *schema.ResourceData, m interface{}) err
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -145,7 +153,11 @@ func resourceRouterBfd6NeighborDelete(d *schema.ResourceData, m interface{}) err
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	err = c.DeleteRouterBfd6Neighbor(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteRouterBfd6Neighbor(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting RouterBfd6Neighbor resource: %v", err)
 	}

@@ -42,6 +42,8 @@ The following arguments are supported:
 * `server_port` - Port number of syslog server that FortiAP units send log messages to (default = 514).
 * `server_status` - Enable/disable FortiAP units to send log messages to a syslog server (default = enable). Valid values: `disable`, `enable`.
 
+* `server_type` - Configure syslog server type (default = standard). Valid values: `standard`, `fortianalyzer`.
+
 
 
 ## Attribute Reference

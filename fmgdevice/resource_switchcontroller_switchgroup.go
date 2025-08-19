@@ -70,6 +70,7 @@ func resourceSwitchControllerSwitchGroupCreate(d *schema.ResourceData, m interfa
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -83,13 +84,15 @@ func resourceSwitchControllerSwitchGroupCreate(d *schema.ResourceData, m interfa
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSwitchControllerSwitchGroup(d)
 	if err != nil {
 		return fmt.Errorf("Error creating SwitchControllerSwitchGroup resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateSwitchControllerSwitchGroup(obj, paradict)
-
+	_, err = c.CreateSwitchControllerSwitchGroup(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating SwitchControllerSwitchGroup resource: %v", err)
 	}
@@ -105,6 +108,7 @@ func resourceSwitchControllerSwitchGroupUpdate(d *schema.ResourceData, m interfa
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -118,12 +122,15 @@ func resourceSwitchControllerSwitchGroupUpdate(d *schema.ResourceData, m interfa
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSwitchControllerSwitchGroup(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SwitchControllerSwitchGroup resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateSwitchControllerSwitchGroup(obj, mkey, paradict)
+	_, err = c.UpdateSwitchControllerSwitchGroup(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating SwitchControllerSwitchGroup resource: %v", err)
 	}
@@ -142,6 +149,7 @@ func resourceSwitchControllerSwitchGroupDelete(d *schema.ResourceData, m interfa
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -155,7 +163,11 @@ func resourceSwitchControllerSwitchGroupDelete(d *schema.ResourceData, m interfa
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	err = c.DeleteSwitchControllerSwitchGroup(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteSwitchControllerSwitchGroup(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting SwitchControllerSwitchGroup resource: %v", err)
 	}

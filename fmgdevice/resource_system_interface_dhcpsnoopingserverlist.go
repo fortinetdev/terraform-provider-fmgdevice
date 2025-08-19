@@ -58,6 +58,7 @@ func resourceSystemInterfaceDhcpSnoopingServerListCreate(d *schema.ResourceData,
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -68,13 +69,15 @@ func resourceSystemInterfaceDhcpSnoopingServerListCreate(d *schema.ResourceData,
 	paradict["device"] = device_name
 	paradict["interface"] = var_interface
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSystemInterfaceDhcpSnoopingServerList(d)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemInterfaceDhcpSnoopingServerList resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateSystemInterfaceDhcpSnoopingServerList(obj, paradict)
-
+	_, err = c.CreateSystemInterfaceDhcpSnoopingServerList(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemInterfaceDhcpSnoopingServerList resource: %v", err)
 	}
@@ -90,6 +93,7 @@ func resourceSystemInterfaceDhcpSnoopingServerListUpdate(d *schema.ResourceData,
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -100,12 +104,15 @@ func resourceSystemInterfaceDhcpSnoopingServerListUpdate(d *schema.ResourceData,
 	paradict["device"] = device_name
 	paradict["interface"] = var_interface
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSystemInterfaceDhcpSnoopingServerList(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemInterfaceDhcpSnoopingServerList resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateSystemInterfaceDhcpSnoopingServerList(obj, mkey, paradict)
+	_, err = c.UpdateSystemInterfaceDhcpSnoopingServerList(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemInterfaceDhcpSnoopingServerList resource: %v", err)
 	}
@@ -124,6 +131,7 @@ func resourceSystemInterfaceDhcpSnoopingServerListDelete(d *schema.ResourceData,
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -134,7 +142,11 @@ func resourceSystemInterfaceDhcpSnoopingServerListDelete(d *schema.ResourceData,
 	paradict["device"] = device_name
 	paradict["interface"] = var_interface
 
-	err = c.DeleteSystemInterfaceDhcpSnoopingServerList(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteSystemInterfaceDhcpSnoopingServerList(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting SystemInterfaceDhcpSnoopingServerList resource: %v", err)
 	}

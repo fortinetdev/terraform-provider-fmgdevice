@@ -64,6 +64,7 @@ func resourceWirelessControllerSettingOffendingSsidCreate(d *schema.ResourceData
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -77,13 +78,15 @@ func resourceWirelessControllerSettingOffendingSsidCreate(d *schema.ResourceData
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectWirelessControllerSettingOffendingSsid(d)
 	if err != nil {
 		return fmt.Errorf("Error creating WirelessControllerSettingOffendingSsid resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateWirelessControllerSettingOffendingSsid(obj, paradict)
-
+	_, err = c.CreateWirelessControllerSettingOffendingSsid(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating WirelessControllerSettingOffendingSsid resource: %v", err)
 	}
@@ -99,6 +102,7 @@ func resourceWirelessControllerSettingOffendingSsidUpdate(d *schema.ResourceData
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -112,12 +116,15 @@ func resourceWirelessControllerSettingOffendingSsidUpdate(d *schema.ResourceData
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectWirelessControllerSettingOffendingSsid(d)
 	if err != nil {
 		return fmt.Errorf("Error updating WirelessControllerSettingOffendingSsid resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateWirelessControllerSettingOffendingSsid(obj, mkey, paradict)
+	_, err = c.UpdateWirelessControllerSettingOffendingSsid(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating WirelessControllerSettingOffendingSsid resource: %v", err)
 	}
@@ -136,6 +143,7 @@ func resourceWirelessControllerSettingOffendingSsidDelete(d *schema.ResourceData
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -149,7 +157,11 @@ func resourceWirelessControllerSettingOffendingSsidDelete(d *schema.ResourceData
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	err = c.DeleteWirelessControllerSettingOffendingSsid(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteWirelessControllerSettingOffendingSsid(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting WirelessControllerSettingOffendingSsid resource: %v", err)
 	}

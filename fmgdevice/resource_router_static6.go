@@ -121,6 +121,10 @@ func resourceRouterStatic6() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"tag": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+			},
 			"virtual_wan_link": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -142,6 +146,7 @@ func resourceRouterStatic6Create(d *schema.ResourceData, m interface{}) error {
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -155,13 +160,15 @@ func resourceRouterStatic6Create(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectRouterStatic6(d)
 	if err != nil {
 		return fmt.Errorf("Error creating RouterStatic6 resource while getting object: %v", err)
 	}
 
-	v, err := c.CreateRouterStatic6(obj, paradict)
-
+	v, err := c.CreateRouterStatic6(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating RouterStatic6 resource: %v", err)
 	}
@@ -186,6 +193,7 @@ func resourceRouterStatic6Update(d *schema.ResourceData, m interface{}) error {
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -199,12 +207,15 @@ func resourceRouterStatic6Update(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectRouterStatic6(d)
 	if err != nil {
 		return fmt.Errorf("Error updating RouterStatic6 resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateRouterStatic6(obj, mkey, paradict)
+	_, err = c.UpdateRouterStatic6(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating RouterStatic6 resource: %v", err)
 	}
@@ -223,6 +234,7 @@ func resourceRouterStatic6Delete(d *schema.ResourceData, m interface{}) error {
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -236,7 +248,11 @@ func resourceRouterStatic6Delete(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	err = c.DeleteRouterStatic6(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteRouterStatic6(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting RouterStatic6 resource: %v", err)
 	}
@@ -357,6 +373,10 @@ func flattenRouterStatic6SeqNum(v interface{}, d *schema.ResourceData, pre strin
 }
 
 func flattenRouterStatic6Status(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenRouterStatic6Tag(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -535,6 +555,16 @@ func refreshObjectRouterStatic6(d *schema.ResourceData, o map[string]interface{}
 		}
 	}
 
+	if err = d.Set("tag", flattenRouterStatic6Tag(o["tag"], d, "tag")); err != nil {
+		if vv, ok := fortiAPIPatch(o["tag"], "RouterStatic6-Tag"); ok {
+			if err = d.Set("tag", vv); err != nil {
+				return fmt.Errorf("Error reading tag: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading tag: %v", err)
+		}
+	}
+
 	if err = d.Set("virtual_wan_link", flattenRouterStatic6VirtualWanLink(o["virtual-wan-link"], d, "virtual_wan_link")); err != nil {
 		if vv, ok := fortiAPIPatch(o["virtual-wan-link"], "RouterStatic6-VirtualWanLink"); ok {
 			if err = d.Set("virtual_wan_link", vv); err != nil {
@@ -635,6 +665,10 @@ func expandRouterStatic6SeqNum(d *schema.ResourceData, v interface{}, pre string
 }
 
 func expandRouterStatic6Status(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandRouterStatic6Tag(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -794,6 +828,15 @@ func getObjectRouterStatic6(d *schema.ResourceData) (*map[string]interface{}, er
 			return &obj, err
 		} else if t != nil {
 			obj["status"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("tag"); ok || d.HasChange("tag") {
+		t, err := expandRouterStatic6Tag(d, v, "tag")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["tag"] = t
 		}
 	}
 

@@ -78,6 +78,11 @@ func resourceWirelessControllerSyslogProfile() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"server_type": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
 		},
 	}
 }
@@ -87,6 +92,7 @@ func resourceWirelessControllerSyslogProfileCreate(d *schema.ResourceData, m int
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -100,13 +106,15 @@ func resourceWirelessControllerSyslogProfileCreate(d *schema.ResourceData, m int
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectWirelessControllerSyslogProfile(d)
 	if err != nil {
 		return fmt.Errorf("Error creating WirelessControllerSyslogProfile resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateWirelessControllerSyslogProfile(obj, paradict)
-
+	_, err = c.CreateWirelessControllerSyslogProfile(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating WirelessControllerSyslogProfile resource: %v", err)
 	}
@@ -122,6 +130,7 @@ func resourceWirelessControllerSyslogProfileUpdate(d *schema.ResourceData, m int
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -135,12 +144,15 @@ func resourceWirelessControllerSyslogProfileUpdate(d *schema.ResourceData, m int
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectWirelessControllerSyslogProfile(d)
 	if err != nil {
 		return fmt.Errorf("Error updating WirelessControllerSyslogProfile resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateWirelessControllerSyslogProfile(obj, mkey, paradict)
+	_, err = c.UpdateWirelessControllerSyslogProfile(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating WirelessControllerSyslogProfile resource: %v", err)
 	}
@@ -159,6 +171,7 @@ func resourceWirelessControllerSyslogProfileDelete(d *schema.ResourceData, m int
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -172,7 +185,11 @@ func resourceWirelessControllerSyslogProfileDelete(d *schema.ResourceData, m int
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	err = c.DeleteWirelessControllerSyslogProfile(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteWirelessControllerSyslogProfile(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting WirelessControllerSyslogProfile resource: %v", err)
 	}
@@ -264,6 +281,10 @@ func flattenWirelessControllerSyslogProfileServerStatus(v interface{}, d *schema
 	return v
 }
 
+func flattenWirelessControllerSyslogProfileServerType(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func refreshObjectWirelessControllerSyslogProfile(d *schema.ResourceData, o map[string]interface{}) error {
 	var err error
 
@@ -347,6 +368,16 @@ func refreshObjectWirelessControllerSyslogProfile(d *schema.ResourceData, o map[
 		}
 	}
 
+	if err = d.Set("server_type", flattenWirelessControllerSyslogProfileServerType(o["server-type"], d, "server_type")); err != nil {
+		if vv, ok := fortiAPIPatch(o["server-type"], "WirelessControllerSyslogProfile-ServerType"); ok {
+			if err = d.Set("server_type", vv); err != nil {
+				return fmt.Errorf("Error reading server_type: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading server_type: %v", err)
+		}
+	}
+
 	return nil
 }
 
@@ -385,6 +416,10 @@ func expandWirelessControllerSyslogProfileServerPort(d *schema.ResourceData, v i
 }
 
 func expandWirelessControllerSyslogProfileServerStatus(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWirelessControllerSyslogProfileServerType(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -460,6 +495,15 @@ func getObjectWirelessControllerSyslogProfile(d *schema.ResourceData) (*map[stri
 			return &obj, err
 		} else if t != nil {
 			obj["server-status"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("server_type"); ok || d.HasChange("server_type") {
+		t, err := expandWirelessControllerSyslogProfileServerType(d, v, "server_type")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["server-type"] = t
 		}
 	}
 

@@ -63,6 +63,7 @@ func resourceWirelessControllerVapVlanNameCreate(d *schema.ResourceData, m inter
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -78,13 +79,15 @@ func resourceWirelessControllerVapVlanNameCreate(d *schema.ResourceData, m inter
 	paradict["vdom"] = device_vdom
 	paradict["vap"] = vap
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectWirelessControllerVapVlanName(d)
 	if err != nil {
 		return fmt.Errorf("Error creating WirelessControllerVapVlanName resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateWirelessControllerVapVlanName(obj, paradict)
-
+	_, err = c.CreateWirelessControllerVapVlanName(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating WirelessControllerVapVlanName resource: %v", err)
 	}
@@ -100,6 +103,7 @@ func resourceWirelessControllerVapVlanNameUpdate(d *schema.ResourceData, m inter
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -115,12 +119,15 @@ func resourceWirelessControllerVapVlanNameUpdate(d *schema.ResourceData, m inter
 	paradict["vdom"] = device_vdom
 	paradict["vap"] = vap
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectWirelessControllerVapVlanName(d)
 	if err != nil {
 		return fmt.Errorf("Error updating WirelessControllerVapVlanName resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateWirelessControllerVapVlanName(obj, mkey, paradict)
+	_, err = c.UpdateWirelessControllerVapVlanName(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating WirelessControllerVapVlanName resource: %v", err)
 	}
@@ -139,6 +146,7 @@ func resourceWirelessControllerVapVlanNameDelete(d *schema.ResourceData, m inter
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -154,7 +162,11 @@ func resourceWirelessControllerVapVlanNameDelete(d *schema.ResourceData, m inter
 	paradict["vdom"] = device_vdom
 	paradict["vap"] = vap
 
-	err = c.DeleteWirelessControllerVapVlanName(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteWirelessControllerVapVlanName(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting WirelessControllerVapVlanName resource: %v", err)
 	}

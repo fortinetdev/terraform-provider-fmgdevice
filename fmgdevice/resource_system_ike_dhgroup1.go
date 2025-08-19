@@ -62,6 +62,7 @@ func resourceSystemIkeDhGroup1Update(d *schema.ResourceData, m interface{}) erro
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -70,12 +71,15 @@ func resourceSystemIkeDhGroup1Update(d *schema.ResourceData, m interface{}) erro
 	}
 	paradict["device"] = device_name
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSystemIkeDhGroup1(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemIkeDhGroup1 resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateSystemIkeDhGroup1(obj, mkey, paradict)
+	_, err = c.UpdateSystemIkeDhGroup1(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemIkeDhGroup1 resource: %v", err)
 	}
@@ -94,6 +98,7 @@ func resourceSystemIkeDhGroup1Delete(d *schema.ResourceData, m interface{}) erro
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -102,7 +107,11 @@ func resourceSystemIkeDhGroup1Delete(d *schema.ResourceData, m interface{}) erro
 	}
 	paradict["device"] = device_name
 
-	err = c.DeleteSystemIkeDhGroup1(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteSystemIkeDhGroup1(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting SystemIkeDhGroup1 resource: %v", err)
 	}

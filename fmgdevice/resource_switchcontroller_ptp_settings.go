@@ -55,6 +55,7 @@ func resourceSwitchControllerPtpSettingsUpdate(d *schema.ResourceData, m interfa
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -68,12 +69,15 @@ func resourceSwitchControllerPtpSettingsUpdate(d *schema.ResourceData, m interfa
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSwitchControllerPtpSettings(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SwitchControllerPtpSettings resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateSwitchControllerPtpSettings(obj, mkey, paradict)
+	_, err = c.UpdateSwitchControllerPtpSettings(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating SwitchControllerPtpSettings resource: %v", err)
 	}
@@ -92,6 +96,7 @@ func resourceSwitchControllerPtpSettingsDelete(d *schema.ResourceData, m interfa
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -105,7 +110,11 @@ func resourceSwitchControllerPtpSettingsDelete(d *schema.ResourceData, m interfa
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	err = c.DeleteSwitchControllerPtpSettings(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteSwitchControllerPtpSettings(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting SwitchControllerPtpSettings resource: %v", err)
 	}

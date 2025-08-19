@@ -81,6 +81,10 @@ func resourceSystemSnmpCommunity() *schema.Resource {
 							Optional: true,
 							Computed: true,
 						},
+						"vrf_select": &schema.Schema{
+							Type:     schema.TypeInt,
+							Optional: true,
+						},
 					},
 				},
 			},
@@ -123,6 +127,10 @@ func resourceSystemSnmpCommunity() *schema.Resource {
 							Type:     schema.TypeString,
 							Optional: true,
 							Computed: true,
+						},
+						"vrf_select": &schema.Schema{
+							Type:     schema.TypeInt,
+							Optional: true,
 						},
 					},
 				},
@@ -217,6 +225,7 @@ func resourceSystemSnmpCommunityCreate(d *schema.ResourceData, m interface{}) er
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -225,13 +234,15 @@ func resourceSystemSnmpCommunityCreate(d *schema.ResourceData, m interface{}) er
 	}
 	paradict["device"] = device_name
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSystemSnmpCommunity(d)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemSnmpCommunity resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateSystemSnmpCommunity(obj, paradict)
-
+	_, err = c.CreateSystemSnmpCommunity(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemSnmpCommunity resource: %v", err)
 	}
@@ -247,6 +258,7 @@ func resourceSystemSnmpCommunityUpdate(d *schema.ResourceData, m interface{}) er
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -255,12 +267,15 @@ func resourceSystemSnmpCommunityUpdate(d *schema.ResourceData, m interface{}) er
 	}
 	paradict["device"] = device_name
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSystemSnmpCommunity(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemSnmpCommunity resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateSystemSnmpCommunity(obj, mkey, paradict)
+	_, err = c.UpdateSystemSnmpCommunity(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemSnmpCommunity resource: %v", err)
 	}
@@ -279,6 +294,7 @@ func resourceSystemSnmpCommunityDelete(d *schema.ResourceData, m interface{}) er
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -287,7 +303,11 @@ func resourceSystemSnmpCommunityDelete(d *schema.ResourceData, m interface{}) er
 	}
 	paradict["device"] = device_name
 
-	err = c.DeleteSystemSnmpCommunity(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteSystemSnmpCommunity(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting SystemSnmpCommunity resource: %v", err)
 	}
@@ -401,6 +421,12 @@ func flattenSystemSnmpCommunityHosts(v interface{}, d *schema.ResourceData, pre 
 			tmp["source_ip"] = fortiAPISubPartPatch(v, "SystemSnmpCommunity-Hosts-SourceIp")
 		}
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "vrf_select"
+		if _, ok := i["vrf-select"]; ok {
+			v := flattenSystemSnmpCommunityHostsVrfSelect(i["vrf-select"], d, pre_append)
+			tmp["vrf_select"] = fortiAPISubPartPatch(v, "SystemSnmpCommunity-Hosts-VrfSelect")
+		}
+
 		if len(tmp) > 0 {
 			result = append(result, tmp)
 		}
@@ -436,6 +462,10 @@ func flattenSystemSnmpCommunityHostsIp(v interface{}, d *schema.ResourceData, pr
 }
 
 func flattenSystemSnmpCommunityHostsSourceIp(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemSnmpCommunityHostsVrfSelect(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -500,6 +530,12 @@ func flattenSystemSnmpCommunityHosts6(v interface{}, d *schema.ResourceData, pre
 			tmp["source_ipv6"] = fortiAPISubPartPatch(v, "SystemSnmpCommunity-Hosts6-SourceIpv6")
 		}
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "vrf_select"
+		if _, ok := i["vrf-select"]; ok {
+			v := flattenSystemSnmpCommunityHosts6VrfSelect(i["vrf-select"], d, pre_append)
+			tmp["vrf_select"] = fortiAPISubPartPatch(v, "SystemSnmpCommunity-Hosts6-VrfSelect")
+		}
+
 		if len(tmp) > 0 {
 			result = append(result, tmp)
 		}
@@ -535,6 +571,10 @@ func flattenSystemSnmpCommunityHosts6Ipv6(v interface{}, d *schema.ResourceData,
 }
 
 func flattenSystemSnmpCommunityHosts6SourceIpv6(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemSnmpCommunityHosts6VrfSelect(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -875,6 +915,11 @@ func expandSystemSnmpCommunityHosts(d *schema.ResourceData, v interface{}, pre s
 			tmp["source-ip"], _ = expandSystemSnmpCommunityHostsSourceIp(d, i["source_ip"], pre_append)
 		}
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "vrf_select"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["vrf-select"], _ = expandSystemSnmpCommunityHostsVrfSelect(d, i["vrf_select"], pre_append)
+		}
+
 		if len(tmp) > 0 {
 			result = append(result, tmp)
 		}
@@ -910,6 +955,10 @@ func expandSystemSnmpCommunityHostsIp(d *schema.ResourceData, v interface{}, pre
 }
 
 func expandSystemSnmpCommunityHostsSourceIp(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemSnmpCommunityHostsVrfSelect(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -962,6 +1011,11 @@ func expandSystemSnmpCommunityHosts6(d *schema.ResourceData, v interface{}, pre 
 			tmp["source-ipv6"], _ = expandSystemSnmpCommunityHosts6SourceIpv6(d, i["source_ipv6"], pre_append)
 		}
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "vrf_select"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["vrf-select"], _ = expandSystemSnmpCommunityHosts6VrfSelect(d, i["vrf_select"], pre_append)
+		}
+
 		if len(tmp) > 0 {
 			result = append(result, tmp)
 		}
@@ -997,6 +1051,10 @@ func expandSystemSnmpCommunityHosts6Ipv6(d *schema.ResourceData, v interface{}, 
 }
 
 func expandSystemSnmpCommunityHosts6SourceIpv6(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemSnmpCommunityHosts6VrfSelect(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 

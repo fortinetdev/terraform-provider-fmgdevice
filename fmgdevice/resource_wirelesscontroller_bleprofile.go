@@ -140,6 +140,7 @@ func resourceWirelessControllerBleProfileCreate(d *schema.ResourceData, m interf
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -153,13 +154,15 @@ func resourceWirelessControllerBleProfileCreate(d *schema.ResourceData, m interf
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectWirelessControllerBleProfile(d)
 	if err != nil {
 		return fmt.Errorf("Error creating WirelessControllerBleProfile resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateWirelessControllerBleProfile(obj, paradict)
-
+	_, err = c.CreateWirelessControllerBleProfile(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating WirelessControllerBleProfile resource: %v", err)
 	}
@@ -175,6 +178,7 @@ func resourceWirelessControllerBleProfileUpdate(d *schema.ResourceData, m interf
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -188,12 +192,15 @@ func resourceWirelessControllerBleProfileUpdate(d *schema.ResourceData, m interf
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectWirelessControllerBleProfile(d)
 	if err != nil {
 		return fmt.Errorf("Error updating WirelessControllerBleProfile resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateWirelessControllerBleProfile(obj, mkey, paradict)
+	_, err = c.UpdateWirelessControllerBleProfile(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating WirelessControllerBleProfile resource: %v", err)
 	}
@@ -212,6 +219,7 @@ func resourceWirelessControllerBleProfileDelete(d *schema.ResourceData, m interf
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -225,7 +233,11 @@ func resourceWirelessControllerBleProfileDelete(d *schema.ResourceData, m interf
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	err = c.DeleteWirelessControllerBleProfile(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteWirelessControllerBleProfile(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting WirelessControllerBleProfile resource: %v", err)
 	}

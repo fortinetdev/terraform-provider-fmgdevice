@@ -66,6 +66,7 @@ func resourceWanoptCacheServiceSrcPeerCreate(d *schema.ResourceData, m interface
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -74,13 +75,15 @@ func resourceWanoptCacheServiceSrcPeerCreate(d *schema.ResourceData, m interface
 	}
 	paradict["device"] = device_name
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectWanoptCacheServiceSrcPeer(d)
 	if err != nil {
 		return fmt.Errorf("Error creating WanoptCacheServiceSrcPeer resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateWanoptCacheServiceSrcPeer(obj, paradict)
-
+	_, err = c.CreateWanoptCacheServiceSrcPeer(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating WanoptCacheServiceSrcPeer resource: %v", err)
 	}
@@ -96,6 +99,7 @@ func resourceWanoptCacheServiceSrcPeerUpdate(d *schema.ResourceData, m interface
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -104,12 +108,15 @@ func resourceWanoptCacheServiceSrcPeerUpdate(d *schema.ResourceData, m interface
 	}
 	paradict["device"] = device_name
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectWanoptCacheServiceSrcPeer(d)
 	if err != nil {
 		return fmt.Errorf("Error updating WanoptCacheServiceSrcPeer resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateWanoptCacheServiceSrcPeer(obj, mkey, paradict)
+	_, err = c.UpdateWanoptCacheServiceSrcPeer(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating WanoptCacheServiceSrcPeer resource: %v", err)
 	}
@@ -128,6 +135,7 @@ func resourceWanoptCacheServiceSrcPeerDelete(d *schema.ResourceData, m interface
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -136,7 +144,11 @@ func resourceWanoptCacheServiceSrcPeerDelete(d *schema.ResourceData, m interface
 	}
 	paradict["device"] = device_name
 
-	err = c.DeleteWanoptCacheServiceSrcPeer(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteWanoptCacheServiceSrcPeer(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting WanoptCacheServiceSrcPeer resource: %v", err)
 	}

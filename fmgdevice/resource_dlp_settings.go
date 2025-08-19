@@ -44,6 +44,11 @@ func resourceDlpSettings() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"config_builder_timeout": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+				Computed: true,
+			},
 			"db_mode": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -68,6 +73,7 @@ func resourceDlpSettingsUpdate(d *schema.ResourceData, m interface{}) error {
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -76,12 +82,15 @@ func resourceDlpSettingsUpdate(d *schema.ResourceData, m interface{}) error {
 	}
 	paradict["device"] = device_name
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectDlpSettings(d)
 	if err != nil {
 		return fmt.Errorf("Error updating DlpSettings resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateDlpSettings(obj, mkey, paradict)
+	_, err = c.UpdateDlpSettings(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating DlpSettings resource: %v", err)
 	}
@@ -100,6 +109,7 @@ func resourceDlpSettingsDelete(d *schema.ResourceData, m interface{}) error {
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -108,7 +118,11 @@ func resourceDlpSettingsDelete(d *schema.ResourceData, m interface{}) error {
 	}
 	paradict["device"] = device_name
 
-	err = c.DeleteDlpSettings(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteDlpSettings(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting DlpSettings resource: %v", err)
 	}
@@ -165,6 +179,10 @@ func flattenDlpSettingsChunkSize(v interface{}, d *schema.ResourceData, pre stri
 	return v
 }
 
+func flattenDlpSettingsConfigBuilderTimeout(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenDlpSettingsDbMode(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -197,6 +215,16 @@ func refreshObjectDlpSettings(d *schema.ResourceData, o map[string]interface{}) 
 			}
 		} else {
 			return fmt.Errorf("Error reading chunk_size: %v", err)
+		}
+	}
+
+	if err = d.Set("config_builder_timeout", flattenDlpSettingsConfigBuilderTimeout(o["config-builder-timeout"], d, "config_builder_timeout")); err != nil {
+		if vv, ok := fortiAPIPatch(o["config-builder-timeout"], "DlpSettings-ConfigBuilderTimeout"); ok {
+			if err = d.Set("config_builder_timeout", vv); err != nil {
+				return fmt.Errorf("Error reading config_builder_timeout: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading config_builder_timeout: %v", err)
 		}
 	}
 
@@ -247,6 +275,10 @@ func expandDlpSettingsChunkSize(d *schema.ResourceData, v interface{}, pre strin
 	return v, nil
 }
 
+func expandDlpSettingsConfigBuilderTimeout(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandDlpSettingsDbMode(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -277,6 +309,15 @@ func getObjectDlpSettings(d *schema.ResourceData) (*map[string]interface{}, erro
 			return &obj, err
 		} else if t != nil {
 			obj["chunk-size"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("config_builder_timeout"); ok || d.HasChange("config_builder_timeout") {
+		t, err := expandDlpSettingsConfigBuilderTimeout(d, v, "config_builder_timeout")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["config-builder-timeout"] = t
 		}
 	}
 

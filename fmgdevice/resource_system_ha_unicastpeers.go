@@ -53,6 +53,7 @@ func resourceSystemHaUnicastPeersCreate(d *schema.ResourceData, m interface{}) e
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -61,13 +62,15 @@ func resourceSystemHaUnicastPeersCreate(d *schema.ResourceData, m interface{}) e
 	}
 	paradict["device"] = device_name
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSystemHaUnicastPeers(d)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemHaUnicastPeers resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateSystemHaUnicastPeers(obj, paradict)
-
+	_, err = c.CreateSystemHaUnicastPeers(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemHaUnicastPeers resource: %v", err)
 	}
@@ -83,6 +86,7 @@ func resourceSystemHaUnicastPeersUpdate(d *schema.ResourceData, m interface{}) e
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -91,12 +95,15 @@ func resourceSystemHaUnicastPeersUpdate(d *schema.ResourceData, m interface{}) e
 	}
 	paradict["device"] = device_name
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSystemHaUnicastPeers(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemHaUnicastPeers resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateSystemHaUnicastPeers(obj, mkey, paradict)
+	_, err = c.UpdateSystemHaUnicastPeers(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemHaUnicastPeers resource: %v", err)
 	}
@@ -115,6 +122,7 @@ func resourceSystemHaUnicastPeersDelete(d *schema.ResourceData, m interface{}) e
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -123,7 +131,11 @@ func resourceSystemHaUnicastPeersDelete(d *schema.ResourceData, m interface{}) e
 	}
 	paradict["device"] = device_name
 
-	err = c.DeleteSystemHaUnicastPeers(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteSystemHaUnicastPeers(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting SystemHaUnicastPeers resource: %v", err)
 	}

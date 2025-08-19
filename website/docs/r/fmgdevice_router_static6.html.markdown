@@ -54,6 +54,7 @@ The following arguments are supported:
 * `seq_num` - Sequence number.
 * `status` - Enable/disable this static route. Valid values: `disable`, `enable`.
 
+* `tag` - Route tag.
 * `virtual_wan_link` - Virtual-Wan-Link. Valid values: `disable`, `enable`.
 
 * `vrf` - Virtual Routing Forwarding ID.

@@ -60,8 +60,10 @@ The following arguments are supported:
 * `server_select_method` - Specify how configured servers are prioritized. Valid values: `least-rtt`, `failover`.
 
 * `source_ip` - IP address used by the DNS server as its source IP.
+* `source_ip_interface` - IP address of the specified interface as the source IP address.
 * `ssl_certificate` - Name of local certificate for SSL connections.
 * `timeout` - DNS query timeout interval in seconds (1 - 10).
+* `vrf_select` - VRF ID used for connection to server.
 
 
 ## Attribute Reference

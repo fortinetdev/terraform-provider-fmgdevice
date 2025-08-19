@@ -72,6 +72,7 @@ func resourceSwitchControllerManagedSwitchPortsDhcpSnoopOption82OverrideCreate(d
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -89,13 +90,15 @@ func resourceSwitchControllerManagedSwitchPortsDhcpSnoopOption82OverrideCreate(d
 	paradict["managed_switch"] = managed_switch
 	paradict["ports"] = ports
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSwitchControllerManagedSwitchPortsDhcpSnoopOption82Override(d)
 	if err != nil {
 		return fmt.Errorf("Error creating SwitchControllerManagedSwitchPortsDhcpSnoopOption82Override resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateSwitchControllerManagedSwitchPortsDhcpSnoopOption82Override(obj, paradict)
-
+	_, err = c.CreateSwitchControllerManagedSwitchPortsDhcpSnoopOption82Override(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating SwitchControllerManagedSwitchPortsDhcpSnoopOption82Override resource: %v", err)
 	}
@@ -111,6 +114,7 @@ func resourceSwitchControllerManagedSwitchPortsDhcpSnoopOption82OverrideUpdate(d
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -128,12 +132,15 @@ func resourceSwitchControllerManagedSwitchPortsDhcpSnoopOption82OverrideUpdate(d
 	paradict["managed_switch"] = managed_switch
 	paradict["ports"] = ports
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSwitchControllerManagedSwitchPortsDhcpSnoopOption82Override(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SwitchControllerManagedSwitchPortsDhcpSnoopOption82Override resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateSwitchControllerManagedSwitchPortsDhcpSnoopOption82Override(obj, mkey, paradict)
+	_, err = c.UpdateSwitchControllerManagedSwitchPortsDhcpSnoopOption82Override(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating SwitchControllerManagedSwitchPortsDhcpSnoopOption82Override resource: %v", err)
 	}
@@ -152,6 +159,7 @@ func resourceSwitchControllerManagedSwitchPortsDhcpSnoopOption82OverrideDelete(d
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -169,7 +177,11 @@ func resourceSwitchControllerManagedSwitchPortsDhcpSnoopOption82OverrideDelete(d
 	paradict["managed_switch"] = managed_switch
 	paradict["ports"] = ports
 
-	err = c.DeleteSwitchControllerManagedSwitchPortsDhcpSnoopOption82Override(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteSwitchControllerManagedSwitchPortsDhcpSnoopOption82Override(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting SwitchControllerManagedSwitchPortsDhcpSnoopOption82Override resource: %v", err)
 	}

@@ -69,6 +69,7 @@ func resourceRouterMulticastFlowFlowsCreate(d *schema.ResourceData, m interface{
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -84,13 +85,15 @@ func resourceRouterMulticastFlowFlowsCreate(d *schema.ResourceData, m interface{
 	paradict["vdom"] = device_vdom
 	paradict["multicast_flow"] = multicast_flow
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectRouterMulticastFlowFlows(d)
 	if err != nil {
 		return fmt.Errorf("Error creating RouterMulticastFlowFlows resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateRouterMulticastFlowFlows(obj, paradict)
-
+	_, err = c.CreateRouterMulticastFlowFlows(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating RouterMulticastFlowFlows resource: %v", err)
 	}
@@ -106,6 +109,7 @@ func resourceRouterMulticastFlowFlowsUpdate(d *schema.ResourceData, m interface{
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -121,12 +125,15 @@ func resourceRouterMulticastFlowFlowsUpdate(d *schema.ResourceData, m interface{
 	paradict["vdom"] = device_vdom
 	paradict["multicast_flow"] = multicast_flow
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectRouterMulticastFlowFlows(d)
 	if err != nil {
 		return fmt.Errorf("Error updating RouterMulticastFlowFlows resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateRouterMulticastFlowFlows(obj, mkey, paradict)
+	_, err = c.UpdateRouterMulticastFlowFlows(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating RouterMulticastFlowFlows resource: %v", err)
 	}
@@ -145,6 +152,7 @@ func resourceRouterMulticastFlowFlowsDelete(d *schema.ResourceData, m interface{
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -160,7 +168,11 @@ func resourceRouterMulticastFlowFlowsDelete(d *schema.ResourceData, m interface{
 	paradict["vdom"] = device_vdom
 	paradict["multicast_flow"] = multicast_flow
 
-	err = c.DeleteRouterMulticastFlowFlows(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteRouterMulticastFlowFlows(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting RouterMulticastFlowFlows resource: %v", err)
 	}

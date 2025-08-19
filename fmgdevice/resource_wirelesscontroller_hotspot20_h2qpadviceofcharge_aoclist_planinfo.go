@@ -76,6 +76,7 @@ func resourceWirelessControllerHotspot20H2QpAdviceOfChargeAocListPlanInfoCreate(
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -93,13 +94,15 @@ func resourceWirelessControllerHotspot20H2QpAdviceOfChargeAocListPlanInfoCreate(
 	paradict["h2qp_advice_of_charge"] = h2qp_advice_of_charge
 	paradict["aoc_list"] = aoc_list
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectWirelessControllerHotspot20H2QpAdviceOfChargeAocListPlanInfo(d)
 	if err != nil {
 		return fmt.Errorf("Error creating WirelessControllerHotspot20H2QpAdviceOfChargeAocListPlanInfo resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateWirelessControllerHotspot20H2QpAdviceOfChargeAocListPlanInfo(obj, paradict)
-
+	_, err = c.CreateWirelessControllerHotspot20H2QpAdviceOfChargeAocListPlanInfo(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating WirelessControllerHotspot20H2QpAdviceOfChargeAocListPlanInfo resource: %v", err)
 	}
@@ -115,6 +118,7 @@ func resourceWirelessControllerHotspot20H2QpAdviceOfChargeAocListPlanInfoUpdate(
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -132,12 +136,15 @@ func resourceWirelessControllerHotspot20H2QpAdviceOfChargeAocListPlanInfoUpdate(
 	paradict["h2qp_advice_of_charge"] = h2qp_advice_of_charge
 	paradict["aoc_list"] = aoc_list
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectWirelessControllerHotspot20H2QpAdviceOfChargeAocListPlanInfo(d)
 	if err != nil {
 		return fmt.Errorf("Error updating WirelessControllerHotspot20H2QpAdviceOfChargeAocListPlanInfo resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateWirelessControllerHotspot20H2QpAdviceOfChargeAocListPlanInfo(obj, mkey, paradict)
+	_, err = c.UpdateWirelessControllerHotspot20H2QpAdviceOfChargeAocListPlanInfo(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating WirelessControllerHotspot20H2QpAdviceOfChargeAocListPlanInfo resource: %v", err)
 	}
@@ -156,6 +163,7 @@ func resourceWirelessControllerHotspot20H2QpAdviceOfChargeAocListPlanInfoDelete(
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -173,7 +181,11 @@ func resourceWirelessControllerHotspot20H2QpAdviceOfChargeAocListPlanInfoDelete(
 	paradict["h2qp_advice_of_charge"] = h2qp_advice_of_charge
 	paradict["aoc_list"] = aoc_list
 
-	err = c.DeleteWirelessControllerHotspot20H2QpAdviceOfChargeAocListPlanInfo(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteWirelessControllerHotspot20H2QpAdviceOfChargeAocListPlanInfo(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting WirelessControllerHotspot20H2QpAdviceOfChargeAocListPlanInfo resource: %v", err)
 	}

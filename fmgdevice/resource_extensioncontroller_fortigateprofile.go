@@ -88,6 +88,7 @@ func resourceExtensionControllerFortigateProfileCreate(d *schema.ResourceData, m
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -101,13 +102,15 @@ func resourceExtensionControllerFortigateProfileCreate(d *schema.ResourceData, m
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectExtensionControllerFortigateProfile(d)
 	if err != nil {
 		return fmt.Errorf("Error creating ExtensionControllerFortigateProfile resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateExtensionControllerFortigateProfile(obj, paradict)
-
+	_, err = c.CreateExtensionControllerFortigateProfile(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating ExtensionControllerFortigateProfile resource: %v", err)
 	}
@@ -123,6 +126,7 @@ func resourceExtensionControllerFortigateProfileUpdate(d *schema.ResourceData, m
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -136,12 +140,15 @@ func resourceExtensionControllerFortigateProfileUpdate(d *schema.ResourceData, m
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectExtensionControllerFortigateProfile(d)
 	if err != nil {
 		return fmt.Errorf("Error updating ExtensionControllerFortigateProfile resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateExtensionControllerFortigateProfile(obj, mkey, paradict)
+	_, err = c.UpdateExtensionControllerFortigateProfile(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating ExtensionControllerFortigateProfile resource: %v", err)
 	}
@@ -160,6 +167,7 @@ func resourceExtensionControllerFortigateProfileDelete(d *schema.ResourceData, m
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -173,7 +181,11 @@ func resourceExtensionControllerFortigateProfileDelete(d *schema.ResourceData, m
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	err = c.DeleteExtensionControllerFortigateProfile(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteExtensionControllerFortigateProfile(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting ExtensionControllerFortigateProfile resource: %v", err)
 	}

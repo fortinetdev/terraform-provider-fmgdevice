@@ -142,6 +142,7 @@ func resourceSwitchControllerSnmpCommunityCreate(d *schema.ResourceData, m inter
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -155,13 +156,15 @@ func resourceSwitchControllerSnmpCommunityCreate(d *schema.ResourceData, m inter
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSwitchControllerSnmpCommunity(d)
 	if err != nil {
 		return fmt.Errorf("Error creating SwitchControllerSnmpCommunity resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateSwitchControllerSnmpCommunity(obj, paradict)
-
+	_, err = c.CreateSwitchControllerSnmpCommunity(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating SwitchControllerSnmpCommunity resource: %v", err)
 	}
@@ -177,6 +180,7 @@ func resourceSwitchControllerSnmpCommunityUpdate(d *schema.ResourceData, m inter
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -190,12 +194,15 @@ func resourceSwitchControllerSnmpCommunityUpdate(d *schema.ResourceData, m inter
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSwitchControllerSnmpCommunity(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SwitchControllerSnmpCommunity resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateSwitchControllerSnmpCommunity(obj, mkey, paradict)
+	_, err = c.UpdateSwitchControllerSnmpCommunity(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating SwitchControllerSnmpCommunity resource: %v", err)
 	}
@@ -214,6 +221,7 @@ func resourceSwitchControllerSnmpCommunityDelete(d *schema.ResourceData, m inter
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -227,7 +235,11 @@ func resourceSwitchControllerSnmpCommunityDelete(d *schema.ResourceData, m inter
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	err = c.DeleteSwitchControllerSnmpCommunity(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteSwitchControllerSnmpCommunity(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting SwitchControllerSnmpCommunity resource: %v", err)
 	}

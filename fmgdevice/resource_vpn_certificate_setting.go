@@ -240,6 +240,10 @@ func resourceVpnCertificateSetting() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"vrf_select": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+			},
 		},
 	}
 }
@@ -250,6 +254,7 @@ func resourceVpnCertificateSettingUpdate(d *schema.ResourceData, m interface{}) 
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -263,12 +268,15 @@ func resourceVpnCertificateSettingUpdate(d *schema.ResourceData, m interface{}) 
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectVpnCertificateSetting(d)
 	if err != nil {
 		return fmt.Errorf("Error updating VpnCertificateSetting resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateVpnCertificateSetting(obj, mkey, paradict)
+	_, err = c.UpdateVpnCertificateSetting(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating VpnCertificateSetting resource: %v", err)
 	}
@@ -287,6 +295,7 @@ func resourceVpnCertificateSettingDelete(d *schema.ResourceData, m interface{}) 
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -300,7 +309,11 @@ func resourceVpnCertificateSettingDelete(d *schema.ResourceData, m interface{}) 
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	err = c.DeleteVpnCertificateSetting(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteVpnCertificateSetting(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting VpnCertificateSetting resource: %v", err)
 	}
@@ -525,6 +538,10 @@ func flattenVpnCertificateSettingSubjectMatch(v interface{}, d *schema.ResourceD
 }
 
 func flattenVpnCertificateSettingSubjectSet(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenVpnCertificateSettingVrfSelect(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -875,6 +892,16 @@ func refreshObjectVpnCertificateSetting(d *schema.ResourceData, o map[string]int
 		}
 	}
 
+	if err = d.Set("vrf_select", flattenVpnCertificateSettingVrfSelect(o["vrf-select"], d, "vrf_select")); err != nil {
+		if vv, ok := fortiAPIPatch(o["vrf-select"], "VpnCertificateSetting-VrfSelect"); ok {
+			if err = d.Set("vrf_select", vv); err != nil {
+				return fmt.Errorf("Error reading vrf_select: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading vrf_select: %v", err)
+		}
+	}
+
 	return nil
 }
 
@@ -1051,6 +1078,10 @@ func expandVpnCertificateSettingSubjectMatch(d *schema.ResourceData, v interface
 }
 
 func expandVpnCertificateSettingSubjectSet(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandVpnCertificateSettingVrfSelect(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -1360,6 +1391,15 @@ func getObjectVpnCertificateSetting(d *schema.ResourceData) (*map[string]interfa
 			return &obj, err
 		} else if t != nil {
 			obj["subject-set"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("vrf_select"); ok || d.HasChange("vrf_select") {
+		t, err := expandVpnCertificateSettingVrfSelect(d, v, "vrf_select")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["vrf-select"] = t
 		}
 	}
 

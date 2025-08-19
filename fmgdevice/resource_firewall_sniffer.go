@@ -283,6 +283,7 @@ func resourceFirewallSnifferCreate(d *schema.ResourceData, m interface{}) error 
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -296,13 +297,15 @@ func resourceFirewallSnifferCreate(d *schema.ResourceData, m interface{}) error 
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectFirewallSniffer(d)
 	if err != nil {
 		return fmt.Errorf("Error creating FirewallSniffer resource while getting object: %v", err)
 	}
 
-	v, err := c.CreateFirewallSniffer(obj, paradict)
-
+	v, err := c.CreateFirewallSniffer(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating FirewallSniffer resource: %v", err)
 	}
@@ -327,6 +330,7 @@ func resourceFirewallSnifferUpdate(d *schema.ResourceData, m interface{}) error 
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -340,12 +344,15 @@ func resourceFirewallSnifferUpdate(d *schema.ResourceData, m interface{}) error 
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectFirewallSniffer(d)
 	if err != nil {
 		return fmt.Errorf("Error updating FirewallSniffer resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateFirewallSniffer(obj, mkey, paradict)
+	_, err = c.UpdateFirewallSniffer(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating FirewallSniffer resource: %v", err)
 	}
@@ -364,6 +371,7 @@ func resourceFirewallSnifferDelete(d *schema.ResourceData, m interface{}) error 
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -377,7 +385,11 @@ func resourceFirewallSnifferDelete(d *schema.ResourceData, m interface{}) error 
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	err = c.DeleteFirewallSniffer(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteFirewallSniffer(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting FirewallSniffer resource: %v", err)
 	}

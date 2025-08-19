@@ -71,6 +71,7 @@ func resourceRouterOspfAreaVirtualLinkMd5KeysCreate(d *schema.ResourceData, m in
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -88,13 +89,15 @@ func resourceRouterOspfAreaVirtualLinkMd5KeysCreate(d *schema.ResourceData, m in
 	paradict["area"] = area
 	paradict["virtual_link"] = virtual_link
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectRouterOspfAreaVirtualLinkMd5Keys(d)
 	if err != nil {
 		return fmt.Errorf("Error creating RouterOspfAreaVirtualLinkMd5Keys resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateRouterOspfAreaVirtualLinkMd5Keys(obj, paradict)
-
+	_, err = c.CreateRouterOspfAreaVirtualLinkMd5Keys(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating RouterOspfAreaVirtualLinkMd5Keys resource: %v", err)
 	}
@@ -110,6 +113,7 @@ func resourceRouterOspfAreaVirtualLinkMd5KeysUpdate(d *schema.ResourceData, m in
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -127,12 +131,15 @@ func resourceRouterOspfAreaVirtualLinkMd5KeysUpdate(d *schema.ResourceData, m in
 	paradict["area"] = area
 	paradict["virtual_link"] = virtual_link
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectRouterOspfAreaVirtualLinkMd5Keys(d)
 	if err != nil {
 		return fmt.Errorf("Error updating RouterOspfAreaVirtualLinkMd5Keys resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateRouterOspfAreaVirtualLinkMd5Keys(obj, mkey, paradict)
+	_, err = c.UpdateRouterOspfAreaVirtualLinkMd5Keys(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating RouterOspfAreaVirtualLinkMd5Keys resource: %v", err)
 	}
@@ -151,6 +158,7 @@ func resourceRouterOspfAreaVirtualLinkMd5KeysDelete(d *schema.ResourceData, m in
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -168,7 +176,11 @@ func resourceRouterOspfAreaVirtualLinkMd5KeysDelete(d *schema.ResourceData, m in
 	paradict["area"] = area
 	paradict["virtual_link"] = virtual_link
 
-	err = c.DeleteRouterOspfAreaVirtualLinkMd5Keys(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteRouterOspfAreaVirtualLinkMd5Keys(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting RouterOspfAreaVirtualLinkMd5Keys resource: %v", err)
 	}

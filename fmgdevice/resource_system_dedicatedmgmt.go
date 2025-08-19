@@ -75,6 +75,7 @@ func resourceSystemDedicatedMgmtUpdate(d *schema.ResourceData, m interface{}) er
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -83,12 +84,15 @@ func resourceSystemDedicatedMgmtUpdate(d *schema.ResourceData, m interface{}) er
 	}
 	paradict["device"] = device_name
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSystemDedicatedMgmt(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemDedicatedMgmt resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateSystemDedicatedMgmt(obj, mkey, paradict)
+	_, err = c.UpdateSystemDedicatedMgmt(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemDedicatedMgmt resource: %v", err)
 	}
@@ -107,6 +111,7 @@ func resourceSystemDedicatedMgmtDelete(d *schema.ResourceData, m interface{}) er
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -115,7 +120,11 @@ func resourceSystemDedicatedMgmtDelete(d *schema.ResourceData, m interface{}) er
 	}
 	paradict["device"] = device_name
 
-	err = c.DeleteSystemDedicatedMgmt(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteSystemDedicatedMgmt(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting SystemDedicatedMgmt resource: %v", err)
 	}

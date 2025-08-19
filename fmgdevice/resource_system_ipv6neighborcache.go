@@ -70,6 +70,7 @@ func resourceSystemIpv6NeighborCacheCreate(d *schema.ResourceData, m interface{}
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -83,13 +84,15 @@ func resourceSystemIpv6NeighborCacheCreate(d *schema.ResourceData, m interface{}
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSystemIpv6NeighborCache(d)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemIpv6NeighborCache resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateSystemIpv6NeighborCache(obj, paradict)
-
+	_, err = c.CreateSystemIpv6NeighborCache(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemIpv6NeighborCache resource: %v", err)
 	}
@@ -105,6 +108,7 @@ func resourceSystemIpv6NeighborCacheUpdate(d *schema.ResourceData, m interface{}
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -118,12 +122,15 @@ func resourceSystemIpv6NeighborCacheUpdate(d *schema.ResourceData, m interface{}
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSystemIpv6NeighborCache(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemIpv6NeighborCache resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateSystemIpv6NeighborCache(obj, mkey, paradict)
+	_, err = c.UpdateSystemIpv6NeighborCache(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemIpv6NeighborCache resource: %v", err)
 	}
@@ -142,6 +149,7 @@ func resourceSystemIpv6NeighborCacheDelete(d *schema.ResourceData, m interface{}
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -155,7 +163,11 @@ func resourceSystemIpv6NeighborCacheDelete(d *schema.ResourceData, m interface{}
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	err = c.DeleteSystemIpv6NeighborCache(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteSystemIpv6NeighborCache(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting SystemIpv6NeighborCache resource: %v", err)
 	}

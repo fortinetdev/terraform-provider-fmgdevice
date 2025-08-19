@@ -71,6 +71,7 @@ func resourceSystemZoneTaggingCreate(d *schema.ResourceData, m interface{}) erro
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -86,13 +87,15 @@ func resourceSystemZoneTaggingCreate(d *schema.ResourceData, m interface{}) erro
 	paradict["vdom"] = device_vdom
 	paradict["zone"] = zone
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSystemZoneTagging(d)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemZoneTagging resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateSystemZoneTagging(obj, paradict)
-
+	_, err = c.CreateSystemZoneTagging(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemZoneTagging resource: %v", err)
 	}
@@ -108,6 +111,7 @@ func resourceSystemZoneTaggingUpdate(d *schema.ResourceData, m interface{}) erro
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -123,12 +127,15 @@ func resourceSystemZoneTaggingUpdate(d *schema.ResourceData, m interface{}) erro
 	paradict["vdom"] = device_vdom
 	paradict["zone"] = zone
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSystemZoneTagging(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemZoneTagging resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateSystemZoneTagging(obj, mkey, paradict)
+	_, err = c.UpdateSystemZoneTagging(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemZoneTagging resource: %v", err)
 	}
@@ -147,6 +154,7 @@ func resourceSystemZoneTaggingDelete(d *schema.ResourceData, m interface{}) erro
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -162,7 +170,11 @@ func resourceSystemZoneTaggingDelete(d *schema.ResourceData, m interface{}) erro
 	paradict["vdom"] = device_vdom
 	paradict["zone"] = zone
 
-	err = c.DeleteSystemZoneTagging(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteSystemZoneTagging(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting SystemZoneTagging resource: %v", err)
 	}

@@ -71,6 +71,7 @@ func resourceRouterBgpAggregateAddressCreate(d *schema.ResourceData, m interface
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -84,13 +85,15 @@ func resourceRouterBgpAggregateAddressCreate(d *schema.ResourceData, m interface
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectRouterBgpAggregateAddress(d)
 	if err != nil {
 		return fmt.Errorf("Error creating RouterBgpAggregateAddress resource while getting object: %v", err)
 	}
 
-	v, err := c.CreateRouterBgpAggregateAddress(obj, paradict)
-
+	v, err := c.CreateRouterBgpAggregateAddress(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating RouterBgpAggregateAddress resource: %v", err)
 	}
@@ -115,6 +118,7 @@ func resourceRouterBgpAggregateAddressUpdate(d *schema.ResourceData, m interface
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -128,12 +132,15 @@ func resourceRouterBgpAggregateAddressUpdate(d *schema.ResourceData, m interface
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectRouterBgpAggregateAddress(d)
 	if err != nil {
 		return fmt.Errorf("Error updating RouterBgpAggregateAddress resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateRouterBgpAggregateAddress(obj, mkey, paradict)
+	_, err = c.UpdateRouterBgpAggregateAddress(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating RouterBgpAggregateAddress resource: %v", err)
 	}
@@ -152,6 +159,7 @@ func resourceRouterBgpAggregateAddressDelete(d *schema.ResourceData, m interface
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -165,7 +173,11 @@ func resourceRouterBgpAggregateAddressDelete(d *schema.ResourceData, m interface
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	err = c.DeleteRouterBgpAggregateAddress(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteRouterBgpAggregateAddress(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting RouterBgpAggregateAddress resource: %v", err)
 	}

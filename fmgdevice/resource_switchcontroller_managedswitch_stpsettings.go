@@ -98,6 +98,7 @@ func resourceSwitchControllerManagedSwitchStpSettingsUpdate(d *schema.ResourceDa
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -113,12 +114,15 @@ func resourceSwitchControllerManagedSwitchStpSettingsUpdate(d *schema.ResourceDa
 	paradict["vdom"] = device_vdom
 	paradict["managed_switch"] = managed_switch
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSwitchControllerManagedSwitchStpSettings(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SwitchControllerManagedSwitchStpSettings resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateSwitchControllerManagedSwitchStpSettings(obj, mkey, paradict)
+	_, err = c.UpdateSwitchControllerManagedSwitchStpSettings(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating SwitchControllerManagedSwitchStpSettings resource: %v", err)
 	}
@@ -137,6 +141,7 @@ func resourceSwitchControllerManagedSwitchStpSettingsDelete(d *schema.ResourceDa
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -152,7 +157,11 @@ func resourceSwitchControllerManagedSwitchStpSettingsDelete(d *schema.ResourceDa
 	paradict["vdom"] = device_vdom
 	paradict["managed_switch"] = managed_switch
 
-	err = c.DeleteSwitchControllerManagedSwitchStpSettings(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteSwitchControllerManagedSwitchStpSettings(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting SwitchControllerManagedSwitchStpSettings resource: %v", err)
 	}

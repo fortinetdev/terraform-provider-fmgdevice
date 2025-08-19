@@ -73,6 +73,7 @@ The following arguments are supported:
 * `uploadtype` - Types of log files to upload. Separate multiple entries with a space. Valid values: `traffic`, `event`, `virus`, `webfilter`, `attack`, `spamfilter`, `voip`, `dlp`, `app-ctrl`, `netscan`, `dlp-archive`, `IPS`, `anomaly`, `waf`, `gtp`, `dns`, `emailfilter`, `ssh`, `ssl`, `cifs`, `file-filter`, `icap`, `ztna`, `http`, `virtual-patch`.
 
 * `uploaduser` - Username required to log into the FTP server to upload disk log files.
+* `vrf_select` - VRF ID used for connection to server.
 
 
 ## Attribute Reference

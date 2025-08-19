@@ -68,6 +68,7 @@ func resourceSystemAutomationStitchActionsCreate(d *schema.ResourceData, m inter
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -78,13 +79,15 @@ func resourceSystemAutomationStitchActionsCreate(d *schema.ResourceData, m inter
 	paradict["device"] = device_name
 	paradict["automation_stitch"] = automation_stitch
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSystemAutomationStitchActions(d)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemAutomationStitchActions resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateSystemAutomationStitchActions(obj, paradict)
-
+	_, err = c.CreateSystemAutomationStitchActions(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemAutomationStitchActions resource: %v", err)
 	}
@@ -100,6 +103,7 @@ func resourceSystemAutomationStitchActionsUpdate(d *schema.ResourceData, m inter
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -110,12 +114,15 @@ func resourceSystemAutomationStitchActionsUpdate(d *schema.ResourceData, m inter
 	paradict["device"] = device_name
 	paradict["automation_stitch"] = automation_stitch
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSystemAutomationStitchActions(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemAutomationStitchActions resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateSystemAutomationStitchActions(obj, mkey, paradict)
+	_, err = c.UpdateSystemAutomationStitchActions(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemAutomationStitchActions resource: %v", err)
 	}
@@ -134,6 +141,7 @@ func resourceSystemAutomationStitchActionsDelete(d *schema.ResourceData, m inter
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -144,7 +152,11 @@ func resourceSystemAutomationStitchActionsDelete(d *schema.ResourceData, m inter
 	paradict["device"] = device_name
 	paradict["automation_stitch"] = automation_stitch
 
-	err = c.DeleteSystemAutomationStitchActions(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteSystemAutomationStitchActions(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting SystemAutomationStitchActions resource: %v", err)
 	}

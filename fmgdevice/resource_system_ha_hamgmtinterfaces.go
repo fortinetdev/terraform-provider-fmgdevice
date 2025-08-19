@@ -70,6 +70,7 @@ func resourceSystemHaHaMgmtInterfacesCreate(d *schema.ResourceData, m interface{
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -78,13 +79,15 @@ func resourceSystemHaHaMgmtInterfacesCreate(d *schema.ResourceData, m interface{
 	}
 	paradict["device"] = device_name
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSystemHaHaMgmtInterfaces(d)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemHaHaMgmtInterfaces resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateSystemHaHaMgmtInterfaces(obj, paradict)
-
+	_, err = c.CreateSystemHaHaMgmtInterfaces(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemHaHaMgmtInterfaces resource: %v", err)
 	}
@@ -100,6 +103,7 @@ func resourceSystemHaHaMgmtInterfacesUpdate(d *schema.ResourceData, m interface{
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -108,12 +112,15 @@ func resourceSystemHaHaMgmtInterfacesUpdate(d *schema.ResourceData, m interface{
 	}
 	paradict["device"] = device_name
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSystemHaHaMgmtInterfaces(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemHaHaMgmtInterfaces resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateSystemHaHaMgmtInterfaces(obj, mkey, paradict)
+	_, err = c.UpdateSystemHaHaMgmtInterfaces(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemHaHaMgmtInterfaces resource: %v", err)
 	}
@@ -132,6 +139,7 @@ func resourceSystemHaHaMgmtInterfacesDelete(d *schema.ResourceData, m interface{
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -140,7 +148,11 @@ func resourceSystemHaHaMgmtInterfacesDelete(d *schema.ResourceData, m interface{
 	}
 	paradict["device"] = device_name
 
-	err = c.DeleteSystemHaHaMgmtInterfaces(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteSystemHaHaMgmtInterfaces(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting SystemHaHaMgmtInterfaces resource: %v", err)
 	}

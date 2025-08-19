@@ -70,6 +70,7 @@ func resourceSystemFssoPollingUpdate(d *schema.ResourceData, m interface{}) erro
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -78,12 +79,15 @@ func resourceSystemFssoPollingUpdate(d *schema.ResourceData, m interface{}) erro
 	}
 	paradict["device"] = device_name
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSystemFssoPolling(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemFssoPolling resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateSystemFssoPolling(obj, mkey, paradict)
+	_, err = c.UpdateSystemFssoPolling(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemFssoPolling resource: %v", err)
 	}
@@ -102,6 +106,7 @@ func resourceSystemFssoPollingDelete(d *schema.ResourceData, m interface{}) erro
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -110,7 +115,11 @@ func resourceSystemFssoPollingDelete(d *schema.ResourceData, m interface{}) erro
 	}
 	paradict["device"] = device_name
 
-	err = c.DeleteSystemFssoPolling(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteSystemFssoPolling(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting SystemFssoPolling resource: %v", err)
 	}

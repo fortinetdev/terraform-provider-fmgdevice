@@ -53,6 +53,11 @@ func resourceSystemPasswordPolicy() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
+			"login_lockout_upon_downgrade": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
 			"min_change_characters": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
@@ -101,6 +106,7 @@ func resourceSystemPasswordPolicyUpdate(d *schema.ResourceData, m interface{}) e
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -109,12 +115,15 @@ func resourceSystemPasswordPolicyUpdate(d *schema.ResourceData, m interface{}) e
 	}
 	paradict["device"] = device_name
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSystemPasswordPolicy(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemPasswordPolicy resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateSystemPasswordPolicy(obj, mkey, paradict)
+	_, err = c.UpdateSystemPasswordPolicy(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemPasswordPolicy resource: %v", err)
 	}
@@ -133,6 +142,7 @@ func resourceSystemPasswordPolicyDelete(d *schema.ResourceData, m interface{}) e
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -141,7 +151,11 @@ func resourceSystemPasswordPolicyDelete(d *schema.ResourceData, m interface{}) e
 	}
 	paradict["device"] = device_name
 
-	err = c.DeleteSystemPasswordPolicy(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteSystemPasswordPolicy(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting SystemPasswordPolicy resource: %v", err)
 	}
@@ -203,6 +217,10 @@ func flattenSystemPasswordPolicyExpireDay(v interface{}, d *schema.ResourceData,
 }
 
 func flattenSystemPasswordPolicyExpireStatus(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemPasswordPolicyLoginLockoutUponDowngrade(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -282,6 +300,16 @@ func refreshObjectSystemPasswordPolicy(d *schema.ResourceData, o map[string]inte
 			}
 		} else {
 			return fmt.Errorf("Error reading expire_status: %v", err)
+		}
+	}
+
+	if err = d.Set("login_lockout_upon_downgrade", flattenSystemPasswordPolicyLoginLockoutUponDowngrade(o["login-lockout-upon-downgrade"], d, "login_lockout_upon_downgrade")); err != nil {
+		if vv, ok := fortiAPIPatch(o["login-lockout-upon-downgrade"], "SystemPasswordPolicy-LoginLockoutUponDowngrade"); ok {
+			if err = d.Set("login_lockout_upon_downgrade", vv); err != nil {
+				return fmt.Errorf("Error reading login_lockout_upon_downgrade: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading login_lockout_upon_downgrade: %v", err)
 		}
 	}
 
@@ -400,6 +428,10 @@ func expandSystemPasswordPolicyExpireStatus(d *schema.ResourceData, v interface{
 	return v, nil
 }
 
+func expandSystemPasswordPolicyLoginLockoutUponDowngrade(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandSystemPasswordPolicyMinChangeCharacters(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -472,6 +504,15 @@ func getObjectSystemPasswordPolicy(d *schema.ResourceData) (*map[string]interfac
 			return &obj, err
 		} else if t != nil {
 			obj["expire-status"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("login_lockout_upon_downgrade"); ok || d.HasChange("login_lockout_upon_downgrade") {
+		t, err := expandSystemPasswordPolicyLoginLockoutUponDowngrade(d, v, "login_lockout_upon_downgrade")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["login-lockout-upon-downgrade"] = t
 		}
 	}
 

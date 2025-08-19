@@ -65,6 +65,7 @@ func resourceSwitchControllerManagedSwitchCustomCommandCreate(d *schema.Resource
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -80,13 +81,15 @@ func resourceSwitchControllerManagedSwitchCustomCommandCreate(d *schema.Resource
 	paradict["vdom"] = device_vdom
 	paradict["managed_switch"] = managed_switch
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSwitchControllerManagedSwitchCustomCommand(d)
 	if err != nil {
 		return fmt.Errorf("Error creating SwitchControllerManagedSwitchCustomCommand resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateSwitchControllerManagedSwitchCustomCommand(obj, paradict)
-
+	_, err = c.CreateSwitchControllerManagedSwitchCustomCommand(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating SwitchControllerManagedSwitchCustomCommand resource: %v", err)
 	}
@@ -102,6 +105,7 @@ func resourceSwitchControllerManagedSwitchCustomCommandUpdate(d *schema.Resource
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -117,12 +121,15 @@ func resourceSwitchControllerManagedSwitchCustomCommandUpdate(d *schema.Resource
 	paradict["vdom"] = device_vdom
 	paradict["managed_switch"] = managed_switch
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSwitchControllerManagedSwitchCustomCommand(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SwitchControllerManagedSwitchCustomCommand resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateSwitchControllerManagedSwitchCustomCommand(obj, mkey, paradict)
+	_, err = c.UpdateSwitchControllerManagedSwitchCustomCommand(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating SwitchControllerManagedSwitchCustomCommand resource: %v", err)
 	}
@@ -141,6 +148,7 @@ func resourceSwitchControllerManagedSwitchCustomCommandDelete(d *schema.Resource
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -156,7 +164,11 @@ func resourceSwitchControllerManagedSwitchCustomCommandDelete(d *schema.Resource
 	paradict["vdom"] = device_vdom
 	paradict["managed_switch"] = managed_switch
 
-	err = c.DeleteSwitchControllerManagedSwitchCustomCommand(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteSwitchControllerManagedSwitchCustomCommand(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting SwitchControllerManagedSwitchCustomCommand resource: %v", err)
 	}

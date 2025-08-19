@@ -45,16 +45,20 @@ The following arguments are supported:
 * `ha_reboot_controller` - Serial number of the FortiGate unit that will control the reboot process for the federated upgrade of the HA cluster.
 * `ignore_signing_errors` - Allow/reject use of FortiGate firmware images that are unsigned. Valid values: `disable`, `enable`.
 
+* `initial_version` - Firmware version when the upgrade was set up.
 * `known_ha_members` - Known-Ha-Members. The structure of `known_ha_members` block is documented below.
 * `maximum_minutes` - Maximum number of minutes to allow for immediate upgrade preparation.
+* `next_path_index` - The index of the next image to upgrade to.
 * `serial` - Serial number of the node to include.
 * `setup_time` - Upgrade preparation start time in UTC (hh:mm yyyy/mm/dd UTC).
+* `starter_admin` - Admin that started the upgrade.
 * `status` - Current status of the upgrade. Valid values: `disabled`, `initialized`, `downloading`, `ready`, `cancelled`, `confirmed`, `done`, `failed`, `device-disconnected`, `staging`, `final-check`, `upgrade-devices`, `coordinating`.
 
 * `time` - Scheduled upgrade execution time in UTC (hh:mm yyyy/mm/dd UTC).
 * `timing` - Run immediately or at a scheduled time. Valid values: `immediate`, `scheduled`.
 
 * `upgrade_path` - Fortinet OS image versions to upgrade through in major-minor-patch format, such as 7-0-4.
+* `vdom` - Limit upgrade to this virtual domain (VDOM).
 * `dynamic_sort_subtable` - true or false, set this parameter to true when using dynamic for_each + toset to configure and sort sub-tables, please do not set this parameter when configuring static sub-tables.
 
 The `known_ha_members` block supports:

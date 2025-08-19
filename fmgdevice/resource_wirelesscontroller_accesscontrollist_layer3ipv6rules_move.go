@@ -73,6 +73,7 @@ func resourceWirelessControllerAccessControlListLayer3Ipv6RulesMoveUpdate(d *sch
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -90,13 +91,16 @@ func resourceWirelessControllerAccessControlListLayer3Ipv6RulesMoveUpdate(d *sch
 	paradict["access_control_list"] = access_control_list
 	paradict["layer3_ipv6_rules"] = layer3_ipv6_rules
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	target := d.Get("target").(string)
 	obj, err := getObjectWirelessControllerAccessControlListLayer3Ipv6RulesMove(d)
 	if err != nil {
 		return fmt.Errorf("Error updating WirelessControllerAccessControlListLayer3Ipv6RulesMove resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateWirelessControllerAccessControlListLayer3Ipv6RulesMove(obj, mkey, paradict)
+	_, err = c.UpdateWirelessControllerAccessControlListLayer3Ipv6RulesMove(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating WirelessControllerAccessControlListLayer3Ipv6RulesMove resource: %v", err)
 	}

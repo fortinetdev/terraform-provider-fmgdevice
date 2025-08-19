@@ -82,6 +82,7 @@ func resourceIcapServerGroupCreate(d *schema.ResourceData, m interface{}) error 
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -95,13 +96,15 @@ func resourceIcapServerGroupCreate(d *schema.ResourceData, m interface{}) error 
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectIcapServerGroup(d)
 	if err != nil {
 		return fmt.Errorf("Error creating IcapServerGroup resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateIcapServerGroup(obj, paradict)
-
+	_, err = c.CreateIcapServerGroup(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating IcapServerGroup resource: %v", err)
 	}
@@ -117,6 +120,7 @@ func resourceIcapServerGroupUpdate(d *schema.ResourceData, m interface{}) error 
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -130,12 +134,15 @@ func resourceIcapServerGroupUpdate(d *schema.ResourceData, m interface{}) error 
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectIcapServerGroup(d)
 	if err != nil {
 		return fmt.Errorf("Error updating IcapServerGroup resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateIcapServerGroup(obj, mkey, paradict)
+	_, err = c.UpdateIcapServerGroup(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating IcapServerGroup resource: %v", err)
 	}
@@ -154,6 +161,7 @@ func resourceIcapServerGroupDelete(d *schema.ResourceData, m interface{}) error 
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -167,7 +175,11 @@ func resourceIcapServerGroupDelete(d *schema.ResourceData, m interface{}) error 
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	err = c.DeleteIcapServerGroup(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteIcapServerGroup(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting IcapServerGroup resource: %v", err)
 	}

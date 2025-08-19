@@ -62,6 +62,7 @@ func resourceLogWebtrendsFilterFreeStyleCreate(d *schema.ResourceData, m interfa
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -70,13 +71,15 @@ func resourceLogWebtrendsFilterFreeStyleCreate(d *schema.ResourceData, m interfa
 	}
 	paradict["device"] = device_name
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectLogWebtrendsFilterFreeStyle(d)
 	if err != nil {
 		return fmt.Errorf("Error creating LogWebtrendsFilterFreeStyle resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateLogWebtrendsFilterFreeStyle(obj, paradict)
-
+	_, err = c.CreateLogWebtrendsFilterFreeStyle(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating LogWebtrendsFilterFreeStyle resource: %v", err)
 	}
@@ -92,6 +95,7 @@ func resourceLogWebtrendsFilterFreeStyleUpdate(d *schema.ResourceData, m interfa
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -100,12 +104,15 @@ func resourceLogWebtrendsFilterFreeStyleUpdate(d *schema.ResourceData, m interfa
 	}
 	paradict["device"] = device_name
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectLogWebtrendsFilterFreeStyle(d)
 	if err != nil {
 		return fmt.Errorf("Error updating LogWebtrendsFilterFreeStyle resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateLogWebtrendsFilterFreeStyle(obj, mkey, paradict)
+	_, err = c.UpdateLogWebtrendsFilterFreeStyle(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating LogWebtrendsFilterFreeStyle resource: %v", err)
 	}
@@ -124,6 +131,7 @@ func resourceLogWebtrendsFilterFreeStyleDelete(d *schema.ResourceData, m interfa
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -132,7 +140,11 @@ func resourceLogWebtrendsFilterFreeStyleDelete(d *schema.ResourceData, m interfa
 	}
 	paradict["device"] = device_name
 
-	err = c.DeleteLogWebtrendsFilterFreeStyle(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteLogWebtrendsFilterFreeStyle(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting LogWebtrendsFilterFreeStyle resource: %v", err)
 	}

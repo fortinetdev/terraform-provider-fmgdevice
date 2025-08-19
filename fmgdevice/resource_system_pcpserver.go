@@ -163,6 +163,7 @@ func resourceSystemPcpServerUpdate(d *schema.ResourceData, m interface{}) error 
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -176,12 +177,15 @@ func resourceSystemPcpServerUpdate(d *schema.ResourceData, m interface{}) error 
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSystemPcpServer(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemPcpServer resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateSystemPcpServer(obj, mkey, paradict)
+	_, err = c.UpdateSystemPcpServer(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemPcpServer resource: %v", err)
 	}
@@ -200,6 +204,7 @@ func resourceSystemPcpServerDelete(d *schema.ResourceData, m interface{}) error 
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -213,7 +218,11 @@ func resourceSystemPcpServerDelete(d *schema.ResourceData, m interface{}) error 
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	err = c.DeleteSystemPcpServer(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteSystemPcpServer(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting SystemPcpServer resource: %v", err)
 	}

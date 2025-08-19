@@ -85,6 +85,8 @@ The following arguments are supported:
 
 * `anti_replay` - Level of checking for packet replay and TCP sequence checking. Valid values: `disable`, `loose`, `strict`.
 
+* `application_bandwidth_tracking` - Enable/disable application bandwidth tracking. Valid values: `disable`, `enable`.
+
 * `arp_max_entry` - Maximum number of dynamically learned MAC addresses that can be added to the ARP table (131072 - 2147483647, default = 131072).
 * `auth_cert` - Server certificate that the FortiGate uses for HTTPS firewall authentication connections.
 * `auth_http_port` - User authentication HTTP port. (1 - 65535, default = 1000).
@@ -409,6 +411,9 @@ The following arguments are supported:
 * `sflowd_max_children_num` - Maximum number of sflowd child processes allowed to run.
 * `show_backplane_intf` - show/hide backplane interfaces Valid values: `disable`, `enable`.
 
+* `single_vdom_npuvlink` - Enable/disable NPU VDOMs links for single VDOM. Valid values: `disable`, `enable`.
+
+* `slbc_fragment_mem_thresholds` - Maximum memory (MB) used to reassemble SLBC IPv4/IPv6 fragments.
 * `snat_route_change` - Enable/disable the ability to change the source NAT route. Valid values: `disable`, `enable`.
 
 * `special_file_23_support` - Enable/disable detection of those special format files when using Data Loss Prevention. Valid values: `disable`, `enable`.
@@ -490,6 +495,8 @@ The following arguments are supported:
 * `two_factor_ftm_expiry` - FortiToken Mobile session timeout (1 - 168 hours (7 days), default = 72).
 * `two_factor_sms_expiry` - SMS-based two-factor authentication session timeout (30 - 300 sec, default = 60).
 * `udp_idle_timer` - UDP connection session timeout. This command can be useful in managing CPU and memory resources (1 - 86400 seconds (1 day), default = 60).
+* `upgrade_report` - Enable/disable the generation of an upgrade report when upgrading the firmware. Valid values: `disable`, `enable`.
+
 * `url_filter_affinity` - URL filter CPU affinity.
 * `url_filter_count` - URL filter daemon count.
 * `user_device_store_max_devices` - Maximum number of devices allowed in user device store.

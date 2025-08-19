@@ -166,6 +166,7 @@ func resourceRouterPolicyCreate(d *schema.ResourceData, m interface{}) error {
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -179,13 +180,15 @@ func resourceRouterPolicyCreate(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectRouterPolicy(d)
 	if err != nil {
 		return fmt.Errorf("Error creating RouterPolicy resource while getting object: %v", err)
 	}
 
-	v, err := c.CreateRouterPolicy(obj, paradict)
-
+	v, err := c.CreateRouterPolicy(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating RouterPolicy resource: %v", err)
 	}
@@ -210,6 +213,7 @@ func resourceRouterPolicyUpdate(d *schema.ResourceData, m interface{}) error {
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -223,12 +227,15 @@ func resourceRouterPolicyUpdate(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectRouterPolicy(d)
 	if err != nil {
 		return fmt.Errorf("Error updating RouterPolicy resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateRouterPolicy(obj, mkey, paradict)
+	_, err = c.UpdateRouterPolicy(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating RouterPolicy resource: %v", err)
 	}
@@ -247,6 +254,7 @@ func resourceRouterPolicyDelete(d *schema.ResourceData, m interface{}) error {
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -260,7 +268,11 @@ func resourceRouterPolicyDelete(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	err = c.DeleteRouterPolicy(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteRouterPolicy(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting RouterPolicy resource: %v", err)
 	}

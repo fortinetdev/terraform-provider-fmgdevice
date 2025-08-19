@@ -124,10 +124,16 @@ func resourceVpnCertificateLocal() *schema.Resource {
 			"est_http_password": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"est_http_username": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+			},
+			"est_regeneration_method": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
 			},
 			"est_server": &schema.Schema{
 				Type:     schema.TypeString,
@@ -142,6 +148,7 @@ func resourceVpnCertificateLocal() *schema.Resource {
 			"est_srp_password": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"est_srp_username": &schema.Schema{
 				Type:     schema.TypeString,
@@ -229,6 +236,7 @@ func resourceVpnCertificateLocalCreate(d *schema.ResourceData, m interface{}) er
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -242,13 +250,15 @@ func resourceVpnCertificateLocalCreate(d *schema.ResourceData, m interface{}) er
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectVpnCertificateLocal(d)
 	if err != nil {
 		return fmt.Errorf("Error creating VpnCertificateLocal resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateVpnCertificateLocal(obj, paradict)
-
+	_, err = c.CreateVpnCertificateLocal(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating VpnCertificateLocal resource: %v", err)
 	}
@@ -264,6 +274,7 @@ func resourceVpnCertificateLocalUpdate(d *schema.ResourceData, m interface{}) er
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -277,12 +288,15 @@ func resourceVpnCertificateLocalUpdate(d *schema.ResourceData, m interface{}) er
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectVpnCertificateLocal(d)
 	if err != nil {
 		return fmt.Errorf("Error updating VpnCertificateLocal resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateVpnCertificateLocal(obj, mkey, paradict)
+	_, err = c.UpdateVpnCertificateLocal(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating VpnCertificateLocal resource: %v", err)
 	}
@@ -301,6 +315,7 @@ func resourceVpnCertificateLocalDelete(d *schema.ResourceData, m interface{}) er
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -314,7 +329,11 @@ func resourceVpnCertificateLocalDelete(d *schema.ResourceData, m interface{}) er
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	err = c.DeleteVpnCertificateLocal(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteVpnCertificateLocal(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting VpnCertificateLocal resource: %v", err)
 	}
@@ -447,10 +466,14 @@ func flattenVpnCertificateLocalEstClientCert(v interface{}, d *schema.ResourceDa
 }
 
 func flattenVpnCertificateLocalEstHttpPassword(v interface{}, d *schema.ResourceData, pre string) interface{} {
-	return v
+	return convintflist2str(v, d.Get(pre))
 }
 
 func flattenVpnCertificateLocalEstHttpUsername(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenVpnCertificateLocalEstRegenerationMethod(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -463,7 +486,7 @@ func flattenVpnCertificateLocalEstServerCert(v interface{}, d *schema.ResourceDa
 }
 
 func flattenVpnCertificateLocalEstSrpPassword(v interface{}, d *schema.ResourceData, pre string) interface{} {
-	return v
+	return convintflist2str(v, d.Get(pre))
 }
 
 func flattenVpnCertificateLocalEstSrpUsername(v interface{}, d *schema.ResourceData, pre string) interface{} {
@@ -725,6 +748,16 @@ func refreshObjectVpnCertificateLocal(d *schema.ResourceData, o map[string]inter
 		}
 	}
 
+	if err = d.Set("est_regeneration_method", flattenVpnCertificateLocalEstRegenerationMethod(o["est-regeneration-method"], d, "est_regeneration_method")); err != nil {
+		if vv, ok := fortiAPIPatch(o["est-regeneration-method"], "VpnCertificateLocal-EstRegenerationMethod"); ok {
+			if err = d.Set("est_regeneration_method", vv); err != nil {
+				return fmt.Errorf("Error reading est_regeneration_method: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading est_regeneration_method: %v", err)
+		}
+	}
+
 	if err = d.Set("est_server", flattenVpnCertificateLocalEstServer(o["est-server"], d, "est_server")); err != nil {
 		if vv, ok := fortiAPIPatch(o["est-server"], "VpnCertificateLocal-EstServer"); ok {
 			if err = d.Set("est_server", vv); err != nil {
@@ -977,10 +1010,14 @@ func expandVpnCertificateLocalEstClientCert(d *schema.ResourceData, v interface{
 }
 
 func expandVpnCertificateLocalEstHttpPassword(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
-	return v, nil
+	return convstr2list(v, nil), nil
 }
 
 func expandVpnCertificateLocalEstHttpUsername(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandVpnCertificateLocalEstRegenerationMethod(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -993,7 +1030,7 @@ func expandVpnCertificateLocalEstServerCert(d *schema.ResourceData, v interface{
 }
 
 func expandVpnCertificateLocalEstSrpPassword(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
-	return v, nil
+	return convstr2list(v, nil), nil
 }
 
 func expandVpnCertificateLocalEstSrpUsername(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
@@ -1240,6 +1277,15 @@ func getObjectVpnCertificateLocal(d *schema.ResourceData) (*map[string]interface
 			return &obj, err
 		} else if t != nil {
 			obj["est-http-username"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("est_regeneration_method"); ok || d.HasChange("est_regeneration_method") {
+		t, err := expandVpnCertificateLocalEstRegenerationMethod(d, v, "est_regeneration_method")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["est-regeneration-method"] = t
 		}
 	}
 

@@ -59,6 +59,7 @@ func resourceRouterMulticast6PimSmGlobalRpAddressCreate(d *schema.ResourceData, 
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -72,13 +73,15 @@ func resourceRouterMulticast6PimSmGlobalRpAddressCreate(d *schema.ResourceData, 
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectRouterMulticast6PimSmGlobalRpAddress(d)
 	if err != nil {
 		return fmt.Errorf("Error creating RouterMulticast6PimSmGlobalRpAddress resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateRouterMulticast6PimSmGlobalRpAddress(obj, paradict)
-
+	_, err = c.CreateRouterMulticast6PimSmGlobalRpAddress(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating RouterMulticast6PimSmGlobalRpAddress resource: %v", err)
 	}
@@ -94,6 +97,7 @@ func resourceRouterMulticast6PimSmGlobalRpAddressUpdate(d *schema.ResourceData, 
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -107,12 +111,15 @@ func resourceRouterMulticast6PimSmGlobalRpAddressUpdate(d *schema.ResourceData, 
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectRouterMulticast6PimSmGlobalRpAddress(d)
 	if err != nil {
 		return fmt.Errorf("Error updating RouterMulticast6PimSmGlobalRpAddress resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateRouterMulticast6PimSmGlobalRpAddress(obj, mkey, paradict)
+	_, err = c.UpdateRouterMulticast6PimSmGlobalRpAddress(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating RouterMulticast6PimSmGlobalRpAddress resource: %v", err)
 	}
@@ -131,6 +138,7 @@ func resourceRouterMulticast6PimSmGlobalRpAddressDelete(d *schema.ResourceData, 
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -144,7 +152,11 @@ func resourceRouterMulticast6PimSmGlobalRpAddressDelete(d *schema.ResourceData, 
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	err = c.DeleteRouterMulticast6PimSmGlobalRpAddress(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteRouterMulticast6PimSmGlobalRpAddress(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting RouterMulticast6PimSmGlobalRpAddress resource: %v", err)
 	}

@@ -70,6 +70,7 @@ func resourceDlpExactDataMatchColumnsCreate(d *schema.ResourceData, m interface{
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -85,13 +86,15 @@ func resourceDlpExactDataMatchColumnsCreate(d *schema.ResourceData, m interface{
 	paradict["vdom"] = device_vdom
 	paradict["exact_data_match"] = exact_data_match
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectDlpExactDataMatchColumns(d)
 	if err != nil {
 		return fmt.Errorf("Error creating DlpExactDataMatchColumns resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateDlpExactDataMatchColumns(obj, paradict)
-
+	_, err = c.CreateDlpExactDataMatchColumns(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating DlpExactDataMatchColumns resource: %v", err)
 	}
@@ -107,6 +110,7 @@ func resourceDlpExactDataMatchColumnsUpdate(d *schema.ResourceData, m interface{
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -122,12 +126,15 @@ func resourceDlpExactDataMatchColumnsUpdate(d *schema.ResourceData, m interface{
 	paradict["vdom"] = device_vdom
 	paradict["exact_data_match"] = exact_data_match
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectDlpExactDataMatchColumns(d)
 	if err != nil {
 		return fmt.Errorf("Error updating DlpExactDataMatchColumns resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateDlpExactDataMatchColumns(obj, mkey, paradict)
+	_, err = c.UpdateDlpExactDataMatchColumns(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating DlpExactDataMatchColumns resource: %v", err)
 	}
@@ -146,6 +153,7 @@ func resourceDlpExactDataMatchColumnsDelete(d *schema.ResourceData, m interface{
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -161,7 +169,11 @@ func resourceDlpExactDataMatchColumnsDelete(d *schema.ResourceData, m interface{
 	paradict["vdom"] = device_vdom
 	paradict["exact_data_match"] = exact_data_match
 
-	err = c.DeleteDlpExactDataMatchColumns(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteDlpExactDataMatchColumns(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting DlpExactDataMatchColumns resource: %v", err)
 	}

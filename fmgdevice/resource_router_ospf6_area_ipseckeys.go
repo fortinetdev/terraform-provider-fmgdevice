@@ -73,6 +73,7 @@ func resourceRouterOspf6AreaIpsecKeysCreate(d *schema.ResourceData, m interface{
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -88,13 +89,15 @@ func resourceRouterOspf6AreaIpsecKeysCreate(d *schema.ResourceData, m interface{
 	paradict["vdom"] = device_vdom
 	paradict["area"] = area
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectRouterOspf6AreaIpsecKeys(d)
 	if err != nil {
 		return fmt.Errorf("Error creating RouterOspf6AreaIpsecKeys resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateRouterOspf6AreaIpsecKeys(obj, paradict)
-
+	_, err = c.CreateRouterOspf6AreaIpsecKeys(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating RouterOspf6AreaIpsecKeys resource: %v", err)
 	}
@@ -110,6 +113,7 @@ func resourceRouterOspf6AreaIpsecKeysUpdate(d *schema.ResourceData, m interface{
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -125,12 +129,15 @@ func resourceRouterOspf6AreaIpsecKeysUpdate(d *schema.ResourceData, m interface{
 	paradict["vdom"] = device_vdom
 	paradict["area"] = area
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectRouterOspf6AreaIpsecKeys(d)
 	if err != nil {
 		return fmt.Errorf("Error updating RouterOspf6AreaIpsecKeys resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateRouterOspf6AreaIpsecKeys(obj, mkey, paradict)
+	_, err = c.UpdateRouterOspf6AreaIpsecKeys(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating RouterOspf6AreaIpsecKeys resource: %v", err)
 	}
@@ -149,6 +156,7 @@ func resourceRouterOspf6AreaIpsecKeysDelete(d *schema.ResourceData, m interface{
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -164,7 +172,11 @@ func resourceRouterOspf6AreaIpsecKeysDelete(d *schema.ResourceData, m interface{
 	paradict["vdom"] = device_vdom
 	paradict["area"] = area
 
-	err = c.DeleteRouterOspf6AreaIpsecKeys(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteRouterOspf6AreaIpsecKeys(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting RouterOspf6AreaIpsecKeys resource: %v", err)
 	}

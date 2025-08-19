@@ -61,6 +61,7 @@ func resourceSystemNdProxyUpdate(d *schema.ResourceData, m interface{}) error {
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -74,12 +75,15 @@ func resourceSystemNdProxyUpdate(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSystemNdProxy(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemNdProxy resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateSystemNdProxy(obj, mkey, paradict)
+	_, err = c.UpdateSystemNdProxy(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemNdProxy resource: %v", err)
 	}
@@ -98,6 +102,7 @@ func resourceSystemNdProxyDelete(d *schema.ResourceData, m interface{}) error {
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -111,7 +116,11 @@ func resourceSystemNdProxyDelete(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	err = c.DeleteSystemNdProxy(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteSystemNdProxy(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting SystemNdProxy resource: %v", err)
 	}

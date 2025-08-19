@@ -54,6 +54,10 @@ func resourceSystemFortindr() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"vrf_select": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+			},
 		},
 	}
 }
@@ -64,6 +68,7 @@ func resourceSystemFortindrUpdate(d *schema.ResourceData, m interface{}) error {
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -72,12 +77,15 @@ func resourceSystemFortindrUpdate(d *schema.ResourceData, m interface{}) error {
 	}
 	paradict["device"] = device_name
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSystemFortindr(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemFortindr resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateSystemFortindr(obj, mkey, paradict)
+	_, err = c.UpdateSystemFortindr(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemFortindr resource: %v", err)
 	}
@@ -96,6 +104,7 @@ func resourceSystemFortindrDelete(d *schema.ResourceData, m interface{}) error {
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -104,7 +113,11 @@ func resourceSystemFortindrDelete(d *schema.ResourceData, m interface{}) error {
 	}
 	paradict["device"] = device_name
 
-	err = c.DeleteSystemFortindr(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteSystemFortindr(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting SystemFortindr resource: %v", err)
 	}
@@ -169,6 +182,10 @@ func flattenSystemFortindrStatus(v interface{}, d *schema.ResourceData, pre stri
 	return v
 }
 
+func flattenSystemFortindrVrfSelect(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func refreshObjectSystemFortindr(d *schema.ResourceData, o map[string]interface{}) error {
 	var err error
 
@@ -212,6 +229,16 @@ func refreshObjectSystemFortindr(d *schema.ResourceData, o map[string]interface{
 		}
 	}
 
+	if err = d.Set("vrf_select", flattenSystemFortindrVrfSelect(o["vrf-select"], d, "vrf_select")); err != nil {
+		if vv, ok := fortiAPIPatch(o["vrf-select"], "SystemFortindr-VrfSelect"); ok {
+			if err = d.Set("vrf_select", vv); err != nil {
+				return fmt.Errorf("Error reading vrf_select: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading vrf_select: %v", err)
+		}
+	}
+
 	return nil
 }
 
@@ -234,6 +261,10 @@ func expandSystemFortindrSourceIp(d *schema.ResourceData, v interface{}, pre str
 }
 
 func expandSystemFortindrStatus(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemFortindrVrfSelect(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -273,6 +304,15 @@ func getObjectSystemFortindr(d *schema.ResourceData) (*map[string]interface{}, e
 			return &obj, err
 		} else if t != nil {
 			obj["status"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("vrf_select"); ok || d.HasChange("vrf_select") {
+		t, err := expandSystemFortindrVrfSelect(d, v, "vrf_select")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["vrf-select"] = t
 		}
 	}
 

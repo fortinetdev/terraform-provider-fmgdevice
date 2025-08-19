@@ -90,6 +90,7 @@ func resourceSwitchControllerFortilinkSettingsNacPortsUpdate(d *schema.ResourceD
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -105,12 +106,15 @@ func resourceSwitchControllerFortilinkSettingsNacPortsUpdate(d *schema.ResourceD
 	paradict["vdom"] = device_vdom
 	paradict["fortilink_settings"] = fortilink_settings
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSwitchControllerFortilinkSettingsNacPorts(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SwitchControllerFortilinkSettingsNacPorts resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateSwitchControllerFortilinkSettingsNacPorts(obj, mkey, paradict)
+	_, err = c.UpdateSwitchControllerFortilinkSettingsNacPorts(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating SwitchControllerFortilinkSettingsNacPorts resource: %v", err)
 	}
@@ -129,6 +133,7 @@ func resourceSwitchControllerFortilinkSettingsNacPortsDelete(d *schema.ResourceD
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -144,7 +149,11 @@ func resourceSwitchControllerFortilinkSettingsNacPortsDelete(d *schema.ResourceD
 	paradict["vdom"] = device_vdom
 	paradict["fortilink_settings"] = fortilink_settings
 
-	err = c.DeleteSwitchControllerFortilinkSettingsNacPorts(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteSwitchControllerFortilinkSettingsNacPorts(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting SwitchControllerFortilinkSettingsNacPorts resource: %v", err)
 	}

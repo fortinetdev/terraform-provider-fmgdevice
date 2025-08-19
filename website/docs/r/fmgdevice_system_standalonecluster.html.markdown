@@ -11,6 +11,7 @@ Configure FortiGate Session Life Support Protocol (FGSP) cluster attributes.
 
 ~> The following variables have sub resource. Avoid using them together, otherwise conflicts and overwrites may occur.
 >- `cluster_peer`: `fmgdevice_system_standalonecluster_clusterpeer`
+>- `monitor_prefix`: `fmgdevice_system_standalonecluster_monitorprefix`
 
 
 
@@ -74,6 +75,7 @@ The following arguments are supported:
 * `layer2_connection` - Indicate whether layer 2 connections are present among FGSP members. Valid values: `unavailable`, `available`.
 
 * `monitor_interface` - Configure a list of interfaces on which to monitor itself. Monitoring is performed on the status of the interface.
+* `monitor_prefix` - Monitor-Prefix. The structure of `monitor_prefix` block is documented below.
 * `pingsvr_monitor_interface` - List of pingsvr monitor interface to check for remote IP monitoring.
 * `psksecret` - Pre-shared secret for session synchronization (ASCII string or hexadecimal encoded with a leading 0x).
 * `session_sync_dev` - Offload session-sync process to kernel and sync sessions using connected interface(s) directly.
@@ -116,6 +118,13 @@ The `custom_service` block supports:
 * `dst_port_range` - Custom service destination port range.
 * `id` - Custom service ID.
 * `src_port_range` - Custom service source port range.
+
+The `monitor_prefix` block supports:
+
+* `id` - ID.
+* `prefix` - Prefix.
+* `vdom` - VDOM name.
+* `vrf` - VRF ID.
 
 
 ## Attribute Reference

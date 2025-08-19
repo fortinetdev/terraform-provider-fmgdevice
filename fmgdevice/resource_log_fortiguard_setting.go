@@ -98,6 +98,10 @@ func resourceLogFortiguardSetting() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
+			"vrf_select": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+			},
 		},
 	}
 }
@@ -108,6 +112,7 @@ func resourceLogFortiguardSettingUpdate(d *schema.ResourceData, m interface{}) e
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -116,12 +121,15 @@ func resourceLogFortiguardSettingUpdate(d *schema.ResourceData, m interface{}) e
 	}
 	paradict["device"] = device_name
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectLogFortiguardSetting(d)
 	if err != nil {
 		return fmt.Errorf("Error updating LogFortiguardSetting resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateLogFortiguardSetting(obj, mkey, paradict)
+	_, err = c.UpdateLogFortiguardSetting(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating LogFortiguardSetting resource: %v", err)
 	}
@@ -140,6 +148,7 @@ func resourceLogFortiguardSettingDelete(d *schema.ResourceData, m interface{}) e
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -148,7 +157,11 @@ func resourceLogFortiguardSettingDelete(d *schema.ResourceData, m interface{}) e
 	}
 	paradict["device"] = device_name
 
-	err = c.DeleteLogFortiguardSetting(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteLogFortiguardSetting(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting LogFortiguardSetting resource: %v", err)
 	}
@@ -250,6 +263,10 @@ func flattenLogFortiguardSettingUploadOption(v interface{}, d *schema.ResourceDa
 }
 
 func flattenLogFortiguardSettingUploadTime(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenLogFortiguardSettingVrfSelect(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -396,6 +413,16 @@ func refreshObjectLogFortiguardSetting(d *schema.ResourceData, o map[string]inte
 		}
 	}
 
+	if err = d.Set("vrf_select", flattenLogFortiguardSettingVrfSelect(o["vrf-select"], d, "vrf_select")); err != nil {
+		if vv, ok := fortiAPIPatch(o["vrf-select"], "LogFortiguardSetting-VrfSelect"); ok {
+			if err = d.Set("vrf_select", vv); err != nil {
+				return fmt.Errorf("Error reading vrf_select: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading vrf_select: %v", err)
+		}
+	}
+
 	return nil
 }
 
@@ -458,6 +485,10 @@ func expandLogFortiguardSettingUploadOption(d *schema.ResourceData, v interface{
 }
 
 func expandLogFortiguardSettingUploadTime(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandLogFortiguardSettingVrfSelect(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -587,6 +618,15 @@ func getObjectLogFortiguardSetting(d *schema.ResourceData) (*map[string]interfac
 			return &obj, err
 		} else if t != nil {
 			obj["upload-time"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("vrf_select"); ok || d.HasChange("vrf_select") {
+		t, err := expandLogFortiguardSettingVrfSelect(d, v, "vrf_select")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["vrf-select"] = t
 		}
 	}
 

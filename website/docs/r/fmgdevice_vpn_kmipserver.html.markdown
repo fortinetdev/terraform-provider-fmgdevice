@@ -48,6 +48,7 @@ The following arguments are supported:
 * `ssl_min_proto_version` - Minimum supported protocol version for SSL/TLS connections (default is to follow system global setting). Valid values: `default`, `TLSv1`, `TLSv1-1`, `TLSv1-2`, `SSLv3`, `TLSv1-3`.
 
 * `username` - User name to use for connectivity to the KMIP server.
+* `vrf_select` - VRF ID used for connection to server.
 * `dynamic_sort_subtable` - true or false, set this parameter to true when using dynamic for_each + toset to configure and sort sub-tables, please do not set this parameter when configuring static sub-tables.
 
 The `server_list` block supports:

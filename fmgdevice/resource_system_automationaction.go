@@ -148,6 +148,11 @@ func resourceSystemAutomationAction() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
+			"duration": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+				Computed: true,
+			},
 			"email_from": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -254,6 +259,10 @@ func resourceSystemAutomationAction() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
+			"regular_expression": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 			"replacement_message": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -320,6 +329,7 @@ func resourceSystemAutomationActionCreate(d *schema.ResourceData, m interface{})
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -328,13 +338,15 @@ func resourceSystemAutomationActionCreate(d *schema.ResourceData, m interface{})
 	}
 	paradict["device"] = device_name
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSystemAutomationAction(d)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemAutomationAction resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateSystemAutomationAction(obj, paradict)
-
+	_, err = c.CreateSystemAutomationAction(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemAutomationAction resource: %v", err)
 	}
@@ -350,6 +362,7 @@ func resourceSystemAutomationActionUpdate(d *schema.ResourceData, m interface{})
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -358,12 +371,15 @@ func resourceSystemAutomationActionUpdate(d *schema.ResourceData, m interface{})
 	}
 	paradict["device"] = device_name
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSystemAutomationAction(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemAutomationAction resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateSystemAutomationAction(obj, mkey, paradict)
+	_, err = c.UpdateSystemAutomationAction(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemAutomationAction resource: %v", err)
 	}
@@ -382,6 +398,7 @@ func resourceSystemAutomationActionDelete(d *schema.ResourceData, m interface{})
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -390,7 +407,11 @@ func resourceSystemAutomationActionDelete(d *schema.ResourceData, m interface{})
 	}
 	paradict["device"] = device_name
 
-	err = c.DeleteSystemAutomationAction(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteSystemAutomationAction(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting SystemAutomationAction resource: %v", err)
 	}
@@ -527,6 +548,10 @@ func flattenSystemAutomationActionDescription(v interface{}, d *schema.ResourceD
 	return v
 }
 
+func flattenSystemAutomationActionDuration(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenSystemAutomationActionEmailFrom(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -659,6 +684,10 @@ func flattenSystemAutomationActionPort(v interface{}, d *schema.ResourceData, pr
 }
 
 func flattenSystemAutomationActionProtocol(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemAutomationActionRegularExpression(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -933,6 +962,16 @@ func refreshObjectSystemAutomationAction(d *schema.ResourceData, o map[string]in
 		}
 	}
 
+	if err = d.Set("duration", flattenSystemAutomationActionDuration(o["duration"], d, "duration")); err != nil {
+		if vv, ok := fortiAPIPatch(o["duration"], "SystemAutomationAction-Duration"); ok {
+			if err = d.Set("duration", vv); err != nil {
+				return fmt.Errorf("Error reading duration: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading duration: %v", err)
+		}
+	}
+
 	if err = d.Set("email_from", flattenSystemAutomationActionEmailFrom(o["email-from"], d, "email_from")); err != nil {
 		if vv, ok := fortiAPIPatch(o["email-from"], "SystemAutomationAction-EmailFrom"); ok {
 			if err = d.Set("email_from", vv); err != nil {
@@ -1144,6 +1183,16 @@ func refreshObjectSystemAutomationAction(d *schema.ResourceData, o map[string]in
 			}
 		} else {
 			return fmt.Errorf("Error reading protocol: %v", err)
+		}
+	}
+
+	if err = d.Set("regular_expression", flattenSystemAutomationActionRegularExpression(o["regular-expression"], d, "regular_expression")); err != nil {
+		if vv, ok := fortiAPIPatch(o["regular-expression"], "SystemAutomationAction-RegularExpression"); ok {
+			if err = d.Set("regular_expression", vv); err != nil {
+				return fmt.Errorf("Error reading regular_expression: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading regular_expression: %v", err)
 		}
 	}
 
@@ -1366,6 +1415,10 @@ func expandSystemAutomationActionDescription(d *schema.ResourceData, v interface
 	return v, nil
 }
 
+func expandSystemAutomationActionDuration(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandSystemAutomationActionEmailFrom(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -1490,6 +1543,10 @@ func expandSystemAutomationActionPort(d *schema.ResourceData, v interface{}, pre
 }
 
 func expandSystemAutomationActionProtocol(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemAutomationActionRegularExpression(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -1765,6 +1822,15 @@ func getObjectSystemAutomationAction(d *schema.ResourceData) (*map[string]interf
 		}
 	}
 
+	if v, ok := d.GetOk("duration"); ok || d.HasChange("duration") {
+		t, err := expandSystemAutomationActionDuration(d, v, "duration")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["duration"] = t
+		}
+	}
+
 	if v, ok := d.GetOk("email_from"); ok || d.HasChange("email_from") {
 		t, err := expandSystemAutomationActionEmailFrom(d, v, "email_from")
 		if err != nil {
@@ -1942,6 +2008,15 @@ func getObjectSystemAutomationAction(d *schema.ResourceData) (*map[string]interf
 			return &obj, err
 		} else if t != nil {
 			obj["protocol"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("regular_expression"); ok || d.HasChange("regular_expression") {
+		t, err := expandSystemAutomationActionRegularExpression(d, v, "regular_expression")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["regular-expression"] = t
 		}
 	}
 

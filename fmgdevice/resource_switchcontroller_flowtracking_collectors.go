@@ -68,6 +68,7 @@ func resourceSwitchControllerFlowTrackingCollectorsCreate(d *schema.ResourceData
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -81,13 +82,15 @@ func resourceSwitchControllerFlowTrackingCollectorsCreate(d *schema.ResourceData
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSwitchControllerFlowTrackingCollectors(d)
 	if err != nil {
 		return fmt.Errorf("Error creating SwitchControllerFlowTrackingCollectors resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateSwitchControllerFlowTrackingCollectors(obj, paradict)
-
+	_, err = c.CreateSwitchControllerFlowTrackingCollectors(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating SwitchControllerFlowTrackingCollectors resource: %v", err)
 	}
@@ -103,6 +106,7 @@ func resourceSwitchControllerFlowTrackingCollectorsUpdate(d *schema.ResourceData
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -116,12 +120,15 @@ func resourceSwitchControllerFlowTrackingCollectorsUpdate(d *schema.ResourceData
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSwitchControllerFlowTrackingCollectors(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SwitchControllerFlowTrackingCollectors resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateSwitchControllerFlowTrackingCollectors(obj, mkey, paradict)
+	_, err = c.UpdateSwitchControllerFlowTrackingCollectors(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating SwitchControllerFlowTrackingCollectors resource: %v", err)
 	}
@@ -140,6 +147,7 @@ func resourceSwitchControllerFlowTrackingCollectorsDelete(d *schema.ResourceData
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -153,7 +161,11 @@ func resourceSwitchControllerFlowTrackingCollectorsDelete(d *schema.ResourceData
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	err = c.DeleteSwitchControllerFlowTrackingCollectors(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteSwitchControllerFlowTrackingCollectors(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting SwitchControllerFlowTrackingCollectors resource: %v", err)
 	}

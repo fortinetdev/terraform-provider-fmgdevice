@@ -45,6 +45,12 @@ func resourceZtnaTrafficForwardProxy() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"auth_virtual_host": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Computed: true,
+			},
 			"client_cert": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -54,6 +60,12 @@ func resourceZtnaTrafficForwardProxy() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
+			"decrypted_traffic_mirror": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Computed: true,
+			},
 			"empty_cert_action": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -61,6 +73,12 @@ func resourceZtnaTrafficForwardProxy() *schema.Resource {
 			},
 			"h3_support": &schema.Schema{
 				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+			"host": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
 				Optional: true,
 				Computed: true,
 			},
@@ -374,6 +392,18 @@ func resourceZtnaTrafficForwardProxy() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"vip": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Computed: true,
+			},
+			"vip6": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Computed: true,
+			},
 			"dynamic_sort_subtable": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -388,6 +418,7 @@ func resourceZtnaTrafficForwardProxyCreate(d *schema.ResourceData, m interface{}
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -401,13 +432,15 @@ func resourceZtnaTrafficForwardProxyCreate(d *schema.ResourceData, m interface{}
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectZtnaTrafficForwardProxy(d)
 	if err != nil {
 		return fmt.Errorf("Error creating ZtnaTrafficForwardProxy resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateZtnaTrafficForwardProxy(obj, paradict)
-
+	_, err = c.CreateZtnaTrafficForwardProxy(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating ZtnaTrafficForwardProxy resource: %v", err)
 	}
@@ -423,6 +456,7 @@ func resourceZtnaTrafficForwardProxyUpdate(d *schema.ResourceData, m interface{}
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -436,12 +470,15 @@ func resourceZtnaTrafficForwardProxyUpdate(d *schema.ResourceData, m interface{}
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectZtnaTrafficForwardProxy(d)
 	if err != nil {
 		return fmt.Errorf("Error updating ZtnaTrafficForwardProxy resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateZtnaTrafficForwardProxy(obj, mkey, paradict)
+	_, err = c.UpdateZtnaTrafficForwardProxy(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating ZtnaTrafficForwardProxy resource: %v", err)
 	}
@@ -460,6 +497,7 @@ func resourceZtnaTrafficForwardProxyDelete(d *schema.ResourceData, m interface{}
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -473,7 +511,11 @@ func resourceZtnaTrafficForwardProxyDelete(d *schema.ResourceData, m interface{}
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	err = c.DeleteZtnaTrafficForwardProxy(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteZtnaTrafficForwardProxy(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting ZtnaTrafficForwardProxy resource: %v", err)
 	}
@@ -537,6 +579,10 @@ func flattenZtnaTrafficForwardProxyAuthPortal(v interface{}, d *schema.ResourceD
 	return v
 }
 
+func flattenZtnaTrafficForwardProxyAuthVirtualHost(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
 func flattenZtnaTrafficForwardProxyClientCert(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -545,12 +591,20 @@ func flattenZtnaTrafficForwardProxyComment(v interface{}, d *schema.ResourceData
 	return v
 }
 
+func flattenZtnaTrafficForwardProxyDecryptedTrafficMirror(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
 func flattenZtnaTrafficForwardProxyEmptyCertAction(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
 func flattenZtnaTrafficForwardProxyH3Support(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
+}
+
+func flattenZtnaTrafficForwardProxyHost(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
 }
 
 func flattenZtnaTrafficForwardProxyInterface(v interface{}, d *schema.ResourceData, pre string) interface{} {
@@ -928,6 +982,14 @@ func flattenZtnaTrafficForwardProxyUserAgentDetect(v interface{}, d *schema.Reso
 	return v
 }
 
+func flattenZtnaTrafficForwardProxyVip(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
+func flattenZtnaTrafficForwardProxyVip6(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
 func refreshObjectZtnaTrafficForwardProxy(d *schema.ResourceData, o map[string]interface{}) error {
 	var err error
 
@@ -942,6 +1004,16 @@ func refreshObjectZtnaTrafficForwardProxy(d *schema.ResourceData, o map[string]i
 			}
 		} else {
 			return fmt.Errorf("Error reading auth_portal: %v", err)
+		}
+	}
+
+	if err = d.Set("auth_virtual_host", flattenZtnaTrafficForwardProxyAuthVirtualHost(o["auth-virtual-host"], d, "auth_virtual_host")); err != nil {
+		if vv, ok := fortiAPIPatch(o["auth-virtual-host"], "ZtnaTrafficForwardProxy-AuthVirtualHost"); ok {
+			if err = d.Set("auth_virtual_host", vv); err != nil {
+				return fmt.Errorf("Error reading auth_virtual_host: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading auth_virtual_host: %v", err)
 		}
 	}
 
@@ -965,6 +1037,16 @@ func refreshObjectZtnaTrafficForwardProxy(d *schema.ResourceData, o map[string]i
 		}
 	}
 
+	if err = d.Set("decrypted_traffic_mirror", flattenZtnaTrafficForwardProxyDecryptedTrafficMirror(o["decrypted-traffic-mirror"], d, "decrypted_traffic_mirror")); err != nil {
+		if vv, ok := fortiAPIPatch(o["decrypted-traffic-mirror"], "ZtnaTrafficForwardProxy-DecryptedTrafficMirror"); ok {
+			if err = d.Set("decrypted_traffic_mirror", vv); err != nil {
+				return fmt.Errorf("Error reading decrypted_traffic_mirror: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading decrypted_traffic_mirror: %v", err)
+		}
+	}
+
 	if err = d.Set("empty_cert_action", flattenZtnaTrafficForwardProxyEmptyCertAction(o["empty-cert-action"], d, "empty_cert_action")); err != nil {
 		if vv, ok := fortiAPIPatch(o["empty-cert-action"], "ZtnaTrafficForwardProxy-EmptyCertAction"); ok {
 			if err = d.Set("empty_cert_action", vv); err != nil {
@@ -982,6 +1064,16 @@ func refreshObjectZtnaTrafficForwardProxy(d *schema.ResourceData, o map[string]i
 			}
 		} else {
 			return fmt.Errorf("Error reading h3_support: %v", err)
+		}
+	}
+
+	if err = d.Set("host", flattenZtnaTrafficForwardProxyHost(o["host"], d, "host")); err != nil {
+		if vv, ok := fortiAPIPatch(o["host"], "ZtnaTrafficForwardProxy-Host"); ok {
+			if err = d.Set("host", vv); err != nil {
+				return fmt.Errorf("Error reading host: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading host: %v", err)
 		}
 	}
 
@@ -1487,6 +1579,26 @@ func refreshObjectZtnaTrafficForwardProxy(d *schema.ResourceData, o map[string]i
 		}
 	}
 
+	if err = d.Set("vip", flattenZtnaTrafficForwardProxyVip(o["vip"], d, "vip")); err != nil {
+		if vv, ok := fortiAPIPatch(o["vip"], "ZtnaTrafficForwardProxy-Vip"); ok {
+			if err = d.Set("vip", vv); err != nil {
+				return fmt.Errorf("Error reading vip: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading vip: %v", err)
+		}
+	}
+
+	if err = d.Set("vip6", flattenZtnaTrafficForwardProxyVip6(o["vip6"], d, "vip6")); err != nil {
+		if vv, ok := fortiAPIPatch(o["vip6"], "ZtnaTrafficForwardProxy-Vip6"); ok {
+			if err = d.Set("vip6", vv); err != nil {
+				return fmt.Errorf("Error reading vip6: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading vip6: %v", err)
+		}
+	}
+
 	return nil
 }
 
@@ -1500,6 +1612,10 @@ func expandZtnaTrafficForwardProxyAuthPortal(d *schema.ResourceData, v interface
 	return v, nil
 }
 
+func expandZtnaTrafficForwardProxyAuthVirtualHost(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
 func expandZtnaTrafficForwardProxyClientCert(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -1508,12 +1624,20 @@ func expandZtnaTrafficForwardProxyComment(d *schema.ResourceData, v interface{},
 	return v, nil
 }
 
+func expandZtnaTrafficForwardProxyDecryptedTrafficMirror(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
 func expandZtnaTrafficForwardProxyEmptyCertAction(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
 func expandZtnaTrafficForwardProxyH3Support(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
+}
+
+func expandZtnaTrafficForwardProxyHost(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
 }
 
 func expandZtnaTrafficForwardProxyInterface(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
@@ -1868,6 +1992,14 @@ func expandZtnaTrafficForwardProxyUserAgentDetect(d *schema.ResourceData, v inte
 	return v, nil
 }
 
+func expandZtnaTrafficForwardProxyVip(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandZtnaTrafficForwardProxyVip6(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
 func getObjectZtnaTrafficForwardProxy(d *schema.ResourceData) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
@@ -1877,6 +2009,15 @@ func getObjectZtnaTrafficForwardProxy(d *schema.ResourceData) (*map[string]inter
 			return &obj, err
 		} else if t != nil {
 			obj["auth-portal"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("auth_virtual_host"); ok || d.HasChange("auth_virtual_host") {
+		t, err := expandZtnaTrafficForwardProxyAuthVirtualHost(d, v, "auth_virtual_host")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["auth-virtual-host"] = t
 		}
 	}
 
@@ -1898,6 +2039,15 @@ func getObjectZtnaTrafficForwardProxy(d *schema.ResourceData) (*map[string]inter
 		}
 	}
 
+	if v, ok := d.GetOk("decrypted_traffic_mirror"); ok || d.HasChange("decrypted_traffic_mirror") {
+		t, err := expandZtnaTrafficForwardProxyDecryptedTrafficMirror(d, v, "decrypted_traffic_mirror")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["decrypted-traffic-mirror"] = t
+		}
+	}
+
 	if v, ok := d.GetOk("empty_cert_action"); ok || d.HasChange("empty_cert_action") {
 		t, err := expandZtnaTrafficForwardProxyEmptyCertAction(d, v, "empty_cert_action")
 		if err != nil {
@@ -1913,6 +2063,15 @@ func getObjectZtnaTrafficForwardProxy(d *schema.ResourceData) (*map[string]inter
 			return &obj, err
 		} else if t != nil {
 			obj["h3-support"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("host"); ok || d.HasChange("host") {
+		t, err := expandZtnaTrafficForwardProxyHost(d, v, "host")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["host"] = t
 		}
 	}
 
@@ -2327,6 +2486,24 @@ func getObjectZtnaTrafficForwardProxy(d *schema.ResourceData) (*map[string]inter
 			return &obj, err
 		} else if t != nil {
 			obj["user-agent-detect"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("vip"); ok || d.HasChange("vip") {
+		t, err := expandZtnaTrafficForwardProxyVip(d, v, "vip")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["vip"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("vip6"); ok || d.HasChange("vip6") {
+		t, err := expandZtnaTrafficForwardProxyVip6(d, v, "vip6")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["vip6"] = t
 		}
 	}
 

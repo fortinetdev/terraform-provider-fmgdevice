@@ -42,6 +42,9 @@ The following arguments are supported:
 
 * `action` - Action.
 * `actions` - Actions. The structure of `actions` block is documented below.
+* `condition` - Automation conditions.
+* `condition_logic` - Apply AND/OR logic to the specified automation conditions. Valid values: `or`, `and`.
+
 * `description` - Description.
 * `destination` - Serial number/HA group-name of destination devices.
 * `name` - Name.

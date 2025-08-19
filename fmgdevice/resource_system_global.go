@@ -199,6 +199,11 @@ func resourceSystemGlobal() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"application_bandwidth_tracking": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
 			"arp_max_entry": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
@@ -1174,6 +1179,15 @@ func resourceSystemGlobal() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
+			"single_vdom_npuvlink": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+			"slbc_fragment_mem_thresholds": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+			},
 			"snat_route_change": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -1448,6 +1462,11 @@ func resourceSystemGlobal() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"upgrade_report": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
 			"url_filter_affinity": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -1604,6 +1623,7 @@ func resourceSystemGlobalUpdate(d *schema.ResourceData, m interface{}) error {
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -1612,12 +1632,15 @@ func resourceSystemGlobalUpdate(d *schema.ResourceData, m interface{}) error {
 	}
 	paradict["device"] = device_name
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSystemGlobal(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemGlobal resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateSystemGlobal(obj, mkey, paradict)
+	_, err = c.UpdateSystemGlobal(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemGlobal resource: %v", err)
 	}
@@ -1636,6 +1659,7 @@ func resourceSystemGlobalDelete(d *schema.ResourceData, m interface{}) error {
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -1644,7 +1668,11 @@ func resourceSystemGlobalDelete(d *schema.ResourceData, m interface{}) error {
 	}
 	paradict["device"] = device_name
 
-	err = c.DeleteSystemGlobal(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteSystemGlobal(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting SystemGlobal resource: %v", err)
 	}
@@ -1822,6 +1850,10 @@ func flattenSystemGlobalAllowTrafficRedirect(v interface{}, d *schema.ResourceDa
 }
 
 func flattenSystemGlobalAntiReplay(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemGlobalApplicationBandwidthTracking(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -2633,6 +2665,14 @@ func flattenSystemGlobalShowBackplaneIntf(v interface{}, d *schema.ResourceData,
 	return v
 }
 
+func flattenSystemGlobalSingleVdomNpuvlink(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemGlobalSlbcFragmentMemThresholds(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenSystemGlobalSnatRouteChange(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -2883,6 +2923,10 @@ func flattenSystemGlobalTwoFactorSmsExpiry(v interface{}, d *schema.ResourceData
 }
 
 func flattenSystemGlobalUdpIdleTimer(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemGlobalUpgradeReport(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -3336,6 +3380,16 @@ func refreshObjectSystemGlobal(d *schema.ResourceData, o map[string]interface{})
 			}
 		} else {
 			return fmt.Errorf("Error reading anti_replay: %v", err)
+		}
+	}
+
+	if err = d.Set("application_bandwidth_tracking", flattenSystemGlobalApplicationBandwidthTracking(o["application-bandwidth-tracking"], d, "application_bandwidth_tracking")); err != nil {
+		if vv, ok := fortiAPIPatch(o["application-bandwidth-tracking"], "SystemGlobal-ApplicationBandwidthTracking"); ok {
+			if err = d.Set("application_bandwidth_tracking", vv); err != nil {
+				return fmt.Errorf("Error reading application_bandwidth_tracking: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading application_bandwidth_tracking: %v", err)
 		}
 	}
 
@@ -5359,6 +5413,26 @@ func refreshObjectSystemGlobal(d *schema.ResourceData, o map[string]interface{})
 		}
 	}
 
+	if err = d.Set("single_vdom_npuvlink", flattenSystemGlobalSingleVdomNpuvlink(o["single-vdom-npuvlink"], d, "single_vdom_npuvlink")); err != nil {
+		if vv, ok := fortiAPIPatch(o["single-vdom-npuvlink"], "SystemGlobal-SingleVdomNpuvlink"); ok {
+			if err = d.Set("single_vdom_npuvlink", vv); err != nil {
+				return fmt.Errorf("Error reading single_vdom_npuvlink: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading single_vdom_npuvlink: %v", err)
+		}
+	}
+
+	if err = d.Set("slbc_fragment_mem_thresholds", flattenSystemGlobalSlbcFragmentMemThresholds(o["slbc-fragment-mem-thresholds"], d, "slbc_fragment_mem_thresholds")); err != nil {
+		if vv, ok := fortiAPIPatch(o["slbc-fragment-mem-thresholds"], "SystemGlobal-SlbcFragmentMemThresholds"); ok {
+			if err = d.Set("slbc_fragment_mem_thresholds", vv); err != nil {
+				return fmt.Errorf("Error reading slbc_fragment_mem_thresholds: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading slbc_fragment_mem_thresholds: %v", err)
+		}
+	}
+
 	if err = d.Set("snat_route_change", flattenSystemGlobalSnatRouteChange(o["snat-route-change"], d, "snat_route_change")); err != nil {
 		if vv, ok := fortiAPIPatch(o["snat-route-change"], "SystemGlobal-SnatRouteChange"); ok {
 			if err = d.Set("snat_route_change", vv); err != nil {
@@ -5893,6 +5967,16 @@ func refreshObjectSystemGlobal(d *schema.ResourceData, o map[string]interface{})
 		}
 	}
 
+	if err = d.Set("upgrade_report", flattenSystemGlobalUpgradeReport(o["upgrade-report"], d, "upgrade_report")); err != nil {
+		if vv, ok := fortiAPIPatch(o["upgrade-report"], "SystemGlobal-UpgradeReport"); ok {
+			if err = d.Set("upgrade_report", vv); err != nil {
+				return fmt.Errorf("Error reading upgrade_report: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading upgrade_report: %v", err)
+		}
+	}
+
 	if err = d.Set("url_filter_affinity", flattenSystemGlobalUrlFilterAffinity(o["url-filter-affinity"], d, "url_filter_affinity")); err != nil {
 		if vv, ok := fortiAPIPatch(o["url-filter-affinity"], "SystemGlobal-UrlFilterAffinity"); ok {
 			if err = d.Set("url_filter_affinity", vv); err != nil {
@@ -6321,6 +6405,10 @@ func expandSystemGlobalAllowTrafficRedirect(d *schema.ResourceData, v interface{
 }
 
 func expandSystemGlobalAntiReplay(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemGlobalApplicationBandwidthTracking(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -7132,6 +7220,14 @@ func expandSystemGlobalShowBackplaneIntf(d *schema.ResourceData, v interface{}, 
 	return v, nil
 }
 
+func expandSystemGlobalSingleVdomNpuvlink(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemGlobalSlbcFragmentMemThresholds(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandSystemGlobalSnatRouteChange(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -7379,6 +7475,10 @@ func expandSystemGlobalTwoFactorSmsExpiry(d *schema.ResourceData, v interface{},
 }
 
 func expandSystemGlobalUdpIdleTimer(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemGlobalUpgradeReport(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -7795,6 +7895,15 @@ func getObjectSystemGlobal(d *schema.ResourceData) (*map[string]interface{}, err
 			return &obj, err
 		} else if t != nil {
 			obj["anti-replay"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("application_bandwidth_tracking"); ok || d.HasChange("application_bandwidth_tracking") {
+		t, err := expandSystemGlobalApplicationBandwidthTracking(d, v, "application_bandwidth_tracking")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["application-bandwidth-tracking"] = t
 		}
 	}
 
@@ -9616,6 +9725,24 @@ func getObjectSystemGlobal(d *schema.ResourceData) (*map[string]interface{}, err
 		}
 	}
 
+	if v, ok := d.GetOk("single_vdom_npuvlink"); ok || d.HasChange("single_vdom_npuvlink") {
+		t, err := expandSystemGlobalSingleVdomNpuvlink(d, v, "single_vdom_npuvlink")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["single-vdom-npuvlink"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("slbc_fragment_mem_thresholds"); ok || d.HasChange("slbc_fragment_mem_thresholds") {
+		t, err := expandSystemGlobalSlbcFragmentMemThresholds(d, v, "slbc_fragment_mem_thresholds")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["slbc-fragment-mem-thresholds"] = t
+		}
+	}
+
 	if v, ok := d.GetOk("snat_route_change"); ok || d.HasChange("snat_route_change") {
 		t, err := expandSystemGlobalSnatRouteChange(d, v, "snat_route_change")
 		if err != nil {
@@ -10090,6 +10217,15 @@ func getObjectSystemGlobal(d *schema.ResourceData) (*map[string]interface{}, err
 			return &obj, err
 		} else if t != nil {
 			obj["udp-idle-timer"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("upgrade_report"); ok || d.HasChange("upgrade_report") {
+		t, err := expandSystemGlobalUpgradeReport(d, v, "upgrade_report")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["upgrade-report"] = t
 		}
 	}
 

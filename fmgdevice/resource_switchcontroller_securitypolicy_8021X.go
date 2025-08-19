@@ -165,6 +165,7 @@ func resourceSwitchControllerSecurityPolicy8021XCreate(d *schema.ResourceData, m
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -178,13 +179,15 @@ func resourceSwitchControllerSecurityPolicy8021XCreate(d *schema.ResourceData, m
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSwitchControllerSecurityPolicy8021X(d)
 	if err != nil {
 		return fmt.Errorf("Error creating SwitchControllerSecurityPolicy8021X resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateSwitchControllerSecurityPolicy8021X(obj, paradict)
-
+	_, err = c.CreateSwitchControllerSecurityPolicy8021X(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating SwitchControllerSecurityPolicy8021X resource: %v", err)
 	}
@@ -200,6 +203,7 @@ func resourceSwitchControllerSecurityPolicy8021XUpdate(d *schema.ResourceData, m
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -213,12 +217,15 @@ func resourceSwitchControllerSecurityPolicy8021XUpdate(d *schema.ResourceData, m
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSwitchControllerSecurityPolicy8021X(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SwitchControllerSecurityPolicy8021X resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateSwitchControllerSecurityPolicy8021X(obj, mkey, paradict)
+	_, err = c.UpdateSwitchControllerSecurityPolicy8021X(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating SwitchControllerSecurityPolicy8021X resource: %v", err)
 	}
@@ -237,6 +244,7 @@ func resourceSwitchControllerSecurityPolicy8021XDelete(d *schema.ResourceData, m
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -250,7 +258,11 @@ func resourceSwitchControllerSecurityPolicy8021XDelete(d *schema.ResourceData, m
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	err = c.DeleteSwitchControllerSecurityPolicy8021X(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteSwitchControllerSecurityPolicy8021X(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting SwitchControllerSecurityPolicy8021X resource: %v", err)
 	}

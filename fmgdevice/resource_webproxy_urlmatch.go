@@ -84,6 +84,7 @@ func resourceWebProxyUrlMatchCreate(d *schema.ResourceData, m interface{}) error
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -97,13 +98,15 @@ func resourceWebProxyUrlMatchCreate(d *schema.ResourceData, m interface{}) error
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectWebProxyUrlMatch(d)
 	if err != nil {
 		return fmt.Errorf("Error creating WebProxyUrlMatch resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateWebProxyUrlMatch(obj, paradict)
-
+	_, err = c.CreateWebProxyUrlMatch(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating WebProxyUrlMatch resource: %v", err)
 	}
@@ -119,6 +122,7 @@ func resourceWebProxyUrlMatchUpdate(d *schema.ResourceData, m interface{}) error
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -132,12 +136,15 @@ func resourceWebProxyUrlMatchUpdate(d *schema.ResourceData, m interface{}) error
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectWebProxyUrlMatch(d)
 	if err != nil {
 		return fmt.Errorf("Error updating WebProxyUrlMatch resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateWebProxyUrlMatch(obj, mkey, paradict)
+	_, err = c.UpdateWebProxyUrlMatch(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating WebProxyUrlMatch resource: %v", err)
 	}
@@ -156,6 +163,7 @@ func resourceWebProxyUrlMatchDelete(d *schema.ResourceData, m interface{}) error
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -169,7 +177,11 @@ func resourceWebProxyUrlMatchDelete(d *schema.ResourceData, m interface{}) error
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	err = c.DeleteWebProxyUrlMatch(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteWebProxyUrlMatch(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting WebProxyUrlMatch resource: %v", err)
 	}

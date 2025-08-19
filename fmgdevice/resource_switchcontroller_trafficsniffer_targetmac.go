@@ -68,6 +68,7 @@ func resourceSwitchControllerTrafficSnifferTargetMacCreate(d *schema.ResourceDat
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -81,13 +82,15 @@ func resourceSwitchControllerTrafficSnifferTargetMacCreate(d *schema.ResourceDat
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSwitchControllerTrafficSnifferTargetMac(d)
 	if err != nil {
 		return fmt.Errorf("Error creating SwitchControllerTrafficSnifferTargetMac resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateSwitchControllerTrafficSnifferTargetMac(obj, paradict)
-
+	_, err = c.CreateSwitchControllerTrafficSnifferTargetMac(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating SwitchControllerTrafficSnifferTargetMac resource: %v", err)
 	}
@@ -103,6 +106,7 @@ func resourceSwitchControllerTrafficSnifferTargetMacUpdate(d *schema.ResourceDat
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -116,12 +120,15 @@ func resourceSwitchControllerTrafficSnifferTargetMacUpdate(d *schema.ResourceDat
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSwitchControllerTrafficSnifferTargetMac(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SwitchControllerTrafficSnifferTargetMac resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateSwitchControllerTrafficSnifferTargetMac(obj, mkey, paradict)
+	_, err = c.UpdateSwitchControllerTrafficSnifferTargetMac(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating SwitchControllerTrafficSnifferTargetMac resource: %v", err)
 	}
@@ -140,6 +147,7 @@ func resourceSwitchControllerTrafficSnifferTargetMacDelete(d *schema.ResourceDat
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -153,7 +161,11 @@ func resourceSwitchControllerTrafficSnifferTargetMacDelete(d *schema.ResourceDat
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	err = c.DeleteSwitchControllerTrafficSnifferTargetMac(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteSwitchControllerTrafficSnifferTargetMac(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting SwitchControllerTrafficSnifferTargetMac resource: %v", err)
 	}

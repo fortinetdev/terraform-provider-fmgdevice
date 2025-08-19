@@ -79,6 +79,7 @@ func resourceSwitchControllerQosIpDscpMapMapCreate(d *schema.ResourceData, m int
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -94,13 +95,15 @@ func resourceSwitchControllerQosIpDscpMapMapCreate(d *schema.ResourceData, m int
 	paradict["vdom"] = device_vdom
 	paradict["ip_dscp_map"] = ip_dscp_map
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSwitchControllerQosIpDscpMapMap(d)
 	if err != nil {
 		return fmt.Errorf("Error creating SwitchControllerQosIpDscpMapMap resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateSwitchControllerQosIpDscpMapMap(obj, paradict)
-
+	_, err = c.CreateSwitchControllerQosIpDscpMapMap(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating SwitchControllerQosIpDscpMapMap resource: %v", err)
 	}
@@ -116,6 +119,7 @@ func resourceSwitchControllerQosIpDscpMapMapUpdate(d *schema.ResourceData, m int
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -131,12 +135,15 @@ func resourceSwitchControllerQosIpDscpMapMapUpdate(d *schema.ResourceData, m int
 	paradict["vdom"] = device_vdom
 	paradict["ip_dscp_map"] = ip_dscp_map
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSwitchControllerQosIpDscpMapMap(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SwitchControllerQosIpDscpMapMap resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateSwitchControllerQosIpDscpMapMap(obj, mkey, paradict)
+	_, err = c.UpdateSwitchControllerQosIpDscpMapMap(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating SwitchControllerQosIpDscpMapMap resource: %v", err)
 	}
@@ -155,6 +162,7 @@ func resourceSwitchControllerQosIpDscpMapMapDelete(d *schema.ResourceData, m int
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -170,7 +178,11 @@ func resourceSwitchControllerQosIpDscpMapMapDelete(d *schema.ResourceData, m int
 	paradict["vdom"] = device_vdom
 	paradict["ip_dscp_map"] = ip_dscp_map
 
-	err = c.DeleteSwitchControllerQosIpDscpMapMap(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteSwitchControllerQosIpDscpMapMap(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting SwitchControllerQosIpDscpMapMap resource: %v", err)
 	}

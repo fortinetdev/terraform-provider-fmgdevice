@@ -59,6 +59,7 @@ func resourceSystemNat64SecondaryPrefixCreate(d *schema.ResourceData, m interfac
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -72,13 +73,15 @@ func resourceSystemNat64SecondaryPrefixCreate(d *schema.ResourceData, m interfac
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSystemNat64SecondaryPrefix(d)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemNat64SecondaryPrefix resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateSystemNat64SecondaryPrefix(obj, paradict)
-
+	_, err = c.CreateSystemNat64SecondaryPrefix(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemNat64SecondaryPrefix resource: %v", err)
 	}
@@ -94,6 +97,7 @@ func resourceSystemNat64SecondaryPrefixUpdate(d *schema.ResourceData, m interfac
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -107,12 +111,15 @@ func resourceSystemNat64SecondaryPrefixUpdate(d *schema.ResourceData, m interfac
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSystemNat64SecondaryPrefix(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemNat64SecondaryPrefix resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateSystemNat64SecondaryPrefix(obj, mkey, paradict)
+	_, err = c.UpdateSystemNat64SecondaryPrefix(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemNat64SecondaryPrefix resource: %v", err)
 	}
@@ -131,6 +138,7 @@ func resourceSystemNat64SecondaryPrefixDelete(d *schema.ResourceData, m interfac
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -144,7 +152,11 @@ func resourceSystemNat64SecondaryPrefixDelete(d *schema.ResourceData, m interfac
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	err = c.DeleteSystemNat64SecondaryPrefix(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteSystemNat64SecondaryPrefix(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting SystemNat64SecondaryPrefix resource: %v", err)
 	}

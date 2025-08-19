@@ -59,6 +59,7 @@ func resourceRouterRipngAggregateAddressCreate(d *schema.ResourceData, m interfa
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -72,13 +73,15 @@ func resourceRouterRipngAggregateAddressCreate(d *schema.ResourceData, m interfa
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectRouterRipngAggregateAddress(d)
 	if err != nil {
 		return fmt.Errorf("Error creating RouterRipngAggregateAddress resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateRouterRipngAggregateAddress(obj, paradict)
-
+	_, err = c.CreateRouterRipngAggregateAddress(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating RouterRipngAggregateAddress resource: %v", err)
 	}
@@ -94,6 +97,7 @@ func resourceRouterRipngAggregateAddressUpdate(d *schema.ResourceData, m interfa
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -107,12 +111,15 @@ func resourceRouterRipngAggregateAddressUpdate(d *schema.ResourceData, m interfa
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectRouterRipngAggregateAddress(d)
 	if err != nil {
 		return fmt.Errorf("Error updating RouterRipngAggregateAddress resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateRouterRipngAggregateAddress(obj, mkey, paradict)
+	_, err = c.UpdateRouterRipngAggregateAddress(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating RouterRipngAggregateAddress resource: %v", err)
 	}
@@ -131,6 +138,7 @@ func resourceRouterRipngAggregateAddressDelete(d *schema.ResourceData, m interfa
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -144,7 +152,11 @@ func resourceRouterRipngAggregateAddressDelete(d *schema.ResourceData, m interfa
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	err = c.DeleteRouterRipngAggregateAddress(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteRouterRipngAggregateAddress(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting RouterRipngAggregateAddress resource: %v", err)
 	}

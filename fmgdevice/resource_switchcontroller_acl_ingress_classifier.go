@@ -81,6 +81,7 @@ func resourceSwitchControllerAclIngressClassifierUpdate(d *schema.ResourceData, 
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -96,12 +97,15 @@ func resourceSwitchControllerAclIngressClassifierUpdate(d *schema.ResourceData, 
 	paradict["vdom"] = device_vdom
 	paradict["ingress"] = ingress
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSwitchControllerAclIngressClassifier(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SwitchControllerAclIngressClassifier resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateSwitchControllerAclIngressClassifier(obj, mkey, paradict)
+	_, err = c.UpdateSwitchControllerAclIngressClassifier(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating SwitchControllerAclIngressClassifier resource: %v", err)
 	}
@@ -120,6 +124,7 @@ func resourceSwitchControllerAclIngressClassifierDelete(d *schema.ResourceData, 
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -135,7 +140,11 @@ func resourceSwitchControllerAclIngressClassifierDelete(d *schema.ResourceData, 
 	paradict["vdom"] = device_vdom
 	paradict["ingress"] = ingress
 
-	err = c.DeleteSwitchControllerAclIngressClassifier(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteSwitchControllerAclIngressClassifier(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting SwitchControllerAclIngressClassifier resource: %v", err)
 	}

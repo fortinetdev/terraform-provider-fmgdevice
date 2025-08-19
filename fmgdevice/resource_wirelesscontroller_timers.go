@@ -141,6 +141,10 @@ func resourceWirelessControllerTimers() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"wids_entry_cleanup": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+			},
 		},
 	}
 }
@@ -151,6 +155,7 @@ func resourceWirelessControllerTimersUpdate(d *schema.ResourceData, m interface{
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -159,12 +164,15 @@ func resourceWirelessControllerTimersUpdate(d *schema.ResourceData, m interface{
 	}
 	paradict["device"] = device_name
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectWirelessControllerTimers(d)
 	if err != nil {
 		return fmt.Errorf("Error updating WirelessControllerTimers resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateWirelessControllerTimers(obj, mkey, paradict)
+	_, err = c.UpdateWirelessControllerTimers(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating WirelessControllerTimers resource: %v", err)
 	}
@@ -183,6 +191,7 @@ func resourceWirelessControllerTimersDelete(d *schema.ResourceData, m interface{
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -191,7 +200,11 @@ func resourceWirelessControllerTimersDelete(d *schema.ResourceData, m interface{
 	}
 	paradict["device"] = device_name
 
-	err = c.DeleteWirelessControllerTimers(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteWirelessControllerTimers(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting WirelessControllerTimers resource: %v", err)
 	}
@@ -329,6 +342,10 @@ func flattenWirelessControllerTimersStaStatsInterval(v interface{}, d *schema.Re
 }
 
 func flattenWirelessControllerTimersVapStatsInterval(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWirelessControllerTimersWidsEntryCleanup(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -565,6 +582,16 @@ func refreshObjectWirelessControllerTimers(d *schema.ResourceData, o map[string]
 		}
 	}
 
+	if err = d.Set("wids_entry_cleanup", flattenWirelessControllerTimersWidsEntryCleanup(o["wids-entry-cleanup"], d, "wids_entry_cleanup")); err != nil {
+		if vv, ok := fortiAPIPatch(o["wids-entry-cleanup"], "WirelessControllerTimers-WidsEntryCleanup"); ok {
+			if err = d.Set("wids_entry_cleanup", vv); err != nil {
+				return fmt.Errorf("Error reading wids_entry_cleanup: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading wids_entry_cleanup: %v", err)
+		}
+	}
+
 	return nil
 }
 
@@ -663,6 +690,10 @@ func expandWirelessControllerTimersStaStatsInterval(d *schema.ResourceData, v in
 }
 
 func expandWirelessControllerTimersVapStatsInterval(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWirelessControllerTimersWidsEntryCleanup(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -873,6 +904,15 @@ func getObjectWirelessControllerTimers(d *schema.ResourceData) (*map[string]inte
 			return &obj, err
 		} else if t != nil {
 			obj["vap-stats-interval"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("wids_entry_cleanup"); ok || d.HasChange("wids_entry_cleanup") {
+		t, err := expandWirelessControllerTimersWidsEntryCleanup(d, v, "wids_entry_cleanup")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["wids-entry-cleanup"] = t
 		}
 	}
 

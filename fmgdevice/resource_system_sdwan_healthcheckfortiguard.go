@@ -315,6 +315,7 @@ func resourceSystemSdwanHealthCheckFortiguardCreate(d *schema.ResourceData, m in
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -328,13 +329,15 @@ func resourceSystemSdwanHealthCheckFortiguardCreate(d *schema.ResourceData, m in
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSystemSdwanHealthCheckFortiguard(d)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemSdwanHealthCheckFortiguard resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateSystemSdwanHealthCheckFortiguard(obj, paradict)
-
+	_, err = c.CreateSystemSdwanHealthCheckFortiguard(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemSdwanHealthCheckFortiguard resource: %v", err)
 	}
@@ -350,6 +353,7 @@ func resourceSystemSdwanHealthCheckFortiguardUpdate(d *schema.ResourceData, m in
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -363,12 +367,15 @@ func resourceSystemSdwanHealthCheckFortiguardUpdate(d *schema.ResourceData, m in
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSystemSdwanHealthCheckFortiguard(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemSdwanHealthCheckFortiguard resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateSystemSdwanHealthCheckFortiguard(obj, mkey, paradict)
+	_, err = c.UpdateSystemSdwanHealthCheckFortiguard(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemSdwanHealthCheckFortiguard resource: %v", err)
 	}
@@ -387,6 +394,7 @@ func resourceSystemSdwanHealthCheckFortiguardDelete(d *schema.ResourceData, m in
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -400,7 +408,11 @@ func resourceSystemSdwanHealthCheckFortiguardDelete(d *schema.ResourceData, m in
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	err = c.DeleteSystemSdwanHealthCheckFortiguard(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteSystemSdwanHealthCheckFortiguard(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting SystemSdwanHealthCheckFortiguard resource: %v", err)
 	}

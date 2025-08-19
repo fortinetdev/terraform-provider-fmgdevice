@@ -53,10 +53,12 @@ func resourceSystemSdwanHealthCheckSla() *schema.Resource {
 			"jitter_threshold": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"latency_threshold": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"link_cost_factor": &schema.Schema{
 				Type:     schema.TypeSet,
@@ -90,6 +92,7 @@ func resourceSystemSdwanHealthCheckSlaCreate(d *schema.ResourceData, m interface
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -105,13 +108,15 @@ func resourceSystemSdwanHealthCheckSlaCreate(d *schema.ResourceData, m interface
 	paradict["vdom"] = device_vdom
 	paradict["health_check"] = health_check
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSystemSdwanHealthCheckSla(d)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemSdwanHealthCheckSla resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateSystemSdwanHealthCheckSla(obj, paradict)
-
+	_, err = c.CreateSystemSdwanHealthCheckSla(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemSdwanHealthCheckSla resource: %v", err)
 	}
@@ -127,6 +132,7 @@ func resourceSystemSdwanHealthCheckSlaUpdate(d *schema.ResourceData, m interface
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -142,12 +148,15 @@ func resourceSystemSdwanHealthCheckSlaUpdate(d *schema.ResourceData, m interface
 	paradict["vdom"] = device_vdom
 	paradict["health_check"] = health_check
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSystemSdwanHealthCheckSla(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemSdwanHealthCheckSla resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateSystemSdwanHealthCheckSla(obj, mkey, paradict)
+	_, err = c.UpdateSystemSdwanHealthCheckSla(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemSdwanHealthCheckSla resource: %v", err)
 	}
@@ -166,6 +175,7 @@ func resourceSystemSdwanHealthCheckSlaDelete(d *schema.ResourceData, m interface
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -181,7 +191,11 @@ func resourceSystemSdwanHealthCheckSlaDelete(d *schema.ResourceData, m interface
 	paradict["vdom"] = device_vdom
 	paradict["health_check"] = health_check
 
-	err = c.DeleteSystemSdwanHealthCheckSla(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteSystemSdwanHealthCheckSla(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting SystemSdwanHealthCheckSla resource: %v", err)
 	}

@@ -109,6 +109,7 @@ func resourceSwitchControllerManagedSwitchIgmpSnoopingUpdate(d *schema.ResourceD
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -124,12 +125,15 @@ func resourceSwitchControllerManagedSwitchIgmpSnoopingUpdate(d *schema.ResourceD
 	paradict["vdom"] = device_vdom
 	paradict["managed_switch"] = managed_switch
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSwitchControllerManagedSwitchIgmpSnooping(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SwitchControllerManagedSwitchIgmpSnooping resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateSwitchControllerManagedSwitchIgmpSnooping(obj, mkey, paradict)
+	_, err = c.UpdateSwitchControllerManagedSwitchIgmpSnooping(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating SwitchControllerManagedSwitchIgmpSnooping resource: %v", err)
 	}
@@ -148,6 +152,7 @@ func resourceSwitchControllerManagedSwitchIgmpSnoopingDelete(d *schema.ResourceD
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -163,7 +168,11 @@ func resourceSwitchControllerManagedSwitchIgmpSnoopingDelete(d *schema.ResourceD
 	paradict["vdom"] = device_vdom
 	paradict["managed_switch"] = managed_switch
 
-	err = c.DeleteSwitchControllerManagedSwitchIgmpSnooping(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteSwitchControllerManagedSwitchIgmpSnooping(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting SwitchControllerManagedSwitchIgmpSnooping resource: %v", err)
 	}

@@ -82,6 +82,7 @@ func resourceReportLayoutPageHeaderHeaderItemCreate(d *schema.ResourceData, m in
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -97,13 +98,15 @@ func resourceReportLayoutPageHeaderHeaderItemCreate(d *schema.ResourceData, m in
 	paradict["vdom"] = device_vdom
 	paradict["layout"] = layout
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectReportLayoutPageHeaderHeaderItem(d)
 	if err != nil {
 		return fmt.Errorf("Error creating ReportLayoutPageHeaderHeaderItem resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateReportLayoutPageHeaderHeaderItem(obj, paradict)
-
+	_, err = c.CreateReportLayoutPageHeaderHeaderItem(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating ReportLayoutPageHeaderHeaderItem resource: %v", err)
 	}
@@ -119,6 +122,7 @@ func resourceReportLayoutPageHeaderHeaderItemUpdate(d *schema.ResourceData, m in
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -134,12 +138,15 @@ func resourceReportLayoutPageHeaderHeaderItemUpdate(d *schema.ResourceData, m in
 	paradict["vdom"] = device_vdom
 	paradict["layout"] = layout
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectReportLayoutPageHeaderHeaderItem(d)
 	if err != nil {
 		return fmt.Errorf("Error updating ReportLayoutPageHeaderHeaderItem resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateReportLayoutPageHeaderHeaderItem(obj, mkey, paradict)
+	_, err = c.UpdateReportLayoutPageHeaderHeaderItem(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating ReportLayoutPageHeaderHeaderItem resource: %v", err)
 	}
@@ -158,6 +165,7 @@ func resourceReportLayoutPageHeaderHeaderItemDelete(d *schema.ResourceData, m in
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -173,7 +181,11 @@ func resourceReportLayoutPageHeaderHeaderItemDelete(d *schema.ResourceData, m in
 	paradict["vdom"] = device_vdom
 	paradict["layout"] = layout
 
-	err = c.DeleteReportLayoutPageHeaderHeaderItem(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteReportLayoutPageHeaderHeaderItem(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting ReportLayoutPageHeaderHeaderItem resource: %v", err)
 	}

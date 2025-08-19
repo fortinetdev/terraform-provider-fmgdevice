@@ -65,6 +65,7 @@ func resourceSwitchControllerAutoConfigCustomSwitchBindingCreate(d *schema.Resou
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -80,13 +81,15 @@ func resourceSwitchControllerAutoConfigCustomSwitchBindingCreate(d *schema.Resou
 	paradict["vdom"] = device_vdom
 	paradict["custom"] = custom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSwitchControllerAutoConfigCustomSwitchBinding(d)
 	if err != nil {
 		return fmt.Errorf("Error creating SwitchControllerAutoConfigCustomSwitchBinding resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateSwitchControllerAutoConfigCustomSwitchBinding(obj, paradict)
-
+	_, err = c.CreateSwitchControllerAutoConfigCustomSwitchBinding(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating SwitchControllerAutoConfigCustomSwitchBinding resource: %v", err)
 	}
@@ -102,6 +105,7 @@ func resourceSwitchControllerAutoConfigCustomSwitchBindingUpdate(d *schema.Resou
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -117,12 +121,15 @@ func resourceSwitchControllerAutoConfigCustomSwitchBindingUpdate(d *schema.Resou
 	paradict["vdom"] = device_vdom
 	paradict["custom"] = custom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSwitchControllerAutoConfigCustomSwitchBinding(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SwitchControllerAutoConfigCustomSwitchBinding resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateSwitchControllerAutoConfigCustomSwitchBinding(obj, mkey, paradict)
+	_, err = c.UpdateSwitchControllerAutoConfigCustomSwitchBinding(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating SwitchControllerAutoConfigCustomSwitchBinding resource: %v", err)
 	}
@@ -141,6 +148,7 @@ func resourceSwitchControllerAutoConfigCustomSwitchBindingDelete(d *schema.Resou
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -156,7 +164,11 @@ func resourceSwitchControllerAutoConfigCustomSwitchBindingDelete(d *schema.Resou
 	paradict["vdom"] = device_vdom
 	paradict["custom"] = custom
 
-	err = c.DeleteSwitchControllerAutoConfigCustomSwitchBinding(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteSwitchControllerAutoConfigCustomSwitchBinding(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting SwitchControllerAutoConfigCustomSwitchBinding resource: %v", err)
 	}

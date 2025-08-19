@@ -771,6 +771,31 @@ func resourceRouterBgpNeighborGroup() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"rr_attr_allow_change": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+			"rr_attr_allow_change_evpn": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+			"rr_attr_allow_change_vpnv4": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+			"rr_attr_allow_change_vpnv6": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+			"rr_attr_allow_change6": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
 			"send_community": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -868,6 +893,7 @@ func resourceRouterBgpNeighborGroupCreate(d *schema.ResourceData, m interface{})
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -881,13 +907,15 @@ func resourceRouterBgpNeighborGroupCreate(d *schema.ResourceData, m interface{})
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectRouterBgpNeighborGroup(d)
 	if err != nil {
 		return fmt.Errorf("Error creating RouterBgpNeighborGroup resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateRouterBgpNeighborGroup(obj, paradict)
-
+	_, err = c.CreateRouterBgpNeighborGroup(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating RouterBgpNeighborGroup resource: %v", err)
 	}
@@ -903,6 +931,7 @@ func resourceRouterBgpNeighborGroupUpdate(d *schema.ResourceData, m interface{})
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -916,12 +945,15 @@ func resourceRouterBgpNeighborGroupUpdate(d *schema.ResourceData, m interface{})
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectRouterBgpNeighborGroup(d)
 	if err != nil {
 		return fmt.Errorf("Error updating RouterBgpNeighborGroup resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateRouterBgpNeighborGroup(obj, mkey, paradict)
+	_, err = c.UpdateRouterBgpNeighborGroup(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating RouterBgpNeighborGroup resource: %v", err)
 	}
@@ -940,6 +972,7 @@ func resourceRouterBgpNeighborGroupDelete(d *schema.ResourceData, m interface{})
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -953,7 +986,11 @@ func resourceRouterBgpNeighborGroupDelete(d *schema.ResourceData, m interface{})
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	err = c.DeleteRouterBgpNeighborGroup(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteRouterBgpNeighborGroup(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting RouterBgpNeighborGroup resource: %v", err)
 	}
@@ -1562,6 +1599,26 @@ func flattenRouterBgpNeighborGroupRouteServerClientVpnv62edl(v interface{}, d *s
 }
 
 func flattenRouterBgpNeighborGroupRouteServerClient62edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenRouterBgpNeighborGroupRrAttrAllowChange2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenRouterBgpNeighborGroupRrAttrAllowChangeEvpn2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenRouterBgpNeighborGroupRrAttrAllowChangeVpnv42edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenRouterBgpNeighborGroupRrAttrAllowChangeVpnv62edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenRouterBgpNeighborGroupRrAttrAllowChange62edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -3016,6 +3073,56 @@ func refreshObjectRouterBgpNeighborGroup(d *schema.ResourceData, o map[string]in
 		}
 	}
 
+	if err = d.Set("rr_attr_allow_change", flattenRouterBgpNeighborGroupRrAttrAllowChange2edl(o["rr-attr-allow-change"], d, "rr_attr_allow_change")); err != nil {
+		if vv, ok := fortiAPIPatch(o["rr-attr-allow-change"], "RouterBgpNeighborGroup-RrAttrAllowChange"); ok {
+			if err = d.Set("rr_attr_allow_change", vv); err != nil {
+				return fmt.Errorf("Error reading rr_attr_allow_change: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading rr_attr_allow_change: %v", err)
+		}
+	}
+
+	if err = d.Set("rr_attr_allow_change_evpn", flattenRouterBgpNeighborGroupRrAttrAllowChangeEvpn2edl(o["rr-attr-allow-change-evpn"], d, "rr_attr_allow_change_evpn")); err != nil {
+		if vv, ok := fortiAPIPatch(o["rr-attr-allow-change-evpn"], "RouterBgpNeighborGroup-RrAttrAllowChangeEvpn"); ok {
+			if err = d.Set("rr_attr_allow_change_evpn", vv); err != nil {
+				return fmt.Errorf("Error reading rr_attr_allow_change_evpn: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading rr_attr_allow_change_evpn: %v", err)
+		}
+	}
+
+	if err = d.Set("rr_attr_allow_change_vpnv4", flattenRouterBgpNeighborGroupRrAttrAllowChangeVpnv42edl(o["rr-attr-allow-change-vpnv4"], d, "rr_attr_allow_change_vpnv4")); err != nil {
+		if vv, ok := fortiAPIPatch(o["rr-attr-allow-change-vpnv4"], "RouterBgpNeighborGroup-RrAttrAllowChangeVpnv4"); ok {
+			if err = d.Set("rr_attr_allow_change_vpnv4", vv); err != nil {
+				return fmt.Errorf("Error reading rr_attr_allow_change_vpnv4: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading rr_attr_allow_change_vpnv4: %v", err)
+		}
+	}
+
+	if err = d.Set("rr_attr_allow_change_vpnv6", flattenRouterBgpNeighborGroupRrAttrAllowChangeVpnv62edl(o["rr-attr-allow-change-vpnv6"], d, "rr_attr_allow_change_vpnv6")); err != nil {
+		if vv, ok := fortiAPIPatch(o["rr-attr-allow-change-vpnv6"], "RouterBgpNeighborGroup-RrAttrAllowChangeVpnv6"); ok {
+			if err = d.Set("rr_attr_allow_change_vpnv6", vv); err != nil {
+				return fmt.Errorf("Error reading rr_attr_allow_change_vpnv6: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading rr_attr_allow_change_vpnv6: %v", err)
+		}
+	}
+
+	if err = d.Set("rr_attr_allow_change6", flattenRouterBgpNeighborGroupRrAttrAllowChange62edl(o["rr-attr-allow-change6"], d, "rr_attr_allow_change6")); err != nil {
+		if vv, ok := fortiAPIPatch(o["rr-attr-allow-change6"], "RouterBgpNeighborGroup-RrAttrAllowChange6"); ok {
+			if err = d.Set("rr_attr_allow_change6", vv); err != nil {
+				return fmt.Errorf("Error reading rr_attr_allow_change6: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading rr_attr_allow_change6: %v", err)
+		}
+	}
+
 	if err = d.Set("send_community", flattenRouterBgpNeighborGroupSendCommunity2edl(o["send-community"], d, "send_community")); err != nil {
 		if vv, ok := fortiAPIPatch(o["send-community"], "RouterBgpNeighborGroup-SendCommunity"); ok {
 			if err = d.Set("send_community", vv); err != nil {
@@ -3748,6 +3855,26 @@ func expandRouterBgpNeighborGroupRouteServerClientVpnv62edl(d *schema.ResourceDa
 }
 
 func expandRouterBgpNeighborGroupRouteServerClient62edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandRouterBgpNeighborGroupRrAttrAllowChange2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandRouterBgpNeighborGroupRrAttrAllowChangeEvpn2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandRouterBgpNeighborGroupRrAttrAllowChangeVpnv42edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandRouterBgpNeighborGroupRrAttrAllowChangeVpnv62edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandRouterBgpNeighborGroupRrAttrAllowChange62edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -5070,6 +5197,51 @@ func getObjectRouterBgpNeighborGroup(d *schema.ResourceData) (*map[string]interf
 			return &obj, err
 		} else if t != nil {
 			obj["route-server-client6"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("rr_attr_allow_change"); ok || d.HasChange("rr_attr_allow_change") {
+		t, err := expandRouterBgpNeighborGroupRrAttrAllowChange2edl(d, v, "rr_attr_allow_change")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["rr-attr-allow-change"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("rr_attr_allow_change_evpn"); ok || d.HasChange("rr_attr_allow_change_evpn") {
+		t, err := expandRouterBgpNeighborGroupRrAttrAllowChangeEvpn2edl(d, v, "rr_attr_allow_change_evpn")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["rr-attr-allow-change-evpn"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("rr_attr_allow_change_vpnv4"); ok || d.HasChange("rr_attr_allow_change_vpnv4") {
+		t, err := expandRouterBgpNeighborGroupRrAttrAllowChangeVpnv42edl(d, v, "rr_attr_allow_change_vpnv4")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["rr-attr-allow-change-vpnv4"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("rr_attr_allow_change_vpnv6"); ok || d.HasChange("rr_attr_allow_change_vpnv6") {
+		t, err := expandRouterBgpNeighborGroupRrAttrAllowChangeVpnv62edl(d, v, "rr_attr_allow_change_vpnv6")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["rr-attr-allow-change-vpnv6"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("rr_attr_allow_change6"); ok || d.HasChange("rr_attr_allow_change6") {
+		t, err := expandRouterBgpNeighborGroupRrAttrAllowChange62edl(d, v, "rr_attr_allow_change6")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["rr-attr-allow-change6"] = t
 		}
 	}
 

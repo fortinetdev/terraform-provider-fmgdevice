@@ -74,6 +74,8 @@ The following arguments are supported:
 * `authusrgrp` - Authentication user group.
 * `auto_discovery_crossover` - Allow/block set-up of short-cut tunnels between different network IDs. Valid values: `block`, `allow`.
 
+* `auto_discovery_dialup_placeholder` - Control if this dynamic gateway is used for shortcut connections only. Valid values: `disable`, `enable`.
+
 * `auto_discovery_forwarder` - Enable/disable forwarding auto-discovery short-cut messages. Valid values: `disable`, `enable`.
 
 * `auto_discovery_offer_interval` - Interval between shortcut offer messages in seconds (1 - 300, default = 5).

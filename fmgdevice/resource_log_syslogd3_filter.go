@@ -137,6 +137,7 @@ func resourceLogSyslogd3FilterUpdate(d *schema.ResourceData, m interface{}) erro
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -145,12 +146,15 @@ func resourceLogSyslogd3FilterUpdate(d *schema.ResourceData, m interface{}) erro
 	}
 	paradict["device"] = device_name
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectLogSyslogd3Filter(d)
 	if err != nil {
 		return fmt.Errorf("Error updating LogSyslogd3Filter resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateLogSyslogd3Filter(obj, mkey, paradict)
+	_, err = c.UpdateLogSyslogd3Filter(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating LogSyslogd3Filter resource: %v", err)
 	}
@@ -169,6 +173,7 @@ func resourceLogSyslogd3FilterDelete(d *schema.ResourceData, m interface{}) erro
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -177,7 +182,11 @@ func resourceLogSyslogd3FilterDelete(d *schema.ResourceData, m interface{}) erro
 	}
 	paradict["device"] = device_name
 
-	err = c.DeleteLogSyslogd3Filter(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteLogSyslogd3Filter(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting LogSyslogd3Filter resource: %v", err)
 	}

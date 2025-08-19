@@ -60,6 +60,7 @@ func resourceSystemAffinityInterruptCreate(d *schema.ResourceData, m interface{}
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -68,13 +69,15 @@ func resourceSystemAffinityInterruptCreate(d *schema.ResourceData, m interface{}
 	}
 	paradict["device"] = device_name
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSystemAffinityInterrupt(d)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemAffinityInterrupt resource while getting object: %v", err)
 	}
 
-	_, err = c.CreateSystemAffinityInterrupt(obj, paradict)
-
+	_, err = c.CreateSystemAffinityInterrupt(obj, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemAffinityInterrupt resource: %v", err)
 	}
@@ -90,6 +93,7 @@ func resourceSystemAffinityInterruptUpdate(d *schema.ResourceData, m interface{}
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -98,12 +102,15 @@ func resourceSystemAffinityInterruptUpdate(d *schema.ResourceData, m interface{}
 	}
 	paradict["device"] = device_name
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSystemAffinityInterrupt(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemAffinityInterrupt resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateSystemAffinityInterrupt(obj, mkey, paradict)
+	_, err = c.UpdateSystemAffinityInterrupt(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemAffinityInterrupt resource: %v", err)
 	}
@@ -122,6 +129,7 @@ func resourceSystemAffinityInterruptDelete(d *schema.ResourceData, m interface{}
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -130,7 +138,11 @@ func resourceSystemAffinityInterruptDelete(d *schema.ResourceData, m interface{}
 	}
 	paradict["device"] = device_name
 
-	err = c.DeleteSystemAffinityInterrupt(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteSystemAffinityInterrupt(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting SystemAffinityInterrupt resource: %v", err)
 	}

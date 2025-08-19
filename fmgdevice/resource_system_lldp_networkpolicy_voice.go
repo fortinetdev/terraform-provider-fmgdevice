@@ -78,6 +78,7 @@ func resourceSystemLldpNetworkPolicyVoiceUpdate(d *schema.ResourceData, m interf
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -93,12 +94,15 @@ func resourceSystemLldpNetworkPolicyVoiceUpdate(d *schema.ResourceData, m interf
 	paradict["vdom"] = device_vdom
 	paradict["network_policy"] = network_policy
 
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
 	obj, err := getObjectSystemLldpNetworkPolicyVoice(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemLldpNetworkPolicyVoice resource while getting object: %v", err)
 	}
 
-	_, err = c.UpdateSystemLldpNetworkPolicyVoice(obj, mkey, paradict)
+	_, err = c.UpdateSystemLldpNetworkPolicyVoice(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemLldpNetworkPolicyVoice resource: %v", err)
 	}
@@ -117,6 +121,7 @@ func resourceSystemLldpNetworkPolicyVoiceDelete(d *schema.ResourceData, m interf
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
 
 	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
@@ -132,7 +137,11 @@ func resourceSystemLldpNetworkPolicyVoiceDelete(d *schema.ResourceData, m interf
 	paradict["vdom"] = device_vdom
 	paradict["network_policy"] = network_policy
 
-	err = c.DeleteSystemLldpNetworkPolicyVoice(mkey, paradict)
+	if cfg.Adom != "" {
+		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
+	}
+
+	err = c.DeleteSystemLldpNetworkPolicyVoice(mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error deleting SystemLldpNetworkPolicyVoice resource: %v", err)
 	}
