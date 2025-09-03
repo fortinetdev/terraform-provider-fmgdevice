@@ -177,7 +177,8 @@ The following arguments are supported:
 * `workspace_mode` - (String | Optional) FortiManger workspace mode. If set to `normal`, FortiManager will be locked/unlocked for each resource operation. Conflict with resource `fortimanager_exec_workspace_action`. Valid opeions: `normal`, `disabled`. Default is `disabled`.
 
 ```hcl
-# Configure the FortiManager provider to lock or unlock resources within a specific ADOM. If no ADOM is specified when using workspace_mode, the default value root will be applied.
+# Configure the FortiManager provider to lock or unlock resources within a specific ADOM. 
+# If no ADOM is specified when using workspace_mode, the default value root will be applied.
 
 provider "fmgdevice" {
   hostname     = "192.168.52.178"
@@ -194,6 +195,7 @@ provider "fmgdevice" {
   adom         = "test_adom"
   workspace_mode = "normal"
 }
+```
 
 
 ## Release

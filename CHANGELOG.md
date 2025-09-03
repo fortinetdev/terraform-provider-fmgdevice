@@ -1,5 +1,11 @@
 ## 1.3.0 (Unreleased)
 
+## 1.2.1 (August 28, 2025)
+
+IMPROVEMENTS:
+* Upgrade the Go version and all associated dependencies;
+* Update the workspace_mode documentation to show properly.
+
 ## 1.2.0 (August 19, 2025)
 
 IMPROVEMENTS:
