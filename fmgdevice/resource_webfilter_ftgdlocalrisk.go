@@ -28,6 +28,17 @@ func resourceWebfilterFtgdLocalRisk() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
+			"update_if_exist": &schema.Schema{
+				Type:     schema.TypeBool,
+				Optional: true,
+				Computed: true,
+			},
+
+			"adom": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"device_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -68,8 +79,12 @@ func resourceWebfilterFtgdLocalRiskCreate(d *schema.ResourceData, m interface{})
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -81,17 +96,37 @@ func resourceWebfilterFtgdLocalRiskCreate(d *schema.ResourceData, m interface{})
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectWebfilterFtgdLocalRisk(d)
 	if err != nil {
 		return fmt.Errorf("Error creating WebfilterFtgdLocalRisk resource while getting object: %v", err)
 	}
+	wsParams["adom"] = adomv
 
-	_, err = c.CreateWebfilterFtgdLocalRisk(obj, paradict, wsParams)
-	if err != nil {
-		return fmt.Errorf("Error creating WebfilterFtgdLocalRisk resource: %v", err)
+	update_if_exist := getUpdateIfExist(c, d)
+	mkey_tf, mkey_ok := d.GetOk("url")
+	mkey := fmt.Sprint(mkey_tf)
+	o := make(map[string]interface{})
+	existing := false
+
+	if update_if_exist && mkey_ok {
+		// check existing
+		o, err = c.ReadWebfilterFtgdLocalRisk(mkey, paradict)
+		if err == nil && o != nil {
+			existing = true
+			// update if existing
+			o, err = c.UpdateWebfilterFtgdLocalRisk(obj, mkey, paradict, wsParams)
+			if err != nil {
+				return fmt.Errorf("Error updating WebfilterFtgdLocalRisk resource: %v", err)
+			}
+		}
+	}
+
+	if !existing {
+		_, err = c.CreateWebfilterFtgdLocalRisk(obj, paradict, wsParams)
+		if err != nil {
+			return fmt.Errorf("Error creating WebfilterFtgdLocalRisk resource: %v", err)
+		}
+
 	}
 
 	d.SetId(getStringKey(d, "url"))
@@ -106,8 +141,12 @@ func resourceWebfilterFtgdLocalRiskUpdate(d *schema.ResourceData, m interface{})
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -119,13 +158,12 @@ func resourceWebfilterFtgdLocalRiskUpdate(d *schema.ResourceData, m interface{})
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectWebfilterFtgdLocalRisk(d)
 	if err != nil {
 		return fmt.Errorf("Error updating WebfilterFtgdLocalRisk resource while getting object: %v", err)
 	}
+
+	wsParams["adom"] = adomv
 
 	_, err = c.UpdateWebfilterFtgdLocalRisk(obj, mkey, paradict, wsParams)
 	if err != nil {
@@ -147,8 +185,12 @@ func resourceWebfilterFtgdLocalRiskDelete(d *schema.ResourceData, m interface{})
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -160,9 +202,7 @@ func resourceWebfilterFtgdLocalRiskDelete(d *schema.ResourceData, m interface{})
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
+	wsParams["adom"] = adomv
 
 	err = c.DeleteWebfilterFtgdLocalRisk(mkey, paradict, wsParams)
 	if err != nil {
@@ -181,8 +221,8 @@ func resourceWebfilterFtgdLocalRiskRead(d *schema.ResourceData, m interface{}) e
 	c.Retries = 1
 
 	paradict := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	device_vdom, err := getVariable(cfg, d, "device_vdom")
 	if device_name == "" {
@@ -208,6 +248,7 @@ func resourceWebfilterFtgdLocalRiskRead(d *schema.ResourceData, m interface{}) e
 
 	o, err := c.ReadWebfilterFtgdLocalRisk(mkey, paradict)
 	if err != nil {
+		d.SetId("")
 		return fmt.Errorf("Error reading WebfilterFtgdLocalRisk resource: %v", err)
 	}
 

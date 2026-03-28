@@ -72,6 +72,8 @@ The following arguments are supported:
 * `encryption` - Enable/disable encryption when synchronizing sessions. Valid values: `disable`, `enable`.
 
 * `group_member_id` - Cluster member ID (0 - 15).
+* `helper_traffic_bounce` - Enable/disable helper related traffic bounce. Valid values: `disable`, `enable`.
+
 * `layer2_connection` - Indicate whether layer 2 connections are present among FGSP members. Valid values: `unavailable`, `available`.
 
 * `monitor_interface` - Configure a list of interfaces on which to monitor itself. Monitoring is performed on the status of the interface.
@@ -80,6 +82,8 @@ The following arguments are supported:
 * `psksecret` - Pre-shared secret for session synchronization (ASCII string or hexadecimal encoded with a leading 0x).
 * `session_sync_dev` - Offload session-sync process to kernel and sync sessions using connected interface(s) directly.
 * `standalone_group_id` - Cluster group ID (0 - 255). Must be the same for all members.
+* `utm_traffic_bounce` - Enable/disable UTM related traffic bounce. Valid values: `disable`, `enable`.
+
 * `dynamic_sort_subtable` - true or false, set this parameter to true when using dynamic for_each + toset to configure and sort sub-tables, please do not set this parameter when configuring static sub-tables.
 
 The `cluster_peer` block supports:

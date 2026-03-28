@@ -28,6 +28,12 @@ func resourceLogFortiguardFilter() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
+
+			"adom": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"device_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -35,6 +41,10 @@ func resourceLogFortiguardFilter() *schema.Resource {
 				ForceNew: true,
 			},
 			"anomaly": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"debug": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 			},
@@ -138,21 +148,24 @@ func resourceLogFortiguardFilterUpdate(d *schema.ResourceData, m interface{}) er
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
 	}
 	paradict["device"] = device_name
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectLogFortiguardFilter(d)
 	if err != nil {
 		return fmt.Errorf("Error updating LogFortiguardFilter resource while getting object: %v", err)
 	}
+
+	wsParams["adom"] = adomv
 
 	_, err = c.UpdateLogFortiguardFilter(obj, mkey, paradict, wsParams)
 	if err != nil {
@@ -174,17 +187,19 @@ func resourceLogFortiguardFilterDelete(d *schema.ResourceData, m interface{}) er
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
 	}
 	paradict["device"] = device_name
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
+	wsParams["adom"] = adomv
 
 	err = c.DeleteLogFortiguardFilter(mkey, paradict, wsParams)
 	if err != nil {
@@ -203,8 +218,8 @@ func resourceLogFortiguardFilterRead(d *schema.ResourceData, m interface{}) erro
 	c.Retries = 1
 
 	paradict := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if device_name == "" {
 		device_name = importOptionChecking(m.(*FortiClient).Cfg, "device_name")
@@ -219,6 +234,7 @@ func resourceLogFortiguardFilterRead(d *schema.ResourceData, m interface{}) erro
 
 	o, err := c.ReadLogFortiguardFilter(mkey, paradict)
 	if err != nil {
+		d.SetId("")
 		return fmt.Errorf("Error reading LogFortiguardFilter resource: %v", err)
 	}
 
@@ -236,6 +252,10 @@ func resourceLogFortiguardFilterRead(d *schema.ResourceData, m interface{}) erro
 }
 
 func flattenLogFortiguardFilterAnomaly(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenLogFortiguardFilterDebug(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -370,6 +390,16 @@ func refreshObjectLogFortiguardFilter(d *schema.ResourceData, o map[string]inter
 			}
 		} else {
 			return fmt.Errorf("Error reading anomaly: %v", err)
+		}
+	}
+
+	if err = d.Set("debug", flattenLogFortiguardFilterDebug(o["debug"], d, "debug")); err != nil {
+		if vv, ok := fortiAPIPatch(o["debug"], "LogFortiguardFilter-Debug"); ok {
+			if err = d.Set("debug", vv); err != nil {
+				return fmt.Errorf("Error reading debug: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading debug: %v", err)
 		}
 	}
 
@@ -530,6 +560,10 @@ func expandLogFortiguardFilterAnomaly(d *schema.ResourceData, v interface{}, pre
 	return v, nil
 }
 
+func expandLogFortiguardFilterDebug(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandLogFortiguardFilterFilter(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -647,6 +681,15 @@ func getObjectLogFortiguardFilter(d *schema.ResourceData) (*map[string]interface
 			return &obj, err
 		} else if t != nil {
 			obj["anomaly"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("debug"); ok || d.HasChange("debug") {
+		t, err := expandLogFortiguardFilterDebug(d, v, "debug")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["debug"] = t
 		}
 	}
 

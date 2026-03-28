@@ -38,6 +38,8 @@ The following arguments are supported:
 
 * `login_lockout_upon_downgrade` - Enable/disable administrative user login lockout upon downgrade (defaut = disable). If enabled, downgrading the FortiOS firmware to a lower version where safer passwords are unsupported will lock out administrative users. Valid values: `disable`, `enable`.
 
+* `login_lockout_upon_weaker_encryption` - Enable/disable administrative user login lockout upon downgrade (defaut = disable). If enabled, changing the FortiOS firmware to a version where safer passwords are unsupported will lock out administrative users. Valid values: `disable`, `enable`.
+
 * `min_change_characters` - Minimum number of unique characters in new password which do not exist in old password (0 - 128, default = 0. This attribute overrides reuse-password if both are enabled).
 * `min_lower_case_letter` - Minimum number of lowercase characters in password (0 - 128, default = 0).
 * `min_non_alphanumeric` - Minimum number of non-alphanumeric characters in password (0 - 128, default = 0).
@@ -49,6 +51,7 @@ The following arguments are supported:
 * `reuse_password_limit` - Number of times passwords can be reused (0 - 20, default = 0. If set to 0, can reuse password an unlimited number of times.).
 * `status` - Enable/disable setting a password policy for locally defined administrator passwords and IPsec VPN pre-shared keys. Valid values: `disable`, `enable`.
 
+* `password_history` - Password-History.
 
 
 ## Attribute Reference

@@ -28,6 +28,17 @@ func resourceRouterOspf6Ospf6Interface() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
+			"update_if_exist": &schema.Schema{
+				Type:     schema.TypeBool,
+				Optional: true,
+				Computed: true,
+			},
+
+			"adom": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"device_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -192,8 +203,12 @@ func resourceRouterOspf6Ospf6InterfaceCreate(d *schema.ResourceData, m interface
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -205,17 +220,37 @@ func resourceRouterOspf6Ospf6InterfaceCreate(d *schema.ResourceData, m interface
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectRouterOspf6Ospf6Interface(d)
 	if err != nil {
 		return fmt.Errorf("Error creating RouterOspf6Ospf6Interface resource while getting object: %v", err)
 	}
+	wsParams["adom"] = adomv
 
-	_, err = c.CreateRouterOspf6Ospf6Interface(obj, paradict, wsParams)
-	if err != nil {
-		return fmt.Errorf("Error creating RouterOspf6Ospf6Interface resource: %v", err)
+	update_if_exist := getUpdateIfExist(c, d)
+	mkey_tf, mkey_ok := d.GetOk("name")
+	mkey := fmt.Sprint(mkey_tf)
+	o := make(map[string]interface{})
+	existing := false
+
+	if update_if_exist && mkey_ok {
+		// check existing
+		o, err = c.ReadRouterOspf6Ospf6Interface(mkey, paradict)
+		if err == nil && o != nil {
+			existing = true
+			// update if existing
+			o, err = c.UpdateRouterOspf6Ospf6Interface(obj, mkey, paradict, wsParams)
+			if err != nil {
+				return fmt.Errorf("Error updating RouterOspf6Ospf6Interface resource: %v", err)
+			}
+		}
+	}
+
+	if !existing {
+		_, err = c.CreateRouterOspf6Ospf6Interface(obj, paradict, wsParams)
+		if err != nil {
+			return fmt.Errorf("Error creating RouterOspf6Ospf6Interface resource: %v", err)
+		}
+
 	}
 
 	d.SetId(getStringKey(d, "name"))
@@ -230,8 +265,12 @@ func resourceRouterOspf6Ospf6InterfaceUpdate(d *schema.ResourceData, m interface
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -243,13 +282,12 @@ func resourceRouterOspf6Ospf6InterfaceUpdate(d *schema.ResourceData, m interface
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectRouterOspf6Ospf6Interface(d)
 	if err != nil {
 		return fmt.Errorf("Error updating RouterOspf6Ospf6Interface resource while getting object: %v", err)
 	}
+
+	wsParams["adom"] = adomv
 
 	_, err = c.UpdateRouterOspf6Ospf6Interface(obj, mkey, paradict, wsParams)
 	if err != nil {
@@ -271,8 +309,12 @@ func resourceRouterOspf6Ospf6InterfaceDelete(d *schema.ResourceData, m interface
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -284,9 +326,7 @@ func resourceRouterOspf6Ospf6InterfaceDelete(d *schema.ResourceData, m interface
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
+	wsParams["adom"] = adomv
 
 	err = c.DeleteRouterOspf6Ospf6Interface(mkey, paradict, wsParams)
 	if err != nil {
@@ -305,8 +345,8 @@ func resourceRouterOspf6Ospf6InterfaceRead(d *schema.ResourceData, m interface{}
 	c.Retries = 1
 
 	paradict := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	device_vdom, err := getVariable(cfg, d, "device_vdom")
 	if device_name == "" {
@@ -332,6 +372,7 @@ func resourceRouterOspf6Ospf6InterfaceRead(d *schema.ResourceData, m interface{}
 
 	o, err := c.ReadRouterOspf6Ospf6Interface(mkey, paradict)
 	if err != nil {
+		d.SetId("")
 		return fmt.Errorf("Error reading RouterOspf6Ospf6Interface resource: %v", err)
 	}
 

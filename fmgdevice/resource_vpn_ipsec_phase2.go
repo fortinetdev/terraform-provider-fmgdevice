@@ -28,6 +28,17 @@ func resourceVpnIpsecPhase2() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
+			"update_if_exist": &schema.Schema{
+				Type:     schema.TypeBool,
+				Optional: true,
+				Computed: true,
+			},
+
+			"adom": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"device_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -314,8 +325,12 @@ func resourceVpnIpsecPhase2Create(d *schema.ResourceData, m interface{}) error {
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -327,17 +342,37 @@ func resourceVpnIpsecPhase2Create(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectVpnIpsecPhase2(d)
 	if err != nil {
 		return fmt.Errorf("Error creating VpnIpsecPhase2 resource while getting object: %v", err)
 	}
+	wsParams["adom"] = adomv
 
-	_, err = c.CreateVpnIpsecPhase2(obj, paradict, wsParams)
-	if err != nil {
-		return fmt.Errorf("Error creating VpnIpsecPhase2 resource: %v", err)
+	update_if_exist := getUpdateIfExist(c, d)
+	mkey_tf, mkey_ok := d.GetOk("name")
+	mkey := fmt.Sprint(mkey_tf)
+	o := make(map[string]interface{})
+	existing := false
+
+	if update_if_exist && mkey_ok {
+		// check existing
+		o, err = c.ReadVpnIpsecPhase2(mkey, paradict)
+		if err == nil && o != nil {
+			existing = true
+			// update if existing
+			o, err = c.UpdateVpnIpsecPhase2(obj, mkey, paradict, wsParams)
+			if err != nil {
+				return fmt.Errorf("Error updating VpnIpsecPhase2 resource: %v", err)
+			}
+		}
+	}
+
+	if !existing {
+		_, err = c.CreateVpnIpsecPhase2(obj, paradict, wsParams)
+		if err != nil {
+			return fmt.Errorf("Error creating VpnIpsecPhase2 resource: %v", err)
+		}
+
 	}
 
 	d.SetId(getStringKey(d, "name"))
@@ -352,8 +387,12 @@ func resourceVpnIpsecPhase2Update(d *schema.ResourceData, m interface{}) error {
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -365,13 +404,12 @@ func resourceVpnIpsecPhase2Update(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectVpnIpsecPhase2(d)
 	if err != nil {
 		return fmt.Errorf("Error updating VpnIpsecPhase2 resource while getting object: %v", err)
 	}
+
+	wsParams["adom"] = adomv
 
 	_, err = c.UpdateVpnIpsecPhase2(obj, mkey, paradict, wsParams)
 	if err != nil {
@@ -393,8 +431,12 @@ func resourceVpnIpsecPhase2Delete(d *schema.ResourceData, m interface{}) error {
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -406,9 +448,7 @@ func resourceVpnIpsecPhase2Delete(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
+	wsParams["adom"] = adomv
 
 	err = c.DeleteVpnIpsecPhase2(mkey, paradict, wsParams)
 	if err != nil {
@@ -427,8 +467,8 @@ func resourceVpnIpsecPhase2Read(d *schema.ResourceData, m interface{}) error {
 	c.Retries = 1
 
 	paradict := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	device_vdom, err := getVariable(cfg, d, "device_vdom")
 	if device_name == "" {
@@ -454,6 +494,7 @@ func resourceVpnIpsecPhase2Read(d *schema.ResourceData, m interface{}) error {
 
 	o, err := c.ReadVpnIpsecPhase2(mkey, paradict)
 	if err != nil {
+		d.SetId("")
 		return fmt.Errorf("Error reading VpnIpsecPhase2 resource: %v", err)
 	}
 

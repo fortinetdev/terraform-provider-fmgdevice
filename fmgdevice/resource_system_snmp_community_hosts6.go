@@ -28,6 +28,17 @@ func resourceSystemSnmpCommunityHosts6() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
+			"update_if_exist": &schema.Schema{
+				Type:     schema.TypeBool,
+				Optional: true,
+				Computed: true,
+			},
+
+			"adom": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"device_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -89,8 +100,12 @@ func resourceSystemSnmpCommunityHosts6Create(d *schema.ResourceData, m interface
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -99,17 +114,37 @@ func resourceSystemSnmpCommunityHosts6Create(d *schema.ResourceData, m interface
 	paradict["device"] = device_name
 	paradict["community"] = community
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectSystemSnmpCommunityHosts6(d)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemSnmpCommunityHosts6 resource while getting object: %v", err)
 	}
+	wsParams["adom"] = adomv
 
-	_, err = c.CreateSystemSnmpCommunityHosts6(obj, paradict, wsParams)
-	if err != nil {
-		return fmt.Errorf("Error creating SystemSnmpCommunityHosts6 resource: %v", err)
+	update_if_exist := getUpdateIfExist(c, d)
+	mkey_tf, mkey_ok := d.GetOk("fosid")
+	mkey := fmt.Sprint(mkey_tf)
+	o := make(map[string]interface{})
+	existing := false
+
+	if update_if_exist && mkey_ok {
+		// check existing
+		o, err = c.ReadSystemSnmpCommunityHosts6(mkey, paradict)
+		if err == nil && o != nil {
+			existing = true
+			// update if existing
+			o, err = c.UpdateSystemSnmpCommunityHosts6(obj, mkey, paradict, wsParams)
+			if err != nil {
+				return fmt.Errorf("Error updating SystemSnmpCommunityHosts6 resource: %v", err)
+			}
+		}
+	}
+
+	if !existing {
+		_, err = c.CreateSystemSnmpCommunityHosts6(obj, paradict, wsParams)
+		if err != nil {
+			return fmt.Errorf("Error creating SystemSnmpCommunityHosts6 resource: %v", err)
+		}
+
 	}
 
 	d.SetId(strconv.Itoa(getIntKey(d, "fosid")))
@@ -124,8 +159,12 @@ func resourceSystemSnmpCommunityHosts6Update(d *schema.ResourceData, m interface
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -134,13 +173,12 @@ func resourceSystemSnmpCommunityHosts6Update(d *schema.ResourceData, m interface
 	paradict["device"] = device_name
 	paradict["community"] = community
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectSystemSnmpCommunityHosts6(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemSnmpCommunityHosts6 resource while getting object: %v", err)
 	}
+
+	wsParams["adom"] = adomv
 
 	_, err = c.UpdateSystemSnmpCommunityHosts6(obj, mkey, paradict, wsParams)
 	if err != nil {
@@ -162,8 +200,12 @@ func resourceSystemSnmpCommunityHosts6Delete(d *schema.ResourceData, m interface
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -172,9 +214,7 @@ func resourceSystemSnmpCommunityHosts6Delete(d *schema.ResourceData, m interface
 	paradict["device"] = device_name
 	paradict["community"] = community
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
+	wsParams["adom"] = adomv
 
 	err = c.DeleteSystemSnmpCommunityHosts6(mkey, paradict, wsParams)
 	if err != nil {
@@ -193,8 +233,8 @@ func resourceSystemSnmpCommunityHosts6Read(d *schema.ResourceData, m interface{}
 	c.Retries = 1
 
 	paradict := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	community := d.Get("community").(string)
 	if device_name == "" {
@@ -220,6 +260,7 @@ func resourceSystemSnmpCommunityHosts6Read(d *schema.ResourceData, m interface{}
 
 	o, err := c.ReadSystemSnmpCommunityHosts6(mkey, paradict)
 	if err != nil {
+		d.SetId("")
 		return fmt.Errorf("Error reading SystemSnmpCommunityHosts6 resource: %v", err)
 	}
 

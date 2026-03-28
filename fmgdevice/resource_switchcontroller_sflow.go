@@ -28,6 +28,12 @@ func resourceSwitchControllerSflow() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
+
+			"adom": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"device_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -60,8 +66,12 @@ func resourceSwitchControllerSflowUpdate(d *schema.ResourceData, m interface{}) 
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -73,13 +83,12 @@ func resourceSwitchControllerSflowUpdate(d *schema.ResourceData, m interface{}) 
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectSwitchControllerSflow(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SwitchControllerSflow resource while getting object: %v", err)
 	}
+
+	wsParams["adom"] = adomv
 
 	_, err = c.UpdateSwitchControllerSflow(obj, mkey, paradict, wsParams)
 	if err != nil {
@@ -101,8 +110,12 @@ func resourceSwitchControllerSflowDelete(d *schema.ResourceData, m interface{}) 
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -114,9 +127,7 @@ func resourceSwitchControllerSflowDelete(d *schema.ResourceData, m interface{}) 
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
+	wsParams["adom"] = adomv
 
 	err = c.DeleteSwitchControllerSflow(mkey, paradict, wsParams)
 	if err != nil {
@@ -135,8 +146,8 @@ func resourceSwitchControllerSflowRead(d *schema.ResourceData, m interface{}) er
 	c.Retries = 1
 
 	paradict := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	device_vdom, err := getVariable(cfg, d, "device_vdom")
 	if device_name == "" {
@@ -162,6 +173,7 @@ func resourceSwitchControllerSflowRead(d *schema.ResourceData, m interface{}) er
 
 	o, err := c.ReadSwitchControllerSflow(mkey, paradict)
 	if err != nil {
+		d.SetId("")
 		return fmt.Errorf("Error reading SwitchControllerSflow resource: %v", err)
 	}
 

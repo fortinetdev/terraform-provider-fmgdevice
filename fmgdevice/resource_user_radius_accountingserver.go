@@ -1,0 +1,570 @@
+// Copyright 2024 Fortinet, Inc. All rights reserved.
+// Author: Hongbin Lu (@fgtdev-hblu), Xing Li (@lix-fortinet)
+// Documentation:
+// Hongbin Lu (@fgtdev-hblu), Xing Li (@lix-fortinet), Yue Wang (@yuew-ftnt)
+
+// Description: <i>This object will be purged after policy copy and install.</i> Additional accounting servers.
+
+package fmgdevice
+
+import (
+	"fmt"
+	"log"
+	"strconv"
+
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
+)
+
+func resourceUserRadiusAccountingServer() *schema.Resource {
+	return &schema.Resource{
+		Create: resourceUserRadiusAccountingServerCreate,
+		Read:   resourceUserRadiusAccountingServerRead,
+		Update: resourceUserRadiusAccountingServerUpdate,
+		Delete: resourceUserRadiusAccountingServerDelete,
+
+		Importer: &schema.ResourceImporter{
+			State: schema.ImportStatePassthrough,
+		},
+
+		Schema: map[string]*schema.Schema{
+			"update_if_exist": &schema.Schema{
+				Type:     schema.TypeBool,
+				Optional: true,
+				Computed: true,
+			},
+
+			"adom": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
+			"device_name": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+				ForceNew: true,
+			},
+			"device_vdom": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+				ForceNew: true,
+			},
+			"radius": &schema.Schema{
+				Type:     schema.TypeString,
+				Required: true,
+				ForceNew: true,
+			},
+			"fosid": &schema.Schema{
+				Type:     schema.TypeInt,
+				ForceNew: true,
+				Optional: true,
+				Computed: true,
+			},
+			"interface": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Computed: true,
+			},
+			"interface_select_method": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+			"port": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+			},
+			"secret": &schema.Schema{
+				Type:      schema.TypeSet,
+				Elem:      &schema.Schema{Type: schema.TypeString},
+				Optional:  true,
+				Sensitive: true,
+				Computed:  true,
+			},
+			"server": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"source_ip": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"status": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+			"vrf_select": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+			},
+		},
+	}
+}
+
+func resourceUserRadiusAccountingServerCreate(d *schema.ResourceData, m interface{}) error {
+	c := m.(*FortiClient).Client
+	c.Retries = 1
+
+	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
+	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
+	device_name, err := getVariable(cfg, d, "device_name")
+	if err != nil {
+		return err
+	}
+	device_vdom, err := getVariable(cfg, d, "device_vdom")
+	if err != nil {
+		return err
+	}
+	radius := d.Get("radius").(string)
+	paradict["device"] = device_name
+	paradict["vdom"] = device_vdom
+	paradict["radius"] = radius
+
+	obj, err := getObjectUserRadiusAccountingServer(d)
+	if err != nil {
+		return fmt.Errorf("Error creating UserRadiusAccountingServer resource while getting object: %v", err)
+	}
+	wsParams["adom"] = adomv
+
+	update_if_exist := getUpdateIfExist(c, d)
+	mkey_tf, mkey_ok := d.GetOk("fosid")
+	mkey := fmt.Sprint(mkey_tf)
+	o := make(map[string]interface{})
+	existing := false
+
+	if update_if_exist && mkey_ok {
+		// check existing
+		o, err = c.ReadUserRadiusAccountingServer(mkey, paradict)
+		if err == nil && o != nil {
+			existing = true
+			// update if existing
+			o, err = c.UpdateUserRadiusAccountingServer(obj, mkey, paradict, wsParams)
+			if err != nil {
+				return fmt.Errorf("Error updating UserRadiusAccountingServer resource: %v", err)
+			}
+		}
+	}
+
+	if !existing {
+		v, err := c.CreateUserRadiusAccountingServer(obj, paradict, wsParams)
+		if err != nil {
+			return fmt.Errorf("Error creating UserRadiusAccountingServer resource: %v", err)
+		}
+
+		if v != nil && v["id"] != nil {
+			if vidn, ok := v["id"].(float64); ok {
+				d.SetId(strconv.Itoa(int(vidn)))
+				return resourceUserRadiusAccountingServerRead(d, m)
+			} else {
+				return fmt.Errorf("Error creating UserRadiusAccountingServer resource: %v", err)
+			}
+		}
+	}
+
+	d.SetId(strconv.Itoa(getIntKey(d, "fosid")))
+
+	return resourceUserRadiusAccountingServerRead(d, m)
+}
+
+func resourceUserRadiusAccountingServerUpdate(d *schema.ResourceData, m interface{}) error {
+	mkey := d.Id()
+	c := m.(*FortiClient).Client
+	c.Retries = 1
+
+	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
+	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
+	device_name, err := getVariable(cfg, d, "device_name")
+	if err != nil {
+		return err
+	}
+	device_vdom, err := getVariable(cfg, d, "device_vdom")
+	if err != nil {
+		return err
+	}
+	radius := d.Get("radius").(string)
+	paradict["device"] = device_name
+	paradict["vdom"] = device_vdom
+	paradict["radius"] = radius
+
+	obj, err := getObjectUserRadiusAccountingServer(d)
+	if err != nil {
+		return fmt.Errorf("Error updating UserRadiusAccountingServer resource while getting object: %v", err)
+	}
+
+	wsParams["adom"] = adomv
+
+	_, err = c.UpdateUserRadiusAccountingServer(obj, mkey, paradict, wsParams)
+	if err != nil {
+		return fmt.Errorf("Error updating UserRadiusAccountingServer resource: %v", err)
+	}
+
+	log.Printf(strconv.Itoa(c.Retries))
+
+	d.SetId(strconv.Itoa(getIntKey(d, "fosid")))
+
+	return resourceUserRadiusAccountingServerRead(d, m)
+}
+
+func resourceUserRadiusAccountingServerDelete(d *schema.ResourceData, m interface{}) error {
+	mkey := d.Id()
+
+	c := m.(*FortiClient).Client
+	c.Retries = 1
+
+	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
+	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
+	device_name, err := getVariable(cfg, d, "device_name")
+	if err != nil {
+		return err
+	}
+	device_vdom, err := getVariable(cfg, d, "device_vdom")
+	if err != nil {
+		return err
+	}
+	radius := d.Get("radius").(string)
+	paradict["device"] = device_name
+	paradict["vdom"] = device_vdom
+	paradict["radius"] = radius
+
+	wsParams["adom"] = adomv
+
+	err = c.DeleteUserRadiusAccountingServer(mkey, paradict, wsParams)
+	if err != nil {
+		return fmt.Errorf("Error deleting UserRadiusAccountingServer resource: %v", err)
+	}
+
+	d.SetId("")
+
+	return nil
+}
+
+func resourceUserRadiusAccountingServerRead(d *schema.ResourceData, m interface{}) error {
+	mkey := d.Id()
+
+	c := m.(*FortiClient).Client
+	c.Retries = 1
+
+	paradict := make(map[string]string)
+	cfg := m.(*FortiClient).Cfg
+
+	device_name, err := getVariable(cfg, d, "device_name")
+	device_vdom, err := getVariable(cfg, d, "device_vdom")
+	radius := d.Get("radius").(string)
+	if device_name == "" {
+		device_name = importOptionChecking(m.(*FortiClient).Cfg, "device_name")
+		if device_name == "" {
+			return fmt.Errorf("Parameter device_name is missing")
+		}
+		if err = d.Set("device_name", device_name); err != nil {
+			return fmt.Errorf("Error set params device_name: %v", err)
+		}
+	}
+	if device_vdom == "" {
+		device_vdom = importOptionChecking(m.(*FortiClient).Cfg, "device_vdom")
+		if device_vdom == "" {
+			return fmt.Errorf("Parameter device_vdom is missing")
+		}
+		if err = d.Set("device_vdom", device_vdom); err != nil {
+			return fmt.Errorf("Error set params device_vdom: %v", err)
+		}
+	}
+	if radius == "" {
+		radius = importOptionChecking(m.(*FortiClient).Cfg, "radius")
+		if radius == "" {
+			return fmt.Errorf("Parameter radius is missing")
+		}
+		if err = d.Set("radius", radius); err != nil {
+			return fmt.Errorf("Error set params radius: %v", err)
+		}
+	}
+	paradict["device"] = device_name
+	paradict["vdom"] = device_vdom
+	paradict["radius"] = radius
+
+	o, err := c.ReadUserRadiusAccountingServer(mkey, paradict)
+	if err != nil {
+		d.SetId("")
+		return fmt.Errorf("Error reading UserRadiusAccountingServer resource: %v", err)
+	}
+
+	if o == nil {
+		log.Printf("[WARN] resource (%s) not found, removing from state", d.Id())
+		d.SetId("")
+		return nil
+	}
+
+	err = refreshObjectUserRadiusAccountingServer(d, o)
+	if err != nil {
+		return fmt.Errorf("Error reading UserRadiusAccountingServer resource from API: %v", err)
+	}
+	return nil
+}
+
+func flattenUserRadiusAccountingServerId2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenUserRadiusAccountingServerInterface2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
+func flattenUserRadiusAccountingServerInterfaceSelectMethod2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenUserRadiusAccountingServerPort2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenUserRadiusAccountingServerServer2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenUserRadiusAccountingServerSourceIp2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenUserRadiusAccountingServerStatus2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenUserRadiusAccountingServerVrfSelect2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func refreshObjectUserRadiusAccountingServer(d *schema.ResourceData, o map[string]interface{}) error {
+	var err error
+
+	if err = d.Set("fosid", flattenUserRadiusAccountingServerId2edl(o["id"], d, "fosid")); err != nil {
+		if vv, ok := fortiAPIPatch(o["id"], "UserRadiusAccountingServer-Id"); ok {
+			if err = d.Set("fosid", vv); err != nil {
+				return fmt.Errorf("Error reading fosid: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading fosid: %v", err)
+		}
+	}
+
+	if err = d.Set("interface", flattenUserRadiusAccountingServerInterface2edl(o["interface"], d, "interface")); err != nil {
+		if vv, ok := fortiAPIPatch(o["interface"], "UserRadiusAccountingServer-Interface"); ok {
+			if err = d.Set("interface", vv); err != nil {
+				return fmt.Errorf("Error reading interface: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading interface: %v", err)
+		}
+	}
+
+	if err = d.Set("interface_select_method", flattenUserRadiusAccountingServerInterfaceSelectMethod2edl(o["interface-select-method"], d, "interface_select_method")); err != nil {
+		if vv, ok := fortiAPIPatch(o["interface-select-method"], "UserRadiusAccountingServer-InterfaceSelectMethod"); ok {
+			if err = d.Set("interface_select_method", vv); err != nil {
+				return fmt.Errorf("Error reading interface_select_method: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading interface_select_method: %v", err)
+		}
+	}
+
+	if err = d.Set("port", flattenUserRadiusAccountingServerPort2edl(o["port"], d, "port")); err != nil {
+		if vv, ok := fortiAPIPatch(o["port"], "UserRadiusAccountingServer-Port"); ok {
+			if err = d.Set("port", vv); err != nil {
+				return fmt.Errorf("Error reading port: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading port: %v", err)
+		}
+	}
+
+	if err = d.Set("server", flattenUserRadiusAccountingServerServer2edl(o["server"], d, "server")); err != nil {
+		if vv, ok := fortiAPIPatch(o["server"], "UserRadiusAccountingServer-Server"); ok {
+			if err = d.Set("server", vv); err != nil {
+				return fmt.Errorf("Error reading server: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading server: %v", err)
+		}
+	}
+
+	if err = d.Set("source_ip", flattenUserRadiusAccountingServerSourceIp2edl(o["source-ip"], d, "source_ip")); err != nil {
+		if vv, ok := fortiAPIPatch(o["source-ip"], "UserRadiusAccountingServer-SourceIp"); ok {
+			if err = d.Set("source_ip", vv); err != nil {
+				return fmt.Errorf("Error reading source_ip: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading source_ip: %v", err)
+		}
+	}
+
+	if err = d.Set("status", flattenUserRadiusAccountingServerStatus2edl(o["status"], d, "status")); err != nil {
+		if vv, ok := fortiAPIPatch(o["status"], "UserRadiusAccountingServer-Status"); ok {
+			if err = d.Set("status", vv); err != nil {
+				return fmt.Errorf("Error reading status: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading status: %v", err)
+		}
+	}
+
+	if err = d.Set("vrf_select", flattenUserRadiusAccountingServerVrfSelect2edl(o["vrf-select"], d, "vrf_select")); err != nil {
+		if vv, ok := fortiAPIPatch(o["vrf-select"], "UserRadiusAccountingServer-VrfSelect"); ok {
+			if err = d.Set("vrf_select", vv); err != nil {
+				return fmt.Errorf("Error reading vrf_select: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading vrf_select: %v", err)
+		}
+	}
+
+	return nil
+}
+
+func flattenUserRadiusAccountingServerFortiTestDebug(d *schema.ResourceData, fosdebugsn int, fosdebugbeg int, fosdebugend int) {
+	log.Printf(strconv.Itoa(fosdebugsn))
+	e := validation.IntBetween(fosdebugbeg, fosdebugend)
+	log.Printf("ER List: %v", e)
+}
+
+func expandUserRadiusAccountingServerId2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandUserRadiusAccountingServerInterface2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandUserRadiusAccountingServerInterfaceSelectMethod2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandUserRadiusAccountingServerPort2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandUserRadiusAccountingServerSecret2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandUserRadiusAccountingServerServer2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandUserRadiusAccountingServerSourceIp2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandUserRadiusAccountingServerStatus2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandUserRadiusAccountingServerVrfSelect2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func getObjectUserRadiusAccountingServer(d *schema.ResourceData) (*map[string]interface{}, error) {
+	obj := make(map[string]interface{})
+
+	if v, ok := d.GetOk("fosid"); ok || d.HasChange("fosid") {
+		t, err := expandUserRadiusAccountingServerId2edl(d, v, "fosid")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["id"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("interface"); ok || d.HasChange("interface") {
+		t, err := expandUserRadiusAccountingServerInterface2edl(d, v, "interface")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["interface"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("interface_select_method"); ok || d.HasChange("interface_select_method") {
+		t, err := expandUserRadiusAccountingServerInterfaceSelectMethod2edl(d, v, "interface_select_method")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["interface-select-method"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("port"); ok || d.HasChange("port") {
+		t, err := expandUserRadiusAccountingServerPort2edl(d, v, "port")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["port"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("secret"); ok || d.HasChange("secret") {
+		t, err := expandUserRadiusAccountingServerSecret2edl(d, v, "secret")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["secret"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("server"); ok || d.HasChange("server") {
+		t, err := expandUserRadiusAccountingServerServer2edl(d, v, "server")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["server"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("source_ip"); ok || d.HasChange("source_ip") {
+		t, err := expandUserRadiusAccountingServerSourceIp2edl(d, v, "source_ip")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["source-ip"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("status"); ok || d.HasChange("status") {
+		t, err := expandUserRadiusAccountingServerStatus2edl(d, v, "status")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["status"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("vrf_select"); ok || d.HasChange("vrf_select") {
+		t, err := expandUserRadiusAccountingServerVrfSelect2edl(d, v, "vrf_select")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["vrf-select"] = t
+		}
+	}
+
+	return &obj, nil
+}

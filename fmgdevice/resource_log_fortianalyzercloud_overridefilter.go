@@ -28,6 +28,12 @@ func resourceLogFortianalyzerCloudOverrideFilter() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
+
+			"adom": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"device_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -41,6 +47,10 @@ func resourceLogFortianalyzerCloudOverrideFilter() *schema.Resource {
 				ForceNew: true,
 			},
 			"anomaly": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"debug": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 			},
@@ -149,8 +159,12 @@ func resourceLogFortianalyzerCloudOverrideFilterUpdate(d *schema.ResourceData, m
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -162,13 +176,12 @@ func resourceLogFortianalyzerCloudOverrideFilterUpdate(d *schema.ResourceData, m
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectLogFortianalyzerCloudOverrideFilter(d)
 	if err != nil {
 		return fmt.Errorf("Error updating LogFortianalyzerCloudOverrideFilter resource while getting object: %v", err)
 	}
+
+	wsParams["adom"] = adomv
 
 	_, err = c.UpdateLogFortianalyzerCloudOverrideFilter(obj, mkey, paradict, wsParams)
 	if err != nil {
@@ -190,8 +203,12 @@ func resourceLogFortianalyzerCloudOverrideFilterDelete(d *schema.ResourceData, m
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -203,9 +220,7 @@ func resourceLogFortianalyzerCloudOverrideFilterDelete(d *schema.ResourceData, m
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
+	wsParams["adom"] = adomv
 
 	err = c.DeleteLogFortianalyzerCloudOverrideFilter(mkey, paradict, wsParams)
 	if err != nil {
@@ -224,8 +239,8 @@ func resourceLogFortianalyzerCloudOverrideFilterRead(d *schema.ResourceData, m i
 	c.Retries = 1
 
 	paradict := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	device_vdom, err := getVariable(cfg, d, "device_vdom")
 	if device_name == "" {
@@ -251,6 +266,7 @@ func resourceLogFortianalyzerCloudOverrideFilterRead(d *schema.ResourceData, m i
 
 	o, err := c.ReadLogFortianalyzerCloudOverrideFilter(mkey, paradict)
 	if err != nil {
+		d.SetId("")
 		return fmt.Errorf("Error reading LogFortianalyzerCloudOverrideFilter resource: %v", err)
 	}
 
@@ -268,6 +284,10 @@ func resourceLogFortianalyzerCloudOverrideFilterRead(d *schema.ResourceData, m i
 }
 
 func flattenLogFortianalyzerCloudOverrideFilterAnomaly(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenLogFortianalyzerCloudOverrideFilterDebug(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -406,6 +426,16 @@ func refreshObjectLogFortianalyzerCloudOverrideFilter(d *schema.ResourceData, o 
 			}
 		} else {
 			return fmt.Errorf("Error reading anomaly: %v", err)
+		}
+	}
+
+	if err = d.Set("debug", flattenLogFortianalyzerCloudOverrideFilterDebug(o["debug"], d, "debug")); err != nil {
+		if vv, ok := fortiAPIPatch(o["debug"], "LogFortianalyzerCloudOverrideFilter-Debug"); ok {
+			if err = d.Set("debug", vv); err != nil {
+				return fmt.Errorf("Error reading debug: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading debug: %v", err)
 		}
 	}
 
@@ -576,6 +606,10 @@ func expandLogFortianalyzerCloudOverrideFilterAnomaly(d *schema.ResourceData, v 
 	return v, nil
 }
 
+func expandLogFortianalyzerCloudOverrideFilterDebug(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandLogFortianalyzerCloudOverrideFilterDlpArchive(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -697,6 +731,15 @@ func getObjectLogFortianalyzerCloudOverrideFilter(d *schema.ResourceData) (*map[
 			return &obj, err
 		} else if t != nil {
 			obj["anomaly"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("debug"); ok || d.HasChange("debug") {
+		t, err := expandLogFortianalyzerCloudOverrideFilterDebug(d, v, "debug")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["debug"] = t
 		}
 	}
 

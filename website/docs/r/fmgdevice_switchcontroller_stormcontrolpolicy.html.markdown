@@ -33,6 +33,7 @@ The following arguments are supported:
 
 * `broadcast` - Enable/disable storm control to drop/allow broadcast traffic in override mode. Valid values: `disable`, `enable`.
 
+* `burst_size_level` - Increase level to handle bursty traffic (0 - 4, default = 0).
 * `description` - Description of the storm control policy.
 * `name` - Storm control policy name.
 * `rate` - Threshold rate in packets per second at which storm traffic is controlled in override mode (default=500, 0 to drop all).

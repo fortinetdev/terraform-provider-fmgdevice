@@ -9,6 +9,11 @@ description: |-
 # fmgdevice_system_admin
 Configure admin users.
 
+~> The following variables have sub resource. Avoid using them together, otherwise conflicts and overwrites may occur.
+>- `trusthosts`: `fmgdevice_system_admin_trusthosts`
+
+
+
 ## Example Usage
 
 ```hcl
@@ -50,6 +55,25 @@ The following arguments are supported:
 * `gui_ignore_release_overview_version` - FortiOS version to ignore release overview prompt for.
 * `history0` - History0.
 * `history1` - History1.
+* `history10` - History10.
+* `history11` - History11.
+* `history12` - History12.
+* `history13` - History13.
+* `history14` - History14.
+* `history15` - History15.
+* `history16` - History16.
+* `history17` - History17.
+* `history18` - History18.
+* `history19` - History19.
+* `history2` - History2.
+* `history3` - History3.
+* `history4` - History4.
+* `history5` - History5.
+* `history6` - History6.
+* `history7` - History7.
+* `history8` - History8.
+* `history9` - History9.
+* `trusthosts` - Trusthosts. The structure of `trusthosts` block is documented below.
 * `ip6_trusthost1` - Any IPv6 address from which the administrator can connect to the FortiGate unit. Default allows access from any IPv6 address.
 * `ip6_trusthost10` - Any IPv6 address from which the administrator can connect to the FortiGate unit. Default allows access from any IPv6 address.
 * `ip6_trusthost2` - Any IPv6 address from which the administrator can connect to the FortiGate unit. Default allows access from any IPv6 address.
@@ -81,6 +105,7 @@ The following arguments are supported:
 * `ssh_public_key1` - Public key of an SSH client. The client is authenticated without being asked for credentials. Create the public-private key pair in the SSH client application.
 * `ssh_public_key2` - Public key of an SSH client. The client is authenticated without being asked for credentials. Create the public-private key pair in the SSH client application.
 * `ssh_public_key3` - Public key of an SSH client. The client is authenticated without being asked for credentials. Create the public-private key pair in the SSH client application.
+* `ssh_tmp_file` - Temporary file for SSH keys.
 * `trusthost1` - Any IPv4 address or subnet address and netmask from which the administrator can connect to the FortiGate unit. Default allows access from any IPv4 address.
 * `trusthost10` - Any IPv4 address or subnet address and netmask from which the administrator can connect to the FortiGate unit. Default allows access from any IPv4 address.
 * `trusthost2` - Any IPv4 address or subnet address and netmask from which the administrator can connect to the FortiGate unit. Default allows access from any IPv4 address.
@@ -101,6 +126,15 @@ The following arguments are supported:
 * `vdom_override` - Enable to use the names of VDOMs provided by the remote authentication server to control the VDOMs that this administrator can access. Valid values: `disable`, `enable`.
 
 * `wildcard` - Enable/disable wildcard RADIUS authentication. Valid values: `disable`, `enable`.
+
+* `dynamic_sort_subtable` - true or false, set this parameter to true when using dynamic for_each + toset to configure and sort sub-tables, please do not set this parameter when configuring static sub-tables.
+
+The `trusthosts` block supports:
+
+* `id` - Id.
+* `ipv4` - Ipv4.
+* `ipv6` - Ipv6.
+* `type` - Type. Valid values: `ipv4`, `ipv6`.
 
 
 

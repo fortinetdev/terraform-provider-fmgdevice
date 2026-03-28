@@ -28,6 +28,17 @@ func resourceLogSyslogd4SettingCustomFieldName() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
+			"update_if_exist": &schema.Schema{
+				Type:     schema.TypeBool,
+				Optional: true,
+				Computed: true,
+			},
+
+			"adom": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"device_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -57,25 +68,49 @@ func resourceLogSyslogd4SettingCustomFieldNameCreate(d *schema.ResourceData, m i
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
 	}
 	paradict["device"] = device_name
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectLogSyslogd4SettingCustomFieldName(d)
 	if err != nil {
 		return fmt.Errorf("Error creating LogSyslogd4SettingCustomFieldName resource while getting object: %v", err)
 	}
+	wsParams["adom"] = adomv
 
-	_, err = c.CreateLogSyslogd4SettingCustomFieldName(obj, paradict, wsParams)
-	if err != nil {
-		return fmt.Errorf("Error creating LogSyslogd4SettingCustomFieldName resource: %v", err)
+	update_if_exist := getUpdateIfExist(c, d)
+	mkey_tf, mkey_ok := d.GetOk("fosid")
+	mkey := fmt.Sprint(mkey_tf)
+	o := make(map[string]interface{})
+	existing := false
+
+	if update_if_exist && mkey_ok {
+		// check existing
+		o, err = c.ReadLogSyslogd4SettingCustomFieldName(mkey, paradict)
+		if err == nil && o != nil {
+			existing = true
+			// update if existing
+			o, err = c.UpdateLogSyslogd4SettingCustomFieldName(obj, mkey, paradict, wsParams)
+			if err != nil {
+				return fmt.Errorf("Error updating LogSyslogd4SettingCustomFieldName resource: %v", err)
+			}
+		}
+	}
+
+	if !existing {
+		_, err = c.CreateLogSyslogd4SettingCustomFieldName(obj, paradict, wsParams)
+		if err != nil {
+			return fmt.Errorf("Error creating LogSyslogd4SettingCustomFieldName resource: %v", err)
+		}
+
 	}
 
 	d.SetId(strconv.Itoa(getIntKey(d, "fosid")))
@@ -90,21 +125,24 @@ func resourceLogSyslogd4SettingCustomFieldNameUpdate(d *schema.ResourceData, m i
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
 	}
 	paradict["device"] = device_name
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectLogSyslogd4SettingCustomFieldName(d)
 	if err != nil {
 		return fmt.Errorf("Error updating LogSyslogd4SettingCustomFieldName resource while getting object: %v", err)
 	}
+
+	wsParams["adom"] = adomv
 
 	_, err = c.UpdateLogSyslogd4SettingCustomFieldName(obj, mkey, paradict, wsParams)
 	if err != nil {
@@ -126,17 +164,19 @@ func resourceLogSyslogd4SettingCustomFieldNameDelete(d *schema.ResourceData, m i
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
 	}
 	paradict["device"] = device_name
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
+	wsParams["adom"] = adomv
 
 	err = c.DeleteLogSyslogd4SettingCustomFieldName(mkey, paradict, wsParams)
 	if err != nil {
@@ -155,8 +195,8 @@ func resourceLogSyslogd4SettingCustomFieldNameRead(d *schema.ResourceData, m int
 	c.Retries = 1
 
 	paradict := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if device_name == "" {
 		device_name = importOptionChecking(m.(*FortiClient).Cfg, "device_name")
@@ -171,6 +211,7 @@ func resourceLogSyslogd4SettingCustomFieldNameRead(d *schema.ResourceData, m int
 
 	o, err := c.ReadLogSyslogd4SettingCustomFieldName(mkey, paradict)
 	if err != nil {
+		d.SetId("")
 		return fmt.Errorf("Error reading LogSyslogd4SettingCustomFieldName resource: %v", err)
 	}
 

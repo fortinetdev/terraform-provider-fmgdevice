@@ -28,6 +28,12 @@ func resourceFtpProxyExplicit() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
+
+			"adom": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"device_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -88,6 +94,18 @@ func resourceFtpProxyExplicit() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"active_src_port": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"incoming_ip6": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"ipv6_status": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 		},
 	}
 }
@@ -99,8 +117,12 @@ func resourceFtpProxyExplicitUpdate(d *schema.ResourceData, m interface{}) error
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -112,13 +134,12 @@ func resourceFtpProxyExplicitUpdate(d *schema.ResourceData, m interface{}) error
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectFtpProxyExplicit(d)
 	if err != nil {
 		return fmt.Errorf("Error updating FtpProxyExplicit resource while getting object: %v", err)
 	}
+
+	wsParams["adom"] = adomv
 
 	_, err = c.UpdateFtpProxyExplicit(obj, mkey, paradict, wsParams)
 	if err != nil {
@@ -140,8 +161,12 @@ func resourceFtpProxyExplicitDelete(d *schema.ResourceData, m interface{}) error
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -153,9 +178,7 @@ func resourceFtpProxyExplicitDelete(d *schema.ResourceData, m interface{}) error
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
+	wsParams["adom"] = adomv
 
 	err = c.DeleteFtpProxyExplicit(mkey, paradict, wsParams)
 	if err != nil {
@@ -174,8 +197,8 @@ func resourceFtpProxyExplicitRead(d *schema.ResourceData, m interface{}) error {
 	c.Retries = 1
 
 	paradict := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	device_vdom, err := getVariable(cfg, d, "device_vdom")
 	if device_name == "" {
@@ -201,6 +224,7 @@ func resourceFtpProxyExplicitRead(d *schema.ResourceData, m interface{}) error {
 
 	o, err := c.ReadFtpProxyExplicit(mkey, paradict)
 	if err != nil {
+		d.SetId("")
 		return fmt.Errorf("Error reading FtpProxyExplicit resource: %v", err)
 	}
 
@@ -254,6 +278,18 @@ func flattenFtpProxyExplicitSslDhBits(v interface{}, d *schema.ResourceData, pre
 }
 
 func flattenFtpProxyExplicitStatus(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenFtpProxyExplicitActiveSrcPort(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenFtpProxyExplicitIncomingIp6(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenFtpProxyExplicitIpv6Status(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -360,6 +396,36 @@ func refreshObjectFtpProxyExplicit(d *schema.ResourceData, o map[string]interfac
 		}
 	}
 
+	if err = d.Set("active_src_port", flattenFtpProxyExplicitActiveSrcPort(o["active-src-port"], d, "active_src_port")); err != nil {
+		if vv, ok := fortiAPIPatch(o["active-src-port"], "FtpProxyExplicit-ActiveSrcPort"); ok {
+			if err = d.Set("active_src_port", vv); err != nil {
+				return fmt.Errorf("Error reading active_src_port: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading active_src_port: %v", err)
+		}
+	}
+
+	if err = d.Set("incoming_ip6", flattenFtpProxyExplicitIncomingIp6(o["incoming-ip6"], d, "incoming_ip6")); err != nil {
+		if vv, ok := fortiAPIPatch(o["incoming-ip6"], "FtpProxyExplicit-IncomingIp6"); ok {
+			if err = d.Set("incoming_ip6", vv); err != nil {
+				return fmt.Errorf("Error reading incoming_ip6: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading incoming_ip6: %v", err)
+		}
+	}
+
+	if err = d.Set("ipv6_status", flattenFtpProxyExplicitIpv6Status(o["ipv6-status"], d, "ipv6_status")); err != nil {
+		if vv, ok := fortiAPIPatch(o["ipv6-status"], "FtpProxyExplicit-Ipv6Status"); ok {
+			if err = d.Set("ipv6_status", vv); err != nil {
+				return fmt.Errorf("Error reading ipv6_status: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading ipv6_status: %v", err)
+		}
+	}
+
 	return nil
 }
 
@@ -406,6 +472,18 @@ func expandFtpProxyExplicitSslDhBits(d *schema.ResourceData, v interface{}, pre 
 }
 
 func expandFtpProxyExplicitStatus(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandFtpProxyExplicitActiveSrcPort(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandFtpProxyExplicitIncomingIp6(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandFtpProxyExplicitIpv6Status(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -499,6 +577,33 @@ func getObjectFtpProxyExplicit(d *schema.ResourceData) (*map[string]interface{},
 			return &obj, err
 		} else if t != nil {
 			obj["status"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("active_src_port"); ok || d.HasChange("active_src_port") {
+		t, err := expandFtpProxyExplicitActiveSrcPort(d, v, "active_src_port")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["active-src-port"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("incoming_ip6"); ok || d.HasChange("incoming_ip6") {
+		t, err := expandFtpProxyExplicitIncomingIp6(d, v, "incoming_ip6")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["incoming-ip6"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("ipv6_status"); ok || d.HasChange("ipv6_status") {
+		t, err := expandFtpProxyExplicitIpv6Status(d, v, "ipv6_status")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["ipv6-status"] = t
 		}
 	}
 

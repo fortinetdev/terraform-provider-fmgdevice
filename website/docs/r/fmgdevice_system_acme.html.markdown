@@ -54,6 +54,8 @@ The following arguments are supported:
 The `accounts` block supports:
 
 * `ca_url` - Account ca_url.
+* `eab_key_hmac` - External Acccount Binding Key HMAC.
+* `eab_key_id` - External Acccount Binding Key ID.
 * `email` - Account email.
 * `id` - Account id.
 * `privatekey` - Account Private Key.

@@ -19,6 +19,8 @@ Configure FortiSwitch devices that are managed by this FortiGate.
 >- `ports`: `fmgdevice_switchcontroller_managedswitch_ports`
 >- `remote_log`: `fmgdevice_switchcontroller_managedswitch_remotelog`
 >- `route_offload_router`: `fmgdevice_switchcontroller_managedswitch_routeoffloadrouter`
+>- `router_static`: `fmgdevice_switchcontroller_managedswitch_routerstatic`
+>- `router_vrf`: `fmgdevice_switchcontroller_managedswitch_routervrf`
 >- `snmp_community`: `fmgdevice_switchcontroller_managedswitch_snmpcommunity`
 >- `snmp_sysinfo`: `fmgdevice_switchcontroller_managedswitch_snmpsysinfo`
 >- `snmp_trap_threshold`: `fmgdevice_switchcontroller_managedswitch_snmptrapthreshold`
@@ -28,6 +30,8 @@ Configure FortiSwitch devices that are managed by this FortiGate.
 >- `stp_instance`: `fmgdevice_switchcontroller_managedswitch_stpinstance`
 >- `stp_settings`: `fmgdevice_switchcontroller_managedswitch_stpsettings`
 >- `switch_log`: `fmgdevice_switchcontroller_managedswitch_switchlog`
+>- `system_dhcp_server`: `fmgdevice_switchcontroller_managedswitch_systemdhcpserver`
+>- `system_interface`: `fmgdevice_switchcontroller_managedswitch_systeminterface`
 >- `vlan`: `fmgdevice_switchcontroller_managedswitch_vlan`
 
 
@@ -138,6 +142,8 @@ The following arguments are supported:
 * `route_offload_mclag` - Enable/disable route offload MCLAG on this FortiSwitch. Valid values: `disable`, `enable`.
 
 * `route_offload_router` - Route-Offload-Router. The structure of `route_offload_router` block is documented below.
+* `router_static` - Router-Static. The structure of `router_static` block is documented below.
+* `router_vrf` - Router-Vrf. The structure of `router_vrf` block is documented below.
 * `sn` - Managed-switch serial number.
 * `snmp_community` - Snmp-Community. The structure of `snmp_community` block is documented below.
 * `snmp_sysinfo` - Snmp-Sysinfo. The structure of `snmp_sysinfo` block is documented below.
@@ -153,6 +159,8 @@ The following arguments are supported:
 * `switch_id` - Managed-switch name.
 * `switch_log` - Switch-Log. The structure of `switch_log` block is documented below.
 * `switch_profile` - FortiSwitch profile.
+* `system_dhcp_server` - System-Dhcp-Server. The structure of `system_dhcp_server` block is documented below.
+* `system_interface` - System-Interface. The structure of `system_interface` block is documented below.
 * `tdr_supported` - Tdr-Supported.
 * `tunnel_discovered` - Tunnel-Discovered.
 * `type` - Indication of switch type, physical or virtual. Valid values: `physical`, `virtual`.
@@ -422,6 +430,29 @@ The `route_offload_router` block supports:
 * `router_ip` - Router IP address.
 * `vlan_name` - VLAN name.
 
+The `router_static` block supports:
+
+* `blackhole` - Enable/disable blackhole on this route. Valid values: `disable`, `enable`.
+
+* `comment` - Comment.
+* `device` - Gateway out interface.
+* `distance` - Administrative distance for the route (1 - 255, default = 10).
+* `dst` - Destination ip and mask for this route.
+* `dynamic_gateway` - Enable/disable dynamic gateway. Valid values: `disable`, `enable`.
+
+* `gateway` - Gateway ip for this route.
+* `id` - Entry sequence number.
+* `status` - Enable/disable route status. Valid values: `disable`, `enable`.
+
+* `switch_id` - Switch ID.
+* `vrf` - VRF for this route.
+
+The `router_vrf` block supports:
+
+* `name` - VRF entry name.
+* `switch_id` - Switch ID.
+* `vrfid` - VRF ID.
+
 The `snmp_community` block supports:
 
 * `events` - SNMP notifications (traps) to send. Valid values: `cpu-high`, `mem-low`, `log-full`, `intf-ip`, `ent-conf-change`.
@@ -495,6 +526,7 @@ The `storm_control` block supports:
 
 * `broadcast` - Enable/disable storm control to drop broadcast traffic. Valid values: `disable`, `enable`.
 
+* `burst_size_level` - Increase level to handle bursty traffic (0 - 4, default = 0).
 * `local_override` - Enable to override global FortiSwitch storm control settings for this FortiSwitch. Valid values: `disable`, `enable`.
 
 * `rate` - Rate in packets per second at which storm control drops excess traffic(0-10000000, default=500, drop-all=0).
@@ -531,6 +563,61 @@ The `switch_log` block supports:
 
 * `status` - Enable/disable adding FortiSwitch logs to the FortiGate event log. Valid values: `disable`, `enable`.
 
+
+The `system_dhcp_server` block supports:
+
+* `default_gateway` - Default gateway IP address assigned by the DHCP server.
+* `dns_server1` - DNS server 1.
+* `dns_server2` - DNS server 2.
+* `dns_server3` - DNS server 3.
+* `dns_service` - Options for assigning DNS servers to DHCP clients. Valid values: `default`, `specify`, `local`.
+
+* `id` - ID.
+* `interface` - DHCP server can assign IP configurations to clients connected to this interface.
+* `ip_range` - Ip-Range. The structure of `ip_range` block is documented below.
+* `lease_time` - Lease time in seconds, 0 means unlimited.
+* `netmask` - Netmask assigned by the DHCP server.
+* `ntp_server1` - NTP server 1.
+* `ntp_server2` - NTP server 2.
+* `ntp_server3` - NTP server 3.
+* `ntp_service` - Options for assigning Network Time Protocol (NTP) servers to DHCP clients. Valid values: `default`, `specify`, `local`.
+
+* `options` - Options. The structure of `options` block is documented below.
+* `status` - Enable/disable this DHCP configuration. Valid values: `disable`, `enable`.
+
+* `switch_id` - Switch ID.
+
+The `ip_range` block supports:
+
+* `end_ip` - End of IP range.
+* `id` - ID.
+* `start_ip` - Start of IP range.
+
+The `options` block supports:
+
+* `code` - DHCP option code.
+* `id` - ID.
+* `ip` - DHCP option IPs.
+* `type` - DHCP option type. Valid values: `hex`, `string`, `ip`, `fqdn`.
+
+* `value` - DHCP option value.
+
+The `system_interface` block supports:
+
+* `allowaccess` - Permitted types of management access to this interface. Valid values: `https`, `ping`, `ssh`, `snmp`, `http`, `telnet`, `radius-acct`.
+
+* `interface` - Interface name.
+* `ip` - IP and mask for this interface.
+* `mode` - Interface addressing mode. Valid values: `static`, `dhcp`.
+
+* `name` - Interface name.
+* `status` - Enable/disable interface status. Valid values: `disable`, `enable`.
+
+* `switch_id` - Switch ID.
+* `type` - Interface type. Valid values: `physical`, `vlan`.
+
+* `vlan` - VLAN name.
+* `vrf` - VRF for this route.
 
 The `vlan` block supports:
 

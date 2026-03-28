@@ -28,6 +28,17 @@ func resourceWirelessControllerVap() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
+			"update_if_exist": &schema.Schema{
+				Type:     schema.TypeBool,
+				Optional: true,
+				Computed: true,
+			},
+
+			"adom": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"device_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -135,6 +146,10 @@ func resourceWirelessControllerVap() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"_intf_ip6_send_adv": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 			"_intf_listen_forticlient_connection": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -149,6 +164,10 @@ func resourceWirelessControllerVap() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+			},
+			"_intf_vrf": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
 			},
 			"_is_factory_setting": &schema.Schema{
 				Type:     schema.TypeString,
@@ -280,6 +299,11 @@ func resourceWirelessControllerVap() *schema.Resource {
 				Computed: true,
 			},
 			"called_station_id_type": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+			"captive_network_assistant_bypass": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
@@ -463,6 +487,10 @@ func resourceWirelessControllerVap() *schema.Resource {
 							Optional: true,
 							Computed: true,
 						},
+						"_intf_ip6_send_adv": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
 						"_intf_listen_forticlient_connection": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
@@ -477,6 +505,10 @@ func resourceWirelessControllerVap() *schema.Resource {
 							Type:     schema.TypeString,
 							Optional: true,
 							Computed: true,
+						},
+						"_intf_vrf": &schema.Schema{
+							Type:     schema.TypeInt,
+							Optional: true,
 						},
 						"_is_factory_setting": &schema.Schema{
 							Type:     schema.TypeString,
@@ -612,6 +644,10 @@ func resourceWirelessControllerVap() *schema.Resource {
 							Optional: true,
 						},
 						"called_station_id_type": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"captive_network_assistant_bypass": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
 						},
@@ -788,6 +824,46 @@ func resourceWirelessControllerVap() *schema.Resource {
 							Elem:     &schema.Schema{Type: schema.TypeString},
 							Optional: true,
 							Computed: true,
+						},
+						"ip6_prefix_list": &schema.Schema{
+							Type:     schema.TypeList,
+							Optional: true,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"autonomous_flag": &schema.Schema{
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+									"dnssl": &schema.Schema{
+										Type:     schema.TypeSet,
+										Elem:     &schema.Schema{Type: schema.TypeString},
+										Optional: true,
+										Computed: true,
+									},
+									"onlink_flag": &schema.Schema{
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+									"preferred_life_time": &schema.Schema{
+										Type:     schema.TypeInt,
+										Optional: true,
+									},
+									"prefix": &schema.Schema{
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+									"rdnss": &schema.Schema{
+										Type:     schema.TypeSet,
+										Elem:     &schema.Schema{Type: schema.TypeString},
+										Optional: true,
+										Computed: true,
+									},
+									"valid_life_time": &schema.Schema{
+										Type:     schema.TypeInt,
+										Optional: true,
+									},
+								},
+							},
 						},
 						"ips_sensor": &schema.Schema{
 							Type:     schema.TypeSet,
@@ -1449,6 +1525,46 @@ func resourceWirelessControllerVap() *schema.Resource {
 				Elem:     &schema.Schema{Type: schema.TypeString},
 				Optional: true,
 				Computed: true,
+			},
+			"ip6_prefix_list": &schema.Schema{
+				Type:     schema.TypeList,
+				Optional: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"autonomous_flag": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"dnssl": &schema.Schema{
+							Type:     schema.TypeSet,
+							Elem:     &schema.Schema{Type: schema.TypeString},
+							Optional: true,
+							Computed: true,
+						},
+						"onlink_flag": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"preferred_life_time": &schema.Schema{
+							Type:     schema.TypeInt,
+							Optional: true,
+						},
+						"prefix": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"rdnss": &schema.Schema{
+							Type:     schema.TypeSet,
+							Elem:     &schema.Schema{Type: schema.TypeString},
+							Optional: true,
+							Computed: true,
+						},
+						"valid_life_time": &schema.Schema{
+							Type:     schema.TypeInt,
+							Optional: true,
+						},
+					},
+				},
 			},
 			"ips_sensor": &schema.Schema{
 				Type:     schema.TypeSet,
@@ -2184,8 +2300,12 @@ func resourceWirelessControllerVapCreate(d *schema.ResourceData, m interface{}) 
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -2197,17 +2317,37 @@ func resourceWirelessControllerVapCreate(d *schema.ResourceData, m interface{}) 
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectWirelessControllerVap(d)
 	if err != nil {
 		return fmt.Errorf("Error creating WirelessControllerVap resource while getting object: %v", err)
 	}
+	wsParams["adom"] = adomv
 
-	_, err = c.CreateWirelessControllerVap(obj, paradict, wsParams)
-	if err != nil {
-		return fmt.Errorf("Error creating WirelessControllerVap resource: %v", err)
+	update_if_exist := getUpdateIfExist(c, d)
+	mkey_tf, mkey_ok := d.GetOk("name")
+	mkey := fmt.Sprint(mkey_tf)
+	o := make(map[string]interface{})
+	existing := false
+
+	if update_if_exist && mkey_ok {
+		// check existing
+		o, err = c.ReadWirelessControllerVap(mkey, paradict)
+		if err == nil && o != nil {
+			existing = true
+			// update if existing
+			o, err = c.UpdateWirelessControllerVap(obj, mkey, paradict, wsParams)
+			if err != nil {
+				return fmt.Errorf("Error updating WirelessControllerVap resource: %v", err)
+			}
+		}
+	}
+
+	if !existing {
+		_, err = c.CreateWirelessControllerVap(obj, paradict, wsParams)
+		if err != nil {
+			return fmt.Errorf("Error creating WirelessControllerVap resource: %v", err)
+		}
+
 	}
 
 	d.SetId(getStringKey(d, "name"))
@@ -2222,8 +2362,12 @@ func resourceWirelessControllerVapUpdate(d *schema.ResourceData, m interface{}) 
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -2235,13 +2379,12 @@ func resourceWirelessControllerVapUpdate(d *schema.ResourceData, m interface{}) 
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectWirelessControllerVap(d)
 	if err != nil {
 		return fmt.Errorf("Error updating WirelessControllerVap resource while getting object: %v", err)
 	}
+
+	wsParams["adom"] = adomv
 
 	_, err = c.UpdateWirelessControllerVap(obj, mkey, paradict, wsParams)
 	if err != nil {
@@ -2263,8 +2406,12 @@ func resourceWirelessControllerVapDelete(d *schema.ResourceData, m interface{}) 
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -2276,9 +2423,7 @@ func resourceWirelessControllerVapDelete(d *schema.ResourceData, m interface{}) 
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
+	wsParams["adom"] = adomv
 
 	err = c.DeleteWirelessControllerVap(mkey, paradict, wsParams)
 	if err != nil {
@@ -2297,8 +2442,8 @@ func resourceWirelessControllerVapRead(d *schema.ResourceData, m interface{}) er
 	c.Retries = 1
 
 	paradict := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	device_vdom, err := getVariable(cfg, d, "device_vdom")
 	if device_name == "" {
@@ -2324,6 +2469,7 @@ func resourceWirelessControllerVapRead(d *schema.ResourceData, m interface{}) er
 
 	o, err := c.ReadWirelessControllerVap(mkey, paradict)
 	if err != nil {
+		d.SetId("")
 		return fmt.Errorf("Error reading WirelessControllerVap resource: %v", err)
 	}
 
@@ -2412,6 +2558,10 @@ func flattenWirelessControllerVapIntfIp6Allowaccess(v interface{}, d *schema.Res
 	return flattenStringList(v)
 }
 
+func flattenWirelessControllerVapIntfIp6SendAdv(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenWirelessControllerVapIntfListenForticlientConnection(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -2421,6 +2571,10 @@ func flattenWirelessControllerVapIntfManagedSubnetworkSize(v interface{}, d *sch
 }
 
 func flattenWirelessControllerVapIntfRole(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWirelessControllerVapIntfVrf(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -2525,6 +2679,10 @@ func flattenWirelessControllerVapBstmRssiDisassocTimer(v interface{}, d *schema.
 }
 
 func flattenWirelessControllerVapCalledStationIdType(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWirelessControllerVapCaptiveNetworkAssistantBypass(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -2715,6 +2873,12 @@ func flattenWirelessControllerVapDynamicMapping(v interface{}, d *schema.Resourc
 			tmp["_intf_ip6_allowaccess"] = fortiAPISubPartPatch(v, "WirelessControllerVap-DynamicMapping-IntfIp6Allowaccess")
 		}
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "_intf_ip6_send_adv"
+		if _, ok := i["_intf_ip6-send-adv"]; ok {
+			v := flattenWirelessControllerVapDynamicMappingIntfIp6SendAdv(i["_intf_ip6-send-adv"], d, pre_append)
+			tmp["_intf_ip6_send_adv"] = fortiAPISubPartPatch(v, "WirelessControllerVap-DynamicMapping-IntfIp6SendAdv")
+		}
+
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "_intf_listen_forticlient_connection"
 		if _, ok := i["_intf_listen-forticlient-connection"]; ok {
 			v := flattenWirelessControllerVapDynamicMappingIntfListenForticlientConnection(i["_intf_listen-forticlient-connection"], d, pre_append)
@@ -2731,6 +2895,12 @@ func flattenWirelessControllerVapDynamicMapping(v interface{}, d *schema.Resourc
 		if _, ok := i["_intf_role"]; ok {
 			v := flattenWirelessControllerVapDynamicMappingIntfRole(i["_intf_role"], d, pre_append)
 			tmp["_intf_role"] = fortiAPISubPartPatch(v, "WirelessControllerVap-DynamicMapping-IntfRole")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "_intf_vrf"
+		if _, ok := i["_intf_vrf"]; ok {
+			v := flattenWirelessControllerVapDynamicMappingIntfVrf(i["_intf_vrf"], d, pre_append)
+			tmp["_intf_vrf"] = fortiAPISubPartPatch(v, "WirelessControllerVap-DynamicMapping-IntfVrf")
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "_is_factory_setting"
@@ -2893,6 +3063,12 @@ func flattenWirelessControllerVapDynamicMapping(v interface{}, d *schema.Resourc
 		if _, ok := i["called-station-id-type"]; ok {
 			v := flattenWirelessControllerVapDynamicMappingCalledStationIdType(i["called-station-id-type"], d, pre_append)
 			tmp["called_station_id_type"] = fortiAPISubPartPatch(v, "WirelessControllerVap-DynamicMapping-CalledStationIdType")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "captive_network_assistant_bypass"
+		if _, ok := i["captive-network-assistant-bypass"]; ok {
+			v := flattenWirelessControllerVapDynamicMappingCaptiveNetworkAssistantBypass(i["captive-network-assistant-bypass"], d, pre_append)
+			tmp["captive_network_assistant_bypass"] = fortiAPISubPartPatch(v, "WirelessControllerVap-DynamicMapping-CaptiveNetworkAssistantBypass")
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "captive_portal"
@@ -3127,6 +3303,12 @@ func flattenWirelessControllerVapDynamicMapping(v interface{}, d *schema.Resourc
 		if _, ok := i["ip"]; ok {
 			v := flattenWirelessControllerVapDynamicMappingIp(i["ip"], d, pre_append)
 			tmp["ip"] = fortiAPISubPartPatch(v, "WirelessControllerVap-DynamicMapping-Ip")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "ip6_prefix_list"
+		if _, ok := i["ip6-prefix-list"]; ok {
+			v := flattenWirelessControllerVapDynamicMappingIp6PrefixList(i["ip6-prefix-list"], d, pre_append)
+			tmp["ip6_prefix_list"] = fortiAPISubPartPatch(v, "WirelessControllerVap-DynamicMapping-Ip6PrefixList")
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "ips_sensor"
@@ -3913,6 +4095,10 @@ func flattenWirelessControllerVapDynamicMappingIntfIp6Allowaccess(v interface{},
 	return flattenStringList(v)
 }
 
+func flattenWirelessControllerVapDynamicMappingIntfIp6SendAdv(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenWirelessControllerVapDynamicMappingIntfListenForticlientConnection(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -3922,6 +4108,10 @@ func flattenWirelessControllerVapDynamicMappingIntfManagedSubnetworkSize(v inter
 }
 
 func flattenWirelessControllerVapDynamicMappingIntfRole(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWirelessControllerVapDynamicMappingIntfVrf(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -4075,6 +4265,10 @@ func flattenWirelessControllerVapDynamicMappingBstmRssiDisassocTimer(v interface
 }
 
 func flattenWirelessControllerVapDynamicMappingCalledStationIdType(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWirelessControllerVapDynamicMappingCaptiveNetworkAssistantBypass(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -4232,6 +4426,105 @@ func flattenWirelessControllerVapDynamicMappingIntraVapPrivacy(v interface{}, d 
 
 func flattenWirelessControllerVapDynamicMappingIp(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return flattenStringList(v)
+}
+
+func flattenWirelessControllerVapDynamicMappingIp6PrefixList(v interface{}, d *schema.ResourceData, pre string) []map[string]interface{} {
+	if v == nil {
+		return nil
+	}
+
+	l := v.([]interface{})
+	if len(l) == 0 || l[0] == nil {
+		return nil
+	}
+
+	result := make([]map[string]interface{}, 0, len(l))
+
+	con := 0
+	for _, r := range l {
+		tmp := make(map[string]interface{})
+		i := r.(map[string]interface{})
+
+		pre_append := "" // table
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "autonomous_flag"
+		if _, ok := i["autonomous-flag"]; ok {
+			v := flattenWirelessControllerVapDynamicMappingIp6PrefixListAutonomousFlag(i["autonomous-flag"], d, pre_append)
+			tmp["autonomous_flag"] = fortiAPISubPartPatch(v, "WirelessControllerVapDynamicMapping-Ip6PrefixList-AutonomousFlag")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "dnssl"
+		if _, ok := i["dnssl"]; ok {
+			v := flattenWirelessControllerVapDynamicMappingIp6PrefixListDnssl(i["dnssl"], d, pre_append)
+			tmp["dnssl"] = fortiAPISubPartPatch(v, "WirelessControllerVapDynamicMapping-Ip6PrefixList-Dnssl")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "onlink_flag"
+		if _, ok := i["onlink-flag"]; ok {
+			v := flattenWirelessControllerVapDynamicMappingIp6PrefixListOnlinkFlag(i["onlink-flag"], d, pre_append)
+			tmp["onlink_flag"] = fortiAPISubPartPatch(v, "WirelessControllerVapDynamicMapping-Ip6PrefixList-OnlinkFlag")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "preferred_life_time"
+		if _, ok := i["preferred-life-time"]; ok {
+			v := flattenWirelessControllerVapDynamicMappingIp6PrefixListPreferredLifeTime(i["preferred-life-time"], d, pre_append)
+			tmp["preferred_life_time"] = fortiAPISubPartPatch(v, "WirelessControllerVapDynamicMapping-Ip6PrefixList-PreferredLifeTime")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "prefix"
+		if _, ok := i["prefix"]; ok {
+			v := flattenWirelessControllerVapDynamicMappingIp6PrefixListPrefix(i["prefix"], d, pre_append)
+			tmp["prefix"] = fortiAPISubPartPatch(v, "WirelessControllerVapDynamicMapping-Ip6PrefixList-Prefix")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "rdnss"
+		if _, ok := i["rdnss"]; ok {
+			v := flattenWirelessControllerVapDynamicMappingIp6PrefixListRdnss(i["rdnss"], d, pre_append)
+			tmp["rdnss"] = fortiAPISubPartPatch(v, "WirelessControllerVapDynamicMapping-Ip6PrefixList-Rdnss")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "valid_life_time"
+		if _, ok := i["valid-life-time"]; ok {
+			v := flattenWirelessControllerVapDynamicMappingIp6PrefixListValidLifeTime(i["valid-life-time"], d, pre_append)
+			tmp["valid_life_time"] = fortiAPISubPartPatch(v, "WirelessControllerVapDynamicMapping-Ip6PrefixList-ValidLifeTime")
+		}
+
+		if len(tmp) > 0 {
+			result = append(result, tmp)
+		}
+
+		con += 1
+	}
+
+	return result
+}
+
+func flattenWirelessControllerVapDynamicMappingIp6PrefixListAutonomousFlag(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWirelessControllerVapDynamicMappingIp6PrefixListDnssl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
+func flattenWirelessControllerVapDynamicMappingIp6PrefixListOnlinkFlag(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWirelessControllerVapDynamicMappingIp6PrefixListPreferredLifeTime(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWirelessControllerVapDynamicMappingIp6PrefixListPrefix(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWirelessControllerVapDynamicMappingIp6PrefixListRdnss(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
+func flattenWirelessControllerVapDynamicMappingIp6PrefixListValidLifeTime(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
 }
 
 func flattenWirelessControllerVapDynamicMappingIpsSensor(v interface{}, d *schema.ResourceData, pre string) interface{} {
@@ -4792,6 +5085,105 @@ func flattenWirelessControllerVapIntraVapPrivacy(v interface{}, d *schema.Resour
 
 func flattenWirelessControllerVapIp(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return flattenStringList(v)
+}
+
+func flattenWirelessControllerVapIp6PrefixList(v interface{}, d *schema.ResourceData, pre string) []map[string]interface{} {
+	if v == nil {
+		return nil
+	}
+
+	l := v.([]interface{})
+	if len(l) == 0 || l[0] == nil {
+		return nil
+	}
+
+	result := make([]map[string]interface{}, 0, len(l))
+
+	con := 0
+	for _, r := range l {
+		tmp := make(map[string]interface{})
+		i := r.(map[string]interface{})
+
+		pre_append := "" // table
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "autonomous_flag"
+		if _, ok := i["autonomous-flag"]; ok {
+			v := flattenWirelessControllerVapIp6PrefixListAutonomousFlag(i["autonomous-flag"], d, pre_append)
+			tmp["autonomous_flag"] = fortiAPISubPartPatch(v, "WirelessControllerVap-Ip6PrefixList-AutonomousFlag")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "dnssl"
+		if _, ok := i["dnssl"]; ok {
+			v := flattenWirelessControllerVapIp6PrefixListDnssl(i["dnssl"], d, pre_append)
+			tmp["dnssl"] = fortiAPISubPartPatch(v, "WirelessControllerVap-Ip6PrefixList-Dnssl")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "onlink_flag"
+		if _, ok := i["onlink-flag"]; ok {
+			v := flattenWirelessControllerVapIp6PrefixListOnlinkFlag(i["onlink-flag"], d, pre_append)
+			tmp["onlink_flag"] = fortiAPISubPartPatch(v, "WirelessControllerVap-Ip6PrefixList-OnlinkFlag")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "preferred_life_time"
+		if _, ok := i["preferred-life-time"]; ok {
+			v := flattenWirelessControllerVapIp6PrefixListPreferredLifeTime(i["preferred-life-time"], d, pre_append)
+			tmp["preferred_life_time"] = fortiAPISubPartPatch(v, "WirelessControllerVap-Ip6PrefixList-PreferredLifeTime")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "prefix"
+		if _, ok := i["prefix"]; ok {
+			v := flattenWirelessControllerVapIp6PrefixListPrefix(i["prefix"], d, pre_append)
+			tmp["prefix"] = fortiAPISubPartPatch(v, "WirelessControllerVap-Ip6PrefixList-Prefix")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "rdnss"
+		if _, ok := i["rdnss"]; ok {
+			v := flattenWirelessControllerVapIp6PrefixListRdnss(i["rdnss"], d, pre_append)
+			tmp["rdnss"] = fortiAPISubPartPatch(v, "WirelessControllerVap-Ip6PrefixList-Rdnss")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "valid_life_time"
+		if _, ok := i["valid-life-time"]; ok {
+			v := flattenWirelessControllerVapIp6PrefixListValidLifeTime(i["valid-life-time"], d, pre_append)
+			tmp["valid_life_time"] = fortiAPISubPartPatch(v, "WirelessControllerVap-Ip6PrefixList-ValidLifeTime")
+		}
+
+		if len(tmp) > 0 {
+			result = append(result, tmp)
+		}
+
+		con += 1
+	}
+
+	return result
+}
+
+func flattenWirelessControllerVapIp6PrefixListAutonomousFlag(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWirelessControllerVapIp6PrefixListDnssl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
+func flattenWirelessControllerVapIp6PrefixListOnlinkFlag(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWirelessControllerVapIp6PrefixListPreferredLifeTime(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWirelessControllerVapIp6PrefixListPrefix(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWirelessControllerVapIp6PrefixListRdnss(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
+func flattenWirelessControllerVapIp6PrefixListValidLifeTime(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
 }
 
 func flattenWirelessControllerVapIpsSensor(v interface{}, d *schema.ResourceData, pre string) interface{} {
@@ -5720,6 +6112,16 @@ func refreshObjectWirelessControllerVap(d *schema.ResourceData, o map[string]int
 		}
 	}
 
+	if err = d.Set("_intf_ip6_send_adv", flattenWirelessControllerVapIntfIp6SendAdv(o["_intf_ip6-send-adv"], d, "_intf_ip6_send_adv")); err != nil {
+		if vv, ok := fortiAPIPatch(o["_intf_ip6-send-adv"], "WirelessControllerVap-IntfIp6SendAdv"); ok {
+			if err = d.Set("_intf_ip6_send_adv", vv); err != nil {
+				return fmt.Errorf("Error reading _intf_ip6_send_adv: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading _intf_ip6_send_adv: %v", err)
+		}
+	}
+
 	if err = d.Set("_intf_listen_forticlient_connection", flattenWirelessControllerVapIntfListenForticlientConnection(o["_intf_listen-forticlient-connection"], d, "_intf_listen_forticlient_connection")); err != nil {
 		if vv, ok := fortiAPIPatch(o["_intf_listen-forticlient-connection"], "WirelessControllerVap-IntfListenForticlientConnection"); ok {
 			if err = d.Set("_intf_listen_forticlient_connection", vv); err != nil {
@@ -5747,6 +6149,16 @@ func refreshObjectWirelessControllerVap(d *schema.ResourceData, o map[string]int
 			}
 		} else {
 			return fmt.Errorf("Error reading _intf_role: %v", err)
+		}
+	}
+
+	if err = d.Set("_intf_vrf", flattenWirelessControllerVapIntfVrf(o["_intf_vrf"], d, "_intf_vrf")); err != nil {
+		if vv, ok := fortiAPIPatch(o["_intf_vrf"], "WirelessControllerVap-IntfVrf"); ok {
+			if err = d.Set("_intf_vrf", vv); err != nil {
+				return fmt.Errorf("Error reading _intf_vrf: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading _intf_vrf: %v", err)
 		}
 	}
 
@@ -6007,6 +6419,16 @@ func refreshObjectWirelessControllerVap(d *schema.ResourceData, o map[string]int
 			}
 		} else {
 			return fmt.Errorf("Error reading called_station_id_type: %v", err)
+		}
+	}
+
+	if err = d.Set("captive_network_assistant_bypass", flattenWirelessControllerVapCaptiveNetworkAssistantBypass(o["captive-network-assistant-bypass"], d, "captive_network_assistant_bypass")); err != nil {
+		if vv, ok := fortiAPIPatch(o["captive-network-assistant-bypass"], "WirelessControllerVap-CaptiveNetworkAssistantBypass"); ok {
+			if err = d.Set("captive_network_assistant_bypass", vv); err != nil {
+				return fmt.Errorf("Error reading captive_network_assistant_bypass: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading captive_network_assistant_bypass: %v", err)
 		}
 	}
 
@@ -6411,6 +6833,30 @@ func refreshObjectWirelessControllerVap(d *schema.ResourceData, o map[string]int
 			}
 		} else {
 			return fmt.Errorf("Error reading ip: %v", err)
+		}
+	}
+
+	if isImportTable() {
+		if err = d.Set("ip6_prefix_list", flattenWirelessControllerVapIp6PrefixList(o["ip6-prefix-list"], d, "ip6_prefix_list")); err != nil {
+			if vv, ok := fortiAPIPatch(o["ip6-prefix-list"], "WirelessControllerVap-Ip6PrefixList"); ok {
+				if err = d.Set("ip6_prefix_list", vv); err != nil {
+					return fmt.Errorf("Error reading ip6_prefix_list: %v", err)
+				}
+			} else {
+				return fmt.Errorf("Error reading ip6_prefix_list: %v", err)
+			}
+		}
+	} else {
+		if _, ok := d.GetOk("ip6_prefix_list"); ok {
+			if err = d.Set("ip6_prefix_list", flattenWirelessControllerVapIp6PrefixList(o["ip6-prefix-list"], d, "ip6_prefix_list")); err != nil {
+				if vv, ok := fortiAPIPatch(o["ip6-prefix-list"], "WirelessControllerVap-Ip6PrefixList"); ok {
+					if err = d.Set("ip6_prefix_list", vv); err != nil {
+						return fmt.Errorf("Error reading ip6_prefix_list: %v", err)
+					}
+				} else {
+					return fmt.Errorf("Error reading ip6_prefix_list: %v", err)
+				}
+			}
 		}
 	}
 
@@ -7775,6 +8221,10 @@ func expandWirelessControllerVapIntfIp6Allowaccess(d *schema.ResourceData, v int
 	return expandStringList(v.(*schema.Set).List()), nil
 }
 
+func expandWirelessControllerVapIntfIp6SendAdv(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandWirelessControllerVapIntfListenForticlientConnection(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -7784,6 +8234,10 @@ func expandWirelessControllerVapIntfManagedSubnetworkSize(d *schema.ResourceData
 }
 
 func expandWirelessControllerVapIntfRole(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWirelessControllerVapIntfVrf(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -7888,6 +8342,10 @@ func expandWirelessControllerVapBstmRssiDisassocTimer(d *schema.ResourceData, v 
 }
 
 func expandWirelessControllerVapCalledStationIdType(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWirelessControllerVapCaptiveNetworkAssistantBypass(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -8063,6 +8521,11 @@ func expandWirelessControllerVapDynamicMapping(d *schema.ResourceData, v interfa
 			tmp["_intf_ip6-allowaccess"], _ = expandWirelessControllerVapDynamicMappingIntfIp6Allowaccess(d, i["_intf_ip6_allowaccess"], pre_append)
 		}
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "_intf_ip6_send_adv"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["_intf_ip6-send-adv"], _ = expandWirelessControllerVapDynamicMappingIntfIp6SendAdv(d, i["_intf_ip6_send_adv"], pre_append)
+		}
+
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "_intf_listen_forticlient_connection"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
 			tmp["_intf_listen-forticlient-connection"], _ = expandWirelessControllerVapDynamicMappingIntfListenForticlientConnection(d, i["_intf_listen_forticlient_connection"], pre_append)
@@ -8076,6 +8539,11 @@ func expandWirelessControllerVapDynamicMapping(d *schema.ResourceData, v interfa
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "_intf_role"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
 			tmp["_intf_role"], _ = expandWirelessControllerVapDynamicMappingIntfRole(d, i["_intf_role"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "_intf_vrf"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["_intf_vrf"], _ = expandWirelessControllerVapDynamicMappingIntfVrf(d, i["_intf_vrf"], pre_append)
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "_is_factory_setting"
@@ -8216,6 +8684,11 @@ func expandWirelessControllerVapDynamicMapping(d *schema.ResourceData, v interfa
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "called_station_id_type"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
 			tmp["called-station-id-type"], _ = expandWirelessControllerVapDynamicMappingCalledStationIdType(d, i["called_station_id_type"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "captive_network_assistant_bypass"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["captive-network-assistant-bypass"], _ = expandWirelessControllerVapDynamicMappingCaptiveNetworkAssistantBypass(d, i["captive_network_assistant_bypass"], pre_append)
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "captive_portal"
@@ -8421,6 +8894,16 @@ func expandWirelessControllerVapDynamicMapping(d *schema.ResourceData, v interfa
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "ip"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
 			tmp["ip"], _ = expandWirelessControllerVapDynamicMappingIp(d, i["ip"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "ip6_prefix_list"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			t, err := expandWirelessControllerVapDynamicMappingIp6PrefixList(d, i["ip6_prefix_list"], pre_append)
+			if err != nil {
+				return result, err
+			} else if t != nil {
+				tmp["ip6-prefix-list"] = t
+			}
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "ips_sensor"
@@ -9105,6 +9588,10 @@ func expandWirelessControllerVapDynamicMappingIntfIp6Allowaccess(d *schema.Resou
 	return expandStringList(v.(*schema.Set).List()), nil
 }
 
+func expandWirelessControllerVapDynamicMappingIntfIp6SendAdv(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandWirelessControllerVapDynamicMappingIntfListenForticlientConnection(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -9114,6 +9601,10 @@ func expandWirelessControllerVapDynamicMappingIntfManagedSubnetworkSize(d *schem
 }
 
 func expandWirelessControllerVapDynamicMappingIntfRole(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWirelessControllerVapDynamicMappingIntfVrf(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -9260,6 +9751,10 @@ func expandWirelessControllerVapDynamicMappingBstmRssiDisassocTimer(d *schema.Re
 }
 
 func expandWirelessControllerVapDynamicMappingCalledStationIdType(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWirelessControllerVapDynamicMappingCaptiveNetworkAssistantBypass(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -9425,6 +9920,93 @@ func expandWirelessControllerVapDynamicMappingIntraVapPrivacy(d *schema.Resource
 
 func expandWirelessControllerVapDynamicMappingIp(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return expandStringList(v.([]interface{})), nil
+}
+
+func expandWirelessControllerVapDynamicMappingIp6PrefixList(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	l := v.([]interface{})
+	result := make([]map[string]interface{}, 0, len(l))
+
+	if len(l) == 0 || l[0] == nil {
+		return result, nil
+	}
+
+	con := 0
+	for _, r := range l {
+		tmp := make(map[string]interface{})
+		i := r.(map[string]interface{})
+		pre_append := "" // table
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "autonomous_flag"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["autonomous-flag"], _ = expandWirelessControllerVapDynamicMappingIp6PrefixListAutonomousFlag(d, i["autonomous_flag"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "dnssl"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["dnssl"], _ = expandWirelessControllerVapDynamicMappingIp6PrefixListDnssl(d, i["dnssl"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "onlink_flag"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["onlink-flag"], _ = expandWirelessControllerVapDynamicMappingIp6PrefixListOnlinkFlag(d, i["onlink_flag"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "preferred_life_time"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["preferred-life-time"], _ = expandWirelessControllerVapDynamicMappingIp6PrefixListPreferredLifeTime(d, i["preferred_life_time"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "prefix"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["prefix"], _ = expandWirelessControllerVapDynamicMappingIp6PrefixListPrefix(d, i["prefix"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "rdnss"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["rdnss"], _ = expandWirelessControllerVapDynamicMappingIp6PrefixListRdnss(d, i["rdnss"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "valid_life_time"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["valid-life-time"], _ = expandWirelessControllerVapDynamicMappingIp6PrefixListValidLifeTime(d, i["valid_life_time"], pre_append)
+		}
+
+		if len(tmp) > 0 {
+			result = append(result, tmp)
+		}
+
+		con += 1
+	}
+
+	return result, nil
+}
+
+func expandWirelessControllerVapDynamicMappingIp6PrefixListAutonomousFlag(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWirelessControllerVapDynamicMappingIp6PrefixListDnssl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandWirelessControllerVapDynamicMappingIp6PrefixListOnlinkFlag(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWirelessControllerVapDynamicMappingIp6PrefixListPreferredLifeTime(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWirelessControllerVapDynamicMappingIp6PrefixListPrefix(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWirelessControllerVapDynamicMappingIp6PrefixListRdnss(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandWirelessControllerVapDynamicMappingIp6PrefixListValidLifeTime(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
 }
 
 func expandWirelessControllerVapDynamicMappingIpsSensor(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
@@ -9997,6 +10579,93 @@ func expandWirelessControllerVapIntraVapPrivacy(d *schema.ResourceData, v interf
 
 func expandWirelessControllerVapIp(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return expandStringList(v.([]interface{})), nil
+}
+
+func expandWirelessControllerVapIp6PrefixList(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	l := v.([]interface{})
+	result := make([]map[string]interface{}, 0, len(l))
+
+	if len(l) == 0 || l[0] == nil {
+		return result, nil
+	}
+
+	con := 0
+	for _, r := range l {
+		tmp := make(map[string]interface{})
+		i := r.(map[string]interface{})
+		pre_append := "" // table
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "autonomous_flag"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["autonomous-flag"], _ = expandWirelessControllerVapIp6PrefixListAutonomousFlag(d, i["autonomous_flag"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "dnssl"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["dnssl"], _ = expandWirelessControllerVapIp6PrefixListDnssl(d, i["dnssl"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "onlink_flag"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["onlink-flag"], _ = expandWirelessControllerVapIp6PrefixListOnlinkFlag(d, i["onlink_flag"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "preferred_life_time"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["preferred-life-time"], _ = expandWirelessControllerVapIp6PrefixListPreferredLifeTime(d, i["preferred_life_time"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "prefix"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["prefix"], _ = expandWirelessControllerVapIp6PrefixListPrefix(d, i["prefix"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "rdnss"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["rdnss"], _ = expandWirelessControllerVapIp6PrefixListRdnss(d, i["rdnss"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "valid_life_time"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["valid-life-time"], _ = expandWirelessControllerVapIp6PrefixListValidLifeTime(d, i["valid_life_time"], pre_append)
+		}
+
+		if len(tmp) > 0 {
+			result = append(result, tmp)
+		}
+
+		con += 1
+	}
+
+	return result, nil
+}
+
+func expandWirelessControllerVapIp6PrefixListAutonomousFlag(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWirelessControllerVapIp6PrefixListDnssl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandWirelessControllerVapIp6PrefixListOnlinkFlag(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWirelessControllerVapIp6PrefixListPreferredLifeTime(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWirelessControllerVapIp6PrefixListPrefix(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWirelessControllerVapIp6PrefixListRdnss(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandWirelessControllerVapIp6PrefixListValidLifeTime(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
 }
 
 func expandWirelessControllerVapIpsSensor(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
@@ -10890,6 +11559,15 @@ func getObjectWirelessControllerVap(d *schema.ResourceData) (*map[string]interfa
 		}
 	}
 
+	if v, ok := d.GetOk("_intf_ip6_send_adv"); ok || d.HasChange("_intf_ip6_send_adv") {
+		t, err := expandWirelessControllerVapIntfIp6SendAdv(d, v, "_intf_ip6_send_adv")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["_intf_ip6-send-adv"] = t
+		}
+	}
+
 	if v, ok := d.GetOk("_intf_listen_forticlient_connection"); ok || d.HasChange("_intf_listen_forticlient_connection") {
 		t, err := expandWirelessControllerVapIntfListenForticlientConnection(d, v, "_intf_listen_forticlient_connection")
 		if err != nil {
@@ -10914,6 +11592,15 @@ func getObjectWirelessControllerVap(d *schema.ResourceData) (*map[string]interfa
 			return &obj, err
 		} else if t != nil {
 			obj["_intf_role"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("_intf_vrf"); ok || d.HasChange("_intf_vrf") {
+		t, err := expandWirelessControllerVapIntfVrf(d, v, "_intf_vrf")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["_intf_vrf"] = t
 		}
 	}
 
@@ -11148,6 +11835,15 @@ func getObjectWirelessControllerVap(d *schema.ResourceData) (*map[string]interfa
 			return &obj, err
 		} else if t != nil {
 			obj["called-station-id-type"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("captive_network_assistant_bypass"); ok || d.HasChange("captive_network_assistant_bypass") {
+		t, err := expandWirelessControllerVapCaptiveNetworkAssistantBypass(d, v, "captive_network_assistant_bypass")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["captive-network-assistant-bypass"] = t
 		}
 	}
 
@@ -11517,6 +12213,15 @@ func getObjectWirelessControllerVap(d *schema.ResourceData) (*map[string]interfa
 			return &obj, err
 		} else if t != nil {
 			obj["ip"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("ip6_prefix_list"); ok || d.HasChange("ip6_prefix_list") {
+		t, err := expandWirelessControllerVapIp6PrefixList(d, v, "ip6_prefix_list")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["ip6-prefix-list"] = t
 		}
 	}
 

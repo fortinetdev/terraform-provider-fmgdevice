@@ -28,6 +28,17 @@ func resourceReportLayoutPageHeaderHeaderItem() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
+			"update_if_exist": &schema.Schema{
+				Type:     schema.TypeBool,
+				Optional: true,
+				Computed: true,
+			},
+
+			"adom": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"device_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -83,8 +94,12 @@ func resourceReportLayoutPageHeaderHeaderItemCreate(d *schema.ResourceData, m in
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -98,17 +113,37 @@ func resourceReportLayoutPageHeaderHeaderItemCreate(d *schema.ResourceData, m in
 	paradict["vdom"] = device_vdom
 	paradict["layout"] = layout
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectReportLayoutPageHeaderHeaderItem(d)
 	if err != nil {
 		return fmt.Errorf("Error creating ReportLayoutPageHeaderHeaderItem resource while getting object: %v", err)
 	}
+	wsParams["adom"] = adomv
 
-	_, err = c.CreateReportLayoutPageHeaderHeaderItem(obj, paradict, wsParams)
-	if err != nil {
-		return fmt.Errorf("Error creating ReportLayoutPageHeaderHeaderItem resource: %v", err)
+	update_if_exist := getUpdateIfExist(c, d)
+	mkey_tf, mkey_ok := d.GetOk("fosid")
+	mkey := fmt.Sprint(mkey_tf)
+	o := make(map[string]interface{})
+	existing := false
+
+	if update_if_exist && mkey_ok {
+		// check existing
+		o, err = c.ReadReportLayoutPageHeaderHeaderItem(mkey, paradict)
+		if err == nil && o != nil {
+			existing = true
+			// update if existing
+			o, err = c.UpdateReportLayoutPageHeaderHeaderItem(obj, mkey, paradict, wsParams)
+			if err != nil {
+				return fmt.Errorf("Error updating ReportLayoutPageHeaderHeaderItem resource: %v", err)
+			}
+		}
+	}
+
+	if !existing {
+		_, err = c.CreateReportLayoutPageHeaderHeaderItem(obj, paradict, wsParams)
+		if err != nil {
+			return fmt.Errorf("Error creating ReportLayoutPageHeaderHeaderItem resource: %v", err)
+		}
+
 	}
 
 	d.SetId(strconv.Itoa(getIntKey(d, "fosid")))
@@ -123,8 +158,12 @@ func resourceReportLayoutPageHeaderHeaderItemUpdate(d *schema.ResourceData, m in
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -138,13 +177,12 @@ func resourceReportLayoutPageHeaderHeaderItemUpdate(d *schema.ResourceData, m in
 	paradict["vdom"] = device_vdom
 	paradict["layout"] = layout
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectReportLayoutPageHeaderHeaderItem(d)
 	if err != nil {
 		return fmt.Errorf("Error updating ReportLayoutPageHeaderHeaderItem resource while getting object: %v", err)
 	}
+
+	wsParams["adom"] = adomv
 
 	_, err = c.UpdateReportLayoutPageHeaderHeaderItem(obj, mkey, paradict, wsParams)
 	if err != nil {
@@ -166,8 +204,12 @@ func resourceReportLayoutPageHeaderHeaderItemDelete(d *schema.ResourceData, m in
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -181,9 +223,7 @@ func resourceReportLayoutPageHeaderHeaderItemDelete(d *schema.ResourceData, m in
 	paradict["vdom"] = device_vdom
 	paradict["layout"] = layout
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
+	wsParams["adom"] = adomv
 
 	err = c.DeleteReportLayoutPageHeaderHeaderItem(mkey, paradict, wsParams)
 	if err != nil {
@@ -202,8 +242,8 @@ func resourceReportLayoutPageHeaderHeaderItemRead(d *schema.ResourceData, m inte
 	c.Retries = 1
 
 	paradict := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	device_vdom, err := getVariable(cfg, d, "device_vdom")
 	layout := d.Get("layout").(string)
@@ -240,6 +280,7 @@ func resourceReportLayoutPageHeaderHeaderItemRead(d *schema.ResourceData, m inte
 
 	o, err := c.ReadReportLayoutPageHeaderHeaderItem(mkey, paradict)
 	if err != nil {
+		d.SetId("")
 		return fmt.Errorf("Error reading ReportLayoutPageHeaderHeaderItem resource: %v", err)
 	}
 

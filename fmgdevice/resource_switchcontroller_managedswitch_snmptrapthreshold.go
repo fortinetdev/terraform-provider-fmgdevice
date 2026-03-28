@@ -28,6 +28,12 @@ func resourceSwitchControllerManagedSwitchSnmpTrapThreshold() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
+
+			"adom": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"device_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -70,8 +76,12 @@ func resourceSwitchControllerManagedSwitchSnmpTrapThresholdUpdate(d *schema.Reso
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -85,13 +95,12 @@ func resourceSwitchControllerManagedSwitchSnmpTrapThresholdUpdate(d *schema.Reso
 	paradict["vdom"] = device_vdom
 	paradict["managed_switch"] = managed_switch
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectSwitchControllerManagedSwitchSnmpTrapThreshold(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SwitchControllerManagedSwitchSnmpTrapThreshold resource while getting object: %v", err)
 	}
+
+	wsParams["adom"] = adomv
 
 	_, err = c.UpdateSwitchControllerManagedSwitchSnmpTrapThreshold(obj, mkey, paradict, wsParams)
 	if err != nil {
@@ -113,8 +122,12 @@ func resourceSwitchControllerManagedSwitchSnmpTrapThresholdDelete(d *schema.Reso
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -128,9 +141,7 @@ func resourceSwitchControllerManagedSwitchSnmpTrapThresholdDelete(d *schema.Reso
 	paradict["vdom"] = device_vdom
 	paradict["managed_switch"] = managed_switch
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
+	wsParams["adom"] = adomv
 
 	err = c.DeleteSwitchControllerManagedSwitchSnmpTrapThreshold(mkey, paradict, wsParams)
 	if err != nil {
@@ -149,8 +160,8 @@ func resourceSwitchControllerManagedSwitchSnmpTrapThresholdRead(d *schema.Resour
 	c.Retries = 1
 
 	paradict := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	device_vdom, err := getVariable(cfg, d, "device_vdom")
 	managed_switch := d.Get("managed_switch").(string)
@@ -187,6 +198,7 @@ func resourceSwitchControllerManagedSwitchSnmpTrapThresholdRead(d *schema.Resour
 
 	o, err := c.ReadSwitchControllerManagedSwitchSnmpTrapThreshold(mkey, paradict)
 	if err != nil {
+		d.SetId("")
 		return fmt.Errorf("Error reading SwitchControllerManagedSwitchSnmpTrapThreshold resource: %v", err)
 	}
 

@@ -57,6 +57,10 @@ func escapeURLString(v string) string { // doesn't support "<>()"'#"
 	// return strings.Replace(url.QueryEscape(v), "+", "%20", -1)
 }
 
+func escapeURLStringDMScope(v string) string { // doesn't support "<>()"'#"
+	return strings.Replace(strings.Replace(v, "/", "\\/", -1), " ", "/", -1)
+}
+
 // NewClient initializes a new global plugin client
 // It returns the created client object
 func NewClient(auth *auth.Auth, client *http.Client, workspaceModeConfig string) (c *FortiSDKClient, err error) {

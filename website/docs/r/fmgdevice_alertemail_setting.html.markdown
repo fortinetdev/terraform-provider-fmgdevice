@@ -88,6 +88,8 @@ The following arguments are supported:
 * `warning_interval` - Warning alert interval in minutes.
 * `webfilter_logs` - Enable/disable web filter logs in alert email. Valid values: `disable`, `enable`.
 
+* `fpx_license_logs` - Fpx-License-Logs. Valid values: `disable`, `enable`.
+
 
 
 ## Attribute Reference

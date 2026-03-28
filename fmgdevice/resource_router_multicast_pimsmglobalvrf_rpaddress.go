@@ -28,6 +28,17 @@ func resourceRouterMulticastPimSmGlobalVrfRpAddress() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
+			"update_if_exist": &schema.Schema{
+				Type:     schema.TypeBool,
+				Optional: true,
+				Computed: true,
+			},
+
+			"adom": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"device_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -55,6 +66,7 @@ func resourceRouterMulticastPimSmGlobalVrfRpAddress() *schema.Resource {
 				Type:     schema.TypeInt,
 				ForceNew: true,
 				Optional: true,
+				Computed: true,
 			},
 			"ip_address": &schema.Schema{
 				Type:     schema.TypeString,
@@ -71,8 +83,12 @@ func resourceRouterMulticastPimSmGlobalVrfRpAddressCreate(d *schema.ResourceData
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -86,17 +102,45 @@ func resourceRouterMulticastPimSmGlobalVrfRpAddressCreate(d *schema.ResourceData
 	paradict["vdom"] = device_vdom
 	paradict["pim_sm_global_vrf"] = pim_sm_global_vrf
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectRouterMulticastPimSmGlobalVrfRpAddress(d)
 	if err != nil {
 		return fmt.Errorf("Error creating RouterMulticastPimSmGlobalVrfRpAddress resource while getting object: %v", err)
 	}
+	wsParams["adom"] = adomv
 
-	_, err = c.CreateRouterMulticastPimSmGlobalVrfRpAddress(obj, paradict, wsParams)
-	if err != nil {
-		return fmt.Errorf("Error creating RouterMulticastPimSmGlobalVrfRpAddress resource: %v", err)
+	update_if_exist := getUpdateIfExist(c, d)
+	mkey_tf, mkey_ok := d.GetOk("fosid")
+	mkey := fmt.Sprint(mkey_tf)
+	o := make(map[string]interface{})
+	existing := false
+
+	if update_if_exist && mkey_ok {
+		// check existing
+		o, err = c.ReadRouterMulticastPimSmGlobalVrfRpAddress(mkey, paradict)
+		if err == nil && o != nil {
+			existing = true
+			// update if existing
+			o, err = c.UpdateRouterMulticastPimSmGlobalVrfRpAddress(obj, mkey, paradict, wsParams)
+			if err != nil {
+				return fmt.Errorf("Error updating RouterMulticastPimSmGlobalVrfRpAddress resource: %v", err)
+			}
+		}
+	}
+
+	if !existing {
+		v, err := c.CreateRouterMulticastPimSmGlobalVrfRpAddress(obj, paradict, wsParams)
+		if err != nil {
+			return fmt.Errorf("Error creating RouterMulticastPimSmGlobalVrfRpAddress resource: %v", err)
+		}
+
+		if v != nil && v["id"] != nil {
+			if vidn, ok := v["id"].(float64); ok {
+				d.SetId(strconv.Itoa(int(vidn)))
+				return resourceRouterMulticastPimSmGlobalVrfRpAddressRead(d, m)
+			} else {
+				return fmt.Errorf("Error creating RouterMulticastPimSmGlobalVrfRpAddress resource: %v", err)
+			}
+		}
 	}
 
 	d.SetId(strconv.Itoa(getIntKey(d, "fosid")))
@@ -111,8 +155,12 @@ func resourceRouterMulticastPimSmGlobalVrfRpAddressUpdate(d *schema.ResourceData
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -126,13 +174,12 @@ func resourceRouterMulticastPimSmGlobalVrfRpAddressUpdate(d *schema.ResourceData
 	paradict["vdom"] = device_vdom
 	paradict["pim_sm_global_vrf"] = pim_sm_global_vrf
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectRouterMulticastPimSmGlobalVrfRpAddress(d)
 	if err != nil {
 		return fmt.Errorf("Error updating RouterMulticastPimSmGlobalVrfRpAddress resource while getting object: %v", err)
 	}
+
+	wsParams["adom"] = adomv
 
 	_, err = c.UpdateRouterMulticastPimSmGlobalVrfRpAddress(obj, mkey, paradict, wsParams)
 	if err != nil {
@@ -154,8 +201,12 @@ func resourceRouterMulticastPimSmGlobalVrfRpAddressDelete(d *schema.ResourceData
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -169,9 +220,7 @@ func resourceRouterMulticastPimSmGlobalVrfRpAddressDelete(d *schema.ResourceData
 	paradict["vdom"] = device_vdom
 	paradict["pim_sm_global_vrf"] = pim_sm_global_vrf
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
+	wsParams["adom"] = adomv
 
 	err = c.DeleteRouterMulticastPimSmGlobalVrfRpAddress(mkey, paradict, wsParams)
 	if err != nil {
@@ -190,8 +239,8 @@ func resourceRouterMulticastPimSmGlobalVrfRpAddressRead(d *schema.ResourceData, 
 	c.Retries = 1
 
 	paradict := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	device_vdom, err := getVariable(cfg, d, "device_vdom")
 	pim_sm_global_vrf := d.Get("pim_sm_global_vrf").(string)
@@ -228,6 +277,7 @@ func resourceRouterMulticastPimSmGlobalVrfRpAddressRead(d *schema.ResourceData, 
 
 	o, err := c.ReadRouterMulticastPimSmGlobalVrfRpAddress(mkey, paradict)
 	if err != nil {
+		d.SetId("")
 		return fmt.Errorf("Error reading RouterMulticastPimSmGlobalVrfRpAddress resource: %v", err)
 	}
 

@@ -36,6 +36,7 @@ The following arguments are supported:
 * `device_vdom` - FortiManager managed device vdom. This variable is used in the request URL. If not specified, it will inherit the variable `device_vdom` of the provider.
 * `health_check` - Health Check.
 
+* `custom_profile_threshold` - Custom profile threshold for SLA to be marked as pass(0 - 10000000, default = 0).
 * `fosid` - SLA ID.
 * `jitter_threshold` - Jitter for SLA to make decision in milliseconds. (0 - 10000000, default = 5).
 * `latency_threshold` - Latency for SLA to make decision in milliseconds. (0 - 10000000, default = 5).

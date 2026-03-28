@@ -40,6 +40,8 @@ The following arguments are supported:
 * `device_vdom` - FortiManager managed device vdom. This variable is used in the request URL. If not specified, it will inherit the variable `device_vdom` of the provider.
 
 * `delegated_prefix_iaid` - IAID of obtained delegated-prefix from the upstream interface.
+* `delegated_prefix_route` - Enable/disable automatically adding of routing for delegated prefix. Valid values: `disable`, `enable`.
+
 * `dns_search_list` - DNS search list options. Valid values: `specify`, `delegated`.
 
 * `dns_server1` - DNS server 1.

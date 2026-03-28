@@ -153,6 +153,8 @@ The following arguments are supported:
 
 * `gui_fortiextender_controller` - Enable/disable FortiExtender on the GUI. Valid values: `disable`, `enable`.
 
+* `gui_fortitelemetry` - Enable/disable FortiTelemetry on the GUI. Valid values: `disable`, `enable`.
+
 * `gui_gtp` - Enable/disable Manage general radio packet service (GPRS) protocols on the GUI. Valid values: `disable`, `enable`.
 
 * `gui_icap` - Enable/disable ICAP on the GUI. Valid values: `disable`, `enable`.
@@ -188,6 +190,8 @@ The following arguments are supported:
 * `gui_replacement_message_groups` - Enable/disable replacement message groups on the GUI. Valid values: `disable`, `enable`.
 
 * `gui_proxy_inspection` - Enable/disable the proxy features on the GUI. Valid values: `disable`, `enable`.
+
+* `wccp_local_route` - Wccp-Local-Route. Valid values: `disable`, `enable`.
 
 * `gui_route_tag_address_creation` - Enable/disable route-tag addresses on the GUI. Valid values: `disable`, `enable`.
 
@@ -236,6 +240,8 @@ The following arguments are supported:
 * `http_external_dest` - Offload HTTP traffic to FortiWeb or FortiCache. Valid values: `fortiweb`, `forticache`.
 
 * `hyperscale_default_policy_action` - Hyperscale default policy action. Valid values: `drop-on-hardware`, `forward-to-host`.
+
+* `ike_detailed_event_logs` - Enable/disable detail log for IKE events. Valid values: `disable`, `enable`.
 
 * `ike_dn_format` - Configure IKE ASN.1 Distinguished Name format conventions. Valid values: `with-space`, `no-space`.
 
@@ -332,6 +338,8 @@ The following arguments are supported:
 
 * `vpn_stats_period` - Period to send VPN log statistics (0 or 60 - 86400 sec).
 * `wccp_cache_engine` - Enable/disable WCCP cache engine. Valid values: `disable`, `enable`.
+
+* `forward_domain` - Forward-Domain. Valid values: `disable`, `enable`.
 
 
 

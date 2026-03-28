@@ -28,6 +28,12 @@ func resourceSystemSettings() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
+
+			"adom": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"device_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -379,6 +385,10 @@ func resourceSystemSettings() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"gui_fortitelemetry": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 			"gui_gtp": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -464,6 +474,10 @@ func resourceSystemSettings() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+			},
+			"wccp_local_route": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
 			},
 			"gui_route_tag_address_creation": &schema.Schema{
 				Type:     schema.TypeString,
@@ -581,6 +595,10 @@ func resourceSystemSettings() *schema.Resource {
 				Computed: true,
 			},
 			"hyperscale_default_policy_action": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"ike_detailed_event_logs": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 			},
@@ -858,6 +876,10 @@ func resourceSystemSettings() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"forward_domain": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 		},
 	}
 }
@@ -869,8 +891,12 @@ func resourceSystemSettingsUpdate(d *schema.ResourceData, m interface{}) error {
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -882,13 +908,12 @@ func resourceSystemSettingsUpdate(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectSystemSettings(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemSettings resource while getting object: %v", err)
 	}
+
+	wsParams["adom"] = adomv
 
 	_, err = c.UpdateSystemSettings(obj, mkey, paradict, wsParams)
 	if err != nil {
@@ -910,8 +935,12 @@ func resourceSystemSettingsDelete(d *schema.ResourceData, m interface{}) error {
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -923,9 +952,7 @@ func resourceSystemSettingsDelete(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
+	wsParams["adom"] = adomv
 
 	err = c.DeleteSystemSettings(mkey, paradict, wsParams)
 	if err != nil {
@@ -944,8 +971,8 @@ func resourceSystemSettingsRead(d *schema.ResourceData, m interface{}) error {
 	c.Retries = 1
 
 	paradict := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	device_vdom, err := getVariable(cfg, d, "device_vdom")
 	if device_name == "" {
@@ -971,6 +998,7 @@ func resourceSystemSettingsRead(d *schema.ResourceData, m interface{}) error {
 
 	o, err := c.ReadSystemSettings(mkey, paradict)
 	if err != nil {
+		d.SetId("")
 		return fmt.Errorf("Error reading SystemSettings resource: %v", err)
 	}
 
@@ -1263,6 +1291,10 @@ func flattenSystemSettingsGuiFortiextenderController(v interface{}, d *schema.Re
 	return v
 }
 
+func flattenSystemSettingsGuiFortitelemetry(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenSystemSettingsGuiGtp(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -1332,6 +1364,10 @@ func flattenSystemSettingsGuiReplacementMessageGroups(v interface{}, d *schema.R
 }
 
 func flattenSystemSettingsGuiProxyInspection(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemSettingsWccpLocalRoute(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -1428,6 +1464,10 @@ func flattenSystemSettingsHttpExternalDest(v interface{}, d *schema.ResourceData
 }
 
 func flattenSystemSettingsHyperscaleDefaultPolicyAction(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemSettingsIkeDetailedEventLogs(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -1652,6 +1692,10 @@ func flattenSystemSettingsVpnStatsPeriod(v interface{}, d *schema.ResourceData, 
 }
 
 func flattenSystemSettingsWccpCacheEngine(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemSettingsForwardDomain(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -2348,6 +2392,16 @@ func refreshObjectSystemSettings(d *schema.ResourceData, o map[string]interface{
 		}
 	}
 
+	if err = d.Set("gui_fortitelemetry", flattenSystemSettingsGuiFortitelemetry(o["gui-fortitelemetry"], d, "gui_fortitelemetry")); err != nil {
+		if vv, ok := fortiAPIPatch(o["gui-fortitelemetry"], "SystemSettings-GuiFortitelemetry"); ok {
+			if err = d.Set("gui_fortitelemetry", vv); err != nil {
+				return fmt.Errorf("Error reading gui_fortitelemetry: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading gui_fortitelemetry: %v", err)
+		}
+	}
+
 	if err = d.Set("gui_gtp", flattenSystemSettingsGuiGtp(o["gui-gtp"], d, "gui_gtp")); err != nil {
 		if vv, ok := fortiAPIPatch(o["gui-gtp"], "SystemSettings-GuiGtp"); ok {
 			if err = d.Set("gui_gtp", vv); err != nil {
@@ -2525,6 +2579,16 @@ func refreshObjectSystemSettings(d *schema.ResourceData, o map[string]interface{
 			}
 		} else {
 			return fmt.Errorf("Error reading gui_proxy_inspection: %v", err)
+		}
+	}
+
+	if err = d.Set("wccp_local_route", flattenSystemSettingsWccpLocalRoute(o["wccp-local-route"], d, "wccp_local_route")); err != nil {
+		if vv, ok := fortiAPIPatch(o["wccp-local-route"], "SystemSettings-WccpLocalRoute"); ok {
+			if err = d.Set("wccp_local_route", vv); err != nil {
+				return fmt.Errorf("Error reading wccp_local_route: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading wccp_local_route: %v", err)
 		}
 	}
 
@@ -2765,6 +2829,16 @@ func refreshObjectSystemSettings(d *schema.ResourceData, o map[string]interface{
 			}
 		} else {
 			return fmt.Errorf("Error reading hyperscale_default_policy_action: %v", err)
+		}
+	}
+
+	if err = d.Set("ike_detailed_event_logs", flattenSystemSettingsIkeDetailedEventLogs(o["ike-detailed-event-logs"], d, "ike_detailed_event_logs")); err != nil {
+		if vv, ok := fortiAPIPatch(o["ike-detailed-event-logs"], "SystemSettings-IkeDetailedEventLogs"); ok {
+			if err = d.Set("ike_detailed_event_logs", vv); err != nil {
+				return fmt.Errorf("Error reading ike_detailed_event_logs: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading ike_detailed_event_logs: %v", err)
 		}
 	}
 
@@ -3328,6 +3402,16 @@ func refreshObjectSystemSettings(d *schema.ResourceData, o map[string]interface{
 		}
 	}
 
+	if err = d.Set("forward_domain", flattenSystemSettingsForwardDomain(o["forward-domain"], d, "forward_domain")); err != nil {
+		if vv, ok := fortiAPIPatch(o["forward-domain"], "SystemSettings-ForwardDomain"); ok {
+			if err = d.Set("forward_domain", vv); err != nil {
+				return fmt.Errorf("Error reading forward_domain: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading forward_domain: %v", err)
+		}
+	}
+
 	return nil
 }
 
@@ -3613,6 +3697,10 @@ func expandSystemSettingsGuiFortiextenderController(d *schema.ResourceData, v in
 	return v, nil
 }
 
+func expandSystemSettingsGuiFortitelemetry(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandSystemSettingsGuiGtp(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -3682,6 +3770,10 @@ func expandSystemSettingsGuiReplacementMessageGroups(d *schema.ResourceData, v i
 }
 
 func expandSystemSettingsGuiProxyInspection(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemSettingsWccpLocalRoute(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -3778,6 +3870,10 @@ func expandSystemSettingsHttpExternalDest(d *schema.ResourceData, v interface{},
 }
 
 func expandSystemSettingsHyperscaleDefaultPolicyAction(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemSettingsIkeDetailedEventLogs(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -4002,6 +4098,10 @@ func expandSystemSettingsVpnStatsPeriod(d *schema.ResourceData, v interface{}, p
 }
 
 func expandSystemSettingsWccpCacheEngine(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemSettingsForwardDomain(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -4629,6 +4729,15 @@ func getObjectSystemSettings(d *schema.ResourceData) (*map[string]interface{}, e
 		}
 	}
 
+	if v, ok := d.GetOk("gui_fortitelemetry"); ok || d.HasChange("gui_fortitelemetry") {
+		t, err := expandSystemSettingsGuiFortitelemetry(d, v, "gui_fortitelemetry")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["gui-fortitelemetry"] = t
+		}
+	}
+
 	if v, ok := d.GetOk("gui_gtp"); ok || d.HasChange("gui_gtp") {
 		t, err := expandSystemSettingsGuiGtp(d, v, "gui_gtp")
 		if err != nil {
@@ -4788,6 +4897,15 @@ func getObjectSystemSettings(d *schema.ResourceData) (*map[string]interface{}, e
 			return &obj, err
 		} else if t != nil {
 			obj["gui-proxy-inspection"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("wccp_local_route"); ok || d.HasChange("wccp_local_route") {
+		t, err := expandSystemSettingsWccpLocalRoute(d, v, "wccp_local_route")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["wccp-local-route"] = t
 		}
 	}
 
@@ -5004,6 +5122,15 @@ func getObjectSystemSettings(d *schema.ResourceData) (*map[string]interface{}, e
 			return &obj, err
 		} else if t != nil {
 			obj["hyperscale-default-policy-action"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("ike_detailed_event_logs"); ok || d.HasChange("ike_detailed_event_logs") {
+		t, err := expandSystemSettingsIkeDetailedEventLogs(d, v, "ike_detailed_event_logs")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["ike-detailed-event-logs"] = t
 		}
 	}
 
@@ -5508,6 +5635,15 @@ func getObjectSystemSettings(d *schema.ResourceData) (*map[string]interface{}, e
 			return &obj, err
 		} else if t != nil {
 			obj["wccp-cache-engine"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("forward_domain"); ok || d.HasChange("forward_domain") {
+		t, err := expandSystemSettingsForwardDomain(d, v, "forward_domain")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["forward-domain"] = t
 		}
 	}
 

@@ -28,6 +28,12 @@ func resourceRouterMulticast() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
+
+			"adom": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"device_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -394,14 +400,17 @@ func resourceRouterMulticast() *schema.Resource {
 						"bsr_allow_quick_refresh": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"bsr_candidate": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"bsr_hash": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"bsr_interface": &schema.Schema{
 							Type:     schema.TypeSet,
@@ -416,6 +425,7 @@ func resourceRouterMulticast() *schema.Resource {
 						"cisco_crp_prefix": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"rp_address": &schema.Schema{
 							Type:     schema.TypeList,
@@ -431,6 +441,7 @@ func resourceRouterMulticast() *schema.Resource {
 									"id": &schema.Schema{
 										Type:     schema.TypeInt,
 										Optional: true,
+										Computed: true,
 									},
 									"ip_address": &schema.Schema{
 										Type:     schema.TypeString,
@@ -473,8 +484,12 @@ func resourceRouterMulticastUpdate(d *schema.ResourceData, m interface{}) error 
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -486,13 +501,12 @@ func resourceRouterMulticastUpdate(d *schema.ResourceData, m interface{}) error 
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectRouterMulticast(d)
 	if err != nil {
 		return fmt.Errorf("Error updating RouterMulticast resource while getting object: %v", err)
 	}
+
+	wsParams["adom"] = adomv
 
 	_, err = c.UpdateRouterMulticast(obj, mkey, paradict, wsParams)
 	if err != nil {
@@ -514,8 +528,12 @@ func resourceRouterMulticastDelete(d *schema.ResourceData, m interface{}) error 
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -527,9 +545,7 @@ func resourceRouterMulticastDelete(d *schema.ResourceData, m interface{}) error 
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
+	wsParams["adom"] = adomv
 
 	err = c.DeleteRouterMulticast(mkey, paradict, wsParams)
 	if err != nil {
@@ -548,8 +564,8 @@ func resourceRouterMulticastRead(d *schema.ResourceData, m interface{}) error {
 	c.Retries = 1
 
 	paradict := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	device_vdom, err := getVariable(cfg, d, "device_vdom")
 	if device_name == "" {
@@ -575,6 +591,7 @@ func resourceRouterMulticastRead(d *schema.ResourceData, m interface{}) error {
 
 	o, err := c.ReadRouterMulticast(mkey, paradict)
 	if err != nil {
+		d.SetId("")
 		return fmt.Errorf("Error reading RouterMulticast resource: %v", err)
 	}
 

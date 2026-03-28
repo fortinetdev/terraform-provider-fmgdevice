@@ -50,6 +50,8 @@ The following arguments are supported:
 * `device_name` - FortiManager managed device name. This variable is used in the request URL. If not specified, it will inherit the variable `device_name` of the provider.
 * `device_vdom` - FortiManager managed device vdom. This variable is used in the request URL. If not specified, it will inherit the variable `device_vdom` of the provider.
 
+* `_auto_override` - _Auto_Override. Valid values: `disable`, `enable`.
+
 * `additional_path` - Enable/disable selection of BGP IPv4 additional paths. Valid values: `disable`, `enable`.
 
 * `additional_path_select` - Number of additional paths to be selected for each IPv4 NLRI.

@@ -28,6 +28,17 @@ func resourceSystemIpsecAggregate() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
+			"update_if_exist": &schema.Schema{
+				Type:     schema.TypeBool,
+				Optional: true,
+				Computed: true,
+			},
+
+			"adom": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"device_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -70,8 +81,12 @@ func resourceSystemIpsecAggregateCreate(d *schema.ResourceData, m interface{}) e
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -83,17 +98,37 @@ func resourceSystemIpsecAggregateCreate(d *schema.ResourceData, m interface{}) e
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectSystemIpsecAggregate(d)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemIpsecAggregate resource while getting object: %v", err)
 	}
+	wsParams["adom"] = adomv
 
-	_, err = c.CreateSystemIpsecAggregate(obj, paradict, wsParams)
-	if err != nil {
-		return fmt.Errorf("Error creating SystemIpsecAggregate resource: %v", err)
+	update_if_exist := getUpdateIfExist(c, d)
+	mkey_tf, mkey_ok := d.GetOk("name")
+	mkey := fmt.Sprint(mkey_tf)
+	o := make(map[string]interface{})
+	existing := false
+
+	if update_if_exist && mkey_ok {
+		// check existing
+		o, err = c.ReadSystemIpsecAggregate(mkey, paradict)
+		if err == nil && o != nil {
+			existing = true
+			// update if existing
+			o, err = c.UpdateSystemIpsecAggregate(obj, mkey, paradict, wsParams)
+			if err != nil {
+				return fmt.Errorf("Error updating SystemIpsecAggregate resource: %v", err)
+			}
+		}
+	}
+
+	if !existing {
+		_, err = c.CreateSystemIpsecAggregate(obj, paradict, wsParams)
+		if err != nil {
+			return fmt.Errorf("Error creating SystemIpsecAggregate resource: %v", err)
+		}
+
 	}
 
 	d.SetId(getStringKey(d, "name"))
@@ -108,8 +143,12 @@ func resourceSystemIpsecAggregateUpdate(d *schema.ResourceData, m interface{}) e
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -121,13 +160,12 @@ func resourceSystemIpsecAggregateUpdate(d *schema.ResourceData, m interface{}) e
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectSystemIpsecAggregate(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemIpsecAggregate resource while getting object: %v", err)
 	}
+
+	wsParams["adom"] = adomv
 
 	_, err = c.UpdateSystemIpsecAggregate(obj, mkey, paradict, wsParams)
 	if err != nil {
@@ -149,8 +187,12 @@ func resourceSystemIpsecAggregateDelete(d *schema.ResourceData, m interface{}) e
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -162,9 +204,7 @@ func resourceSystemIpsecAggregateDelete(d *schema.ResourceData, m interface{}) e
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
+	wsParams["adom"] = adomv
 
 	err = c.DeleteSystemIpsecAggregate(mkey, paradict, wsParams)
 	if err != nil {
@@ -183,8 +223,8 @@ func resourceSystemIpsecAggregateRead(d *schema.ResourceData, m interface{}) err
 	c.Retries = 1
 
 	paradict := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	device_vdom, err := getVariable(cfg, d, "device_vdom")
 	if device_name == "" {
@@ -210,6 +250,7 @@ func resourceSystemIpsecAggregateRead(d *schema.ResourceData, m interface{}) err
 
 	o, err := c.ReadSystemIpsecAggregate(mkey, paradict)
 	if err != nil {
+		d.SetId("")
 		return fmt.Errorf("Error reading SystemIpsecAggregate resource: %v", err)
 	}
 

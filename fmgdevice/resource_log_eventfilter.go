@@ -28,6 +28,12 @@ func resourceLogEventfilter() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
+
+			"adom": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"device_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -99,6 +105,10 @@ func resourceLogEventfilter() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"telemetry": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 			"user": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -124,6 +134,26 @@ func resourceLogEventfilter() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"aggd": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"crwl": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"iptables": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"wcs": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"wdb": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 		},
 	}
 }
@@ -135,8 +165,12 @@ func resourceLogEventfilterUpdate(d *schema.ResourceData, m interface{}) error {
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -148,13 +182,12 @@ func resourceLogEventfilterUpdate(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectLogEventfilter(d)
 	if err != nil {
 		return fmt.Errorf("Error updating LogEventfilter resource while getting object: %v", err)
 	}
+
+	wsParams["adom"] = adomv
 
 	_, err = c.UpdateLogEventfilter(obj, mkey, paradict, wsParams)
 	if err != nil {
@@ -176,8 +209,12 @@ func resourceLogEventfilterDelete(d *schema.ResourceData, m interface{}) error {
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -189,9 +226,7 @@ func resourceLogEventfilterDelete(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
+	wsParams["adom"] = adomv
 
 	err = c.DeleteLogEventfilter(mkey, paradict, wsParams)
 	if err != nil {
@@ -210,8 +245,8 @@ func resourceLogEventfilterRead(d *schema.ResourceData, m interface{}) error {
 	c.Retries = 1
 
 	paradict := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	device_vdom, err := getVariable(cfg, d, "device_vdom")
 	if device_name == "" {
@@ -237,6 +272,7 @@ func resourceLogEventfilterRead(d *schema.ResourceData, m interface{}) error {
 
 	o, err := c.ReadLogEventfilter(mkey, paradict)
 	if err != nil {
+		d.SetId("")
 		return fmt.Errorf("Error reading LogEventfilter resource: %v", err)
 	}
 
@@ -301,6 +337,10 @@ func flattenLogEventfilterSystem(v interface{}, d *schema.ResourceData, pre stri
 	return v
 }
 
+func flattenLogEventfilterTelemetry(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenLogEventfilterUser(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -318,6 +358,26 @@ func flattenLogEventfilterWebproxy(v interface{}, d *schema.ResourceData, pre st
 }
 
 func flattenLogEventfilterWirelessActivity(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenLogEventfilterAggd(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenLogEventfilterCrwl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenLogEventfilterIptables(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenLogEventfilterWcs(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenLogEventfilterWdb(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -444,6 +504,16 @@ func refreshObjectLogEventfilter(d *schema.ResourceData, o map[string]interface{
 		}
 	}
 
+	if err = d.Set("telemetry", flattenLogEventfilterTelemetry(o["telemetry"], d, "telemetry")); err != nil {
+		if vv, ok := fortiAPIPatch(o["telemetry"], "LogEventfilter-Telemetry"); ok {
+			if err = d.Set("telemetry", vv); err != nil {
+				return fmt.Errorf("Error reading telemetry: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading telemetry: %v", err)
+		}
+	}
+
 	if err = d.Set("user", flattenLogEventfilterUser(o["user"], d, "user")); err != nil {
 		if vv, ok := fortiAPIPatch(o["user"], "LogEventfilter-User"); ok {
 			if err = d.Set("user", vv); err != nil {
@@ -491,6 +561,56 @@ func refreshObjectLogEventfilter(d *schema.ResourceData, o map[string]interface{
 			}
 		} else {
 			return fmt.Errorf("Error reading wireless_activity: %v", err)
+		}
+	}
+
+	if err = d.Set("aggd", flattenLogEventfilterAggd(o["aggd"], d, "aggd")); err != nil {
+		if vv, ok := fortiAPIPatch(o["aggd"], "LogEventfilter-Aggd"); ok {
+			if err = d.Set("aggd", vv); err != nil {
+				return fmt.Errorf("Error reading aggd: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading aggd: %v", err)
+		}
+	}
+
+	if err = d.Set("crwl", flattenLogEventfilterCrwl(o["crwl"], d, "crwl")); err != nil {
+		if vv, ok := fortiAPIPatch(o["crwl"], "LogEventfilter-Crwl"); ok {
+			if err = d.Set("crwl", vv); err != nil {
+				return fmt.Errorf("Error reading crwl: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading crwl: %v", err)
+		}
+	}
+
+	if err = d.Set("iptables", flattenLogEventfilterIptables(o["iptables"], d, "iptables")); err != nil {
+		if vv, ok := fortiAPIPatch(o["iptables"], "LogEventfilter-Iptables"); ok {
+			if err = d.Set("iptables", vv); err != nil {
+				return fmt.Errorf("Error reading iptables: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading iptables: %v", err)
+		}
+	}
+
+	if err = d.Set("wcs", flattenLogEventfilterWcs(o["wcs"], d, "wcs")); err != nil {
+		if vv, ok := fortiAPIPatch(o["wcs"], "LogEventfilter-Wcs"); ok {
+			if err = d.Set("wcs", vv); err != nil {
+				return fmt.Errorf("Error reading wcs: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading wcs: %v", err)
+		}
+	}
+
+	if err = d.Set("wdb", flattenLogEventfilterWdb(o["wdb"], d, "wdb")); err != nil {
+		if vv, ok := fortiAPIPatch(o["wdb"], "LogEventfilter-Wdb"); ok {
+			if err = d.Set("wdb", vv); err != nil {
+				return fmt.Errorf("Error reading wdb: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading wdb: %v", err)
 		}
 	}
 
@@ -551,6 +671,10 @@ func expandLogEventfilterSystem(d *schema.ResourceData, v interface{}, pre strin
 	return v, nil
 }
 
+func expandLogEventfilterTelemetry(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandLogEventfilterUser(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -568,6 +692,26 @@ func expandLogEventfilterWebproxy(d *schema.ResourceData, v interface{}, pre str
 }
 
 func expandLogEventfilterWirelessActivity(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandLogEventfilterAggd(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandLogEventfilterCrwl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandLogEventfilterIptables(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandLogEventfilterWcs(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandLogEventfilterWdb(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -682,6 +826,15 @@ func getObjectLogEventfilter(d *schema.ResourceData) (*map[string]interface{}, e
 		}
 	}
 
+	if v, ok := d.GetOk("telemetry"); ok || d.HasChange("telemetry") {
+		t, err := expandLogEventfilterTelemetry(d, v, "telemetry")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["telemetry"] = t
+		}
+	}
+
 	if v, ok := d.GetOk("user"); ok || d.HasChange("user") {
 		t, err := expandLogEventfilterUser(d, v, "user")
 		if err != nil {
@@ -724,6 +877,51 @@ func getObjectLogEventfilter(d *schema.ResourceData) (*map[string]interface{}, e
 			return &obj, err
 		} else if t != nil {
 			obj["wireless-activity"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("aggd"); ok || d.HasChange("aggd") {
+		t, err := expandLogEventfilterAggd(d, v, "aggd")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["aggd"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("crwl"); ok || d.HasChange("crwl") {
+		t, err := expandLogEventfilterCrwl(d, v, "crwl")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["crwl"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("iptables"); ok || d.HasChange("iptables") {
+		t, err := expandLogEventfilterIptables(d, v, "iptables")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["iptables"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("wcs"); ok || d.HasChange("wcs") {
+		t, err := expandLogEventfilterWcs(d, v, "wcs")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["wcs"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("wdb"); ok || d.HasChange("wdb") {
+		t, err := expandLogEventfilterWdb(d, v, "wdb")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["wdb"] = t
 		}
 	}
 

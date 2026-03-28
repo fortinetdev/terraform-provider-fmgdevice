@@ -28,11 +28,117 @@ func resourceSystemGlobal() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
+
+			"adom": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"device_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
 				ForceNew: true,
+			},
+			"close_wait_timeout": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+			},
+			"conntrack": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+			},
+			"crwl_log": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"established_timeout": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+			},
+			"fin_wait_timeout": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+			},
+			"http_view": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"img_cache_mode": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"kernel_panic_debug": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"kernel_panic_on_warn": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"kernel_panic_timeout": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+			},
+			"last_ack_timeout": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+			},
+			"license_overlimit": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"max_img_cache_size": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+			},
+			"max_session_per_user": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+			},
+			"proxy_auth_machine_timeout": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+			},
+			"resigned_pkey_period": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+			},
+			"syn_recv_timeout": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+			},
+			"syn_sent_timeout": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+			},
+			"tcp_random_source_port": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"time_wait_timeout": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+			},
+			"udp_stream_timeout": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+			},
+			"udp_timeout": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+			},
+			"update_tls_finger_print": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"username_case_sensitivity": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"v_tpm": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
 			},
 			"admin_ble_button": &schema.Schema{
 				Type:     schema.TypeString,
@@ -278,6 +384,14 @@ func resourceSystemGlobal() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+			},
+			"black_box": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"black_box_interval": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
 			},
 			"bfd_affinity": &schema.Schema{
 				Type:     schema.TypeString,
@@ -531,6 +645,10 @@ func resourceSystemGlobal() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+			},
+			"fortitoken_cloud_region": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
 			},
 			"fortitoken_cloud_sync_interval": &schema.Schema{
 				Type:     schema.TypeInt,
@@ -819,6 +937,11 @@ func resourceSystemGlobal() *schema.Resource {
 			},
 			"ipv6_fragment_timeout": &schema.Schema{
 				Type:     schema.TypeInt,
+				Optional: true,
+				Computed: true,
+			},
+			"ipv6_snat_route_change": &schema.Schema{
+				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
 			},
@@ -1135,6 +1258,11 @@ func resourceSystemGlobal() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"router_affinity": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
 			"scanunit_count": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
@@ -1324,6 +1452,11 @@ func resourceSystemGlobal() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"sslvpn_affinity": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
 			"sslvpn_cipher_hardware_acceleration": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -1411,6 +1544,14 @@ func resourceSystemGlobal() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"telemetry_controller": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"telemetry_data_port": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+			},
 			"tftp": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -1419,6 +1560,11 @@ func resourceSystemGlobal() *schema.Resource {
 			"timezone": &schema.Schema{
 				Type:     schema.TypeSet,
 				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Computed: true,
+			},
+			"tls_session_cache": &schema.Schema{
+				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
 			},
@@ -1473,6 +1619,11 @@ func resourceSystemGlobal() *schema.Resource {
 				Computed: true,
 			},
 			"url_filter_count": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+				Computed: true,
+			},
+			"user_device_store_max_device_mem": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
 				Computed: true,
@@ -1545,6 +1696,11 @@ func resourceSystemGlobal() *schema.Resource {
 				Optional: true,
 			},
 			"wad_memory_change_granularity": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+				Computed: true,
+			},
+			"wad_p2s_max_body_size": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
 				Computed: true,
@@ -1624,21 +1780,24 @@ func resourceSystemGlobalUpdate(d *schema.ResourceData, m interface{}) error {
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
 	}
 	paradict["device"] = device_name
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectSystemGlobal(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemGlobal resource while getting object: %v", err)
 	}
+
+	wsParams["adom"] = adomv
 
 	_, err = c.UpdateSystemGlobal(obj, mkey, paradict, wsParams)
 	if err != nil {
@@ -1660,17 +1819,19 @@ func resourceSystemGlobalDelete(d *schema.ResourceData, m interface{}) error {
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
 	}
 	paradict["device"] = device_name
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
+	wsParams["adom"] = adomv
 
 	err = c.DeleteSystemGlobal(mkey, paradict, wsParams)
 	if err != nil {
@@ -1689,8 +1850,8 @@ func resourceSystemGlobalRead(d *schema.ResourceData, m interface{}) error {
 	c.Retries = 1
 
 	paradict := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if device_name == "" {
 		device_name = importOptionChecking(m.(*FortiClient).Cfg, "device_name")
@@ -1705,6 +1866,7 @@ func resourceSystemGlobalRead(d *schema.ResourceData, m interface{}) error {
 
 	o, err := c.ReadSystemGlobal(mkey, paradict)
 	if err != nil {
+		d.SetId("")
 		return fmt.Errorf("Error reading SystemGlobal resource: %v", err)
 	}
 
@@ -1719,6 +1881,106 @@ func resourceSystemGlobalRead(d *schema.ResourceData, m interface{}) error {
 		return fmt.Errorf("Error reading SystemGlobal resource from API: %v", err)
 	}
 	return nil
+}
+
+func flattenSystemGlobalCloseWaitTimeout(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemGlobalConntrack(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemGlobalCrwlLog(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemGlobalEstablishedTimeout(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemGlobalFinWaitTimeout(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemGlobalHttpView(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemGlobalImgCacheMode(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemGlobalKernelPanicDebug(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemGlobalKernelPanicOnWarn(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemGlobalKernelPanicTimeout(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemGlobalLastAckTimeout(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemGlobalLicenseOverlimit(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemGlobalMaxImgCacheSize(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemGlobalMaxSessionPerUser(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemGlobalProxyAuthMachineTimeout(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemGlobalResignedPkeyPeriod(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemGlobalSynRecvTimeout(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemGlobalSynSentTimeout(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemGlobalTcpRandomSourcePort(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemGlobalTimeWaitTimeout(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemGlobalUdpStreamTimeout(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemGlobalUdpTimeout(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemGlobalUpdateTlsFingerPrint(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemGlobalUsernameCaseSensitivity(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemGlobalVTpm(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
 }
 
 func flattenSystemGlobalAdminBleButton(v interface{}, d *schema.ResourceData, pre string) interface{} {
@@ -1914,6 +2176,14 @@ func flattenSystemGlobalAvFailopenSession(v interface{}, d *schema.ResourceData,
 }
 
 func flattenSystemGlobalBatchCmdb(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemGlobalBlackBox(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemGlobalBlackBoxInterval(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -2126,6 +2396,10 @@ func flattenSystemGlobalGuiAllowDefaultHostname(v interface{}, d *schema.Resourc
 }
 
 func flattenSystemGlobalFortitokenCloudPushStatus(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemGlobalFortitokenCloudRegion(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -2366,6 +2640,10 @@ func flattenSystemGlobalIpv6AllowTrafficRedirect(v interface{}, d *schema.Resour
 }
 
 func flattenSystemGlobalIpv6FragmentTimeout(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemGlobalIpv6SnatRouteChange(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -2629,6 +2907,10 @@ func flattenSystemGlobalRevisionImageAutoBackup(v interface{}, d *schema.Resourc
 	return v
 }
 
+func flattenSystemGlobalRouterAffinity(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenSystemGlobalScanunitCount(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -2814,6 +3096,10 @@ func flattenSystemGlobalSslStaticKeyCiphers(v interface{}, d *schema.ResourceDat
 	return v
 }
 
+func flattenSystemGlobalSslvpnAffinity(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenSystemGlobalSslvpnCipherHardwareAcceleration(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -2886,12 +3172,24 @@ func flattenSystemGlobalTcpTimewaitTimer(v interface{}, d *schema.ResourceData, 
 	return v
 }
 
+func flattenSystemGlobalTelemetryController(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemGlobalTelemetryDataPort(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenSystemGlobalTftp(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
 func flattenSystemGlobalTimezone(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return convstr2list(v, d.Get(pre))
+}
+
+func flattenSystemGlobalTlsSessionCache(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
 }
 
 func flattenSystemGlobalTrafficPriority(v interface{}, d *schema.ResourceData, pre string) interface{} {
@@ -2935,6 +3233,10 @@ func flattenSystemGlobalUrlFilterAffinity(v interface{}, d *schema.ResourceData,
 }
 
 func flattenSystemGlobalUrlFilterCount(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemGlobalUserDeviceStoreMaxDeviceMem(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -2998,6 +3300,10 @@ func flattenSystemGlobalWadMemoryChangeGranularity(v interface{}, d *schema.Reso
 	return v
 }
 
+func flattenSystemGlobalWadP2SMaxBodySize(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenSystemGlobalWadRestartEndTime(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -3051,6 +3357,256 @@ func refreshObjectSystemGlobal(d *schema.ResourceData, o map[string]interface{})
 
 	if dssValue := d.Get("dynamic_sort_subtable"); dssValue == "" {
 		d.Set("dynamic_sort_subtable", "false")
+	}
+
+	if err = d.Set("close_wait_timeout", flattenSystemGlobalCloseWaitTimeout(o["close-wait-timeout"], d, "close_wait_timeout")); err != nil {
+		if vv, ok := fortiAPIPatch(o["close-wait-timeout"], "SystemGlobal-CloseWaitTimeout"); ok {
+			if err = d.Set("close_wait_timeout", vv); err != nil {
+				return fmt.Errorf("Error reading close_wait_timeout: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading close_wait_timeout: %v", err)
+		}
+	}
+
+	if err = d.Set("conntrack", flattenSystemGlobalConntrack(o["conntrack"], d, "conntrack")); err != nil {
+		if vv, ok := fortiAPIPatch(o["conntrack"], "SystemGlobal-Conntrack"); ok {
+			if err = d.Set("conntrack", vv); err != nil {
+				return fmt.Errorf("Error reading conntrack: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading conntrack: %v", err)
+		}
+	}
+
+	if err = d.Set("crwl_log", flattenSystemGlobalCrwlLog(o["crwl-log"], d, "crwl_log")); err != nil {
+		if vv, ok := fortiAPIPatch(o["crwl-log"], "SystemGlobal-CrwlLog"); ok {
+			if err = d.Set("crwl_log", vv); err != nil {
+				return fmt.Errorf("Error reading crwl_log: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading crwl_log: %v", err)
+		}
+	}
+
+	if err = d.Set("established_timeout", flattenSystemGlobalEstablishedTimeout(o["established-timeout"], d, "established_timeout")); err != nil {
+		if vv, ok := fortiAPIPatch(o["established-timeout"], "SystemGlobal-EstablishedTimeout"); ok {
+			if err = d.Set("established_timeout", vv); err != nil {
+				return fmt.Errorf("Error reading established_timeout: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading established_timeout: %v", err)
+		}
+	}
+
+	if err = d.Set("fin_wait_timeout", flattenSystemGlobalFinWaitTimeout(o["fin-wait-timeout"], d, "fin_wait_timeout")); err != nil {
+		if vv, ok := fortiAPIPatch(o["fin-wait-timeout"], "SystemGlobal-FinWaitTimeout"); ok {
+			if err = d.Set("fin_wait_timeout", vv); err != nil {
+				return fmt.Errorf("Error reading fin_wait_timeout: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading fin_wait_timeout: %v", err)
+		}
+	}
+
+	if err = d.Set("http_view", flattenSystemGlobalHttpView(o["http-view"], d, "http_view")); err != nil {
+		if vv, ok := fortiAPIPatch(o["http-view"], "SystemGlobal-HttpView"); ok {
+			if err = d.Set("http_view", vv); err != nil {
+				return fmt.Errorf("Error reading http_view: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading http_view: %v", err)
+		}
+	}
+
+	if err = d.Set("img_cache_mode", flattenSystemGlobalImgCacheMode(o["img-cache-mode"], d, "img_cache_mode")); err != nil {
+		if vv, ok := fortiAPIPatch(o["img-cache-mode"], "SystemGlobal-ImgCacheMode"); ok {
+			if err = d.Set("img_cache_mode", vv); err != nil {
+				return fmt.Errorf("Error reading img_cache_mode: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading img_cache_mode: %v", err)
+		}
+	}
+
+	if err = d.Set("kernel_panic_debug", flattenSystemGlobalKernelPanicDebug(o["kernel-panic-debug"], d, "kernel_panic_debug")); err != nil {
+		if vv, ok := fortiAPIPatch(o["kernel-panic-debug"], "SystemGlobal-KernelPanicDebug"); ok {
+			if err = d.Set("kernel_panic_debug", vv); err != nil {
+				return fmt.Errorf("Error reading kernel_panic_debug: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading kernel_panic_debug: %v", err)
+		}
+	}
+
+	if err = d.Set("kernel_panic_on_warn", flattenSystemGlobalKernelPanicOnWarn(o["kernel-panic-on-warn"], d, "kernel_panic_on_warn")); err != nil {
+		if vv, ok := fortiAPIPatch(o["kernel-panic-on-warn"], "SystemGlobal-KernelPanicOnWarn"); ok {
+			if err = d.Set("kernel_panic_on_warn", vv); err != nil {
+				return fmt.Errorf("Error reading kernel_panic_on_warn: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading kernel_panic_on_warn: %v", err)
+		}
+	}
+
+	if err = d.Set("kernel_panic_timeout", flattenSystemGlobalKernelPanicTimeout(o["kernel-panic-timeout"], d, "kernel_panic_timeout")); err != nil {
+		if vv, ok := fortiAPIPatch(o["kernel-panic-timeout"], "SystemGlobal-KernelPanicTimeout"); ok {
+			if err = d.Set("kernel_panic_timeout", vv); err != nil {
+				return fmt.Errorf("Error reading kernel_panic_timeout: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading kernel_panic_timeout: %v", err)
+		}
+	}
+
+	if err = d.Set("last_ack_timeout", flattenSystemGlobalLastAckTimeout(o["last-ack-timeout"], d, "last_ack_timeout")); err != nil {
+		if vv, ok := fortiAPIPatch(o["last-ack-timeout"], "SystemGlobal-LastAckTimeout"); ok {
+			if err = d.Set("last_ack_timeout", vv); err != nil {
+				return fmt.Errorf("Error reading last_ack_timeout: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading last_ack_timeout: %v", err)
+		}
+	}
+
+	if err = d.Set("license_overlimit", flattenSystemGlobalLicenseOverlimit(o["license-overlimit"], d, "license_overlimit")); err != nil {
+		if vv, ok := fortiAPIPatch(o["license-overlimit"], "SystemGlobal-LicenseOverlimit"); ok {
+			if err = d.Set("license_overlimit", vv); err != nil {
+				return fmt.Errorf("Error reading license_overlimit: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading license_overlimit: %v", err)
+		}
+	}
+
+	if err = d.Set("max_img_cache_size", flattenSystemGlobalMaxImgCacheSize(o["max-img-cache-size"], d, "max_img_cache_size")); err != nil {
+		if vv, ok := fortiAPIPatch(o["max-img-cache-size"], "SystemGlobal-MaxImgCacheSize"); ok {
+			if err = d.Set("max_img_cache_size", vv); err != nil {
+				return fmt.Errorf("Error reading max_img_cache_size: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading max_img_cache_size: %v", err)
+		}
+	}
+
+	if err = d.Set("max_session_per_user", flattenSystemGlobalMaxSessionPerUser(o["max-session-per-user"], d, "max_session_per_user")); err != nil {
+		if vv, ok := fortiAPIPatch(o["max-session-per-user"], "SystemGlobal-MaxSessionPerUser"); ok {
+			if err = d.Set("max_session_per_user", vv); err != nil {
+				return fmt.Errorf("Error reading max_session_per_user: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading max_session_per_user: %v", err)
+		}
+	}
+
+	if err = d.Set("proxy_auth_machine_timeout", flattenSystemGlobalProxyAuthMachineTimeout(o["proxy-auth-machine-timeout"], d, "proxy_auth_machine_timeout")); err != nil {
+		if vv, ok := fortiAPIPatch(o["proxy-auth-machine-timeout"], "SystemGlobal-ProxyAuthMachineTimeout"); ok {
+			if err = d.Set("proxy_auth_machine_timeout", vv); err != nil {
+				return fmt.Errorf("Error reading proxy_auth_machine_timeout: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading proxy_auth_machine_timeout: %v", err)
+		}
+	}
+
+	if err = d.Set("resigned_pkey_period", flattenSystemGlobalResignedPkeyPeriod(o["resigned-pkey-period"], d, "resigned_pkey_period")); err != nil {
+		if vv, ok := fortiAPIPatch(o["resigned-pkey-period"], "SystemGlobal-ResignedPkeyPeriod"); ok {
+			if err = d.Set("resigned_pkey_period", vv); err != nil {
+				return fmt.Errorf("Error reading resigned_pkey_period: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading resigned_pkey_period: %v", err)
+		}
+	}
+
+	if err = d.Set("syn_recv_timeout", flattenSystemGlobalSynRecvTimeout(o["syn-recv-timeout"], d, "syn_recv_timeout")); err != nil {
+		if vv, ok := fortiAPIPatch(o["syn-recv-timeout"], "SystemGlobal-SynRecvTimeout"); ok {
+			if err = d.Set("syn_recv_timeout", vv); err != nil {
+				return fmt.Errorf("Error reading syn_recv_timeout: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading syn_recv_timeout: %v", err)
+		}
+	}
+
+	if err = d.Set("syn_sent_timeout", flattenSystemGlobalSynSentTimeout(o["syn-sent-timeout"], d, "syn_sent_timeout")); err != nil {
+		if vv, ok := fortiAPIPatch(o["syn-sent-timeout"], "SystemGlobal-SynSentTimeout"); ok {
+			if err = d.Set("syn_sent_timeout", vv); err != nil {
+				return fmt.Errorf("Error reading syn_sent_timeout: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading syn_sent_timeout: %v", err)
+		}
+	}
+
+	if err = d.Set("tcp_random_source_port", flattenSystemGlobalTcpRandomSourcePort(o["tcp-random-source-port"], d, "tcp_random_source_port")); err != nil {
+		if vv, ok := fortiAPIPatch(o["tcp-random-source-port"], "SystemGlobal-TcpRandomSourcePort"); ok {
+			if err = d.Set("tcp_random_source_port", vv); err != nil {
+				return fmt.Errorf("Error reading tcp_random_source_port: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading tcp_random_source_port: %v", err)
+		}
+	}
+
+	if err = d.Set("time_wait_timeout", flattenSystemGlobalTimeWaitTimeout(o["time-wait-timeout"], d, "time_wait_timeout")); err != nil {
+		if vv, ok := fortiAPIPatch(o["time-wait-timeout"], "SystemGlobal-TimeWaitTimeout"); ok {
+			if err = d.Set("time_wait_timeout", vv); err != nil {
+				return fmt.Errorf("Error reading time_wait_timeout: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading time_wait_timeout: %v", err)
+		}
+	}
+
+	if err = d.Set("udp_stream_timeout", flattenSystemGlobalUdpStreamTimeout(o["udp-stream-timeout"], d, "udp_stream_timeout")); err != nil {
+		if vv, ok := fortiAPIPatch(o["udp-stream-timeout"], "SystemGlobal-UdpStreamTimeout"); ok {
+			if err = d.Set("udp_stream_timeout", vv); err != nil {
+				return fmt.Errorf("Error reading udp_stream_timeout: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading udp_stream_timeout: %v", err)
+		}
+	}
+
+	if err = d.Set("udp_timeout", flattenSystemGlobalUdpTimeout(o["udp-timeout"], d, "udp_timeout")); err != nil {
+		if vv, ok := fortiAPIPatch(o["udp-timeout"], "SystemGlobal-UdpTimeout"); ok {
+			if err = d.Set("udp_timeout", vv); err != nil {
+				return fmt.Errorf("Error reading udp_timeout: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading udp_timeout: %v", err)
+		}
+	}
+
+	if err = d.Set("update_tls_finger_print", flattenSystemGlobalUpdateTlsFingerPrint(o["update-tls-finger-print"], d, "update_tls_finger_print")); err != nil {
+		if vv, ok := fortiAPIPatch(o["update-tls-finger-print"], "SystemGlobal-UpdateTlsFingerPrint"); ok {
+			if err = d.Set("update_tls_finger_print", vv); err != nil {
+				return fmt.Errorf("Error reading update_tls_finger_print: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading update_tls_finger_print: %v", err)
+		}
+	}
+
+	if err = d.Set("username_case_sensitivity", flattenSystemGlobalUsernameCaseSensitivity(o["username-case-sensitivity"], d, "username_case_sensitivity")); err != nil {
+		if vv, ok := fortiAPIPatch(o["username-case-sensitivity"], "SystemGlobal-UsernameCaseSensitivity"); ok {
+			if err = d.Set("username_case_sensitivity", vv); err != nil {
+				return fmt.Errorf("Error reading username_case_sensitivity: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading username_case_sensitivity: %v", err)
+		}
+	}
+
+	if err = d.Set("v_tpm", flattenSystemGlobalVTpm(o["v-tpm"], d, "v_tpm")); err != nil {
+		if vv, ok := fortiAPIPatch(o["v-tpm"], "SystemGlobal-VTpm"); ok {
+			if err = d.Set("v_tpm", vv); err != nil {
+				return fmt.Errorf("Error reading v_tpm: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading v_tpm: %v", err)
+		}
 	}
 
 	if err = d.Set("admin_ble_button", flattenSystemGlobalAdminBleButton(o["admin-ble-button"], d, "admin_ble_button")); err != nil {
@@ -3540,6 +4096,26 @@ func refreshObjectSystemGlobal(d *schema.ResourceData, o map[string]interface{})
 			}
 		} else {
 			return fmt.Errorf("Error reading batch_cmdb: %v", err)
+		}
+	}
+
+	if err = d.Set("black_box", flattenSystemGlobalBlackBox(o["black-box"], d, "black_box")); err != nil {
+		if vv, ok := fortiAPIPatch(o["black-box"], "SystemGlobal-BlackBox"); ok {
+			if err = d.Set("black_box", vv); err != nil {
+				return fmt.Errorf("Error reading black_box: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading black_box: %v", err)
+		}
+	}
+
+	if err = d.Set("black_box_interval", flattenSystemGlobalBlackBoxInterval(o["black-box-interval"], d, "black_box_interval")); err != nil {
+		if vv, ok := fortiAPIPatch(o["black-box-interval"], "SystemGlobal-BlackBoxInterval"); ok {
+			if err = d.Set("black_box_interval", vv); err != nil {
+				return fmt.Errorf("Error reading black_box_interval: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading black_box_interval: %v", err)
 		}
 	}
 
@@ -4070,6 +4646,16 @@ func refreshObjectSystemGlobal(d *schema.ResourceData, o map[string]interface{})
 			}
 		} else {
 			return fmt.Errorf("Error reading fortitoken_cloud_push_status: %v", err)
+		}
+	}
+
+	if err = d.Set("fortitoken_cloud_region", flattenSystemGlobalFortitokenCloudRegion(o["fortitoken-cloud-region"], d, "fortitoken_cloud_region")); err != nil {
+		if vv, ok := fortiAPIPatch(o["fortitoken-cloud-region"], "SystemGlobal-FortitokenCloudRegion"); ok {
+			if err = d.Set("fortitoken_cloud_region", vv); err != nil {
+				return fmt.Errorf("Error reading fortitoken_cloud_region: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading fortitoken_cloud_region: %v", err)
 		}
 	}
 
@@ -4670,6 +5256,16 @@ func refreshObjectSystemGlobal(d *schema.ResourceData, o map[string]interface{})
 			}
 		} else {
 			return fmt.Errorf("Error reading ipv6_fragment_timeout: %v", err)
+		}
+	}
+
+	if err = d.Set("ipv6_snat_route_change", flattenSystemGlobalIpv6SnatRouteChange(o["ipv6-snat-route-change"], d, "ipv6_snat_route_change")); err != nil {
+		if vv, ok := fortiAPIPatch(o["ipv6-snat-route-change"], "SystemGlobal-Ipv6SnatRouteChange"); ok {
+			if err = d.Set("ipv6_snat_route_change", vv); err != nil {
+				return fmt.Errorf("Error reading ipv6_snat_route_change: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading ipv6_snat_route_change: %v", err)
 		}
 	}
 
@@ -5323,6 +5919,16 @@ func refreshObjectSystemGlobal(d *schema.ResourceData, o map[string]interface{})
 		}
 	}
 
+	if err = d.Set("router_affinity", flattenSystemGlobalRouterAffinity(o["router-affinity"], d, "router_affinity")); err != nil {
+		if vv, ok := fortiAPIPatch(o["router-affinity"], "SystemGlobal-RouterAffinity"); ok {
+			if err = d.Set("router_affinity", vv); err != nil {
+				return fmt.Errorf("Error reading router_affinity: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading router_affinity: %v", err)
+		}
+	}
+
 	if err = d.Set("scanunit_count", flattenSystemGlobalScanunitCount(o["scanunit-count"], d, "scanunit_count")); err != nil {
 		if vv, ok := fortiAPIPatch(o["scanunit-count"], "SystemGlobal-ScanunitCount"); ok {
 			if err = d.Set("scanunit_count", vv); err != nil {
@@ -5687,6 +6293,16 @@ func refreshObjectSystemGlobal(d *schema.ResourceData, o map[string]interface{})
 		}
 	}
 
+	if err = d.Set("sslvpn_affinity", flattenSystemGlobalSslvpnAffinity(o["sslvpn-affinity"], d, "sslvpn_affinity")); err != nil {
+		if vv, ok := fortiAPIPatch(o["sslvpn-affinity"], "SystemGlobal-SslvpnAffinity"); ok {
+			if err = d.Set("sslvpn_affinity", vv); err != nil {
+				return fmt.Errorf("Error reading sslvpn_affinity: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading sslvpn_affinity: %v", err)
+		}
+	}
+
 	if err = d.Set("sslvpn_cipher_hardware_acceleration", flattenSystemGlobalSslvpnCipherHardwareAcceleration(o["sslvpn-cipher-hardware-acceleration"], d, "sslvpn_cipher_hardware_acceleration")); err != nil {
 		if vv, ok := fortiAPIPatch(o["sslvpn-cipher-hardware-acceleration"], "SystemGlobal-SslvpnCipherHardwareAcceleration"); ok {
 			if err = d.Set("sslvpn_cipher_hardware_acceleration", vv); err != nil {
@@ -5867,6 +6483,26 @@ func refreshObjectSystemGlobal(d *schema.ResourceData, o map[string]interface{})
 		}
 	}
 
+	if err = d.Set("telemetry_controller", flattenSystemGlobalTelemetryController(o["telemetry-controller"], d, "telemetry_controller")); err != nil {
+		if vv, ok := fortiAPIPatch(o["telemetry-controller"], "SystemGlobal-TelemetryController"); ok {
+			if err = d.Set("telemetry_controller", vv); err != nil {
+				return fmt.Errorf("Error reading telemetry_controller: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading telemetry_controller: %v", err)
+		}
+	}
+
+	if err = d.Set("telemetry_data_port", flattenSystemGlobalTelemetryDataPort(o["telemetry-data-port"], d, "telemetry_data_port")); err != nil {
+		if vv, ok := fortiAPIPatch(o["telemetry-data-port"], "SystemGlobal-TelemetryDataPort"); ok {
+			if err = d.Set("telemetry_data_port", vv); err != nil {
+				return fmt.Errorf("Error reading telemetry_data_port: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading telemetry_data_port: %v", err)
+		}
+	}
+
 	if err = d.Set("tftp", flattenSystemGlobalTftp(o["tftp"], d, "tftp")); err != nil {
 		if vv, ok := fortiAPIPatch(o["tftp"], "SystemGlobal-Tftp"); ok {
 			if err = d.Set("tftp", vv); err != nil {
@@ -5884,6 +6520,16 @@ func refreshObjectSystemGlobal(d *schema.ResourceData, o map[string]interface{})
 			}
 		} else {
 			return fmt.Errorf("Error reading timezone: %v", err)
+		}
+	}
+
+	if err = d.Set("tls_session_cache", flattenSystemGlobalTlsSessionCache(o["tls-session-cache"], d, "tls_session_cache")); err != nil {
+		if vv, ok := fortiAPIPatch(o["tls-session-cache"], "SystemGlobal-TlsSessionCache"); ok {
+			if err = d.Set("tls_session_cache", vv); err != nil {
+				return fmt.Errorf("Error reading tls_session_cache: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading tls_session_cache: %v", err)
 		}
 	}
 
@@ -5994,6 +6640,16 @@ func refreshObjectSystemGlobal(d *schema.ResourceData, o map[string]interface{})
 			}
 		} else {
 			return fmt.Errorf("Error reading url_filter_count: %v", err)
+		}
+	}
+
+	if err = d.Set("user_device_store_max_device_mem", flattenSystemGlobalUserDeviceStoreMaxDeviceMem(o["user-device-store-max-device-mem"], d, "user_device_store_max_device_mem")); err != nil {
+		if vv, ok := fortiAPIPatch(o["user-device-store-max-device-mem"], "SystemGlobal-UserDeviceStoreMaxDeviceMem"); ok {
+			if err = d.Set("user_device_store_max_device_mem", vv); err != nil {
+				return fmt.Errorf("Error reading user_device_store_max_device_mem: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading user_device_store_max_device_mem: %v", err)
 		}
 	}
 
@@ -6147,6 +6803,16 @@ func refreshObjectSystemGlobal(d *schema.ResourceData, o map[string]interface{})
 		}
 	}
 
+	if err = d.Set("wad_p2s_max_body_size", flattenSystemGlobalWadP2SMaxBodySize(o["wad-p2s-max-body-size"], d, "wad_p2s_max_body_size")); err != nil {
+		if vv, ok := fortiAPIPatch(o["wad-p2s-max-body-size"], "SystemGlobal-WadP2SMaxBodySize"); ok {
+			if err = d.Set("wad_p2s_max_body_size", vv); err != nil {
+				return fmt.Errorf("Error reading wad_p2s_max_body_size: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading wad_p2s_max_body_size: %v", err)
+		}
+	}
+
 	if err = d.Set("wad_restart_end_time", flattenSystemGlobalWadRestartEndTime(o["wad-restart-end-time"], d, "wad_restart_end_time")); err != nil {
 		if vv, ok := fortiAPIPatch(o["wad-restart-end-time"], "SystemGlobal-WadRestartEndTime"); ok {
 			if err = d.Set("wad_restart_end_time", vv); err != nil {
@@ -6274,6 +6940,106 @@ func flattenSystemGlobalFortiTestDebug(d *schema.ResourceData, fosdebugsn int, f
 	log.Printf(strconv.Itoa(fosdebugsn))
 	e := validation.IntBetween(fosdebugbeg, fosdebugend)
 	log.Printf("ER List: %v", e)
+}
+
+func expandSystemGlobalCloseWaitTimeout(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemGlobalConntrack(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemGlobalCrwlLog(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemGlobalEstablishedTimeout(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemGlobalFinWaitTimeout(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemGlobalHttpView(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemGlobalImgCacheMode(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemGlobalKernelPanicDebug(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemGlobalKernelPanicOnWarn(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemGlobalKernelPanicTimeout(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemGlobalLastAckTimeout(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemGlobalLicenseOverlimit(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemGlobalMaxImgCacheSize(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemGlobalMaxSessionPerUser(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemGlobalProxyAuthMachineTimeout(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemGlobalResignedPkeyPeriod(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemGlobalSynRecvTimeout(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemGlobalSynSentTimeout(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemGlobalTcpRandomSourcePort(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemGlobalTimeWaitTimeout(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemGlobalUdpStreamTimeout(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemGlobalUdpTimeout(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemGlobalUpdateTlsFingerPrint(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemGlobalUsernameCaseSensitivity(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemGlobalVTpm(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
 }
 
 func expandSystemGlobalAdminBleButton(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
@@ -6469,6 +7235,14 @@ func expandSystemGlobalAvFailopenSession(d *schema.ResourceData, v interface{}, 
 }
 
 func expandSystemGlobalBatchCmdb(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemGlobalBlackBox(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemGlobalBlackBoxInterval(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -6681,6 +7455,10 @@ func expandSystemGlobalGuiAllowDefaultHostname(d *schema.ResourceData, v interfa
 }
 
 func expandSystemGlobalFortitokenCloudPushStatus(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemGlobalFortitokenCloudRegion(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -6921,6 +7699,10 @@ func expandSystemGlobalIpv6AllowTrafficRedirect(d *schema.ResourceData, v interf
 }
 
 func expandSystemGlobalIpv6FragmentTimeout(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemGlobalIpv6SnatRouteChange(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -7184,6 +7966,10 @@ func expandSystemGlobalRevisionImageAutoBackup(d *schema.ResourceData, v interfa
 	return v, nil
 }
 
+func expandSystemGlobalRouterAffinity(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandSystemGlobalScanunitCount(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -7366,6 +8152,10 @@ func expandSystemGlobalSslStaticKeyCiphers(d *schema.ResourceData, v interface{}
 	return v, nil
 }
 
+func expandSystemGlobalSslvpnAffinity(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandSystemGlobalSslvpnCipherHardwareAcceleration(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -7438,12 +8228,24 @@ func expandSystemGlobalTcpTimewaitTimer(d *schema.ResourceData, v interface{}, p
 	return v, nil
 }
 
+func expandSystemGlobalTelemetryController(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemGlobalTelemetryDataPort(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandSystemGlobalTftp(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
 func expandSystemGlobalTimezone(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandSystemGlobalTlsSessionCache(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
 }
 
 func expandSystemGlobalTrafficPriority(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
@@ -7487,6 +8289,10 @@ func expandSystemGlobalUrlFilterAffinity(d *schema.ResourceData, v interface{}, 
 }
 
 func expandSystemGlobalUrlFilterCount(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemGlobalUserDeviceStoreMaxDeviceMem(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -7550,6 +8356,10 @@ func expandSystemGlobalWadMemoryChangeGranularity(d *schema.ResourceData, v inte
 	return v, nil
 }
 
+func expandSystemGlobalWadP2SMaxBodySize(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandSystemGlobalWadRestartEndTime(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -7600,6 +8410,231 @@ func expandSystemGlobalXstoolsUpdateFrequency(d *schema.ResourceData, v interfac
 
 func getObjectSystemGlobal(d *schema.ResourceData) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
+
+	if v, ok := d.GetOk("close_wait_timeout"); ok || d.HasChange("close_wait_timeout") {
+		t, err := expandSystemGlobalCloseWaitTimeout(d, v, "close_wait_timeout")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["close-wait-timeout"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("conntrack"); ok || d.HasChange("conntrack") {
+		t, err := expandSystemGlobalConntrack(d, v, "conntrack")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["conntrack"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("crwl_log"); ok || d.HasChange("crwl_log") {
+		t, err := expandSystemGlobalCrwlLog(d, v, "crwl_log")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["crwl-log"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("established_timeout"); ok || d.HasChange("established_timeout") {
+		t, err := expandSystemGlobalEstablishedTimeout(d, v, "established_timeout")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["established-timeout"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("fin_wait_timeout"); ok || d.HasChange("fin_wait_timeout") {
+		t, err := expandSystemGlobalFinWaitTimeout(d, v, "fin_wait_timeout")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["fin-wait-timeout"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("http_view"); ok || d.HasChange("http_view") {
+		t, err := expandSystemGlobalHttpView(d, v, "http_view")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["http-view"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("img_cache_mode"); ok || d.HasChange("img_cache_mode") {
+		t, err := expandSystemGlobalImgCacheMode(d, v, "img_cache_mode")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["img-cache-mode"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("kernel_panic_debug"); ok || d.HasChange("kernel_panic_debug") {
+		t, err := expandSystemGlobalKernelPanicDebug(d, v, "kernel_panic_debug")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["kernel-panic-debug"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("kernel_panic_on_warn"); ok || d.HasChange("kernel_panic_on_warn") {
+		t, err := expandSystemGlobalKernelPanicOnWarn(d, v, "kernel_panic_on_warn")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["kernel-panic-on-warn"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("kernel_panic_timeout"); ok || d.HasChange("kernel_panic_timeout") {
+		t, err := expandSystemGlobalKernelPanicTimeout(d, v, "kernel_panic_timeout")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["kernel-panic-timeout"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("last_ack_timeout"); ok || d.HasChange("last_ack_timeout") {
+		t, err := expandSystemGlobalLastAckTimeout(d, v, "last_ack_timeout")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["last-ack-timeout"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("license_overlimit"); ok || d.HasChange("license_overlimit") {
+		t, err := expandSystemGlobalLicenseOverlimit(d, v, "license_overlimit")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["license-overlimit"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("max_img_cache_size"); ok || d.HasChange("max_img_cache_size") {
+		t, err := expandSystemGlobalMaxImgCacheSize(d, v, "max_img_cache_size")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["max-img-cache-size"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("max_session_per_user"); ok || d.HasChange("max_session_per_user") {
+		t, err := expandSystemGlobalMaxSessionPerUser(d, v, "max_session_per_user")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["max-session-per-user"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("proxy_auth_machine_timeout"); ok || d.HasChange("proxy_auth_machine_timeout") {
+		t, err := expandSystemGlobalProxyAuthMachineTimeout(d, v, "proxy_auth_machine_timeout")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["proxy-auth-machine-timeout"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("resigned_pkey_period"); ok || d.HasChange("resigned_pkey_period") {
+		t, err := expandSystemGlobalResignedPkeyPeriod(d, v, "resigned_pkey_period")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["resigned-pkey-period"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("syn_recv_timeout"); ok || d.HasChange("syn_recv_timeout") {
+		t, err := expandSystemGlobalSynRecvTimeout(d, v, "syn_recv_timeout")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["syn-recv-timeout"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("syn_sent_timeout"); ok || d.HasChange("syn_sent_timeout") {
+		t, err := expandSystemGlobalSynSentTimeout(d, v, "syn_sent_timeout")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["syn-sent-timeout"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("tcp_random_source_port"); ok || d.HasChange("tcp_random_source_port") {
+		t, err := expandSystemGlobalTcpRandomSourcePort(d, v, "tcp_random_source_port")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["tcp-random-source-port"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("time_wait_timeout"); ok || d.HasChange("time_wait_timeout") {
+		t, err := expandSystemGlobalTimeWaitTimeout(d, v, "time_wait_timeout")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["time-wait-timeout"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("udp_stream_timeout"); ok || d.HasChange("udp_stream_timeout") {
+		t, err := expandSystemGlobalUdpStreamTimeout(d, v, "udp_stream_timeout")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["udp-stream-timeout"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("udp_timeout"); ok || d.HasChange("udp_timeout") {
+		t, err := expandSystemGlobalUdpTimeout(d, v, "udp_timeout")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["udp-timeout"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("update_tls_finger_print"); ok || d.HasChange("update_tls_finger_print") {
+		t, err := expandSystemGlobalUpdateTlsFingerPrint(d, v, "update_tls_finger_print")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["update-tls-finger-print"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("username_case_sensitivity"); ok || d.HasChange("username_case_sensitivity") {
+		t, err := expandSystemGlobalUsernameCaseSensitivity(d, v, "username_case_sensitivity")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["username-case-sensitivity"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("v_tpm"); ok || d.HasChange("v_tpm") {
+		t, err := expandSystemGlobalVTpm(d, v, "v_tpm")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["v-tpm"] = t
+		}
+	}
 
 	if v, ok := d.GetOk("admin_ble_button"); ok || d.HasChange("admin_ble_button") {
 		t, err := expandSystemGlobalAdminBleButton(d, v, "admin_ble_button")
@@ -8039,6 +9074,24 @@ func getObjectSystemGlobal(d *schema.ResourceData) (*map[string]interface{}, err
 			return &obj, err
 		} else if t != nil {
 			obj["batch-cmdb"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("black_box"); ok || d.HasChange("black_box") {
+		t, err := expandSystemGlobalBlackBox(d, v, "black_box")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["black-box"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("black_box_interval"); ok || d.HasChange("black_box_interval") {
+		t, err := expandSystemGlobalBlackBoxInterval(d, v, "black_box_interval")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["black-box-interval"] = t
 		}
 	}
 
@@ -8516,6 +9569,15 @@ func getObjectSystemGlobal(d *schema.ResourceData) (*map[string]interface{}, err
 			return &obj, err
 		} else if t != nil {
 			obj["fortitoken-cloud-push-status"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("fortitoken_cloud_region"); ok || d.HasChange("fortitoken_cloud_region") {
+		t, err := expandSystemGlobalFortitokenCloudRegion(d, v, "fortitoken_cloud_region")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["fortitoken-cloud-region"] = t
 		}
 	}
 
@@ -9056,6 +10118,15 @@ func getObjectSystemGlobal(d *schema.ResourceData) (*map[string]interface{}, err
 			return &obj, err
 		} else if t != nil {
 			obj["ipv6-fragment-timeout"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("ipv6_snat_route_change"); ok || d.HasChange("ipv6_snat_route_change") {
+		t, err := expandSystemGlobalIpv6SnatRouteChange(d, v, "ipv6_snat_route_change")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["ipv6-snat-route-change"] = t
 		}
 	}
 
@@ -9644,6 +10715,15 @@ func getObjectSystemGlobal(d *schema.ResourceData) (*map[string]interface{}, err
 		}
 	}
 
+	if v, ok := d.GetOk("router_affinity"); ok || d.HasChange("router_affinity") {
+		t, err := expandSystemGlobalRouterAffinity(d, v, "router_affinity")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["router-affinity"] = t
+		}
+	}
+
 	if v, ok := d.GetOk("scanunit_count"); ok || d.HasChange("scanunit_count") {
 		t, err := expandSystemGlobalScanunitCount(d, v, "scanunit_count")
 		if err != nil {
@@ -9968,6 +11048,15 @@ func getObjectSystemGlobal(d *schema.ResourceData) (*map[string]interface{}, err
 		}
 	}
 
+	if v, ok := d.GetOk("sslvpn_affinity"); ok || d.HasChange("sslvpn_affinity") {
+		t, err := expandSystemGlobalSslvpnAffinity(d, v, "sslvpn_affinity")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["sslvpn-affinity"] = t
+		}
+	}
+
 	if v, ok := d.GetOk("sslvpn_cipher_hardware_acceleration"); ok || d.HasChange("sslvpn_cipher_hardware_acceleration") {
 		t, err := expandSystemGlobalSslvpnCipherHardwareAcceleration(d, v, "sslvpn_cipher_hardware_acceleration")
 		if err != nil {
@@ -10130,6 +11219,24 @@ func getObjectSystemGlobal(d *schema.ResourceData) (*map[string]interface{}, err
 		}
 	}
 
+	if v, ok := d.GetOk("telemetry_controller"); ok || d.HasChange("telemetry_controller") {
+		t, err := expandSystemGlobalTelemetryController(d, v, "telemetry_controller")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["telemetry-controller"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("telemetry_data_port"); ok || d.HasChange("telemetry_data_port") {
+		t, err := expandSystemGlobalTelemetryDataPort(d, v, "telemetry_data_port")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["telemetry-data-port"] = t
+		}
+	}
+
 	if v, ok := d.GetOk("tftp"); ok || d.HasChange("tftp") {
 		t, err := expandSystemGlobalTftp(d, v, "tftp")
 		if err != nil {
@@ -10145,6 +11252,15 @@ func getObjectSystemGlobal(d *schema.ResourceData) (*map[string]interface{}, err
 			return &obj, err
 		} else if t != nil {
 			obj["timezone"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("tls_session_cache"); ok || d.HasChange("tls_session_cache") {
+		t, err := expandSystemGlobalTlsSessionCache(d, v, "tls_session_cache")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["tls-session-cache"] = t
 		}
 	}
 
@@ -10244,6 +11360,15 @@ func getObjectSystemGlobal(d *schema.ResourceData) (*map[string]interface{}, err
 			return &obj, err
 		} else if t != nil {
 			obj["url-filter-count"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("user_device_store_max_device_mem"); ok || d.HasChange("user_device_store_max_device_mem") {
+		t, err := expandSystemGlobalUserDeviceStoreMaxDeviceMem(d, v, "user_device_store_max_device_mem")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["user-device-store-max-device-mem"] = t
 		}
 	}
 
@@ -10379,6 +11504,15 @@ func getObjectSystemGlobal(d *schema.ResourceData) (*map[string]interface{}, err
 			return &obj, err
 		} else if t != nil {
 			obj["wad-memory-change-granularity"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("wad_p2s_max_body_size"); ok || d.HasChange("wad_p2s_max_body_size") {
+		t, err := expandSystemGlobalWadP2SMaxBodySize(d, v, "wad_p2s_max_body_size")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["wad-p2s-max-body-size"] = t
 		}
 	}
 

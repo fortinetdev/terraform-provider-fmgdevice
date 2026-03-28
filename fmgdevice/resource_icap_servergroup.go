@@ -28,6 +28,17 @@ func resourceIcapServerGroup() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
+			"update_if_exist": &schema.Schema{
+				Type:     schema.TypeBool,
+				Optional: true,
+				Computed: true,
+			},
+
+			"adom": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"device_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -56,10 +67,8 @@ func resourceIcapServerGroup() *schema.Resource {
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"name": &schema.Schema{
-							Type:     schema.TypeSet,
-							Elem:     &schema.Schema{Type: schema.TypeString},
+							Type:     schema.TypeString,
 							Optional: true,
-							Computed: true,
 						},
 						"weight": &schema.Schema{
 							Type:     schema.TypeInt,
@@ -83,8 +92,12 @@ func resourceIcapServerGroupCreate(d *schema.ResourceData, m interface{}) error 
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -96,17 +109,37 @@ func resourceIcapServerGroupCreate(d *schema.ResourceData, m interface{}) error 
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectIcapServerGroup(d)
 	if err != nil {
 		return fmt.Errorf("Error creating IcapServerGroup resource while getting object: %v", err)
 	}
+	wsParams["adom"] = adomv
 
-	_, err = c.CreateIcapServerGroup(obj, paradict, wsParams)
-	if err != nil {
-		return fmt.Errorf("Error creating IcapServerGroup resource: %v", err)
+	update_if_exist := getUpdateIfExist(c, d)
+	mkey_tf, mkey_ok := d.GetOk("name")
+	mkey := fmt.Sprint(mkey_tf)
+	o := make(map[string]interface{})
+	existing := false
+
+	if update_if_exist && mkey_ok {
+		// check existing
+		o, err = c.ReadIcapServerGroup(mkey, paradict)
+		if err == nil && o != nil {
+			existing = true
+			// update if existing
+			o, err = c.UpdateIcapServerGroup(obj, mkey, paradict, wsParams)
+			if err != nil {
+				return fmt.Errorf("Error updating IcapServerGroup resource: %v", err)
+			}
+		}
+	}
+
+	if !existing {
+		_, err = c.CreateIcapServerGroup(obj, paradict, wsParams)
+		if err != nil {
+			return fmt.Errorf("Error creating IcapServerGroup resource: %v", err)
+		}
+
 	}
 
 	d.SetId(getStringKey(d, "name"))
@@ -121,8 +154,12 @@ func resourceIcapServerGroupUpdate(d *schema.ResourceData, m interface{}) error 
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -134,13 +171,12 @@ func resourceIcapServerGroupUpdate(d *schema.ResourceData, m interface{}) error 
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectIcapServerGroup(d)
 	if err != nil {
 		return fmt.Errorf("Error updating IcapServerGroup resource while getting object: %v", err)
 	}
+
+	wsParams["adom"] = adomv
 
 	_, err = c.UpdateIcapServerGroup(obj, mkey, paradict, wsParams)
 	if err != nil {
@@ -162,8 +198,12 @@ func resourceIcapServerGroupDelete(d *schema.ResourceData, m interface{}) error 
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -175,9 +215,7 @@ func resourceIcapServerGroupDelete(d *schema.ResourceData, m interface{}) error 
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
+	wsParams["adom"] = adomv
 
 	err = c.DeleteIcapServerGroup(mkey, paradict, wsParams)
 	if err != nil {
@@ -196,8 +234,8 @@ func resourceIcapServerGroupRead(d *schema.ResourceData, m interface{}) error {
 	c.Retries = 1
 
 	paradict := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	device_vdom, err := getVariable(cfg, d, "device_vdom")
 	if device_name == "" {
@@ -223,6 +261,7 @@ func resourceIcapServerGroupRead(d *schema.ResourceData, m interface{}) error {
 
 	o, err := c.ReadIcapServerGroup(mkey, paradict)
 	if err != nil {
+		d.SetId("")
 		return fmt.Errorf("Error reading IcapServerGroup resource: %v", err)
 	}
 
@@ -289,7 +328,7 @@ func flattenIcapServerGroupServerList(v interface{}, d *schema.ResourceData, pre
 }
 
 func flattenIcapServerGroupServerListName(v interface{}, d *schema.ResourceData, pre string) interface{} {
-	return flattenStringList(v)
+	return conv2str(v)
 }
 
 func flattenIcapServerGroupServerListWeight(v interface{}, d *schema.ResourceData, pre string) interface{} {
@@ -399,7 +438,7 @@ func expandIcapServerGroupServerList(d *schema.ResourceData, v interface{}, pre 
 }
 
 func expandIcapServerGroupServerListName(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
-	return expandStringList(v.(*schema.Set).List()), nil
+	return v, nil
 }
 
 func expandIcapServerGroupServerListWeight(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {

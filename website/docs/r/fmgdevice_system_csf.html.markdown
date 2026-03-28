@@ -79,6 +79,9 @@ The following arguments are supported:
 * `upstream_interface_select_method` - Specify how to select outgoing interface to reach server. Valid values: `auto`, `sdwan`, `specify`.
 
 * `upstream_port` - The port number to use to communicate with the FortiGate upstream from this FortiGate in the Security Fabric (default = 8013).
+* `license_sharing` - License-Sharing. Valid values: `disable`, `enable`.
+
+* `preferred_seats` - Preferred-Seats.
 * `dynamic_sort_subtable` - true or false, set this parameter to true when using dynamic for_each + toset to configure and sort sub-tables, please do not set this parameter when configuring static sub-tables.
 
 The `fabric_connector` block supports:
@@ -109,6 +112,8 @@ The `trusted_list` block supports:
 * `index` - Index of the downstream in tree.
 * `name` - Name.
 * `serial` - Serial.
+* `guaranteed_seats` - Guaranteed-Seats.
+* `preferred_seats` - Preferred-Seats.
 
 
 ## Attribute Reference

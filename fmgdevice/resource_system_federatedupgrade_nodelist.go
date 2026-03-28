@@ -28,17 +28,38 @@ func resourceSystemFederatedUpgradeNodeList() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
+			"update_if_exist": &schema.Schema{
+				Type:     schema.TypeBool,
+				Optional: true,
+				Computed: true,
+			},
+
+			"adom": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"device_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
 				ForceNew: true,
 			},
+			"allow_download": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
 			"coordinating_fortigate": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 			},
 			"device_type": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+			"failure_reason": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
@@ -74,6 +95,10 @@ func resourceSystemFederatedUpgradeNodeList() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
+			"coordinating_fortiproxy": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 		},
 	}
 }
@@ -84,25 +109,49 @@ func resourceSystemFederatedUpgradeNodeListCreate(d *schema.ResourceData, m inte
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
 	}
 	paradict["device"] = device_name
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectSystemFederatedUpgradeNodeList(d)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemFederatedUpgradeNodeList resource while getting object: %v", err)
 	}
+	wsParams["adom"] = adomv
 
-	_, err = c.CreateSystemFederatedUpgradeNodeList(obj, paradict, wsParams)
-	if err != nil {
-		return fmt.Errorf("Error creating SystemFederatedUpgradeNodeList resource: %v", err)
+	update_if_exist := getUpdateIfExist(c, d)
+	mkey_tf, mkey_ok := d.GetOk("serial")
+	mkey := fmt.Sprint(mkey_tf)
+	o := make(map[string]interface{})
+	existing := false
+
+	if update_if_exist && mkey_ok {
+		// check existing
+		o, err = c.ReadSystemFederatedUpgradeNodeList(mkey, paradict)
+		if err == nil && o != nil {
+			existing = true
+			// update if existing
+			o, err = c.UpdateSystemFederatedUpgradeNodeList(obj, mkey, paradict, wsParams)
+			if err != nil {
+				return fmt.Errorf("Error updating SystemFederatedUpgradeNodeList resource: %v", err)
+			}
+		}
+	}
+
+	if !existing {
+		_, err = c.CreateSystemFederatedUpgradeNodeList(obj, paradict, wsParams)
+		if err != nil {
+			return fmt.Errorf("Error creating SystemFederatedUpgradeNodeList resource: %v", err)
+		}
+
 	}
 
 	d.SetId(getStringKey(d, "serial"))
@@ -117,21 +166,24 @@ func resourceSystemFederatedUpgradeNodeListUpdate(d *schema.ResourceData, m inte
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
 	}
 	paradict["device"] = device_name
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectSystemFederatedUpgradeNodeList(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemFederatedUpgradeNodeList resource while getting object: %v", err)
 	}
+
+	wsParams["adom"] = adomv
 
 	_, err = c.UpdateSystemFederatedUpgradeNodeList(obj, mkey, paradict, wsParams)
 	if err != nil {
@@ -153,17 +205,19 @@ func resourceSystemFederatedUpgradeNodeListDelete(d *schema.ResourceData, m inte
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
 	}
 	paradict["device"] = device_name
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
+	wsParams["adom"] = adomv
 
 	err = c.DeleteSystemFederatedUpgradeNodeList(mkey, paradict, wsParams)
 	if err != nil {
@@ -182,8 +236,8 @@ func resourceSystemFederatedUpgradeNodeListRead(d *schema.ResourceData, m interf
 	c.Retries = 1
 
 	paradict := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if device_name == "" {
 		device_name = importOptionChecking(m.(*FortiClient).Cfg, "device_name")
@@ -198,6 +252,7 @@ func resourceSystemFederatedUpgradeNodeListRead(d *schema.ResourceData, m interf
 
 	o, err := c.ReadSystemFederatedUpgradeNodeList(mkey, paradict)
 	if err != nil {
+		d.SetId("")
 		return fmt.Errorf("Error reading SystemFederatedUpgradeNodeList resource: %v", err)
 	}
 
@@ -214,11 +269,19 @@ func resourceSystemFederatedUpgradeNodeListRead(d *schema.ResourceData, m interf
 	return nil
 }
 
+func flattenSystemFederatedUpgradeNodeListAllowDownload2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenSystemFederatedUpgradeNodeListCoordinatingFortigate2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
 func flattenSystemFederatedUpgradeNodeListDeviceType2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemFederatedUpgradeNodeListFailureReason2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -246,8 +309,22 @@ func flattenSystemFederatedUpgradeNodeListUpgradePath2edl(v interface{}, d *sche
 	return v
 }
 
+func flattenSystemFederatedUpgradeNodeListCoordinatingFortiproxy2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func refreshObjectSystemFederatedUpgradeNodeList(d *schema.ResourceData, o map[string]interface{}) error {
 	var err error
+
+	if err = d.Set("allow_download", flattenSystemFederatedUpgradeNodeListAllowDownload2edl(o["allow-download"], d, "allow_download")); err != nil {
+		if vv, ok := fortiAPIPatch(o["allow-download"], "SystemFederatedUpgradeNodeList-AllowDownload"); ok {
+			if err = d.Set("allow_download", vv); err != nil {
+				return fmt.Errorf("Error reading allow_download: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading allow_download: %v", err)
+		}
+	}
 
 	if err = d.Set("coordinating_fortigate", flattenSystemFederatedUpgradeNodeListCoordinatingFortigate2edl(o["coordinating-fortigate"], d, "coordinating_fortigate")); err != nil {
 		if vv, ok := fortiAPIPatch(o["coordinating-fortigate"], "SystemFederatedUpgradeNodeList-CoordinatingFortigate"); ok {
@@ -266,6 +343,16 @@ func refreshObjectSystemFederatedUpgradeNodeList(d *schema.ResourceData, o map[s
 			}
 		} else {
 			return fmt.Errorf("Error reading device_type: %v", err)
+		}
+	}
+
+	if err = d.Set("failure_reason", flattenSystemFederatedUpgradeNodeListFailureReason2edl(o["failure-reason"], d, "failure_reason")); err != nil {
+		if vv, ok := fortiAPIPatch(o["failure-reason"], "SystemFederatedUpgradeNodeList-FailureReason"); ok {
+			if err = d.Set("failure_reason", vv); err != nil {
+				return fmt.Errorf("Error reading failure_reason: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading failure_reason: %v", err)
 		}
 	}
 
@@ -329,6 +416,16 @@ func refreshObjectSystemFederatedUpgradeNodeList(d *schema.ResourceData, o map[s
 		}
 	}
 
+	if err = d.Set("coordinating_fortiproxy", flattenSystemFederatedUpgradeNodeListCoordinatingFortiproxy2edl(o["coordinating-fortiproxy"], d, "coordinating_fortiproxy")); err != nil {
+		if vv, ok := fortiAPIPatch(o["coordinating-fortiproxy"], "SystemFederatedUpgradeNodeList-CoordinatingFortiproxy"); ok {
+			if err = d.Set("coordinating_fortiproxy", vv); err != nil {
+				return fmt.Errorf("Error reading coordinating_fortiproxy: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading coordinating_fortiproxy: %v", err)
+		}
+	}
+
 	return nil
 }
 
@@ -338,11 +435,19 @@ func flattenSystemFederatedUpgradeNodeListFortiTestDebug(d *schema.ResourceData,
 	log.Printf("ER List: %v", e)
 }
 
+func expandSystemFederatedUpgradeNodeListAllowDownload2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandSystemFederatedUpgradeNodeListCoordinatingFortigate2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
 func expandSystemFederatedUpgradeNodeListDeviceType2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemFederatedUpgradeNodeListFailureReason2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -370,8 +475,21 @@ func expandSystemFederatedUpgradeNodeListUpgradePath2edl(d *schema.ResourceData,
 	return v, nil
 }
 
+func expandSystemFederatedUpgradeNodeListCoordinatingFortiproxy2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func getObjectSystemFederatedUpgradeNodeList(d *schema.ResourceData) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
+
+	if v, ok := d.GetOk("allow_download"); ok || d.HasChange("allow_download") {
+		t, err := expandSystemFederatedUpgradeNodeListAllowDownload2edl(d, v, "allow_download")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["allow-download"] = t
+		}
+	}
 
 	if v, ok := d.GetOk("coordinating_fortigate"); ok || d.HasChange("coordinating_fortigate") {
 		t, err := expandSystemFederatedUpgradeNodeListCoordinatingFortigate2edl(d, v, "coordinating_fortigate")
@@ -388,6 +506,15 @@ func getObjectSystemFederatedUpgradeNodeList(d *schema.ResourceData) (*map[strin
 			return &obj, err
 		} else if t != nil {
 			obj["device-type"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("failure_reason"); ok || d.HasChange("failure_reason") {
+		t, err := expandSystemFederatedUpgradeNodeListFailureReason2edl(d, v, "failure_reason")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["failure-reason"] = t
 		}
 	}
 
@@ -442,6 +569,15 @@ func getObjectSystemFederatedUpgradeNodeList(d *schema.ResourceData) (*map[strin
 			return &obj, err
 		} else if t != nil {
 			obj["upgrade-path"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("coordinating_fortiproxy"); ok || d.HasChange("coordinating_fortiproxy") {
+		t, err := expandSystemFederatedUpgradeNodeListCoordinatingFortiproxy2edl(d, v, "coordinating_fortiproxy")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["coordinating-fortiproxy"] = t
 		}
 	}
 

@@ -34,6 +34,7 @@ The following arguments are supported:
 * `device_name` - FortiManager managed device name. This variable is used in the request URL. If not specified, it will inherit the variable `device_name` of the provider.
 
 * `dst` - Default route destination for reserved HA management interface.
+* `dst6` - Default IPv6 destination for reserved HA management interface.
 * `gateway` - Default route gateway for reserved HA management interface.
 * `gateway6` - Default IPv6 gateway for reserved HA management interface.
 * `fosid` - Table ID.

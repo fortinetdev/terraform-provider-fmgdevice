@@ -28,6 +28,12 @@ func resourceWirelessControllerWtpLan() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
+
+			"adom": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"device_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -166,8 +172,12 @@ func resourceWirelessControllerWtpLanUpdate(d *schema.ResourceData, m interface{
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -181,13 +191,12 @@ func resourceWirelessControllerWtpLanUpdate(d *schema.ResourceData, m interface{
 	paradict["vdom"] = device_vdom
 	paradict["wtp"] = wtp
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectWirelessControllerWtpLan(d)
 	if err != nil {
 		return fmt.Errorf("Error updating WirelessControllerWtpLan resource while getting object: %v", err)
 	}
+
+	wsParams["adom"] = adomv
 
 	_, err = c.UpdateWirelessControllerWtpLan(obj, mkey, paradict, wsParams)
 	if err != nil {
@@ -209,8 +218,12 @@ func resourceWirelessControllerWtpLanDelete(d *schema.ResourceData, m interface{
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -224,9 +237,7 @@ func resourceWirelessControllerWtpLanDelete(d *schema.ResourceData, m interface{
 	paradict["vdom"] = device_vdom
 	paradict["wtp"] = wtp
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
+	wsParams["adom"] = adomv
 
 	err = c.DeleteWirelessControllerWtpLan(mkey, paradict, wsParams)
 	if err != nil {
@@ -245,8 +256,8 @@ func resourceWirelessControllerWtpLanRead(d *schema.ResourceData, m interface{})
 	c.Retries = 1
 
 	paradict := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	device_vdom, err := getVariable(cfg, d, "device_vdom")
 	wtp := d.Get("wtp").(string)
@@ -283,6 +294,7 @@ func resourceWirelessControllerWtpLanRead(d *schema.ResourceData, m interface{})
 
 	o, err := c.ReadWirelessControllerWtpLan(mkey, paradict)
 	if err != nil {
+		d.SetId("")
 		return fmt.Errorf("Error reading WirelessControllerWtpLan resource: %v", err)
 	}
 

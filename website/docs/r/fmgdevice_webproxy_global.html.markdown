@@ -38,6 +38,8 @@ The following arguments are supported:
 * `forward_proxy_auth` - Enable/disable forwarding proxy authentication headers. Valid values: `disable`, `enable`.
 
 * `forward_server_affinity_timeout` - Period of time before the source IP's traffic is no longer assigned to the forwarding server (6 - 60 min, default = 30).
+* `http2_client_window_size` - HTTP/2 client initial window size in bytes (65535 - 2147483647, default = 1048576 (1MB)).
+* `http2_server_window_size` - HTTP/2 server initial window size in bytes (65535 - 2147483647, default = 1048576 (1MB)).
 * `ldap_user_cache` - Enable/disable LDAP user cache for explicit and transparent proxy user. Valid values: `disable`, `enable`.
 
 * `learn_client_ip` - Enable/disable learning the client's IP address from headers. Valid values: `disable`, `enable`.
@@ -73,6 +75,25 @@ The following arguments are supported:
 * `unknown_http_version` - Action to take when an unknown version of HTTP is encountered: reject, allow (tunnel), or proceed with best-effort. Valid values: `best-effort`, `reject`, `tunnel`.
 
 * `webproxy_profile` - Name of the web proxy profile to apply when explicit proxy traffic is allowed by default and traffic is accepted that does not match an explicit proxy policy.
+* `address_ip_rating` - Address-Ip-Rating. Valid values: `disable`, `enable`.
+
+* `explicit_outgoing_ip` - Explicit-Outgoing-Ip.
+* `explicit_outgoing_ip6` - Explicit-Outgoing-Ip6.
+* `extended_log` - Extended-Log. Valid values: `disable`, `enable`.
+
+* `https_replacement_message` - Https-Replacement-Message. Valid values: `disable`, `enable`.
+
+* `log_http_transaction` - Log-Http-Transaction. Valid values: `disable`, `enable`.
+
+* `message_upon_server_error` - Message-Upon-Server-Error. Valid values: `disable`, `enable`.
+
+* `realm` - Realm.
+* `strict_guest` - Strict-Guest. Valid values: `disable`, `enable`.
+
+* `trace_auth_no_rsp` - Trace-Auth-No-Rsp. Valid values: `disable`, `enable`.
+
+* `use_dynamic_pkey` - Use-Dynamic-Pkey. Valid values: `disable`, `enable`.
+
 
 
 ## Attribute Reference

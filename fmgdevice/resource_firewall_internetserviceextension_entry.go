@@ -28,6 +28,17 @@ func resourceFirewallInternetServiceExtensionEntry() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
+			"update_if_exist": &schema.Schema{
+				Type:     schema.TypeBool,
+				Optional: true,
+				Computed: true,
+			},
+
+			"adom": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"device_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -107,8 +118,12 @@ func resourceFirewallInternetServiceExtensionEntryCreate(d *schema.ResourceData,
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -122,17 +137,37 @@ func resourceFirewallInternetServiceExtensionEntryCreate(d *schema.ResourceData,
 	paradict["vdom"] = device_vdom
 	paradict["internet_service_extension"] = internet_service_extension
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectFirewallInternetServiceExtensionEntry(d)
 	if err != nil {
 		return fmt.Errorf("Error creating FirewallInternetServiceExtensionEntry resource while getting object: %v", err)
 	}
+	wsParams["adom"] = adomv
 
-	_, err = c.CreateFirewallInternetServiceExtensionEntry(obj, paradict, wsParams)
-	if err != nil {
-		return fmt.Errorf("Error creating FirewallInternetServiceExtensionEntry resource: %v", err)
+	update_if_exist := getUpdateIfExist(c, d)
+	mkey_tf, mkey_ok := d.GetOk("fosid")
+	mkey := fmt.Sprint(mkey_tf)
+	o := make(map[string]interface{})
+	existing := false
+
+	if update_if_exist && mkey_ok {
+		// check existing
+		o, err = c.ReadFirewallInternetServiceExtensionEntry(mkey, paradict)
+		if err == nil && o != nil {
+			existing = true
+			// update if existing
+			o, err = c.UpdateFirewallInternetServiceExtensionEntry(obj, mkey, paradict, wsParams)
+			if err != nil {
+				return fmt.Errorf("Error updating FirewallInternetServiceExtensionEntry resource: %v", err)
+			}
+		}
+	}
+
+	if !existing {
+		_, err = c.CreateFirewallInternetServiceExtensionEntry(obj, paradict, wsParams)
+		if err != nil {
+			return fmt.Errorf("Error creating FirewallInternetServiceExtensionEntry resource: %v", err)
+		}
+
 	}
 
 	d.SetId(strconv.Itoa(getIntKey(d, "fosid")))
@@ -147,8 +182,12 @@ func resourceFirewallInternetServiceExtensionEntryUpdate(d *schema.ResourceData,
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -162,13 +201,12 @@ func resourceFirewallInternetServiceExtensionEntryUpdate(d *schema.ResourceData,
 	paradict["vdom"] = device_vdom
 	paradict["internet_service_extension"] = internet_service_extension
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectFirewallInternetServiceExtensionEntry(d)
 	if err != nil {
 		return fmt.Errorf("Error updating FirewallInternetServiceExtensionEntry resource while getting object: %v", err)
 	}
+
+	wsParams["adom"] = adomv
 
 	_, err = c.UpdateFirewallInternetServiceExtensionEntry(obj, mkey, paradict, wsParams)
 	if err != nil {
@@ -190,8 +228,12 @@ func resourceFirewallInternetServiceExtensionEntryDelete(d *schema.ResourceData,
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -205,9 +247,7 @@ func resourceFirewallInternetServiceExtensionEntryDelete(d *schema.ResourceData,
 	paradict["vdom"] = device_vdom
 	paradict["internet_service_extension"] = internet_service_extension
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
+	wsParams["adom"] = adomv
 
 	err = c.DeleteFirewallInternetServiceExtensionEntry(mkey, paradict, wsParams)
 	if err != nil {
@@ -226,8 +266,8 @@ func resourceFirewallInternetServiceExtensionEntryRead(d *schema.ResourceData, m
 	c.Retries = 1
 
 	paradict := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	device_vdom, err := getVariable(cfg, d, "device_vdom")
 	internet_service_extension := d.Get("internet_service_extension").(string)
@@ -264,6 +304,7 @@ func resourceFirewallInternetServiceExtensionEntryRead(d *schema.ResourceData, m
 
 	o, err := c.ReadFirewallInternetServiceExtensionEntry(mkey, paradict)
 	if err != nil {
+		d.SetId("")
 		return fmt.Errorf("Error reading FirewallInternetServiceExtensionEntry resource: %v", err)
 	}
 

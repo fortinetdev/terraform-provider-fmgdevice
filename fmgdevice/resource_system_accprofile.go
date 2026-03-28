@@ -28,6 +28,17 @@ func resourceSystemAccprofile() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
+			"update_if_exist": &schema.Schema{
+				Type:     schema.TypeBool,
+				Optional: true,
+				Computed: true,
+			},
+
+			"adom": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"device_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -300,6 +311,10 @@ func resourceSystemAccprofile() *schema.Resource {
 							Type:     schema.TypeString,
 							Optional: true,
 						},
+						"telemetry": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
 						"videofilter": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
@@ -348,25 +363,49 @@ func resourceSystemAccprofileCreate(d *schema.ResourceData, m interface{}) error
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
 	}
 	paradict["device"] = device_name
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectSystemAccprofile(d)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemAccprofile resource while getting object: %v", err)
 	}
+	wsParams["adom"] = adomv
 
-	_, err = c.CreateSystemAccprofile(obj, paradict, wsParams)
-	if err != nil {
-		return fmt.Errorf("Error creating SystemAccprofile resource: %v", err)
+	update_if_exist := getUpdateIfExist(c, d)
+	mkey_tf, mkey_ok := d.GetOk("name")
+	mkey := fmt.Sprint(mkey_tf)
+	o := make(map[string]interface{})
+	existing := false
+
+	if update_if_exist && mkey_ok {
+		// check existing
+		o, err = c.ReadSystemAccprofile(mkey, paradict)
+		if err == nil && o != nil {
+			existing = true
+			// update if existing
+			o, err = c.UpdateSystemAccprofile(obj, mkey, paradict, wsParams)
+			if err != nil {
+				return fmt.Errorf("Error updating SystemAccprofile resource: %v", err)
+			}
+		}
+	}
+
+	if !existing {
+		_, err = c.CreateSystemAccprofile(obj, paradict, wsParams)
+		if err != nil {
+			return fmt.Errorf("Error creating SystemAccprofile resource: %v", err)
+		}
+
 	}
 
 	d.SetId(getStringKey(d, "name"))
@@ -381,21 +420,24 @@ func resourceSystemAccprofileUpdate(d *schema.ResourceData, m interface{}) error
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
 	}
 	paradict["device"] = device_name
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectSystemAccprofile(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemAccprofile resource while getting object: %v", err)
 	}
+
+	wsParams["adom"] = adomv
 
 	_, err = c.UpdateSystemAccprofile(obj, mkey, paradict, wsParams)
 	if err != nil {
@@ -417,17 +459,19 @@ func resourceSystemAccprofileDelete(d *schema.ResourceData, m interface{}) error
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
 	}
 	paradict["device"] = device_name
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
+	wsParams["adom"] = adomv
 
 	err = c.DeleteSystemAccprofile(mkey, paradict, wsParams)
 	if err != nil {
@@ -446,8 +490,8 @@ func resourceSystemAccprofileRead(d *schema.ResourceData, m interface{}) error {
 	c.Retries = 1
 
 	paradict := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if device_name == "" {
 		device_name = importOptionChecking(m.(*FortiClient).Cfg, "device_name")
@@ -462,6 +506,7 @@ func resourceSystemAccprofileRead(d *schema.ResourceData, m interface{}) error {
 
 	o, err := c.ReadSystemAccprofile(mkey, paradict)
 	if err != nil {
+		d.SetId("")
 		return fmt.Errorf("Error reading SystemAccprofile resource: %v", err)
 	}
 
@@ -832,6 +877,11 @@ func flattenSystemAccprofileUtmgrpPermission(v interface{}, d *schema.ResourceDa
 		result["mmsgtp"] = flattenSystemAccprofileUtmgrpPermissionMmsgtp(i["mmsgtp"], d, pre_append)
 	}
 
+	pre_append = pre + ".0." + "telemetry"
+	if _, ok := i["telemetry"]; ok {
+		result["telemetry"] = flattenSystemAccprofileUtmgrpPermissionTelemetry(i["telemetry"], d, pre_append)
+	}
+
 	pre_append = pre + ".0." + "videofilter"
 	if _, ok := i["videofilter"]; ok {
 		result["videofilter"] = flattenSystemAccprofileUtmgrpPermissionVideofilter(i["videofilter"], d, pre_append)
@@ -910,6 +960,10 @@ func flattenSystemAccprofileUtmgrpPermissionIps(v interface{}, d *schema.Resourc
 }
 
 func flattenSystemAccprofileUtmgrpPermissionMmsgtp(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemAccprofileUtmgrpPermissionTelemetry(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -1647,6 +1701,10 @@ func expandSystemAccprofileUtmgrpPermission(d *schema.ResourceData, v interface{
 	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
 		result["mmsgtp"], _ = expandSystemAccprofileUtmgrpPermissionMmsgtp(d, i["mmsgtp"], pre_append)
 	}
+	pre_append = pre + ".0." + "telemetry"
+	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+		result["telemetry"], _ = expandSystemAccprofileUtmgrpPermissionTelemetry(d, i["telemetry"], pre_append)
+	}
 	pre_append = pre + ".0." + "videofilter"
 	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
 		result["videofilter"], _ = expandSystemAccprofileUtmgrpPermissionVideofilter(d, i["videofilter"], pre_append)
@@ -1720,6 +1778,10 @@ func expandSystemAccprofileUtmgrpPermissionIps(d *schema.ResourceData, v interfa
 }
 
 func expandSystemAccprofileUtmgrpPermissionMmsgtp(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemAccprofileUtmgrpPermissionTelemetry(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 

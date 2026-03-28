@@ -28,11 +28,23 @@ func resourceSystemFtmPush() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
+
+			"adom": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"device_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
 				ForceNew: true,
+			},
+			"interface": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Computed: true,
 			},
 			"proxy": &schema.Schema{
 				Type:     schema.TypeString,
@@ -74,21 +86,24 @@ func resourceSystemFtmPushUpdate(d *schema.ResourceData, m interface{}) error {
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
 	}
 	paradict["device"] = device_name
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectSystemFtmPush(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemFtmPush resource while getting object: %v", err)
 	}
+
+	wsParams["adom"] = adomv
 
 	_, err = c.UpdateSystemFtmPush(obj, mkey, paradict, wsParams)
 	if err != nil {
@@ -110,17 +125,19 @@ func resourceSystemFtmPushDelete(d *schema.ResourceData, m interface{}) error {
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
 	}
 	paradict["device"] = device_name
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
+	wsParams["adom"] = adomv
 
 	err = c.DeleteSystemFtmPush(mkey, paradict, wsParams)
 	if err != nil {
@@ -139,8 +156,8 @@ func resourceSystemFtmPushRead(d *schema.ResourceData, m interface{}) error {
 	c.Retries = 1
 
 	paradict := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if device_name == "" {
 		device_name = importOptionChecking(m.(*FortiClient).Cfg, "device_name")
@@ -155,6 +172,7 @@ func resourceSystemFtmPushRead(d *schema.ResourceData, m interface{}) error {
 
 	o, err := c.ReadSystemFtmPush(mkey, paradict)
 	if err != nil {
+		d.SetId("")
 		return fmt.Errorf("Error reading SystemFtmPush resource: %v", err)
 	}
 
@@ -169,6 +187,10 @@ func resourceSystemFtmPushRead(d *schema.ResourceData, m interface{}) error {
 		return fmt.Errorf("Error reading SystemFtmPush resource from API: %v", err)
 	}
 	return nil
+}
+
+func flattenSystemFtmPushInterface(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
 }
 
 func flattenSystemFtmPushProxy(v interface{}, d *schema.ResourceData, pre string) interface{} {
@@ -197,6 +219,16 @@ func flattenSystemFtmPushStatus(v interface{}, d *schema.ResourceData, pre strin
 
 func refreshObjectSystemFtmPush(d *schema.ResourceData, o map[string]interface{}) error {
 	var err error
+
+	if err = d.Set("interface", flattenSystemFtmPushInterface(o["interface"], d, "interface")); err != nil {
+		if vv, ok := fortiAPIPatch(o["interface"], "SystemFtmPush-Interface"); ok {
+			if err = d.Set("interface", vv); err != nil {
+				return fmt.Errorf("Error reading interface: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading interface: %v", err)
+		}
+	}
 
 	if err = d.Set("proxy", flattenSystemFtmPushProxy(o["proxy"], d, "proxy")); err != nil {
 		if vv, ok := fortiAPIPatch(o["proxy"], "SystemFtmPush-Proxy"); ok {
@@ -267,6 +299,10 @@ func flattenSystemFtmPushFortiTestDebug(d *schema.ResourceData, fosdebugsn int, 
 	log.Printf("ER List: %v", e)
 }
 
+func expandSystemFtmPushInterface(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
 func expandSystemFtmPushProxy(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -293,6 +329,15 @@ func expandSystemFtmPushStatus(d *schema.ResourceData, v interface{}, pre string
 
 func getObjectSystemFtmPush(d *schema.ResourceData) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
+
+	if v, ok := d.GetOk("interface"); ok || d.HasChange("interface") {
+		t, err := expandSystemFtmPushInterface(d, v, "interface")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["interface"] = t
+		}
+	}
 
 	if v, ok := d.GetOk("proxy"); ok || d.HasChange("proxy") {
 		t, err := expandSystemFtmPushProxy(d, v, "proxy")

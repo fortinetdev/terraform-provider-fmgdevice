@@ -10,6 +10,7 @@ description: |-
 Action for automation stitches.
 
 ~> The following variables have sub resource. Avoid using them together, otherwise conflicts and overwrites may occur.
+>- `form_data`: `fmgdevice_system_automationaction_formdata`
 >- `http_headers`: `fmgdevice_system_automationaction_httpheaders`
 
 
@@ -73,11 +74,16 @@ The following arguments are supported:
 * `gcp_project` - Google Cloud Platform project name.
 * `execute_security_fabric` - Enable/disable execution of CLI script on all or only one FortiGate unit in the Security Fabric. Valid values: `disable`, `enable`.
 
+* `file_only` - Enable/disable the output in files only. Valid values: `disable`, `enable`.
+
+* `form_data` - Form-Data. The structure of `form_data` block is documented below.
 * `headers` - Headers.
 * `forticare_email` - Enable/disable use of your FortiCare email address as the email-to address. Valid values: `disable`, `enable`.
 
 * `http_body` - Request body (if necessary). Should be serialized json string.
 * `http_headers` - Http-Headers. The structure of `http_headers` block is documented below.
+* `log_debug_print` - Enable/disable logging debug print output from diagnose action. Valid values: `disable`, `enable`.
+
 * `message` - Message content.
 * `message_type` - Message type. Valid values: `text`, `json`.
 
@@ -85,6 +91,7 @@ The following arguments are supported:
 
 * `minimum_interval` - Limit execution to no more than once in this interval (in seconds).
 * `name` - Name.
+* `output_interval` - Collect the outputs for each output-interval in seconds (0 = no intermediate output).
 * `output_size` - Number of megabytes to limit script output to (1 - 1024, default = 10).
 * `port` - Protocol port.
 * `protocol` - Request protocol. Valid values: `http`, `https`.
@@ -105,7 +112,14 @@ The following arguments are supported:
 * `uri` - Request API URI.
 * `verify_host_cert` - Enable/disable verification of the remote host certificate. Valid values: `disable`, `enable`.
 
+* `password` - Password.
 * `dynamic_sort_subtable` - true or false, set this parameter to true when using dynamic for_each + toset to configure and sort sub-tables, please do not set this parameter when configuring static sub-tables.
+
+The `form_data` block supports:
+
+* `id` - Entry ID.
+* `key` - Key of the part of Multipart/form-data.
+* `value` - Value of the part of Multipart/form-data.
 
 The `http_headers` block supports:
 

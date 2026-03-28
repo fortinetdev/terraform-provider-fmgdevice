@@ -97,6 +97,8 @@ The `realservers` block supports:
 
 * `translate_host` - Enable/disable translation of hostname/IP from virtual server to real server. Valid values: `disable`, `enable`.
 
+* `verify_cert` - Enable/disable certificate verification of the real server. Valid values: `disable`, `enable`.
+
 * `weight` - Weight of the real server. If weighted load balancing is enabled, the server with the highest weight gets more connections.
 
 The `ssl_cipher_suites` block supports:

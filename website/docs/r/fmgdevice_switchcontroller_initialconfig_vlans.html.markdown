@@ -34,6 +34,8 @@ The following arguments are supported:
 * `default_vlan` - Default VLAN (native) assigned to all switch ports upon discovery.
 * `nac` - VLAN for NAC onboarding devices.
 * `nac_segment` - VLAN for NAC segment primary interface.
+* `optional_vlans` - Auto-generate pre-configured VLANs upon switch discovery. Valid values: `disable`, `enable`.
+
 * `quarantine` - VLAN for quarantined traffic.
 * `rspan` - VLAN for RSPAN/ERSPAN mirrored traffic.
 * `video` - VLAN dedicated for video devices.

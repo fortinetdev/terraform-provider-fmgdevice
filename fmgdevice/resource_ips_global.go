@@ -28,6 +28,12 @@ func resourceIpsGlobal() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
+
+			"adom": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"device_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -80,6 +86,11 @@ func resourceIpsGlobal() *schema.Resource {
 			"ips_reserve_cpu": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+			},
+			"machine_learning_detection": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
 			},
 			"ngfw_max_scan_range": &schema.Schema{
 				Type:     schema.TypeInt,
@@ -165,21 +176,24 @@ func resourceIpsGlobalUpdate(d *schema.ResourceData, m interface{}) error {
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
 	}
 	paradict["device"] = device_name
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectIpsGlobal(d)
 	if err != nil {
 		return fmt.Errorf("Error updating IpsGlobal resource while getting object: %v", err)
 	}
+
+	wsParams["adom"] = adomv
 
 	_, err = c.UpdateIpsGlobal(obj, mkey, paradict, wsParams)
 	if err != nil {
@@ -201,17 +215,19 @@ func resourceIpsGlobalDelete(d *schema.ResourceData, m interface{}) error {
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
 	}
 	paradict["device"] = device_name
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
+	wsParams["adom"] = adomv
 
 	err = c.DeleteIpsGlobal(mkey, paradict, wsParams)
 	if err != nil {
@@ -230,8 +246,8 @@ func resourceIpsGlobalRead(d *schema.ResourceData, m interface{}) error {
 	c.Retries = 1
 
 	paradict := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if device_name == "" {
 		device_name = importOptionChecking(m.(*FortiClient).Cfg, "device_name")
@@ -246,6 +262,7 @@ func resourceIpsGlobalRead(d *schema.ResourceData, m interface{}) error {
 
 	o, err := c.ReadIpsGlobal(mkey, paradict)
 	if err != nil {
+		d.SetId("")
 		return fmt.Errorf("Error reading IpsGlobal resource: %v", err)
 	}
 
@@ -303,6 +320,10 @@ func flattenIpsGlobalIntelligentMode(v interface{}, d *schema.ResourceData, pre 
 }
 
 func flattenIpsGlobalIpsReserveCpu(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenIpsGlobalMachineLearningDetection(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -509,6 +530,16 @@ func refreshObjectIpsGlobal(d *schema.ResourceData, o map[string]interface{}) er
 		}
 	}
 
+	if err = d.Set("machine_learning_detection", flattenIpsGlobalMachineLearningDetection(o["machine-learning-detection"], d, "machine_learning_detection")); err != nil {
+		if vv, ok := fortiAPIPatch(o["machine-learning-detection"], "IpsGlobal-MachineLearningDetection"); ok {
+			if err = d.Set("machine_learning_detection", vv); err != nil {
+				return fmt.Errorf("Error reading machine_learning_detection: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading machine_learning_detection: %v", err)
+		}
+	}
+
 	if err = d.Set("ngfw_max_scan_range", flattenIpsGlobalNgfwMaxScanRange(o["ngfw-max-scan-range"], d, "ngfw_max_scan_range")); err != nil {
 		if vv, ok := fortiAPIPatch(o["ngfw-max-scan-range"], "IpsGlobal-NgfwMaxScanRange"); ok {
 			if err = d.Set("ngfw_max_scan_range", vv); err != nil {
@@ -663,6 +694,10 @@ func expandIpsGlobalIntelligentMode(d *schema.ResourceData, v interface{}, pre s
 }
 
 func expandIpsGlobalIpsReserveCpu(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandIpsGlobalMachineLearningDetection(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -851,6 +886,15 @@ func getObjectIpsGlobal(d *schema.ResourceData) (*map[string]interface{}, error)
 			return &obj, err
 		} else if t != nil {
 			obj["ips-reserve-cpu"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("machine_learning_detection"); ok || d.HasChange("machine_learning_detection") {
+		t, err := expandIpsGlobalMachineLearningDetection(d, v, "machine_learning_detection")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["machine-learning-detection"] = t
 		}
 	}
 

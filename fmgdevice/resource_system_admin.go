@@ -28,6 +28,17 @@ func resourceSystemAdmin() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
+			"update_if_exist": &schema.Schema{
+				Type:     schema.TypeBool,
+				Optional: true,
+				Computed: true,
+			},
+
+			"adom": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"device_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -113,6 +124,160 @@ func resourceSystemAdmin() *schema.Resource {
 				Optional:  true,
 				Sensitive: true,
 				Computed:  true,
+			},
+			"history10": &schema.Schema{
+				Type:      schema.TypeSet,
+				Elem:      &schema.Schema{Type: schema.TypeString},
+				Optional:  true,
+				Sensitive: true,
+				Computed:  true,
+			},
+			"history11": &schema.Schema{
+				Type:      schema.TypeSet,
+				Elem:      &schema.Schema{Type: schema.TypeString},
+				Optional:  true,
+				Sensitive: true,
+				Computed:  true,
+			},
+			"history12": &schema.Schema{
+				Type:      schema.TypeSet,
+				Elem:      &schema.Schema{Type: schema.TypeString},
+				Optional:  true,
+				Sensitive: true,
+				Computed:  true,
+			},
+			"history13": &schema.Schema{
+				Type:      schema.TypeSet,
+				Elem:      &schema.Schema{Type: schema.TypeString},
+				Optional:  true,
+				Sensitive: true,
+				Computed:  true,
+			},
+			"history14": &schema.Schema{
+				Type:      schema.TypeSet,
+				Elem:      &schema.Schema{Type: schema.TypeString},
+				Optional:  true,
+				Sensitive: true,
+				Computed:  true,
+			},
+			"history15": &schema.Schema{
+				Type:      schema.TypeSet,
+				Elem:      &schema.Schema{Type: schema.TypeString},
+				Optional:  true,
+				Sensitive: true,
+				Computed:  true,
+			},
+			"history16": &schema.Schema{
+				Type:      schema.TypeSet,
+				Elem:      &schema.Schema{Type: schema.TypeString},
+				Optional:  true,
+				Sensitive: true,
+				Computed:  true,
+			},
+			"history17": &schema.Schema{
+				Type:      schema.TypeSet,
+				Elem:      &schema.Schema{Type: schema.TypeString},
+				Optional:  true,
+				Sensitive: true,
+				Computed:  true,
+			},
+			"history18": &schema.Schema{
+				Type:      schema.TypeSet,
+				Elem:      &schema.Schema{Type: schema.TypeString},
+				Optional:  true,
+				Sensitive: true,
+				Computed:  true,
+			},
+			"history19": &schema.Schema{
+				Type:      schema.TypeSet,
+				Elem:      &schema.Schema{Type: schema.TypeString},
+				Optional:  true,
+				Sensitive: true,
+				Computed:  true,
+			},
+			"history2": &schema.Schema{
+				Type:      schema.TypeSet,
+				Elem:      &schema.Schema{Type: schema.TypeString},
+				Optional:  true,
+				Sensitive: true,
+				Computed:  true,
+			},
+			"history3": &schema.Schema{
+				Type:      schema.TypeSet,
+				Elem:      &schema.Schema{Type: schema.TypeString},
+				Optional:  true,
+				Sensitive: true,
+				Computed:  true,
+			},
+			"history4": &schema.Schema{
+				Type:      schema.TypeSet,
+				Elem:      &schema.Schema{Type: schema.TypeString},
+				Optional:  true,
+				Sensitive: true,
+				Computed:  true,
+			},
+			"history5": &schema.Schema{
+				Type:      schema.TypeSet,
+				Elem:      &schema.Schema{Type: schema.TypeString},
+				Optional:  true,
+				Sensitive: true,
+				Computed:  true,
+			},
+			"history6": &schema.Schema{
+				Type:      schema.TypeSet,
+				Elem:      &schema.Schema{Type: schema.TypeString},
+				Optional:  true,
+				Sensitive: true,
+				Computed:  true,
+			},
+			"history7": &schema.Schema{
+				Type:      schema.TypeSet,
+				Elem:      &schema.Schema{Type: schema.TypeString},
+				Optional:  true,
+				Sensitive: true,
+				Computed:  true,
+			},
+			"history8": &schema.Schema{
+				Type:      schema.TypeSet,
+				Elem:      &schema.Schema{Type: schema.TypeString},
+				Optional:  true,
+				Sensitive: true,
+				Computed:  true,
+			},
+			"history9": &schema.Schema{
+				Type:      schema.TypeSet,
+				Elem:      &schema.Schema{Type: schema.TypeString},
+				Optional:  true,
+				Sensitive: true,
+				Computed:  true,
+			},
+			"trusthosts": &schema.Schema{
+				Type:     schema.TypeList,
+				Optional: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"id": &schema.Schema{
+							Type:     schema.TypeInt,
+							Optional: true,
+						},
+						"ipv4": &schema.Schema{
+							Type:     schema.TypeList,
+							Elem:     &schema.Schema{Type: schema.TypeString},
+							Optional: true,
+							Computed: true,
+						},
+						"ipv6": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+							Computed: true,
+						},
+						"type": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+							Computed: true,
+						},
+					},
+				},
 			},
 			"ip6_trusthost1": &schema.Schema{
 				Type:     schema.TypeString,
@@ -252,6 +417,10 @@ func resourceSystemAdmin() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
+			"ssh_tmp_file": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 			"trusthost1": &schema.Schema{
 				Type:     schema.TypeList,
 				Elem:     &schema.Schema{Type: schema.TypeString},
@@ -340,6 +509,11 @@ func resourceSystemAdmin() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
+			"dynamic_sort_subtable": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Default:  "false",
+			},
 		},
 	}
 }
@@ -350,25 +524,49 @@ func resourceSystemAdminCreate(d *schema.ResourceData, m interface{}) error {
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
 	}
 	paradict["device"] = device_name
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectSystemAdmin(d)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemAdmin resource while getting object: %v", err)
 	}
+	wsParams["adom"] = adomv
 
-	_, err = c.CreateSystemAdmin(obj, paradict, wsParams)
-	if err != nil {
-		return fmt.Errorf("Error creating SystemAdmin resource: %v", err)
+	update_if_exist := getUpdateIfExist(c, d)
+	mkey_tf, mkey_ok := d.GetOk("name")
+	mkey := fmt.Sprint(mkey_tf)
+	o := make(map[string]interface{})
+	existing := false
+
+	if update_if_exist && mkey_ok {
+		// check existing
+		o, err = c.ReadSystemAdmin(mkey, paradict)
+		if err == nil && o != nil {
+			existing = true
+			// update if existing
+			o, err = c.UpdateSystemAdmin(obj, mkey, paradict, wsParams)
+			if err != nil {
+				return fmt.Errorf("Error updating SystemAdmin resource: %v", err)
+			}
+		}
+	}
+
+	if !existing {
+		_, err = c.CreateSystemAdmin(obj, paradict, wsParams)
+		if err != nil {
+			return fmt.Errorf("Error creating SystemAdmin resource: %v", err)
+		}
+
 	}
 
 	d.SetId(getStringKey(d, "name"))
@@ -383,21 +581,24 @@ func resourceSystemAdminUpdate(d *schema.ResourceData, m interface{}) error {
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
 	}
 	paradict["device"] = device_name
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectSystemAdmin(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemAdmin resource while getting object: %v", err)
 	}
+
+	wsParams["adom"] = adomv
 
 	_, err = c.UpdateSystemAdmin(obj, mkey, paradict, wsParams)
 	if err != nil {
@@ -419,17 +620,19 @@ func resourceSystemAdminDelete(d *schema.ResourceData, m interface{}) error {
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
 	}
 	paradict["device"] = device_name
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
+	wsParams["adom"] = adomv
 
 	err = c.DeleteSystemAdmin(mkey, paradict, wsParams)
 	if err != nil {
@@ -448,8 +651,8 @@ func resourceSystemAdminRead(d *schema.ResourceData, m interface{}) error {
 	c.Retries = 1
 
 	paradict := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if device_name == "" {
 		device_name = importOptionChecking(m.(*FortiClient).Cfg, "device_name")
@@ -464,6 +667,7 @@ func resourceSystemAdminRead(d *schema.ResourceData, m interface{}) error {
 
 	o, err := c.ReadSystemAdmin(mkey, paradict)
 	if err != nil {
+		d.SetId("")
 		return fmt.Errorf("Error reading SystemAdmin resource: %v", err)
 	}
 
@@ -533,6 +737,75 @@ func flattenSystemAdminGuiIgnoreInvalidSignatureVersion(v interface{}, d *schema
 }
 
 func flattenSystemAdminGuiIgnoreReleaseOverviewVersion(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemAdminTrusthosts(v interface{}, d *schema.ResourceData, pre string) []map[string]interface{} {
+	if v == nil {
+		return nil
+	}
+
+	l := v.([]interface{})
+	if len(l) == 0 || l[0] == nil {
+		return nil
+	}
+
+	result := make([]map[string]interface{}, 0, len(l))
+
+	con := 0
+	for _, r := range l {
+		tmp := make(map[string]interface{})
+		i := r.(map[string]interface{})
+
+		pre_append := "" // table
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "id"
+		if _, ok := i["id"]; ok {
+			v := flattenSystemAdminTrusthostsId(i["id"], d, pre_append)
+			tmp["id"] = fortiAPISubPartPatch(v, "SystemAdmin-Trusthosts-Id")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "ipv4"
+		if _, ok := i["ipv4"]; ok {
+			v := flattenSystemAdminTrusthostsIpv4(i["ipv4"], d, pre_append)
+			tmp["ipv4"] = fortiAPISubPartPatch(v, "SystemAdmin-Trusthosts-Ipv4")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "ipv6"
+		if _, ok := i["ipv6"]; ok {
+			v := flattenSystemAdminTrusthostsIpv6(i["ipv6"], d, pre_append)
+			tmp["ipv6"] = fortiAPISubPartPatch(v, "SystemAdmin-Trusthosts-Ipv6")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "type"
+		if _, ok := i["type"]; ok {
+			v := flattenSystemAdminTrusthostsType(i["type"], d, pre_append)
+			tmp["type"] = fortiAPISubPartPatch(v, "SystemAdmin-Trusthosts-Type")
+		}
+
+		if len(tmp) > 0 {
+			result = append(result, tmp)
+		}
+
+		con += 1
+	}
+
+	return result
+}
+
+func flattenSystemAdminTrusthostsId(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemAdminTrusthostsIpv4(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
+func flattenSystemAdminTrusthostsIpv6(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemAdminTrusthostsType(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -636,6 +909,10 @@ func flattenSystemAdminSshPublicKey3(v interface{}, d *schema.ResourceData, pre 
 	return v
 }
 
+func flattenSystemAdminSshTmpFile(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenSystemAdminTrusthost1(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return flattenStringList(v)
 }
@@ -702,6 +979,10 @@ func flattenSystemAdminWildcard(v interface{}, d *schema.ResourceData, pre strin
 
 func refreshObjectSystemAdmin(d *schema.ResourceData, o map[string]interface{}) error {
 	var err error
+
+	if dssValue := d.Get("dynamic_sort_subtable"); dssValue == "" {
+		d.Set("dynamic_sort_subtable", "false")
+	}
 
 	if err = d.Set("accprofile", flattenSystemAdminAccprofile(o["accprofile"], d, "accprofile")); err != nil {
 		if vv, ok := fortiAPIPatch(o["accprofile"], "SystemAdmin-Accprofile"); ok {
@@ -840,6 +1121,30 @@ func refreshObjectSystemAdmin(d *schema.ResourceData, o map[string]interface{}) 
 			}
 		} else {
 			return fmt.Errorf("Error reading gui_ignore_release_overview_version: %v", err)
+		}
+	}
+
+	if isImportTable() {
+		if err = d.Set("trusthosts", flattenSystemAdminTrusthosts(o["trusthosts"], d, "trusthosts")); err != nil {
+			if vv, ok := fortiAPIPatch(o["trusthosts"], "SystemAdmin-Trusthosts"); ok {
+				if err = d.Set("trusthosts", vv); err != nil {
+					return fmt.Errorf("Error reading trusthosts: %v", err)
+				}
+			} else {
+				return fmt.Errorf("Error reading trusthosts: %v", err)
+			}
+		}
+	} else {
+		if _, ok := d.GetOk("trusthosts"); ok {
+			if err = d.Set("trusthosts", flattenSystemAdminTrusthosts(o["trusthosts"], d, "trusthosts")); err != nil {
+				if vv, ok := fortiAPIPatch(o["trusthosts"], "SystemAdmin-Trusthosts"); ok {
+					if err = d.Set("trusthosts", vv); err != nil {
+						return fmt.Errorf("Error reading trusthosts: %v", err)
+					}
+				} else {
+					return fmt.Errorf("Error reading trusthosts: %v", err)
+				}
+			}
 		}
 	}
 
@@ -1093,6 +1398,16 @@ func refreshObjectSystemAdmin(d *schema.ResourceData, o map[string]interface{}) 
 		}
 	}
 
+	if err = d.Set("ssh_tmp_file", flattenSystemAdminSshTmpFile(o["ssh-tmp-file"], d, "ssh_tmp_file")); err != nil {
+		if vv, ok := fortiAPIPatch(o["ssh-tmp-file"], "SystemAdmin-SshTmpFile"); ok {
+			if err = d.Set("ssh_tmp_file", vv); err != nil {
+				return fmt.Errorf("Error reading ssh_tmp_file: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading ssh_tmp_file: %v", err)
+		}
+	}
+
 	if err = d.Set("trusthost1", flattenSystemAdminTrusthost1(o["trusthost1"], d, "trusthost1")); err != nil {
 		if vv, ok := fortiAPIPatch(o["trusthost1"], "SystemAdmin-Trusthost1"); ok {
 			if err = d.Set("trusthost1", vv); err != nil {
@@ -1326,6 +1641,138 @@ func expandSystemAdminHistory1(d *schema.ResourceData, v interface{}, pre string
 	return expandStringList(v.(*schema.Set).List()), nil
 }
 
+func expandSystemAdminHistory10(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandSystemAdminHistory11(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandSystemAdminHistory12(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandSystemAdminHistory13(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandSystemAdminHistory14(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandSystemAdminHistory15(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandSystemAdminHistory16(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandSystemAdminHistory17(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandSystemAdminHistory18(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandSystemAdminHistory19(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandSystemAdminHistory2(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandSystemAdminHistory3(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandSystemAdminHistory4(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandSystemAdminHistory5(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandSystemAdminHistory6(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandSystemAdminHistory7(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandSystemAdminHistory8(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandSystemAdminHistory9(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandSystemAdminTrusthosts(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	l := v.([]interface{})
+	result := make([]map[string]interface{}, 0, len(l))
+
+	if len(l) == 0 || l[0] == nil {
+		return result, nil
+	}
+
+	con := 0
+	for _, r := range l {
+		tmp := make(map[string]interface{})
+		i := r.(map[string]interface{})
+		pre_append := "" // table
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "id"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["id"], _ = expandSystemAdminTrusthostsId(d, i["id"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "ipv4"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["ipv4"], _ = expandSystemAdminTrusthostsIpv4(d, i["ipv4"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "ipv6"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["ipv6"], _ = expandSystemAdminTrusthostsIpv6(d, i["ipv6"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "type"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["type"], _ = expandSystemAdminTrusthostsType(d, i["type"], pre_append)
+		}
+
+		if len(tmp) > 0 {
+			result = append(result, tmp)
+		}
+
+		con += 1
+	}
+
+	return result, nil
+}
+
+func expandSystemAdminTrusthostsId(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemAdminTrusthostsIpv4(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.([]interface{})), nil
+}
+
+func expandSystemAdminTrusthostsIpv6(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemAdminTrusthostsType(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandSystemAdminIp6Trusthost1(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -1431,6 +1878,10 @@ func expandSystemAdminSshPublicKey2(d *schema.ResourceData, v interface{}, pre s
 }
 
 func expandSystemAdminSshPublicKey3(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemAdminSshTmpFile(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -1642,6 +2093,177 @@ func getObjectSystemAdmin(d *schema.ResourceData) (*map[string]interface{}, erro
 			return &obj, err
 		} else if t != nil {
 			obj["history1"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("history10"); ok || d.HasChange("history10") {
+		t, err := expandSystemAdminHistory10(d, v, "history10")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["history10"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("history11"); ok || d.HasChange("history11") {
+		t, err := expandSystemAdminHistory11(d, v, "history11")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["history11"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("history12"); ok || d.HasChange("history12") {
+		t, err := expandSystemAdminHistory12(d, v, "history12")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["history12"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("history13"); ok || d.HasChange("history13") {
+		t, err := expandSystemAdminHistory13(d, v, "history13")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["history13"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("history14"); ok || d.HasChange("history14") {
+		t, err := expandSystemAdminHistory14(d, v, "history14")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["history14"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("history15"); ok || d.HasChange("history15") {
+		t, err := expandSystemAdminHistory15(d, v, "history15")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["history15"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("history16"); ok || d.HasChange("history16") {
+		t, err := expandSystemAdminHistory16(d, v, "history16")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["history16"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("history17"); ok || d.HasChange("history17") {
+		t, err := expandSystemAdminHistory17(d, v, "history17")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["history17"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("history18"); ok || d.HasChange("history18") {
+		t, err := expandSystemAdminHistory18(d, v, "history18")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["history18"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("history19"); ok || d.HasChange("history19") {
+		t, err := expandSystemAdminHistory19(d, v, "history19")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["history19"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("history2"); ok || d.HasChange("history2") {
+		t, err := expandSystemAdminHistory2(d, v, "history2")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["history2"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("history3"); ok || d.HasChange("history3") {
+		t, err := expandSystemAdminHistory3(d, v, "history3")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["history3"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("history4"); ok || d.HasChange("history4") {
+		t, err := expandSystemAdminHistory4(d, v, "history4")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["history4"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("history5"); ok || d.HasChange("history5") {
+		t, err := expandSystemAdminHistory5(d, v, "history5")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["history5"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("history6"); ok || d.HasChange("history6") {
+		t, err := expandSystemAdminHistory6(d, v, "history6")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["history6"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("history7"); ok || d.HasChange("history7") {
+		t, err := expandSystemAdminHistory7(d, v, "history7")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["history7"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("history8"); ok || d.HasChange("history8") {
+		t, err := expandSystemAdminHistory8(d, v, "history8")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["history8"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("history9"); ok || d.HasChange("history9") {
+		t, err := expandSystemAdminHistory9(d, v, "history9")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["history9"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("trusthosts"); ok || d.HasChange("trusthosts") {
+		t, err := expandSystemAdminTrusthosts(d, v, "trusthosts")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["trusthosts"] = t
 		}
 	}
 
@@ -1885,6 +2507,15 @@ func getObjectSystemAdmin(d *schema.ResourceData) (*map[string]interface{}, erro
 			return &obj, err
 		} else if t != nil {
 			obj["ssh-public-key3"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("ssh_tmp_file"); ok || d.HasChange("ssh_tmp_file") {
+		t, err := expandSystemAdminSshTmpFile(d, v, "ssh_tmp_file")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["ssh-tmp-file"] = t
 		}
 	}
 

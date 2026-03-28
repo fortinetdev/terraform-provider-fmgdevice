@@ -28,6 +28,12 @@ func resourceRouterIsis() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
+
+			"adom": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"device_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -251,10 +257,8 @@ func resourceRouterIsis() *schema.Resource {
 							Computed: true,
 						},
 						"name": &schema.Schema{
-							Type:     schema.TypeSet,
-							Elem:     &schema.Schema{Type: schema.TypeString},
+							Type:     schema.TypeString,
 							Optional: true,
-							Computed: true,
 						},
 						"network_type": &schema.Schema{
 							Type:     schema.TypeString,
@@ -544,8 +548,12 @@ func resourceRouterIsisUpdate(d *schema.ResourceData, m interface{}) error {
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -557,13 +565,12 @@ func resourceRouterIsisUpdate(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectRouterIsis(d)
 	if err != nil {
 		return fmt.Errorf("Error updating RouterIsis resource while getting object: %v", err)
 	}
+
+	wsParams["adom"] = adomv
 
 	_, err = c.UpdateRouterIsis(obj, mkey, paradict, wsParams)
 	if err != nil {
@@ -585,8 +592,12 @@ func resourceRouterIsisDelete(d *schema.ResourceData, m interface{}) error {
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -598,9 +609,7 @@ func resourceRouterIsisDelete(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
+	wsParams["adom"] = adomv
 
 	err = c.DeleteRouterIsis(mkey, paradict, wsParams)
 	if err != nil {
@@ -619,8 +628,8 @@ func resourceRouterIsisRead(d *schema.ResourceData, m interface{}) error {
 	c.Retries = 1
 
 	paradict := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	device_vdom, err := getVariable(cfg, d, "device_vdom")
 	if device_name == "" {
@@ -646,6 +655,7 @@ func resourceRouterIsisRead(d *schema.ResourceData, m interface{}) error {
 
 	o, err := c.ReadRouterIsis(mkey, paradict)
 	if err != nil {
+		d.SetId("")
 		return fmt.Errorf("Error reading RouterIsis resource: %v", err)
 	}
 
@@ -1000,7 +1010,7 @@ func flattenRouterIsisIsisInterfaceMetricL2(v interface{}, d *schema.ResourceDat
 }
 
 func flattenRouterIsisIsisInterfaceName(v interface{}, d *schema.ResourceData, pre string) interface{} {
-	return flattenStringList(v)
+	return conv2str(v)
 }
 
 func flattenRouterIsisIsisInterfaceNetworkType(v interface{}, d *schema.ResourceData, pre string) interface{} {
@@ -2225,7 +2235,7 @@ func expandRouterIsisIsisInterfaceMetricL2(d *schema.ResourceData, v interface{}
 }
 
 func expandRouterIsisIsisInterfaceName(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
-	return expandStringList(v.(*schema.Set).List()), nil
+	return v, nil
 }
 
 func expandRouterIsisIsisInterfaceNetworkType(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {

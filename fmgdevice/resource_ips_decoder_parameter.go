@@ -28,6 +28,12 @@ func resourceIpsDecoderParameter() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
+
+			"adom": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"device_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -58,8 +64,12 @@ func resourceIpsDecoderParameterUpdate(d *schema.ResourceData, m interface{}) er
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -68,13 +78,12 @@ func resourceIpsDecoderParameterUpdate(d *schema.ResourceData, m interface{}) er
 	paradict["device"] = device_name
 	paradict["decoder"] = decoder
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectIpsDecoderParameter(d)
 	if err != nil {
 		return fmt.Errorf("Error updating IpsDecoderParameter resource while getting object: %v", err)
 	}
+
+	wsParams["adom"] = adomv
 
 	_, err = c.UpdateIpsDecoderParameter(obj, mkey, paradict, wsParams)
 	if err != nil {
@@ -96,8 +105,12 @@ func resourceIpsDecoderParameterDelete(d *schema.ResourceData, m interface{}) er
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -106,9 +119,7 @@ func resourceIpsDecoderParameterDelete(d *schema.ResourceData, m interface{}) er
 	paradict["device"] = device_name
 	paradict["decoder"] = decoder
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
+	wsParams["adom"] = adomv
 
 	err = c.DeleteIpsDecoderParameter(mkey, paradict, wsParams)
 	if err != nil {
@@ -127,8 +138,8 @@ func resourceIpsDecoderParameterRead(d *schema.ResourceData, m interface{}) erro
 	c.Retries = 1
 
 	paradict := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	decoder := d.Get("decoder").(string)
 	if device_name == "" {
@@ -154,6 +165,7 @@ func resourceIpsDecoderParameterRead(d *schema.ResourceData, m interface{}) erro
 
 	o, err := c.ReadIpsDecoderParameter(mkey, paradict)
 	if err != nil {
+		d.SetId("")
 		return fmt.Errorf("Error reading IpsDecoderParameter resource: %v", err)
 	}
 

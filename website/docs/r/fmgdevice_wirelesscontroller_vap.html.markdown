@@ -11,6 +11,7 @@ Configure Virtual Access Points (VAPs).
 
 ~> The following variables have sub resource. Avoid using them together, otherwise conflicts and overwrites may occur.
 >- `dynamic_mapping`: `fmgdevice_wirelesscontroller_vap_dynamic_mapping`
+>- `ip6_prefix_list`: `fmgdevice_wirelesscontroller_vap_ip6prefixlist`
 >- `mac_filter_list`: `fmgdevice_wirelesscontroller_vap_macfilterlist`
 >- `mpsk_key`: `fmgdevice_wirelesscontroller_vap_mpskkey`
 >- `portal_message_overrides`: `fmgdevice_wirelesscontroller_vap_portalmessageoverrides`
@@ -72,12 +73,15 @@ The following arguments are supported:
 * `_intf_ip6_address` - _Intf_Ip6-Address.
 * `_intf_ip6_allowaccess` - _Intf_Ip6-Allowaccess. Valid values: `https`, `ping`, `ssh`, `snmp`, `http`, `telnet`, `any`, `fgfm`, `capwap`.
 
+* `_intf_ip6_send_adv` - _Intf_Ip6-Send-Adv. Valid values: `disable`, `enable`.
+
 * `_intf_listen_forticlient_connection` - _Intf_Listen-Forticlient-Connection. Valid values: `disable`, `enable`.
 
 * `_intf_managed_subnetwork_size` - _Intf_Managed-Subnetwork-Size. Valid values: `32`, `64`, `128`, `256`, `512`, `1024`, `2048`, `4096`, `8192`, `16384`, `32768`, `65536`.
 
 * `_intf_role` - _Intf_Role. Valid values: `lan`, `wan`, `dmz`, `undefined`.
 
+* `_intf_vrf` - _Intf_Vrf.
 * `_is_factory_setting` - _Is_Factory_Setting. Valid values: `disable`, `enable`, `ext`.
 
 * `acct_interim_interval` - WiFi RADIUS accounting interim interval (60 - 86400 sec, default = 0).
@@ -117,6 +121,8 @@ The following arguments are supported:
 * `bstm_load_balancing_disassoc_timer` - Time interval for client to voluntarily leave AP before forcing a disassociation due to AP load-balancing (0 to 30, default = 10).
 * `bstm_rssi_disassoc_timer` - Time interval for client to voluntarily leave AP before forcing a disassociation due to low RSSI (0 to 2000, default = 200).
 * `called_station_id_type` - The format type of RADIUS attribute Called-Station-Id (default = mac). Valid values: `mac`, `ip`, `apname`.
+
+* `captive_network_assistant_bypass` - Enable/disable Captive Network Assistant bypass. Valid values: `disable`, `enable`.
 
 * `captive_portal` - Enable/disable captive portal. Valid values: `disable`, `enable`.
 
@@ -181,6 +187,7 @@ The following arguments are supported:
 * `intra_vap_privacy` - Enable/disable blocking communication between clients on the same SSID (called intra-SSID privacy) (default = disable). Valid values: `disable`, `enable`.
 
 * `ip` - IP address and subnet mask for the local standalone NAT subnet.
+* `ip6_prefix_list` - Ip6-Prefix-List. The structure of `ip6_prefix_list` block is documented below.
 * `ips_sensor` - IPS sensor name.
 * `ipv6_rules` - Optional rules of IPv6 packets. For example, you can keep RA, RS and so on off of the wireless network. Valid values: `drop-icmp6ra`, `drop-icmp6rs`, `drop-llmnr6`, `drop-icmp6mld2`, `drop-dhcp6s`, `drop-dhcp6c`, `ndp-proxy`, `drop-ns-dad`, `drop-ns-nondad`.
 
@@ -407,12 +414,15 @@ The `dynamic_mapping` block supports:
 * `_intf_ip6_address` - _Intf_Ip6-Address.
 * `_intf_ip6_allowaccess` - _Intf_Ip6-Allowaccess. Valid values: `https`, `ping`, `ssh`, `snmp`, `http`, `telnet`, `any`, `fgfm`, `capwap`.
 
+* `_intf_ip6_send_adv` - _Intf_Ip6-Send-Adv. Valid values: `disable`, `enable`.
+
 * `_intf_listen_forticlient_connection` - _Intf_Listen-Forticlient-Connection. Valid values: `disable`, `enable`.
 
 * `_intf_managed_subnetwork_size` - _Intf_Managed-Subnetwork-Size. Valid values: `32`, `64`, `128`, `256`, `512`, `1024`, `2048`, `4096`, `8192`, `16384`, `32768`, `65536`.
 
 * `_intf_role` - _Intf_Role. Valid values: `lan`, `wan`, `dmz`, `undefined`.
 
+* `_intf_vrf` - _Intf_Vrf.
 * `_is_factory_setting` - _Is_Factory_Setting. Valid values: `disable`, `enable`, `ext`.
 
 * `_scope` - _Scope. The structure of `_scope` block is documented below.
@@ -453,6 +463,8 @@ The `dynamic_mapping` block supports:
 * `bstm_load_balancing_disassoc_timer` - Time interval for client to voluntarily leave AP before forcing a disassociation due to AP load-balancing (0 to 30, default = 10).
 * `bstm_rssi_disassoc_timer` - Time interval for client to voluntarily leave AP before forcing a disassociation due to low RSSI (0 to 2000, default = 200).
 * `called_station_id_type` - The format type of RADIUS attribute Called-Station-Id (default = mac). Valid values: `mac`, `ip`, `apname`.
+
+* `captive_network_assistant_bypass` - Enable/disable Captive Network Assistant bypass. Valid values: `disable`, `enable`.
 
 * `captive_portal` - Enable/disable captive portal. Valid values: `disable`, `enable`.
 
@@ -517,6 +529,7 @@ The `dynamic_mapping` block supports:
 * `intra_vap_privacy` - Enable/disable blocking communication between clients on the same SSID (called intra-SSID privacy) (default = disable). Valid values: `disable`, `enable`.
 
 * `ip` - IP address and subnet mask for the local standalone NAT subnet.
+* `ip6_prefix_list` - Ip6-Prefix-List. The structure of `ip6_prefix_list` block is documented below.
 * `ips_sensor` - IPS sensor name.
 * `ipv6_rules` - Optional rules of IPv6 packets. For example, you can keep RA, RS and so on off of the wireless network. Valid values: `drop-icmp6ra`, `drop-icmp6rs`, `drop-llmnr6`, `drop-icmp6mld2`, `drop-dhcp6s`, `drop-dhcp6c`, `ndp-proxy`, `drop-ns-dad`, `drop-ns-nondad`.
 
@@ -711,6 +724,30 @@ The `_scope` block supports:
 
 * `name` - Name.
 * `vdom` - Vdom.
+
+The `ip6_prefix_list` block supports:
+
+* `autonomous_flag` - Autonomous-Flag. Valid values: `disable`, `enable`.
+
+* `dnssl` - Dnssl.
+* `onlink_flag` - Onlink-Flag. Valid values: `disable`, `enable`.
+
+* `preferred_life_time` - Preferred-Life-Time.
+* `prefix` - Prefix.
+* `rdnss` - Rdnss.
+* `valid_life_time` - Valid-Life-Time.
+
+The `ip6_prefix_list` block supports:
+
+* `autonomous_flag` - Autonomous-Flag. Valid values: `disable`, `enable`.
+
+* `dnssl` - Dnssl.
+* `onlink_flag` - Onlink-Flag. Valid values: `disable`, `enable`.
+
+* `preferred_life_time` - Preferred-Life-Time.
+* `prefix` - Prefix.
+* `rdnss` - Rdnss.
+* `valid_life_time` - Valid-Life-Time.
 
 The `mac_filter_list` block supports:
 

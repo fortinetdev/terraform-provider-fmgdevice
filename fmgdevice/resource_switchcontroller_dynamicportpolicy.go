@@ -28,6 +28,17 @@ func resourceSwitchControllerDynamicPortPolicy() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
+			"update_if_exist": &schema.Schema{
+				Type:     schema.TypeBool,
+				Optional: true,
+				Computed: true,
+			},
+
+			"adom": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"device_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -117,6 +128,11 @@ func resourceSwitchControllerDynamicPortPolicy() *schema.Resource {
 							Type:     schema.TypeInt,
 							Optional: true,
 						},
+						"match_remove": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+							Computed: true,
+						},
 						"match_type": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
@@ -170,8 +186,12 @@ func resourceSwitchControllerDynamicPortPolicyCreate(d *schema.ResourceData, m i
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -183,17 +203,37 @@ func resourceSwitchControllerDynamicPortPolicyCreate(d *schema.ResourceData, m i
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectSwitchControllerDynamicPortPolicy(d)
 	if err != nil {
 		return fmt.Errorf("Error creating SwitchControllerDynamicPortPolicy resource while getting object: %v", err)
 	}
+	wsParams["adom"] = adomv
 
-	_, err = c.CreateSwitchControllerDynamicPortPolicy(obj, paradict, wsParams)
-	if err != nil {
-		return fmt.Errorf("Error creating SwitchControllerDynamicPortPolicy resource: %v", err)
+	update_if_exist := getUpdateIfExist(c, d)
+	mkey_tf, mkey_ok := d.GetOk("name")
+	mkey := fmt.Sprint(mkey_tf)
+	o := make(map[string]interface{})
+	existing := false
+
+	if update_if_exist && mkey_ok {
+		// check existing
+		o, err = c.ReadSwitchControllerDynamicPortPolicy(mkey, paradict)
+		if err == nil && o != nil {
+			existing = true
+			// update if existing
+			o, err = c.UpdateSwitchControllerDynamicPortPolicy(obj, mkey, paradict, wsParams)
+			if err != nil {
+				return fmt.Errorf("Error updating SwitchControllerDynamicPortPolicy resource: %v", err)
+			}
+		}
+	}
+
+	if !existing {
+		_, err = c.CreateSwitchControllerDynamicPortPolicy(obj, paradict, wsParams)
+		if err != nil {
+			return fmt.Errorf("Error creating SwitchControllerDynamicPortPolicy resource: %v", err)
+		}
+
 	}
 
 	d.SetId(getStringKey(d, "name"))
@@ -208,8 +248,12 @@ func resourceSwitchControllerDynamicPortPolicyUpdate(d *schema.ResourceData, m i
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -221,13 +265,12 @@ func resourceSwitchControllerDynamicPortPolicyUpdate(d *schema.ResourceData, m i
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectSwitchControllerDynamicPortPolicy(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SwitchControllerDynamicPortPolicy resource while getting object: %v", err)
 	}
+
+	wsParams["adom"] = adomv
 
 	_, err = c.UpdateSwitchControllerDynamicPortPolicy(obj, mkey, paradict, wsParams)
 	if err != nil {
@@ -249,8 +292,12 @@ func resourceSwitchControllerDynamicPortPolicyDelete(d *schema.ResourceData, m i
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -262,9 +309,7 @@ func resourceSwitchControllerDynamicPortPolicyDelete(d *schema.ResourceData, m i
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
+	wsParams["adom"] = adomv
 
 	err = c.DeleteSwitchControllerDynamicPortPolicy(mkey, paradict, wsParams)
 	if err != nil {
@@ -283,8 +328,8 @@ func resourceSwitchControllerDynamicPortPolicyRead(d *schema.ResourceData, m int
 	c.Retries = 1
 
 	paradict := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	device_vdom, err := getVariable(cfg, d, "device_vdom")
 	if device_name == "" {
@@ -310,6 +355,7 @@ func resourceSwitchControllerDynamicPortPolicyRead(d *schema.ResourceData, m int
 
 	o, err := c.ReadSwitchControllerDynamicPortPolicy(mkey, paradict)
 	if err != nil {
+		d.SetId("")
 		return fmt.Errorf("Error reading SwitchControllerDynamicPortPolicy resource: %v", err)
 	}
 
@@ -429,6 +475,12 @@ func flattenSwitchControllerDynamicPortPolicyPolicy(v interface{}, d *schema.Res
 			tmp["match_period"] = fortiAPISubPartPatch(v, "SwitchControllerDynamicPortPolicy-Policy-MatchPeriod")
 		}
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "match_remove"
+		if _, ok := i["match-remove"]; ok {
+			v := flattenSwitchControllerDynamicPortPolicyPolicyMatchRemove(i["match-remove"], d, pre_append)
+			tmp["match_remove"] = fortiAPISubPartPatch(v, "SwitchControllerDynamicPortPolicy-Policy-MatchRemove")
+		}
+
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "match_type"
 		if _, ok := i["match-type"]; ok {
 			v := flattenSwitchControllerDynamicPortPolicyPolicyMatchType(i["match-type"], d, pre_append)
@@ -526,6 +578,10 @@ func flattenSwitchControllerDynamicPortPolicyPolicyMac(v interface{}, d *schema.
 }
 
 func flattenSwitchControllerDynamicPortPolicyPolicyMatchPeriod(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSwitchControllerDynamicPortPolicyPolicyMatchRemove(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -713,6 +769,11 @@ func expandSwitchControllerDynamicPortPolicyPolicy(d *schema.ResourceData, v int
 			tmp["match-period"], _ = expandSwitchControllerDynamicPortPolicyPolicyMatchPeriod(d, i["match_period"], pre_append)
 		}
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "match_remove"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["match-remove"], _ = expandSwitchControllerDynamicPortPolicyPolicyMatchRemove(d, i["match_remove"], pre_append)
+		}
+
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "match_type"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
 			tmp["match-type"], _ = expandSwitchControllerDynamicPortPolicyPolicyMatchType(d, i["match_type"], pre_append)
@@ -803,6 +864,10 @@ func expandSwitchControllerDynamicPortPolicyPolicyMac(d *schema.ResourceData, v 
 }
 
 func expandSwitchControllerDynamicPortPolicyPolicyMatchPeriod(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSwitchControllerDynamicPortPolicyPolicyMatchRemove(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 

@@ -28,6 +28,12 @@ func resourceLogSyslogd3OverrideSetting() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
+
+			"adom": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"device_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -145,6 +151,32 @@ func resourceLogSyslogd3OverrideSetting() *schema.Resource {
 				Type:     schema.TypeInt,
 				Optional: true,
 			},
+			"log_templates": &schema.Schema{
+				Type:     schema.TypeList,
+				Optional: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"category": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+							Computed: true,
+						},
+						"empty_value_indicator": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"id": &schema.Schema{
+							Type:     schema.TypeInt,
+							Optional: true,
+							Computed: true,
+						},
+						"template": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+					},
+				},
+			},
 			"dynamic_sort_subtable": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -161,8 +193,12 @@ func resourceLogSyslogd3OverrideSettingUpdate(d *schema.ResourceData, m interfac
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -174,13 +210,12 @@ func resourceLogSyslogd3OverrideSettingUpdate(d *schema.ResourceData, m interfac
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectLogSyslogd3OverrideSetting(d)
 	if err != nil {
 		return fmt.Errorf("Error updating LogSyslogd3OverrideSetting resource while getting object: %v", err)
 	}
+
+	wsParams["adom"] = adomv
 
 	_, err = c.UpdateLogSyslogd3OverrideSetting(obj, mkey, paradict, wsParams)
 	if err != nil {
@@ -202,8 +237,12 @@ func resourceLogSyslogd3OverrideSettingDelete(d *schema.ResourceData, m interfac
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -215,9 +254,7 @@ func resourceLogSyslogd3OverrideSettingDelete(d *schema.ResourceData, m interfac
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
+	wsParams["adom"] = adomv
 
 	err = c.DeleteLogSyslogd3OverrideSetting(mkey, paradict, wsParams)
 	if err != nil {
@@ -236,8 +273,8 @@ func resourceLogSyslogd3OverrideSettingRead(d *schema.ResourceData, m interface{
 	c.Retries = 1
 
 	paradict := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	device_vdom, err := getVariable(cfg, d, "device_vdom")
 	if device_name == "" {
@@ -263,6 +300,7 @@ func resourceLogSyslogd3OverrideSettingRead(d *schema.ResourceData, m interface{
 
 	o, err := c.ReadLogSyslogd3OverrideSetting(mkey, paradict)
 	if err != nil {
+		d.SetId("")
 		return fmt.Errorf("Error reading LogSyslogd3OverrideSetting resource: %v", err)
 	}
 
@@ -407,6 +445,75 @@ func flattenLogSyslogd3OverrideSettingUseManagementVdom(v interface{}, d *schema
 }
 
 func flattenLogSyslogd3OverrideSettingVrfSelect(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenLogSyslogd3OverrideSettingLogTemplates(v interface{}, d *schema.ResourceData, pre string) []map[string]interface{} {
+	if v == nil {
+		return nil
+	}
+
+	l := v.([]interface{})
+	if len(l) == 0 || l[0] == nil {
+		return nil
+	}
+
+	result := make([]map[string]interface{}, 0, len(l))
+
+	con := 0
+	for _, r := range l {
+		tmp := make(map[string]interface{})
+		i := r.(map[string]interface{})
+
+		pre_append := "" // table
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "category"
+		if _, ok := i["category"]; ok {
+			v := flattenLogSyslogd3OverrideSettingLogTemplatesCategory(i["category"], d, pre_append)
+			tmp["category"] = fortiAPISubPartPatch(v, "LogSyslogd3OverrideSetting-LogTemplates-Category")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "empty_value_indicator"
+		if _, ok := i["empty-value-indicator"]; ok {
+			v := flattenLogSyslogd3OverrideSettingLogTemplatesEmptyValueIndicator(i["empty-value-indicator"], d, pre_append)
+			tmp["empty_value_indicator"] = fortiAPISubPartPatch(v, "LogSyslogd3OverrideSetting-LogTemplates-EmptyValueIndicator")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "id"
+		if _, ok := i["id"]; ok {
+			v := flattenLogSyslogd3OverrideSettingLogTemplatesId(i["id"], d, pre_append)
+			tmp["id"] = fortiAPISubPartPatch(v, "LogSyslogd3OverrideSetting-LogTemplates-Id")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "template"
+		if _, ok := i["template"]; ok {
+			v := flattenLogSyslogd3OverrideSettingLogTemplatesTemplate(i["template"], d, pre_append)
+			tmp["template"] = fortiAPISubPartPatch(v, "LogSyslogd3OverrideSetting-LogTemplates-Template")
+		}
+
+		if len(tmp) > 0 {
+			result = append(result, tmp)
+		}
+
+		con += 1
+	}
+
+	return result
+}
+
+func flattenLogSyslogd3OverrideSettingLogTemplatesCategory(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenLogSyslogd3OverrideSettingLogTemplatesEmptyValueIndicator(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenLogSyslogd3OverrideSettingLogTemplatesId(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenLogSyslogd3OverrideSettingLogTemplatesTemplate(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -621,6 +728,30 @@ func refreshObjectLogSyslogd3OverrideSetting(d *schema.ResourceData, o map[strin
 		}
 	}
 
+	if isImportTable() {
+		if err = d.Set("log_templates", flattenLogSyslogd3OverrideSettingLogTemplates(o["log-templates"], d, "log_templates")); err != nil {
+			if vv, ok := fortiAPIPatch(o["log-templates"], "LogSyslogd3OverrideSetting-LogTemplates"); ok {
+				if err = d.Set("log_templates", vv); err != nil {
+					return fmt.Errorf("Error reading log_templates: %v", err)
+				}
+			} else {
+				return fmt.Errorf("Error reading log_templates: %v", err)
+			}
+		}
+	} else {
+		if _, ok := d.GetOk("log_templates"); ok {
+			if err = d.Set("log_templates", flattenLogSyslogd3OverrideSettingLogTemplates(o["log-templates"], d, "log_templates")); err != nil {
+				if vv, ok := fortiAPIPatch(o["log-templates"], "LogSyslogd3OverrideSetting-LogTemplates"); ok {
+					if err = d.Set("log_templates", vv); err != nil {
+						return fmt.Errorf("Error reading log_templates: %v", err)
+					}
+				} else {
+					return fmt.Errorf("Error reading log_templates: %v", err)
+				}
+			}
+		}
+	}
+
 	return nil
 }
 
@@ -750,6 +881,66 @@ func expandLogSyslogd3OverrideSettingUseManagementVdom(d *schema.ResourceData, v
 }
 
 func expandLogSyslogd3OverrideSettingVrfSelect(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandLogSyslogd3OverrideSettingLogTemplates(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	l := v.([]interface{})
+	result := make([]map[string]interface{}, 0, len(l))
+
+	if len(l) == 0 || l[0] == nil {
+		return result, nil
+	}
+
+	con := 0
+	for _, r := range l {
+		tmp := make(map[string]interface{})
+		i := r.(map[string]interface{})
+		pre_append := "" // table
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "category"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["category"], _ = expandLogSyslogd3OverrideSettingLogTemplatesCategory(d, i["category"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "empty_value_indicator"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["empty-value-indicator"], _ = expandLogSyslogd3OverrideSettingLogTemplatesEmptyValueIndicator(d, i["empty_value_indicator"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "id"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["id"], _ = expandLogSyslogd3OverrideSettingLogTemplatesId(d, i["id"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "template"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["template"], _ = expandLogSyslogd3OverrideSettingLogTemplatesTemplate(d, i["template"], pre_append)
+		}
+
+		if len(tmp) > 0 {
+			result = append(result, tmp)
+		}
+
+		con += 1
+	}
+
+	return result, nil
+}
+
+func expandLogSyslogd3OverrideSettingLogTemplatesCategory(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandLogSyslogd3OverrideSettingLogTemplatesEmptyValueIndicator(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandLogSyslogd3OverrideSettingLogTemplatesId(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandLogSyslogd3OverrideSettingLogTemplatesTemplate(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -924,6 +1115,15 @@ func getObjectLogSyslogd3OverrideSetting(d *schema.ResourceData) (*map[string]in
 			return &obj, err
 		} else if t != nil {
 			obj["vrf-select"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("log_templates"); ok || d.HasChange("log_templates") {
+		t, err := expandLogSyslogd3OverrideSettingLogTemplates(d, v, "log_templates")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["log-templates"] = t
 		}
 	}
 

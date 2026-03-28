@@ -61,6 +61,7 @@ The following arguments are supported:
 * `disable_discovery` - Prevent this FortiSwitch from discovering.
 * `fips_enforce` - Enable/disable enforcement of FIPS on managed FortiSwitch devices. Valid values: `disable`, `enable`.
 
+* `firewall_auth_user_hold_period` - Time period in minutes to hold firewall authenticated MAC users (5 - 1440, default = 5, disable = 0).
 * `firmware_provision_on_authorization` - Enable/disable automatic provisioning of latest firmware on authorization. Valid values: `disable`, `enable`.
 
 * `https_image_push` - Enable/disable image push to FortiSwitch using HTTPS. Valid values: `disable`, `enable`.

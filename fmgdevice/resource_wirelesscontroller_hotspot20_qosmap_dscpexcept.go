@@ -28,6 +28,17 @@ func resourceWirelessControllerHotspot20QosMapDscpExcept() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
+			"update_if_exist": &schema.Schema{
+				Type:     schema.TypeBool,
+				Optional: true,
+				Computed: true,
+			},
+
+			"adom": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"device_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -68,8 +79,12 @@ func resourceWirelessControllerHotspot20QosMapDscpExceptCreate(d *schema.Resourc
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -83,17 +98,37 @@ func resourceWirelessControllerHotspot20QosMapDscpExceptCreate(d *schema.Resourc
 	paradict["vdom"] = device_vdom
 	paradict["qos_map"] = qos_map
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectWirelessControllerHotspot20QosMapDscpExcept(d)
 	if err != nil {
 		return fmt.Errorf("Error creating WirelessControllerHotspot20QosMapDscpExcept resource while getting object: %v", err)
 	}
+	wsParams["adom"] = adomv
 
-	_, err = c.CreateWirelessControllerHotspot20QosMapDscpExcept(obj, paradict, wsParams)
-	if err != nil {
-		return fmt.Errorf("Error creating WirelessControllerHotspot20QosMapDscpExcept resource: %v", err)
+	update_if_exist := getUpdateIfExist(c, d)
+	mkey_tf, mkey_ok := d.GetOk("index")
+	mkey := fmt.Sprint(mkey_tf)
+	o := make(map[string]interface{})
+	existing := false
+
+	if update_if_exist && mkey_ok {
+		// check existing
+		o, err = c.ReadWirelessControllerHotspot20QosMapDscpExcept(mkey, paradict)
+		if err == nil && o != nil {
+			existing = true
+			// update if existing
+			o, err = c.UpdateWirelessControllerHotspot20QosMapDscpExcept(obj, mkey, paradict, wsParams)
+			if err != nil {
+				return fmt.Errorf("Error updating WirelessControllerHotspot20QosMapDscpExcept resource: %v", err)
+			}
+		}
+	}
+
+	if !existing {
+		_, err = c.CreateWirelessControllerHotspot20QosMapDscpExcept(obj, paradict, wsParams)
+		if err != nil {
+			return fmt.Errorf("Error creating WirelessControllerHotspot20QosMapDscpExcept resource: %v", err)
+		}
+
 	}
 
 	d.SetId(strconv.Itoa(getIntKey(d, "index")))
@@ -108,8 +143,12 @@ func resourceWirelessControllerHotspot20QosMapDscpExceptUpdate(d *schema.Resourc
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -123,13 +162,12 @@ func resourceWirelessControllerHotspot20QosMapDscpExceptUpdate(d *schema.Resourc
 	paradict["vdom"] = device_vdom
 	paradict["qos_map"] = qos_map
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectWirelessControllerHotspot20QosMapDscpExcept(d)
 	if err != nil {
 		return fmt.Errorf("Error updating WirelessControllerHotspot20QosMapDscpExcept resource while getting object: %v", err)
 	}
+
+	wsParams["adom"] = adomv
 
 	_, err = c.UpdateWirelessControllerHotspot20QosMapDscpExcept(obj, mkey, paradict, wsParams)
 	if err != nil {
@@ -151,8 +189,12 @@ func resourceWirelessControllerHotspot20QosMapDscpExceptDelete(d *schema.Resourc
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -166,9 +208,7 @@ func resourceWirelessControllerHotspot20QosMapDscpExceptDelete(d *schema.Resourc
 	paradict["vdom"] = device_vdom
 	paradict["qos_map"] = qos_map
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
+	wsParams["adom"] = adomv
 
 	err = c.DeleteWirelessControllerHotspot20QosMapDscpExcept(mkey, paradict, wsParams)
 	if err != nil {
@@ -187,8 +227,8 @@ func resourceWirelessControllerHotspot20QosMapDscpExceptRead(d *schema.ResourceD
 	c.Retries = 1
 
 	paradict := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	device_vdom, err := getVariable(cfg, d, "device_vdom")
 	qos_map := d.Get("qos_map").(string)
@@ -225,6 +265,7 @@ func resourceWirelessControllerHotspot20QosMapDscpExceptRead(d *schema.ResourceD
 
 	o, err := c.ReadWirelessControllerHotspot20QosMapDscpExcept(mkey, paradict)
 	if err != nil {
+		d.SetId("")
 		return fmt.Errorf("Error reading WirelessControllerHotspot20QosMapDscpExcept resource: %v", err)
 	}
 

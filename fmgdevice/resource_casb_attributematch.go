@@ -28,6 +28,17 @@ func resourceCasbAttributeMatch() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
+			"update_if_exist": &schema.Schema{
+				Type:     schema.TypeBool,
+				Optional: true,
+				Computed: true,
+			},
+
+			"adom": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"device_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -54,12 +65,10 @@ func resourceCasbAttributeMatch() *schema.Resource {
 						"case_sensitive": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
-							Computed: true,
 						},
 						"match_pattern": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
-							Computed: true,
 						},
 						"match_value": &schema.Schema{
 							Type:     schema.TypeString,
@@ -70,6 +79,59 @@ func resourceCasbAttributeMatch() *schema.Resource {
 							Optional: true,
 						},
 						"negate": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+					},
+				},
+			},
+			"match": &schema.Schema{
+				Type:     schema.TypeList,
+				Optional: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"id": &schema.Schema{
+							Type:     schema.TypeInt,
+							Optional: true,
+							Computed: true,
+						},
+						"rule": &schema.Schema{
+							Type:     schema.TypeList,
+							Optional: true,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"attribute": &schema.Schema{
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+									"case_sensitive": &schema.Schema{
+										Type:     schema.TypeString,
+										Optional: true,
+										Computed: true,
+									},
+									"id": &schema.Schema{
+										Type:     schema.TypeInt,
+										Optional: true,
+										Computed: true,
+									},
+									"match_pattern": &schema.Schema{
+										Type:     schema.TypeString,
+										Optional: true,
+										Computed: true,
+									},
+									"match_value": &schema.Schema{
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+									"negate": &schema.Schema{
+										Type:     schema.TypeString,
+										Optional: true,
+										Computed: true,
+									},
+								},
+							},
+						},
+						"rule_strategy": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
 							Computed: true,
@@ -102,8 +164,12 @@ func resourceCasbAttributeMatchCreate(d *schema.ResourceData, m interface{}) err
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -115,17 +181,37 @@ func resourceCasbAttributeMatchCreate(d *schema.ResourceData, m interface{}) err
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectCasbAttributeMatch(d)
 	if err != nil {
 		return fmt.Errorf("Error creating CasbAttributeMatch resource while getting object: %v", err)
 	}
+	wsParams["adom"] = adomv
 
-	_, err = c.CreateCasbAttributeMatch(obj, paradict, wsParams)
-	if err != nil {
-		return fmt.Errorf("Error creating CasbAttributeMatch resource: %v", err)
+	update_if_exist := getUpdateIfExist(c, d)
+	mkey_tf, mkey_ok := d.GetOk("name")
+	mkey := fmt.Sprint(mkey_tf)
+	o := make(map[string]interface{})
+	existing := false
+
+	if update_if_exist && mkey_ok {
+		// check existing
+		o, err = c.ReadCasbAttributeMatch(mkey, paradict)
+		if err == nil && o != nil {
+			existing = true
+			// update if existing
+			o, err = c.UpdateCasbAttributeMatch(obj, mkey, paradict, wsParams)
+			if err != nil {
+				return fmt.Errorf("Error updating CasbAttributeMatch resource: %v", err)
+			}
+		}
+	}
+
+	if !existing {
+		_, err = c.CreateCasbAttributeMatch(obj, paradict, wsParams)
+		if err != nil {
+			return fmt.Errorf("Error creating CasbAttributeMatch resource: %v", err)
+		}
+
 	}
 
 	d.SetId(getStringKey(d, "name"))
@@ -140,8 +226,12 @@ func resourceCasbAttributeMatchUpdate(d *schema.ResourceData, m interface{}) err
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -153,13 +243,12 @@ func resourceCasbAttributeMatchUpdate(d *schema.ResourceData, m interface{}) err
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectCasbAttributeMatch(d)
 	if err != nil {
 		return fmt.Errorf("Error updating CasbAttributeMatch resource while getting object: %v", err)
 	}
+
+	wsParams["adom"] = adomv
 
 	_, err = c.UpdateCasbAttributeMatch(obj, mkey, paradict, wsParams)
 	if err != nil {
@@ -181,8 +270,12 @@ func resourceCasbAttributeMatchDelete(d *schema.ResourceData, m interface{}) err
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -194,9 +287,7 @@ func resourceCasbAttributeMatchDelete(d *schema.ResourceData, m interface{}) err
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
+	wsParams["adom"] = adomv
 
 	err = c.DeleteCasbAttributeMatch(mkey, paradict, wsParams)
 	if err != nil {
@@ -215,8 +306,8 @@ func resourceCasbAttributeMatchRead(d *schema.ResourceData, m interface{}) error
 	c.Retries = 1
 
 	paradict := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	device_vdom, err := getVariable(cfg, d, "device_vdom")
 	if device_name == "" {
@@ -242,6 +333,7 @@ func resourceCasbAttributeMatchRead(d *schema.ResourceData, m interface{}) error
 
 	o, err := c.ReadCasbAttributeMatch(mkey, paradict)
 	if err != nil {
+		d.SetId("")
 		return fmt.Errorf("Error reading CasbAttributeMatch resource: %v", err)
 	}
 
@@ -341,6 +433,150 @@ func flattenCasbAttributeMatchAttributeNegate(v interface{}, d *schema.ResourceD
 	return v
 }
 
+func flattenCasbAttributeMatchMatch(v interface{}, d *schema.ResourceData, pre string) []map[string]interface{} {
+	if v == nil {
+		return nil
+	}
+
+	l := v.([]interface{})
+	if len(l) == 0 || l[0] == nil {
+		return nil
+	}
+
+	result := make([]map[string]interface{}, 0, len(l))
+
+	con := 0
+	for _, r := range l {
+		tmp := make(map[string]interface{})
+		i := r.(map[string]interface{})
+
+		pre_append := "" // table
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "id"
+		if _, ok := i["id"]; ok {
+			v := flattenCasbAttributeMatchMatchId(i["id"], d, pre_append)
+			tmp["id"] = fortiAPISubPartPatch(v, "CasbAttributeMatch-Match-Id")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "rule"
+		if _, ok := i["rule"]; ok {
+			v := flattenCasbAttributeMatchMatchRule(i["rule"], d, pre_append)
+			tmp["rule"] = fortiAPISubPartPatch(v, "CasbAttributeMatch-Match-Rule")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "rule_strategy"
+		if _, ok := i["rule-strategy"]; ok {
+			v := flattenCasbAttributeMatchMatchRuleStrategy(i["rule-strategy"], d, pre_append)
+			tmp["rule_strategy"] = fortiAPISubPartPatch(v, "CasbAttributeMatch-Match-RuleStrategy")
+		}
+
+		if len(tmp) > 0 {
+			result = append(result, tmp)
+		}
+
+		con += 1
+	}
+
+	return result
+}
+
+func flattenCasbAttributeMatchMatchId(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenCasbAttributeMatchMatchRule(v interface{}, d *schema.ResourceData, pre string) []map[string]interface{} {
+	if v == nil {
+		return nil
+	}
+
+	l := v.([]interface{})
+	if len(l) == 0 || l[0] == nil {
+		return nil
+	}
+
+	result := make([]map[string]interface{}, 0, len(l))
+
+	con := 0
+	for _, r := range l {
+		tmp := make(map[string]interface{})
+		i := r.(map[string]interface{})
+
+		pre_append := "" // table
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "attribute"
+		if _, ok := i["attribute"]; ok {
+			v := flattenCasbAttributeMatchMatchRuleAttribute(i["attribute"], d, pre_append)
+			tmp["attribute"] = fortiAPISubPartPatch(v, "CasbAttributeMatchMatch-Rule-Attribute")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "case_sensitive"
+		if _, ok := i["case-sensitive"]; ok {
+			v := flattenCasbAttributeMatchMatchRuleCaseSensitive(i["case-sensitive"], d, pre_append)
+			tmp["case_sensitive"] = fortiAPISubPartPatch(v, "CasbAttributeMatchMatch-Rule-CaseSensitive")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "id"
+		if _, ok := i["id"]; ok {
+			v := flattenCasbAttributeMatchMatchRuleId(i["id"], d, pre_append)
+			tmp["id"] = fortiAPISubPartPatch(v, "CasbAttributeMatchMatch-Rule-Id")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "match_pattern"
+		if _, ok := i["match-pattern"]; ok {
+			v := flattenCasbAttributeMatchMatchRuleMatchPattern(i["match-pattern"], d, pre_append)
+			tmp["match_pattern"] = fortiAPISubPartPatch(v, "CasbAttributeMatchMatch-Rule-MatchPattern")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "match_value"
+		if _, ok := i["match-value"]; ok {
+			v := flattenCasbAttributeMatchMatchRuleMatchValue(i["match-value"], d, pre_append)
+			tmp["match_value"] = fortiAPISubPartPatch(v, "CasbAttributeMatchMatch-Rule-MatchValue")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "negate"
+		if _, ok := i["negate"]; ok {
+			v := flattenCasbAttributeMatchMatchRuleNegate(i["negate"], d, pre_append)
+			tmp["negate"] = fortiAPISubPartPatch(v, "CasbAttributeMatchMatch-Rule-Negate")
+		}
+
+		if len(tmp) > 0 {
+			result = append(result, tmp)
+		}
+
+		con += 1
+	}
+
+	return result
+}
+
+func flattenCasbAttributeMatchMatchRuleAttribute(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenCasbAttributeMatchMatchRuleCaseSensitive(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenCasbAttributeMatchMatchRuleId(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenCasbAttributeMatchMatchRuleMatchPattern(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenCasbAttributeMatchMatchRuleMatchValue(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenCasbAttributeMatchMatchRuleNegate(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenCasbAttributeMatchMatchRuleStrategy(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenCasbAttributeMatchMatchStrategy(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -385,6 +621,30 @@ func refreshObjectCasbAttributeMatch(d *schema.ResourceData, o map[string]interf
 					}
 				} else {
 					return fmt.Errorf("Error reading attribute: %v", err)
+				}
+			}
+		}
+	}
+
+	if isImportTable() {
+		if err = d.Set("match", flattenCasbAttributeMatchMatch(o["match"], d, "match")); err != nil {
+			if vv, ok := fortiAPIPatch(o["match"], "CasbAttributeMatch-Match"); ok {
+				if err = d.Set("match", vv); err != nil {
+					return fmt.Errorf("Error reading match: %v", err)
+				}
+			} else {
+				return fmt.Errorf("Error reading match: %v", err)
+			}
+		}
+	} else {
+		if _, ok := d.GetOk("match"); ok {
+			if err = d.Set("match", flattenCasbAttributeMatchMatch(o["match"], d, "match")); err != nil {
+				if vv, ok := fortiAPIPatch(o["match"], "CasbAttributeMatch-Match"); ok {
+					if err = d.Set("match", vv); err != nil {
+						return fmt.Errorf("Error reading match: %v", err)
+					}
+				} else {
+					return fmt.Errorf("Error reading match: %v", err)
 				}
 			}
 		}
@@ -492,6 +752,136 @@ func expandCasbAttributeMatchAttributeNegate(d *schema.ResourceData, v interface
 	return v, nil
 }
 
+func expandCasbAttributeMatchMatch(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	l := v.([]interface{})
+	result := make([]map[string]interface{}, 0, len(l))
+
+	if len(l) == 0 || l[0] == nil {
+		return result, nil
+	}
+
+	con := 0
+	for _, r := range l {
+		tmp := make(map[string]interface{})
+		i := r.(map[string]interface{})
+		pre_append := "" // table
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "id"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["id"], _ = expandCasbAttributeMatchMatchId(d, i["id"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "rule"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			t, err := expandCasbAttributeMatchMatchRule(d, i["rule"], pre_append)
+			if err != nil {
+				return result, err
+			} else if t != nil {
+				tmp["rule"] = t
+			}
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "rule_strategy"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["rule-strategy"], _ = expandCasbAttributeMatchMatchRuleStrategy(d, i["rule_strategy"], pre_append)
+		}
+
+		if len(tmp) > 0 {
+			result = append(result, tmp)
+		}
+
+		con += 1
+	}
+
+	return result, nil
+}
+
+func expandCasbAttributeMatchMatchId(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandCasbAttributeMatchMatchRule(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	l := v.([]interface{})
+	result := make([]map[string]interface{}, 0, len(l))
+
+	if len(l) == 0 || l[0] == nil {
+		return result, nil
+	}
+
+	con := 0
+	for _, r := range l {
+		tmp := make(map[string]interface{})
+		i := r.(map[string]interface{})
+		pre_append := "" // table
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "attribute"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["attribute"], _ = expandCasbAttributeMatchMatchRuleAttribute(d, i["attribute"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "case_sensitive"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["case-sensitive"], _ = expandCasbAttributeMatchMatchRuleCaseSensitive(d, i["case_sensitive"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "id"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["id"], _ = expandCasbAttributeMatchMatchRuleId(d, i["id"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "match_pattern"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["match-pattern"], _ = expandCasbAttributeMatchMatchRuleMatchPattern(d, i["match_pattern"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "match_value"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["match-value"], _ = expandCasbAttributeMatchMatchRuleMatchValue(d, i["match_value"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "negate"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["negate"], _ = expandCasbAttributeMatchMatchRuleNegate(d, i["negate"], pre_append)
+		}
+
+		if len(tmp) > 0 {
+			result = append(result, tmp)
+		}
+
+		con += 1
+	}
+
+	return result, nil
+}
+
+func expandCasbAttributeMatchMatchRuleAttribute(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandCasbAttributeMatchMatchRuleCaseSensitive(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandCasbAttributeMatchMatchRuleId(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandCasbAttributeMatchMatchRuleMatchPattern(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandCasbAttributeMatchMatchRuleMatchValue(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandCasbAttributeMatchMatchRuleNegate(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandCasbAttributeMatchMatchRuleStrategy(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandCasbAttributeMatchMatchStrategy(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -518,6 +908,15 @@ func getObjectCasbAttributeMatch(d *schema.ResourceData) (*map[string]interface{
 			return &obj, err
 		} else if t != nil {
 			obj["attribute"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("match"); ok || d.HasChange("match") {
+		t, err := expandCasbAttributeMatchMatch(d, v, "match")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["match"] = t
 		}
 	}
 

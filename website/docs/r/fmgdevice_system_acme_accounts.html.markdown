@@ -34,6 +34,8 @@ The following arguments are supported:
 * `device_name` - FortiManager managed device name. This variable is used in the request URL. If not specified, it will inherit the variable `device_name` of the provider.
 
 * `ca_url` - Account ca_url.
+* `eab_key_hmac` - External Acccount Binding Key HMAC.
+* `eab_key_id` - External Acccount Binding Key ID.
 * `email` - Account email.
 * `fosid` - Account id.
 * `privatekey` - Account Private Key.

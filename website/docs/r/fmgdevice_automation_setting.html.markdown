@@ -29,6 +29,8 @@ The following arguments are supported:
 * `fabric_sync` - Enable/disable synchronization of automation settings with security fabric. Valid values: `disable`, `enable`.
 
 * `max_concurrent_stitches` - Maximum number of automation stitches that are allowed to run concurrently.
+* `secure_mode` - Enable/disable secure running mode for automation. Valid values: `disable`, `enable`.
+
 
 
 ## Attribute Reference

@@ -37,6 +37,7 @@ The following arguments are supported:
 * `start` - Script starting mode. Valid values: `auto`, `manual`.
 
 * `timeout` - Maximum running time for this script in seconds (0 = no timeout).
+* `password` - Password.
 
 
 ## Attribute Reference

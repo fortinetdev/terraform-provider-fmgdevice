@@ -28,6 +28,17 @@ func resourceSystemAutomationAction() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
+			"update_if_exist": &schema.Schema{
+				Type:     schema.TypeBool,
+				Optional: true,
+				Computed: true,
+			},
+
+			"adom": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"device_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -188,6 +199,32 @@ func resourceSystemAutomationAction() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"file_only": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+			"form_data": &schema.Schema{
+				Type:     schema.TypeList,
+				Optional: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"id": &schema.Schema{
+							Type:     schema.TypeInt,
+							Optional: true,
+							Computed: true,
+						},
+						"key": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"value": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+					},
+				},
+			},
 			"headers": &schema.Schema{
 				Type:     schema.TypeSet,
 				Elem:     &schema.Schema{Type: schema.TypeString},
@@ -223,6 +260,11 @@ func resourceSystemAutomationAction() *schema.Resource {
 					},
 				},
 			},
+			"log_debug_print": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
 			"message": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -244,6 +286,10 @@ func resourceSystemAutomationAction() *schema.Resource {
 			"name": &schema.Schema{
 				Type:     schema.TypeString,
 				ForceNew: true,
+				Optional: true,
+			},
+			"output_interval": &schema.Schema{
+				Type:     schema.TypeInt,
 				Optional: true,
 			},
 			"output_size": &schema.Schema{
@@ -315,6 +361,13 @@ func resourceSystemAutomationAction() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"password": &schema.Schema{
+				Type:      schema.TypeSet,
+				Elem:      &schema.Schema{Type: schema.TypeString},
+				Optional:  true,
+				Sensitive: true,
+				Computed:  true,
+			},
 			"dynamic_sort_subtable": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -330,25 +383,49 @@ func resourceSystemAutomationActionCreate(d *schema.ResourceData, m interface{})
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
 	}
 	paradict["device"] = device_name
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectSystemAutomationAction(d)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemAutomationAction resource while getting object: %v", err)
 	}
+	wsParams["adom"] = adomv
 
-	_, err = c.CreateSystemAutomationAction(obj, paradict, wsParams)
-	if err != nil {
-		return fmt.Errorf("Error creating SystemAutomationAction resource: %v", err)
+	update_if_exist := getUpdateIfExist(c, d)
+	mkey_tf, mkey_ok := d.GetOk("name")
+	mkey := fmt.Sprint(mkey_tf)
+	o := make(map[string]interface{})
+	existing := false
+
+	if update_if_exist && mkey_ok {
+		// check existing
+		o, err = c.ReadSystemAutomationAction(mkey, paradict)
+		if err == nil && o != nil {
+			existing = true
+			// update if existing
+			o, err = c.UpdateSystemAutomationAction(obj, mkey, paradict, wsParams)
+			if err != nil {
+				return fmt.Errorf("Error updating SystemAutomationAction resource: %v", err)
+			}
+		}
+	}
+
+	if !existing {
+		_, err = c.CreateSystemAutomationAction(obj, paradict, wsParams)
+		if err != nil {
+			return fmt.Errorf("Error creating SystemAutomationAction resource: %v", err)
+		}
+
 	}
 
 	d.SetId(getStringKey(d, "name"))
@@ -363,21 +440,24 @@ func resourceSystemAutomationActionUpdate(d *schema.ResourceData, m interface{})
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
 	}
 	paradict["device"] = device_name
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectSystemAutomationAction(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemAutomationAction resource while getting object: %v", err)
 	}
+
+	wsParams["adom"] = adomv
 
 	_, err = c.UpdateSystemAutomationAction(obj, mkey, paradict, wsParams)
 	if err != nil {
@@ -399,17 +479,19 @@ func resourceSystemAutomationActionDelete(d *schema.ResourceData, m interface{})
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
 	}
 	paradict["device"] = device_name
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
+	wsParams["adom"] = adomv
 
 	err = c.DeleteSystemAutomationAction(mkey, paradict, wsParams)
 	if err != nil {
@@ -428,8 +510,8 @@ func resourceSystemAutomationActionRead(d *schema.ResourceData, m interface{}) e
 	c.Retries = 1
 
 	paradict := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if device_name == "" {
 		device_name = importOptionChecking(m.(*FortiClient).Cfg, "device_name")
@@ -444,6 +526,7 @@ func resourceSystemAutomationActionRead(d *schema.ResourceData, m interface{}) e
 
 	o, err := c.ReadSystemAutomationAction(mkey, paradict)
 	if err != nil {
+		d.SetId("")
 		return fmt.Errorf("Error reading SystemAutomationAction resource: %v", err)
 	}
 
@@ -584,6 +667,69 @@ func flattenSystemAutomationActionExecuteSecurityFabric(v interface{}, d *schema
 	return v
 }
 
+func flattenSystemAutomationActionFileOnly(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemAutomationActionFormData(v interface{}, d *schema.ResourceData, pre string) []map[string]interface{} {
+	if v == nil {
+		return nil
+	}
+
+	l := v.([]interface{})
+	if len(l) == 0 || l[0] == nil {
+		return nil
+	}
+
+	result := make([]map[string]interface{}, 0, len(l))
+
+	con := 0
+	for _, r := range l {
+		tmp := make(map[string]interface{})
+		i := r.(map[string]interface{})
+
+		pre_append := "" // table
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "id"
+		if _, ok := i["id"]; ok {
+			v := flattenSystemAutomationActionFormDataId(i["id"], d, pre_append)
+			tmp["id"] = fortiAPISubPartPatch(v, "SystemAutomationAction-FormData-Id")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "key"
+		if _, ok := i["key"]; ok {
+			v := flattenSystemAutomationActionFormDataKey(i["key"], d, pre_append)
+			tmp["key"] = fortiAPISubPartPatch(v, "SystemAutomationAction-FormData-Key")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "value"
+		if _, ok := i["value"]; ok {
+			v := flattenSystemAutomationActionFormDataValue(i["value"], d, pre_append)
+			tmp["value"] = fortiAPISubPartPatch(v, "SystemAutomationAction-FormData-Value")
+		}
+
+		if len(tmp) > 0 {
+			result = append(result, tmp)
+		}
+
+		con += 1
+	}
+
+	return result
+}
+
+func flattenSystemAutomationActionFormDataId(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemAutomationActionFormDataKey(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemAutomationActionFormDataValue(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenSystemAutomationActionHeaders(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return flattenStringList(v)
 }
@@ -655,6 +801,10 @@ func flattenSystemAutomationActionHttpHeadersValue(v interface{}, d *schema.Reso
 	return v
 }
 
+func flattenSystemAutomationActionLogDebugPrint(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenSystemAutomationActionMessage(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -672,6 +822,10 @@ func flattenSystemAutomationActionMinimumInterval(v interface{}, d *schema.Resou
 }
 
 func flattenSystemAutomationActionName(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemAutomationActionOutputInterval(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -1052,6 +1206,40 @@ func refreshObjectSystemAutomationAction(d *schema.ResourceData, o map[string]in
 		}
 	}
 
+	if err = d.Set("file_only", flattenSystemAutomationActionFileOnly(o["file-only"], d, "file_only")); err != nil {
+		if vv, ok := fortiAPIPatch(o["file-only"], "SystemAutomationAction-FileOnly"); ok {
+			if err = d.Set("file_only", vv); err != nil {
+				return fmt.Errorf("Error reading file_only: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading file_only: %v", err)
+		}
+	}
+
+	if isImportTable() {
+		if err = d.Set("form_data", flattenSystemAutomationActionFormData(o["form-data"], d, "form_data")); err != nil {
+			if vv, ok := fortiAPIPatch(o["form-data"], "SystemAutomationAction-FormData"); ok {
+				if err = d.Set("form_data", vv); err != nil {
+					return fmt.Errorf("Error reading form_data: %v", err)
+				}
+			} else {
+				return fmt.Errorf("Error reading form_data: %v", err)
+			}
+		}
+	} else {
+		if _, ok := d.GetOk("form_data"); ok {
+			if err = d.Set("form_data", flattenSystemAutomationActionFormData(o["form-data"], d, "form_data")); err != nil {
+				if vv, ok := fortiAPIPatch(o["form-data"], "SystemAutomationAction-FormData"); ok {
+					if err = d.Set("form_data", vv); err != nil {
+						return fmt.Errorf("Error reading form_data: %v", err)
+					}
+				} else {
+					return fmt.Errorf("Error reading form_data: %v", err)
+				}
+			}
+		}
+	}
+
 	if err = d.Set("headers", flattenSystemAutomationActionHeaders(o["headers"], d, "headers")); err != nil {
 		if vv, ok := fortiAPIPatch(o["headers"], "SystemAutomationAction-Headers"); ok {
 			if err = d.Set("headers", vv); err != nil {
@@ -1106,6 +1294,16 @@ func refreshObjectSystemAutomationAction(d *schema.ResourceData, o map[string]in
 		}
 	}
 
+	if err = d.Set("log_debug_print", flattenSystemAutomationActionLogDebugPrint(o["log-debug-print"], d, "log_debug_print")); err != nil {
+		if vv, ok := fortiAPIPatch(o["log-debug-print"], "SystemAutomationAction-LogDebugPrint"); ok {
+			if err = d.Set("log_debug_print", vv); err != nil {
+				return fmt.Errorf("Error reading log_debug_print: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading log_debug_print: %v", err)
+		}
+	}
+
 	if err = d.Set("message", flattenSystemAutomationActionMessage(o["message"], d, "message")); err != nil {
 		if vv, ok := fortiAPIPatch(o["message"], "SystemAutomationAction-Message"); ok {
 			if err = d.Set("message", vv); err != nil {
@@ -1153,6 +1351,16 @@ func refreshObjectSystemAutomationAction(d *schema.ResourceData, o map[string]in
 			}
 		} else {
 			return fmt.Errorf("Error reading name: %v", err)
+		}
+	}
+
+	if err = d.Set("output_interval", flattenSystemAutomationActionOutputInterval(o["output-interval"], d, "output_interval")); err != nil {
+		if vv, ok := fortiAPIPatch(o["output-interval"], "SystemAutomationAction-OutputInterval"); ok {
+			if err = d.Set("output_interval", vv); err != nil {
+				return fmt.Errorf("Error reading output_interval: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading output_interval: %v", err)
 		}
 	}
 
@@ -1451,6 +1659,61 @@ func expandSystemAutomationActionExecuteSecurityFabric(d *schema.ResourceData, v
 	return v, nil
 }
 
+func expandSystemAutomationActionFileOnly(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemAutomationActionFormData(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	l := v.([]interface{})
+	result := make([]map[string]interface{}, 0, len(l))
+
+	if len(l) == 0 || l[0] == nil {
+		return result, nil
+	}
+
+	con := 0
+	for _, r := range l {
+		tmp := make(map[string]interface{})
+		i := r.(map[string]interface{})
+		pre_append := "" // table
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "id"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["id"], _ = expandSystemAutomationActionFormDataId(d, i["id"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "key"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["key"], _ = expandSystemAutomationActionFormDataKey(d, i["key"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "value"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["value"], _ = expandSystemAutomationActionFormDataValue(d, i["value"], pre_append)
+		}
+
+		if len(tmp) > 0 {
+			result = append(result, tmp)
+		}
+
+		con += 1
+	}
+
+	return result, nil
+}
+
+func expandSystemAutomationActionFormDataId(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemAutomationActionFormDataKey(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemAutomationActionFormDataValue(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandSystemAutomationActionHeaders(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return expandStringList(v.(*schema.Set).List()), nil
 }
@@ -1514,6 +1777,10 @@ func expandSystemAutomationActionHttpHeadersValue(d *schema.ResourceData, v inte
 	return v, nil
 }
 
+func expandSystemAutomationActionLogDebugPrint(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandSystemAutomationActionMessage(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -1531,6 +1798,10 @@ func expandSystemAutomationActionMinimumInterval(d *schema.ResourceData, v inter
 }
 
 func expandSystemAutomationActionName(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemAutomationActionOutputInterval(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -1592,6 +1863,10 @@ func expandSystemAutomationActionUri(d *schema.ResourceData, v interface{}, pre 
 
 func expandSystemAutomationActionVerifyHostCert(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
+}
+
+func expandSystemAutomationActionPassword(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
 }
 
 func getObjectSystemAutomationAction(d *schema.ResourceData) (*map[string]interface{}, error) {
@@ -1903,6 +2178,24 @@ func getObjectSystemAutomationAction(d *schema.ResourceData) (*map[string]interf
 		}
 	}
 
+	if v, ok := d.GetOk("file_only"); ok || d.HasChange("file_only") {
+		t, err := expandSystemAutomationActionFileOnly(d, v, "file_only")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["file-only"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("form_data"); ok || d.HasChange("form_data") {
+		t, err := expandSystemAutomationActionFormData(d, v, "form_data")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["form-data"] = t
+		}
+	}
+
 	if v, ok := d.GetOk("headers"); ok || d.HasChange("headers") {
 		t, err := expandSystemAutomationActionHeaders(d, v, "headers")
 		if err != nil {
@@ -1936,6 +2229,15 @@ func getObjectSystemAutomationAction(d *schema.ResourceData) (*map[string]interf
 			return &obj, err
 		} else if t != nil {
 			obj["http-headers"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("log_debug_print"); ok || d.HasChange("log_debug_print") {
+		t, err := expandSystemAutomationActionLogDebugPrint(d, v, "log_debug_print")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["log-debug-print"] = t
 		}
 	}
 
@@ -1981,6 +2283,15 @@ func getObjectSystemAutomationAction(d *schema.ResourceData) (*map[string]interf
 			return &obj, err
 		} else if t != nil {
 			obj["name"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("output_interval"); ok || d.HasChange("output_interval") {
+		t, err := expandSystemAutomationActionOutputInterval(d, v, "output_interval")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["output-interval"] = t
 		}
 	}
 
@@ -2116,6 +2427,15 @@ func getObjectSystemAutomationAction(d *schema.ResourceData) (*map[string]interf
 			return &obj, err
 		} else if t != nil {
 			obj["verify-host-cert"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("password"); ok || d.HasChange("password") {
+		t, err := expandSystemAutomationActionPassword(d, v, "password")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["password"] = t
 		}
 	}
 

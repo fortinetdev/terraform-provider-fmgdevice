@@ -28,6 +28,12 @@ func resourceWirelessControllerWtpProfileLbs() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
+
+			"adom": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"device_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -283,8 +289,12 @@ func resourceWirelessControllerWtpProfileLbsUpdate(d *schema.ResourceData, m int
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -298,13 +308,12 @@ func resourceWirelessControllerWtpProfileLbsUpdate(d *schema.ResourceData, m int
 	paradict["vdom"] = device_vdom
 	paradict["wtp_profile"] = wtp_profile
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectWirelessControllerWtpProfileLbs(d)
 	if err != nil {
 		return fmt.Errorf("Error updating WirelessControllerWtpProfileLbs resource while getting object: %v", err)
 	}
+
+	wsParams["adom"] = adomv
 
 	_, err = c.UpdateWirelessControllerWtpProfileLbs(obj, mkey, paradict, wsParams)
 	if err != nil {
@@ -326,8 +335,12 @@ func resourceWirelessControllerWtpProfileLbsDelete(d *schema.ResourceData, m int
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -341,9 +354,7 @@ func resourceWirelessControllerWtpProfileLbsDelete(d *schema.ResourceData, m int
 	paradict["vdom"] = device_vdom
 	paradict["wtp_profile"] = wtp_profile
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
+	wsParams["adom"] = adomv
 
 	err = c.DeleteWirelessControllerWtpProfileLbs(mkey, paradict, wsParams)
 	if err != nil {
@@ -362,8 +373,8 @@ func resourceWirelessControllerWtpProfileLbsRead(d *schema.ResourceData, m inter
 	c.Retries = 1
 
 	paradict := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	device_vdom, err := getVariable(cfg, d, "device_vdom")
 	wtp_profile := d.Get("wtp_profile").(string)
@@ -400,6 +411,7 @@ func resourceWirelessControllerWtpProfileLbsRead(d *schema.ResourceData, m inter
 
 	o, err := c.ReadWirelessControllerWtpProfileLbs(mkey, paradict)
 	if err != nil {
+		d.SetId("")
 		return fmt.Errorf("Error reading WirelessControllerWtpProfileLbs resource: %v", err)
 	}
 

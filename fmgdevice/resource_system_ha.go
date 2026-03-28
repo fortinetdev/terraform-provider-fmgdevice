@@ -28,6 +28,12 @@ func resourceSystemHa() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
+
+			"adom": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"device_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -63,6 +69,11 @@ func resourceSystemHa() *schema.Resource {
 			"board_failover_tolerance": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+			},
+			"bounce_intf_upon_failover": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
 			},
 			"chassis_id": &schema.Schema{
 				Type:     schema.TypeInt,
@@ -157,6 +168,11 @@ func resourceSystemHa() *schema.Resource {
 						"dst": &schema.Schema{
 							Type:     schema.TypeList,
 							Elem:     &schema.Schema{Type: schema.TypeString},
+							Optional: true,
+							Computed: true,
+						},
+						"dst6": &schema.Schema{
+							Type:     schema.TypeString,
 							Optional: true,
 							Computed: true,
 						},
@@ -694,6 +710,14 @@ func resourceSystemHa() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"primary_hold_before_reboot": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+			},
+			"sequential_upgrade": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 			"dynamic_sort_subtable": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -710,21 +734,24 @@ func resourceSystemHaUpdate(d *schema.ResourceData, m interface{}) error {
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
 	}
 	paradict["device"] = device_name
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectSystemHa(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemHa resource while getting object: %v", err)
 	}
+
+	wsParams["adom"] = adomv
 
 	_, err = c.UpdateSystemHa(obj, mkey, paradict, wsParams)
 	if err != nil {
@@ -746,17 +773,19 @@ func resourceSystemHaDelete(d *schema.ResourceData, m interface{}) error {
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
 	}
 	paradict["device"] = device_name
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
+	wsParams["adom"] = adomv
 
 	err = c.DeleteSystemHa(mkey, paradict, wsParams)
 	if err != nil {
@@ -775,8 +804,8 @@ func resourceSystemHaRead(d *schema.ResourceData, m interface{}) error {
 	c.Retries = 1
 
 	paradict := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if device_name == "" {
 		device_name = importOptionChecking(m.(*FortiClient).Cfg, "device_name")
@@ -791,6 +820,7 @@ func resourceSystemHaRead(d *schema.ResourceData, m interface{}) error {
 
 	o, err := c.ReadSystemHa(mkey, paradict)
 	if err != nil {
+		d.SetId("")
 		return fmt.Errorf("Error reading SystemHa resource: %v", err)
 	}
 
@@ -828,6 +858,10 @@ func flattenSystemHaBackupHbdev(v interface{}, d *schema.ResourceData, pre strin
 }
 
 func flattenSystemHaBoardFailoverTolerance(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemHaBounceIntfUponFailover(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -948,6 +982,12 @@ func flattenSystemHaHaMgmtInterfaces(v interface{}, d *schema.ResourceData, pre 
 			tmp["dst"] = fortiAPISubPartPatch(v, "SystemHa-HaMgmtInterfaces-Dst")
 		}
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "dst6"
+		if _, ok := i["dst6"]; ok {
+			v := flattenSystemHaHaMgmtInterfacesDst6(i["dst6"], d, pre_append)
+			tmp["dst6"] = fortiAPISubPartPatch(v, "SystemHa-HaMgmtInterfaces-Dst6")
+		}
+
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "gateway"
 		if _, ok := i["gateway"]; ok {
 			v := flattenSystemHaHaMgmtInterfacesGateway(i["gateway"], d, pre_append)
@@ -984,6 +1024,10 @@ func flattenSystemHaHaMgmtInterfaces(v interface{}, d *schema.ResourceData, pre 
 
 func flattenSystemHaHaMgmtInterfacesDst(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return flattenStringList(v)
+}
+
+func flattenSystemHaHaMgmtInterfacesDst6(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
 }
 
 func flattenSystemHaHaMgmtInterfacesGateway(v interface{}, d *schema.ResourceData, pre string) interface{} {
@@ -1593,6 +1637,14 @@ func flattenSystemHaWeight(v interface{}, d *schema.ResourceData, pre string) in
 	return flattenStringList(v)
 }
 
+func flattenSystemHaPrimaryHoldBeforeReboot(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemHaSequentialUpgrade(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func refreshObjectSystemHa(d *schema.ResourceData, o map[string]interface{}) error {
 	var err error
 
@@ -1657,6 +1709,16 @@ func refreshObjectSystemHa(d *schema.ResourceData, o map[string]interface{}) err
 			}
 		} else {
 			return fmt.Errorf("Error reading board_failover_tolerance: %v", err)
+		}
+	}
+
+	if err = d.Set("bounce_intf_upon_failover", flattenSystemHaBounceIntfUponFailover(o["bounce-intf-upon-failover"], d, "bounce_intf_upon_failover")); err != nil {
+		if vv, ok := fortiAPIPatch(o["bounce-intf-upon-failover"], "SystemHa-BounceIntfUponFailover"); ok {
+			if err = d.Set("bounce_intf_upon_failover", vv); err != nil {
+				return fmt.Errorf("Error reading bounce_intf_upon_failover: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading bounce_intf_upon_failover: %v", err)
 		}
 	}
 
@@ -2660,6 +2722,26 @@ func refreshObjectSystemHa(d *schema.ResourceData, o map[string]interface{}) err
 		}
 	}
 
+	if err = d.Set("primary_hold_before_reboot", flattenSystemHaPrimaryHoldBeforeReboot(o["primary-hold-before-reboot"], d, "primary_hold_before_reboot")); err != nil {
+		if vv, ok := fortiAPIPatch(o["primary-hold-before-reboot"], "SystemHa-PrimaryHoldBeforeReboot"); ok {
+			if err = d.Set("primary_hold_before_reboot", vv); err != nil {
+				return fmt.Errorf("Error reading primary_hold_before_reboot: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading primary_hold_before_reboot: %v", err)
+		}
+	}
+
+	if err = d.Set("sequential_upgrade", flattenSystemHaSequentialUpgrade(o["sequential-upgrade"], d, "sequential_upgrade")); err != nil {
+		if vv, ok := fortiAPIPatch(o["sequential-upgrade"], "SystemHa-SequentialUpgrade"); ok {
+			if err = d.Set("sequential_upgrade", vv); err != nil {
+				return fmt.Errorf("Error reading sequential_upgrade: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading sequential_upgrade: %v", err)
+		}
+	}
+
 	return nil
 }
 
@@ -2690,6 +2772,10 @@ func expandSystemHaBackupHbdev(d *schema.ResourceData, v interface{}, pre string
 }
 
 func expandSystemHaBoardFailoverTolerance(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemHaBounceIntfUponFailover(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -2802,6 +2888,11 @@ func expandSystemHaHaMgmtInterfaces(d *schema.ResourceData, v interface{}, pre s
 			tmp["dst"], _ = expandSystemHaHaMgmtInterfacesDst(d, i["dst"], pre_append)
 		}
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "dst6"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["dst6"], _ = expandSystemHaHaMgmtInterfacesDst6(d, i["dst6"], pre_append)
+		}
+
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "gateway"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
 			tmp["gateway"], _ = expandSystemHaHaMgmtInterfacesGateway(d, i["gateway"], pre_append)
@@ -2834,6 +2925,10 @@ func expandSystemHaHaMgmtInterfaces(d *schema.ResourceData, v interface{}, pre s
 
 func expandSystemHaHaMgmtInterfacesDst(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return expandStringList(v.([]interface{})), nil
+}
+
+func expandSystemHaHaMgmtInterfacesDst6(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
 }
 
 func expandSystemHaHaMgmtInterfacesGateway(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
@@ -3419,6 +3514,14 @@ func expandSystemHaWeight(d *schema.ResourceData, v interface{}, pre string) (in
 	return expandStringList(v.(*schema.Set).List()), nil
 }
 
+func expandSystemHaPrimaryHoldBeforeReboot(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemHaSequentialUpgrade(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func getObjectSystemHa(d *schema.ResourceData) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
@@ -3473,6 +3576,15 @@ func getObjectSystemHa(d *schema.ResourceData) (*map[string]interface{}, error) 
 			return &obj, err
 		} else if t != nil {
 			obj["board-failover-tolerance"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("bounce_intf_upon_failover"); ok || d.HasChange("bounce_intf_upon_failover") {
+		t, err := expandSystemHaBounceIntfUponFailover(d, v, "bounce_intf_upon_failover")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["bounce-intf-upon-failover"] = t
 		}
 	}
 
@@ -4328,6 +4440,24 @@ func getObjectSystemHa(d *schema.ResourceData) (*map[string]interface{}, error) 
 			return &obj, err
 		} else if t != nil {
 			obj["weight"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("primary_hold_before_reboot"); ok || d.HasChange("primary_hold_before_reboot") {
+		t, err := expandSystemHaPrimaryHoldBeforeReboot(d, v, "primary_hold_before_reboot")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["primary-hold-before-reboot"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("sequential_upgrade"); ok || d.HasChange("sequential_upgrade") {
+		t, err := expandSystemHaSequentialUpgrade(d, v, "sequential_upgrade")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["sequential-upgrade"] = t
 		}
 	}
 

@@ -28,6 +28,17 @@ func resourceSystemHaHaMgmtInterfaces() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
+			"update_if_exist": &schema.Schema{
+				Type:     schema.TypeBool,
+				Optional: true,
+				Computed: true,
+			},
+
+			"adom": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"device_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -37,6 +48,11 @@ func resourceSystemHaHaMgmtInterfaces() *schema.Resource {
 			"dst": &schema.Schema{
 				Type:     schema.TypeList,
 				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Computed: true,
+			},
+			"dst6": &schema.Schema{
+				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
 			},
@@ -71,25 +87,49 @@ func resourceSystemHaHaMgmtInterfacesCreate(d *schema.ResourceData, m interface{
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
 	}
 	paradict["device"] = device_name
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectSystemHaHaMgmtInterfaces(d)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemHaHaMgmtInterfaces resource while getting object: %v", err)
 	}
+	wsParams["adom"] = adomv
 
-	_, err = c.CreateSystemHaHaMgmtInterfaces(obj, paradict, wsParams)
-	if err != nil {
-		return fmt.Errorf("Error creating SystemHaHaMgmtInterfaces resource: %v", err)
+	update_if_exist := getUpdateIfExist(c, d)
+	mkey_tf, mkey_ok := d.GetOk("fosid")
+	mkey := fmt.Sprint(mkey_tf)
+	o := make(map[string]interface{})
+	existing := false
+
+	if update_if_exist && mkey_ok {
+		// check existing
+		o, err = c.ReadSystemHaHaMgmtInterfaces(mkey, paradict)
+		if err == nil && o != nil {
+			existing = true
+			// update if existing
+			o, err = c.UpdateSystemHaHaMgmtInterfaces(obj, mkey, paradict, wsParams)
+			if err != nil {
+				return fmt.Errorf("Error updating SystemHaHaMgmtInterfaces resource: %v", err)
+			}
+		}
+	}
+
+	if !existing {
+		_, err = c.CreateSystemHaHaMgmtInterfaces(obj, paradict, wsParams)
+		if err != nil {
+			return fmt.Errorf("Error creating SystemHaHaMgmtInterfaces resource: %v", err)
+		}
+
 	}
 
 	d.SetId(strconv.Itoa(getIntKey(d, "fosid")))
@@ -104,21 +144,24 @@ func resourceSystemHaHaMgmtInterfacesUpdate(d *schema.ResourceData, m interface{
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
 	}
 	paradict["device"] = device_name
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectSystemHaHaMgmtInterfaces(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemHaHaMgmtInterfaces resource while getting object: %v", err)
 	}
+
+	wsParams["adom"] = adomv
 
 	_, err = c.UpdateSystemHaHaMgmtInterfaces(obj, mkey, paradict, wsParams)
 	if err != nil {
@@ -140,17 +183,19 @@ func resourceSystemHaHaMgmtInterfacesDelete(d *schema.ResourceData, m interface{
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
 	}
 	paradict["device"] = device_name
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
+	wsParams["adom"] = adomv
 
 	err = c.DeleteSystemHaHaMgmtInterfaces(mkey, paradict, wsParams)
 	if err != nil {
@@ -169,8 +214,8 @@ func resourceSystemHaHaMgmtInterfacesRead(d *schema.ResourceData, m interface{})
 	c.Retries = 1
 
 	paradict := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if device_name == "" {
 		device_name = importOptionChecking(m.(*FortiClient).Cfg, "device_name")
@@ -185,6 +230,7 @@ func resourceSystemHaHaMgmtInterfacesRead(d *schema.ResourceData, m interface{})
 
 	o, err := c.ReadSystemHaHaMgmtInterfaces(mkey, paradict)
 	if err != nil {
+		d.SetId("")
 		return fmt.Errorf("Error reading SystemHaHaMgmtInterfaces resource: %v", err)
 	}
 
@@ -203,6 +249,10 @@ func resourceSystemHaHaMgmtInterfacesRead(d *schema.ResourceData, m interface{})
 
 func flattenSystemHaHaMgmtInterfacesDst2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return flattenStringList(v)
+}
+
+func flattenSystemHaHaMgmtInterfacesDst62edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
 }
 
 func flattenSystemHaHaMgmtInterfacesGateway2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
@@ -231,6 +281,16 @@ func refreshObjectSystemHaHaMgmtInterfaces(d *schema.ResourceData, o map[string]
 			}
 		} else {
 			return fmt.Errorf("Error reading dst: %v", err)
+		}
+	}
+
+	if err = d.Set("dst6", flattenSystemHaHaMgmtInterfacesDst62edl(o["dst6"], d, "dst6")); err != nil {
+		if vv, ok := fortiAPIPatch(o["dst6"], "SystemHaHaMgmtInterfaces-Dst6"); ok {
+			if err = d.Set("dst6", vv); err != nil {
+				return fmt.Errorf("Error reading dst6: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading dst6: %v", err)
 		}
 	}
 
@@ -287,6 +347,10 @@ func expandSystemHaHaMgmtInterfacesDst2edl(d *schema.ResourceData, v interface{}
 	return expandStringList(v.([]interface{})), nil
 }
 
+func expandSystemHaHaMgmtInterfacesDst62edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandSystemHaHaMgmtInterfacesGateway2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -312,6 +376,15 @@ func getObjectSystemHaHaMgmtInterfaces(d *schema.ResourceData) (*map[string]inte
 			return &obj, err
 		} else if t != nil {
 			obj["dst"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("dst6"); ok || d.HasChange("dst6") {
+		t, err := expandSystemHaHaMgmtInterfacesDst62edl(d, v, "dst6")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["dst6"] = t
 		}
 	}
 

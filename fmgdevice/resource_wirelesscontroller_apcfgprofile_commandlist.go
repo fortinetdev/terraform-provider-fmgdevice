@@ -28,6 +28,17 @@ func resourceWirelessControllerApcfgProfileCommandList() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
+			"update_if_exist": &schema.Schema{
+				Type:     schema.TypeBool,
+				Optional: true,
+				Computed: true,
+			},
+
+			"adom": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"device_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -80,8 +91,12 @@ func resourceWirelessControllerApcfgProfileCommandListCreate(d *schema.ResourceD
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -95,17 +110,37 @@ func resourceWirelessControllerApcfgProfileCommandListCreate(d *schema.ResourceD
 	paradict["vdom"] = device_vdom
 	paradict["apcfg_profile"] = apcfg_profile
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectWirelessControllerApcfgProfileCommandList(d)
 	if err != nil {
 		return fmt.Errorf("Error creating WirelessControllerApcfgProfileCommandList resource while getting object: %v", err)
 	}
+	wsParams["adom"] = adomv
 
-	_, err = c.CreateWirelessControllerApcfgProfileCommandList(obj, paradict, wsParams)
-	if err != nil {
-		return fmt.Errorf("Error creating WirelessControllerApcfgProfileCommandList resource: %v", err)
+	update_if_exist := getUpdateIfExist(c, d)
+	mkey_tf, mkey_ok := d.GetOk("fosid")
+	mkey := fmt.Sprint(mkey_tf)
+	o := make(map[string]interface{})
+	existing := false
+
+	if update_if_exist && mkey_ok {
+		// check existing
+		o, err = c.ReadWirelessControllerApcfgProfileCommandList(mkey, paradict)
+		if err == nil && o != nil {
+			existing = true
+			// update if existing
+			o, err = c.UpdateWirelessControllerApcfgProfileCommandList(obj, mkey, paradict, wsParams)
+			if err != nil {
+				return fmt.Errorf("Error updating WirelessControllerApcfgProfileCommandList resource: %v", err)
+			}
+		}
+	}
+
+	if !existing {
+		_, err = c.CreateWirelessControllerApcfgProfileCommandList(obj, paradict, wsParams)
+		if err != nil {
+			return fmt.Errorf("Error creating WirelessControllerApcfgProfileCommandList resource: %v", err)
+		}
+
 	}
 
 	d.SetId(strconv.Itoa(getIntKey(d, "fosid")))
@@ -120,8 +155,12 @@ func resourceWirelessControllerApcfgProfileCommandListUpdate(d *schema.ResourceD
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -135,13 +174,12 @@ func resourceWirelessControllerApcfgProfileCommandListUpdate(d *schema.ResourceD
 	paradict["vdom"] = device_vdom
 	paradict["apcfg_profile"] = apcfg_profile
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectWirelessControllerApcfgProfileCommandList(d)
 	if err != nil {
 		return fmt.Errorf("Error updating WirelessControllerApcfgProfileCommandList resource while getting object: %v", err)
 	}
+
+	wsParams["adom"] = adomv
 
 	_, err = c.UpdateWirelessControllerApcfgProfileCommandList(obj, mkey, paradict, wsParams)
 	if err != nil {
@@ -163,8 +201,12 @@ func resourceWirelessControllerApcfgProfileCommandListDelete(d *schema.ResourceD
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -178,9 +220,7 @@ func resourceWirelessControllerApcfgProfileCommandListDelete(d *schema.ResourceD
 	paradict["vdom"] = device_vdom
 	paradict["apcfg_profile"] = apcfg_profile
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
+	wsParams["adom"] = adomv
 
 	err = c.DeleteWirelessControllerApcfgProfileCommandList(mkey, paradict, wsParams)
 	if err != nil {
@@ -199,8 +239,8 @@ func resourceWirelessControllerApcfgProfileCommandListRead(d *schema.ResourceDat
 	c.Retries = 1
 
 	paradict := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	device_vdom, err := getVariable(cfg, d, "device_vdom")
 	apcfg_profile := d.Get("apcfg_profile").(string)
@@ -237,6 +277,7 @@ func resourceWirelessControllerApcfgProfileCommandListRead(d *schema.ResourceDat
 
 	o, err := c.ReadWirelessControllerApcfgProfileCommandList(mkey, paradict)
 	if err != nil {
+		d.SetId("")
 		return fmt.Errorf("Error reading WirelessControllerApcfgProfileCommandList resource: %v", err)
 	}
 

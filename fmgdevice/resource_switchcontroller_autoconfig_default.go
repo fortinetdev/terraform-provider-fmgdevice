@@ -28,6 +28,12 @@ func resourceSwitchControllerAutoConfigDefault() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
+
+			"adom": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"device_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -68,8 +74,12 @@ func resourceSwitchControllerAutoConfigDefaultUpdate(d *schema.ResourceData, m i
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -81,13 +91,12 @@ func resourceSwitchControllerAutoConfigDefaultUpdate(d *schema.ResourceData, m i
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectSwitchControllerAutoConfigDefault(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SwitchControllerAutoConfigDefault resource while getting object: %v", err)
 	}
+
+	wsParams["adom"] = adomv
 
 	_, err = c.UpdateSwitchControllerAutoConfigDefault(obj, mkey, paradict, wsParams)
 	if err != nil {
@@ -109,8 +118,12 @@ func resourceSwitchControllerAutoConfigDefaultDelete(d *schema.ResourceData, m i
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -122,9 +135,7 @@ func resourceSwitchControllerAutoConfigDefaultDelete(d *schema.ResourceData, m i
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
+	wsParams["adom"] = adomv
 
 	err = c.DeleteSwitchControllerAutoConfigDefault(mkey, paradict, wsParams)
 	if err != nil {
@@ -143,8 +154,8 @@ func resourceSwitchControllerAutoConfigDefaultRead(d *schema.ResourceData, m int
 	c.Retries = 1
 
 	paradict := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	device_vdom, err := getVariable(cfg, d, "device_vdom")
 	if device_name == "" {
@@ -170,6 +181,7 @@ func resourceSwitchControllerAutoConfigDefaultRead(d *schema.ResourceData, m int
 
 	o, err := c.ReadSwitchControllerAutoConfigDefault(mkey, paradict)
 	if err != nil {
+		d.SetId("")
 		return fmt.Errorf("Error reading SwitchControllerAutoConfigDefault resource: %v", err)
 	}
 

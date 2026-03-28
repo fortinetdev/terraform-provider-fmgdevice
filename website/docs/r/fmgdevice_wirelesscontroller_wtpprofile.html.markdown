@@ -57,6 +57,14 @@ The following arguments are supported:
 
 * `ap_handoff` - Enable/disable AP handoff of clients to other APs (default = disable). Valid values: `disable`, `enable`.
 
+* `apcfg_mesh` - Enable/disable AP local mesh configuration (default = disable). Valid values: `disable`, `enable`.
+
+* `apcfg_mesh_ap_type` - Mesh AP Type (default = ethernet). Valid values: `auto`, `ethernet`, `mesh`.
+
+* `apcfg_mesh_eth_bridge` - Enable/disable mesh ethernet bridge (default = disable). Valid values: `disable`, `enable`.
+
+* `apcfg_mesh_passwd` - Apcfg-Mesh-Passwd.
+* `apcfg_mesh_ssid` - Mesh SSID (default = none).
 * `apcfg_profile` - AP local configuration profile name.
 * `ble_profile` - Bluetooth Low Energy profile name.
 * `bonjour_profile` - Bonjour profile name.
@@ -64,6 +72,8 @@ The following arguments are supported:
 * `console_login` - Enable/disable FortiAP console login access (default = enable). Valid values: `disable`, `enable`.
 
 * `control_message_offload` - Enable/disable CAPWAP control message data channel offload. Valid values: `ebp-frame`, `aeroscout-tag`, `ap-list`, `sta-list`, `sta-cap-list`, `stats`, `aeroscout-mu`, `sta-health`, `spectral-analysis`.
+
+* `default_mesh_root` - Configure default mesh root SSID when it is not included by radio's SSID configuration. Valid values: `disable`, `enable`.
 
 * `deny_mac_list` - Deny-Mac-List. The structure of `deny_mac_list` block is documented below.
 * `dtls_in_kernel` - Enable/disable data channel DTLS in kernel. Valid values: `disable`, `enable`.

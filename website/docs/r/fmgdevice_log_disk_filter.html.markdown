@@ -38,6 +38,8 @@ The following arguments are supported:
 
 * `anomaly` - Enable/disable anomaly logging. Valid values: `disable`, `enable`.
 
+* `debug` - Enable/disable debug logging. Valid values: `disable`, `enable`.
+
 * `dlp_archive` - Enable/disable DLP archive logging. Valid values: `disable`, `enable`.
 
 * `filter` - Disk log filter.

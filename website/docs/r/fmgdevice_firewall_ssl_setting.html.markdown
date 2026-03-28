@@ -33,10 +33,13 @@ The following arguments are supported:
 
 * `cert_cache_capacity` - Maximum capacity of the host certificate cache (0 - 500, default = 200).
 * `cert_cache_timeout` - Time limit to keep certificate cache (1 - 120 min, default = 10).
+* `cert_manager_cache_timeout` - Time limit for certificate manager to keep FortiGate re-signed server certificate (24 - 720 hours, default = 72).
 * `kxp_queue_threshold` - Maximum length of the CP KXP queue. When the queue becomes full, the proxy switches cipher functions to the main CPU (0 - 512, default = 16).
 * `no_matching_cipher_action` - Bypass or drop the connection when no matching cipher is found. Valid values: `drop`, `bypass`.
 
 * `proxy_connect_timeout` - Time limit to make an internal connection to the appropriate proxy process (1 - 60 sec, default = 30).
+* `resigned_short_lived_certificate` - Enable/disable short-lived certificate. Valid values: `disable`, `enable`.
+
 * `session_cache_capacity` - Capacity of the SSL session cache (--Obsolete--) (1 - 1000, default = 500).
 * `session_cache_timeout` - Time limit to keep SSL session state (1 - 60 min, default = 20).
 * `ssl_dh_bits` - Bit-size of Diffie-Hellman (DH) prime used in DHE-RSA negotiation (default = 2048). Valid values: `768`, `1024`, `1536`, `2048`.

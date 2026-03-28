@@ -28,6 +28,17 @@ func resourceZtnaTrafficForwardProxySslCipherSuites() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
+			"update_if_exist": &schema.Schema{
+				Type:     schema.TypeBool,
+				Optional: true,
+				Computed: true,
+			},
+
+			"adom": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"device_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -71,8 +82,12 @@ func resourceZtnaTrafficForwardProxySslCipherSuitesCreate(d *schema.ResourceData
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -86,25 +101,44 @@ func resourceZtnaTrafficForwardProxySslCipherSuitesCreate(d *schema.ResourceData
 	paradict["vdom"] = device_vdom
 	paradict["traffic_forward_proxy"] = traffic_forward_proxy
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectZtnaTrafficForwardProxySslCipherSuites(d)
 	if err != nil {
 		return fmt.Errorf("Error creating ZtnaTrafficForwardProxySslCipherSuites resource while getting object: %v", err)
 	}
+	wsParams["adom"] = adomv
 
-	v, err := c.CreateZtnaTrafficForwardProxySslCipherSuites(obj, paradict, wsParams)
-	if err != nil {
-		return fmt.Errorf("Error creating ZtnaTrafficForwardProxySslCipherSuites resource: %v", err)
+	update_if_exist := getUpdateIfExist(c, d)
+	mkey_tf, mkey_ok := d.GetOk("priority")
+	mkey := fmt.Sprint(mkey_tf)
+	o := make(map[string]interface{})
+	existing := false
+
+	if update_if_exist && mkey_ok {
+		// check existing
+		o, err = c.ReadZtnaTrafficForwardProxySslCipherSuites(mkey, paradict)
+		if err == nil && o != nil {
+			existing = true
+			// update if existing
+			o, err = c.UpdateZtnaTrafficForwardProxySslCipherSuites(obj, mkey, paradict, wsParams)
+			if err != nil {
+				return fmt.Errorf("Error updating ZtnaTrafficForwardProxySslCipherSuites resource: %v", err)
+			}
+		}
 	}
 
-	if v != nil && v["priority"] != nil {
-		if vidn, ok := v["priority"].(float64); ok {
-			d.SetId(strconv.Itoa(int(vidn)))
-			return resourceZtnaTrafficForwardProxySslCipherSuitesRead(d, m)
-		} else {
+	if !existing {
+		v, err := c.CreateZtnaTrafficForwardProxySslCipherSuites(obj, paradict, wsParams)
+		if err != nil {
 			return fmt.Errorf("Error creating ZtnaTrafficForwardProxySslCipherSuites resource: %v", err)
+		}
+
+		if v != nil && v["priority"] != nil {
+			if vidn, ok := v["priority"].(float64); ok {
+				d.SetId(strconv.Itoa(int(vidn)))
+				return resourceZtnaTrafficForwardProxySslCipherSuitesRead(d, m)
+			} else {
+				return fmt.Errorf("Error creating ZtnaTrafficForwardProxySslCipherSuites resource: %v", err)
+			}
 		}
 	}
 
@@ -120,8 +154,12 @@ func resourceZtnaTrafficForwardProxySslCipherSuitesUpdate(d *schema.ResourceData
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -135,13 +173,12 @@ func resourceZtnaTrafficForwardProxySslCipherSuitesUpdate(d *schema.ResourceData
 	paradict["vdom"] = device_vdom
 	paradict["traffic_forward_proxy"] = traffic_forward_proxy
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectZtnaTrafficForwardProxySslCipherSuites(d)
 	if err != nil {
 		return fmt.Errorf("Error updating ZtnaTrafficForwardProxySslCipherSuites resource while getting object: %v", err)
 	}
+
+	wsParams["adom"] = adomv
 
 	_, err = c.UpdateZtnaTrafficForwardProxySslCipherSuites(obj, mkey, paradict, wsParams)
 	if err != nil {
@@ -163,8 +200,12 @@ func resourceZtnaTrafficForwardProxySslCipherSuitesDelete(d *schema.ResourceData
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -178,9 +219,7 @@ func resourceZtnaTrafficForwardProxySslCipherSuitesDelete(d *schema.ResourceData
 	paradict["vdom"] = device_vdom
 	paradict["traffic_forward_proxy"] = traffic_forward_proxy
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
+	wsParams["adom"] = adomv
 
 	err = c.DeleteZtnaTrafficForwardProxySslCipherSuites(mkey, paradict, wsParams)
 	if err != nil {
@@ -199,8 +238,8 @@ func resourceZtnaTrafficForwardProxySslCipherSuitesRead(d *schema.ResourceData, 
 	c.Retries = 1
 
 	paradict := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	device_vdom, err := getVariable(cfg, d, "device_vdom")
 	traffic_forward_proxy := d.Get("traffic_forward_proxy").(string)
@@ -237,6 +276,7 @@ func resourceZtnaTrafficForwardProxySslCipherSuitesRead(d *schema.ResourceData, 
 
 	o, err := c.ReadZtnaTrafficForwardProxySslCipherSuites(mkey, paradict)
 	if err != nil {
+		d.SetId("")
 		return fmt.Errorf("Error reading ZtnaTrafficForwardProxySslCipherSuites resource: %v", err)
 	}
 

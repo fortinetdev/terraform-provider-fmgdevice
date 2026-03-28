@@ -1,0 +1,1397 @@
+// Copyright 2024 Fortinet, Inc. All rights reserved.
+// Author: Hongbin Lu (@fgtdev-hblu), Xing Li (@lix-fortinet)
+// Documentation:
+// Hongbin Lu (@fgtdev-hblu), Xing Li (@lix-fortinet), Yue Wang (@yuew-ftnt)
+
+// Description: <i>This object will be purged after policy copy and install.</i> Configure HTTP protocol options.
+
+package fmgdevice
+
+import (
+	"fmt"
+	"log"
+	"strconv"
+
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
+)
+
+func resourceFirewallProfileProtocolOptionsHttp() *schema.Resource {
+	return &schema.Resource{
+		Create: resourceFirewallProfileProtocolOptionsHttpUpdate,
+		Read:   resourceFirewallProfileProtocolOptionsHttpRead,
+		Update: resourceFirewallProfileProtocolOptionsHttpUpdate,
+		Delete: resourceFirewallProfileProtocolOptionsHttpDelete,
+
+		Importer: &schema.ResourceImporter{
+			State: schema.ImportStatePassthrough,
+		},
+
+		Schema: map[string]*schema.Schema{
+
+			"adom": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
+			"device_name": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+				ForceNew: true,
+			},
+			"device_vdom": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+				ForceNew: true,
+			},
+			"profile_protocol_options": &schema.Schema{
+				Type:     schema.TypeString,
+				Required: true,
+				ForceNew: true,
+			},
+			"address_ip_rating": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+			"block_page_status_code": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+				Computed: true,
+			},
+			"comfort_amount": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+				Computed: true,
+			},
+			"comfort_interval": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+				Computed: true,
+			},
+			"fortinet_bar": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"fortinet_bar_port": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+			},
+			"domain_fronting": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+			"h2c": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+			"http_09": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+			"inspect_all": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+			"options": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Computed: true,
+			},
+			"oversize_limit": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+				Computed: true,
+			},
+			"ports": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeInt},
+				Optional: true,
+				Computed: true,
+			},
+			"post_lang": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Computed: true,
+			},
+			"proxy_after_tcp_handshake": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+			"range_block": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+			"retry_count": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+			},
+			"scan_bzip2": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+			"ssl_offloaded": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+			"status": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+			"stream_based_uncompressed_limit": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+			},
+			"streaming_content_bypass": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+			"strip_x_forwarded_for": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+			"switching_protocols": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+			"tcp_window_maximum": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+			},
+			"tcp_window_minimum": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+			},
+			"tcp_window_size": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+			},
+			"tcp_window_type": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+			"tunnel_non_http": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+			"uncompressed_nest_limit": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+				Computed: true,
+			},
+			"uncompressed_oversize_limit": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+				Computed: true,
+			},
+			"unknown_content_encoding": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+			"unknown_http_version": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+			"verify_dns_for_policy_matching": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+			"dns_protection": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"encrypted_file": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"encrypted_file_log": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+		},
+	}
+}
+
+func resourceFirewallProfileProtocolOptionsHttpUpdate(d *schema.ResourceData, m interface{}) error {
+	mkey := d.Id()
+	c := m.(*FortiClient).Client
+	c.Retries = 1
+
+	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
+	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
+	device_name, err := getVariable(cfg, d, "device_name")
+	if err != nil {
+		return err
+	}
+	device_vdom, err := getVariable(cfg, d, "device_vdom")
+	if err != nil {
+		return err
+	}
+	profile_protocol_options := d.Get("profile_protocol_options").(string)
+	paradict["device"] = device_name
+	paradict["vdom"] = device_vdom
+	paradict["profile_protocol_options"] = profile_protocol_options
+
+	obj, err := getObjectFirewallProfileProtocolOptionsHttp(d)
+	if err != nil {
+		return fmt.Errorf("Error updating FirewallProfileProtocolOptionsHttp resource while getting object: %v", err)
+	}
+
+	wsParams["adom"] = adomv
+
+	_, err = c.UpdateFirewallProfileProtocolOptionsHttp(obj, mkey, paradict, wsParams)
+	if err != nil {
+		return fmt.Errorf("Error updating FirewallProfileProtocolOptionsHttp resource: %v", err)
+	}
+
+	log.Printf(strconv.Itoa(c.Retries))
+
+	d.SetId("FirewallProfileProtocolOptionsHttp")
+
+	return resourceFirewallProfileProtocolOptionsHttpRead(d, m)
+}
+
+func resourceFirewallProfileProtocolOptionsHttpDelete(d *schema.ResourceData, m interface{}) error {
+	mkey := d.Id()
+
+	c := m.(*FortiClient).Client
+	c.Retries = 1
+
+	paradict := make(map[string]string)
+	wsParams := make(map[string]string)
+	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
+	device_name, err := getVariable(cfg, d, "device_name")
+	if err != nil {
+		return err
+	}
+	device_vdom, err := getVariable(cfg, d, "device_vdom")
+	if err != nil {
+		return err
+	}
+	profile_protocol_options := d.Get("profile_protocol_options").(string)
+	paradict["device"] = device_name
+	paradict["vdom"] = device_vdom
+	paradict["profile_protocol_options"] = profile_protocol_options
+
+	wsParams["adom"] = adomv
+
+	err = c.DeleteFirewallProfileProtocolOptionsHttp(mkey, paradict, wsParams)
+	if err != nil {
+		return fmt.Errorf("Error deleting FirewallProfileProtocolOptionsHttp resource: %v", err)
+	}
+
+	d.SetId("")
+
+	return nil
+}
+
+func resourceFirewallProfileProtocolOptionsHttpRead(d *schema.ResourceData, m interface{}) error {
+	mkey := d.Id()
+
+	c := m.(*FortiClient).Client
+	c.Retries = 1
+
+	paradict := make(map[string]string)
+	cfg := m.(*FortiClient).Cfg
+
+	device_name, err := getVariable(cfg, d, "device_name")
+	device_vdom, err := getVariable(cfg, d, "device_vdom")
+	profile_protocol_options := d.Get("profile_protocol_options").(string)
+	if device_name == "" {
+		device_name = importOptionChecking(m.(*FortiClient).Cfg, "device_name")
+		if device_name == "" {
+			return fmt.Errorf("Parameter device_name is missing")
+		}
+		if err = d.Set("device_name", device_name); err != nil {
+			return fmt.Errorf("Error set params device_name: %v", err)
+		}
+	}
+	if device_vdom == "" {
+		device_vdom = importOptionChecking(m.(*FortiClient).Cfg, "device_vdom")
+		if device_vdom == "" {
+			return fmt.Errorf("Parameter device_vdom is missing")
+		}
+		if err = d.Set("device_vdom", device_vdom); err != nil {
+			return fmt.Errorf("Error set params device_vdom: %v", err)
+		}
+	}
+	if profile_protocol_options == "" {
+		profile_protocol_options = importOptionChecking(m.(*FortiClient).Cfg, "profile_protocol_options")
+		if profile_protocol_options == "" {
+			return fmt.Errorf("Parameter profile_protocol_options is missing")
+		}
+		if err = d.Set("profile_protocol_options", profile_protocol_options); err != nil {
+			return fmt.Errorf("Error set params profile_protocol_options: %v", err)
+		}
+	}
+	paradict["device"] = device_name
+	paradict["vdom"] = device_vdom
+	paradict["profile_protocol_options"] = profile_protocol_options
+
+	o, err := c.ReadFirewallProfileProtocolOptionsHttp(mkey, paradict)
+	if err != nil {
+		d.SetId("")
+		return fmt.Errorf("Error reading FirewallProfileProtocolOptionsHttp resource: %v", err)
+	}
+
+	if o == nil {
+		log.Printf("[WARN] resource (%s) not found, removing from state", d.Id())
+		d.SetId("")
+		return nil
+	}
+
+	err = refreshObjectFirewallProfileProtocolOptionsHttp(d, o)
+	if err != nil {
+		return fmt.Errorf("Error reading FirewallProfileProtocolOptionsHttp resource from API: %v", err)
+	}
+	return nil
+}
+
+func flattenFirewallProfileProtocolOptionsHttpAddressIpRating2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenFirewallProfileProtocolOptionsHttpBlockPageStatusCode2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenFirewallProfileProtocolOptionsHttpComfortAmount2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenFirewallProfileProtocolOptionsHttpComfortInterval2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenFirewallProfileProtocolOptionsHttpFortinetBar2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenFirewallProfileProtocolOptionsHttpFortinetBarPort2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenFirewallProfileProtocolOptionsHttpDomainFronting2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenFirewallProfileProtocolOptionsHttpH2C2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenFirewallProfileProtocolOptionsHttpHttp092edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenFirewallProfileProtocolOptionsHttpInspectAll2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenFirewallProfileProtocolOptionsHttpOptions2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
+func flattenFirewallProfileProtocolOptionsHttpOversizeLimit2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenFirewallProfileProtocolOptionsHttpPorts2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenIntegerList(v)
+}
+
+func flattenFirewallProfileProtocolOptionsHttpPostLang2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
+func flattenFirewallProfileProtocolOptionsHttpProxyAfterTcpHandshake2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenFirewallProfileProtocolOptionsHttpRangeBlock2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenFirewallProfileProtocolOptionsHttpRetryCount2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenFirewallProfileProtocolOptionsHttpScanBzip22edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenFirewallProfileProtocolOptionsHttpSslOffloaded2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenFirewallProfileProtocolOptionsHttpStatus2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenFirewallProfileProtocolOptionsHttpStreamBasedUncompressedLimit2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenFirewallProfileProtocolOptionsHttpStreamingContentBypass2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenFirewallProfileProtocolOptionsHttpStripXForwardedFor2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenFirewallProfileProtocolOptionsHttpSwitchingProtocols2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenFirewallProfileProtocolOptionsHttpTcpWindowMaximum2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenFirewallProfileProtocolOptionsHttpTcpWindowMinimum2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenFirewallProfileProtocolOptionsHttpTcpWindowSize2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenFirewallProfileProtocolOptionsHttpTcpWindowType2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenFirewallProfileProtocolOptionsHttpTunnelNonHttp2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenFirewallProfileProtocolOptionsHttpUncompressedNestLimit2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenFirewallProfileProtocolOptionsHttpUncompressedOversizeLimit2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenFirewallProfileProtocolOptionsHttpUnknownContentEncoding2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenFirewallProfileProtocolOptionsHttpUnknownHttpVersion2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenFirewallProfileProtocolOptionsHttpVerifyDnsForPolicyMatching2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenFirewallProfileProtocolOptionsHttpDnsProtection2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenFirewallProfileProtocolOptionsHttpEncryptedFile2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenFirewallProfileProtocolOptionsHttpEncryptedFileLog2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func refreshObjectFirewallProfileProtocolOptionsHttp(d *schema.ResourceData, o map[string]interface{}) error {
+	var err error
+
+	if err = d.Set("address_ip_rating", flattenFirewallProfileProtocolOptionsHttpAddressIpRating2edl(o["address-ip-rating"], d, "address_ip_rating")); err != nil {
+		if vv, ok := fortiAPIPatch(o["address-ip-rating"], "FirewallProfileProtocolOptionsHttp-AddressIpRating"); ok {
+			if err = d.Set("address_ip_rating", vv); err != nil {
+				return fmt.Errorf("Error reading address_ip_rating: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading address_ip_rating: %v", err)
+		}
+	}
+
+	if err = d.Set("block_page_status_code", flattenFirewallProfileProtocolOptionsHttpBlockPageStatusCode2edl(o["block-page-status-code"], d, "block_page_status_code")); err != nil {
+		if vv, ok := fortiAPIPatch(o["block-page-status-code"], "FirewallProfileProtocolOptionsHttp-BlockPageStatusCode"); ok {
+			if err = d.Set("block_page_status_code", vv); err != nil {
+				return fmt.Errorf("Error reading block_page_status_code: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading block_page_status_code: %v", err)
+		}
+	}
+
+	if err = d.Set("comfort_amount", flattenFirewallProfileProtocolOptionsHttpComfortAmount2edl(o["comfort-amount"], d, "comfort_amount")); err != nil {
+		if vv, ok := fortiAPIPatch(o["comfort-amount"], "FirewallProfileProtocolOptionsHttp-ComfortAmount"); ok {
+			if err = d.Set("comfort_amount", vv); err != nil {
+				return fmt.Errorf("Error reading comfort_amount: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading comfort_amount: %v", err)
+		}
+	}
+
+	if err = d.Set("comfort_interval", flattenFirewallProfileProtocolOptionsHttpComfortInterval2edl(o["comfort-interval"], d, "comfort_interval")); err != nil {
+		if vv, ok := fortiAPIPatch(o["comfort-interval"], "FirewallProfileProtocolOptionsHttp-ComfortInterval"); ok {
+			if err = d.Set("comfort_interval", vv); err != nil {
+				return fmt.Errorf("Error reading comfort_interval: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading comfort_interval: %v", err)
+		}
+	}
+
+	if err = d.Set("fortinet_bar", flattenFirewallProfileProtocolOptionsHttpFortinetBar2edl(o["fortinet-bar"], d, "fortinet_bar")); err != nil {
+		if vv, ok := fortiAPIPatch(o["fortinet-bar"], "FirewallProfileProtocolOptionsHttp-FortinetBar"); ok {
+			if err = d.Set("fortinet_bar", vv); err != nil {
+				return fmt.Errorf("Error reading fortinet_bar: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading fortinet_bar: %v", err)
+		}
+	}
+
+	if err = d.Set("fortinet_bar_port", flattenFirewallProfileProtocolOptionsHttpFortinetBarPort2edl(o["fortinet-bar-port"], d, "fortinet_bar_port")); err != nil {
+		if vv, ok := fortiAPIPatch(o["fortinet-bar-port"], "FirewallProfileProtocolOptionsHttp-FortinetBarPort"); ok {
+			if err = d.Set("fortinet_bar_port", vv); err != nil {
+				return fmt.Errorf("Error reading fortinet_bar_port: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading fortinet_bar_port: %v", err)
+		}
+	}
+
+	if err = d.Set("domain_fronting", flattenFirewallProfileProtocolOptionsHttpDomainFronting2edl(o["domain-fronting"], d, "domain_fronting")); err != nil {
+		if vv, ok := fortiAPIPatch(o["domain-fronting"], "FirewallProfileProtocolOptionsHttp-DomainFronting"); ok {
+			if err = d.Set("domain_fronting", vv); err != nil {
+				return fmt.Errorf("Error reading domain_fronting: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading domain_fronting: %v", err)
+		}
+	}
+
+	if err = d.Set("h2c", flattenFirewallProfileProtocolOptionsHttpH2C2edl(o["h2c"], d, "h2c")); err != nil {
+		if vv, ok := fortiAPIPatch(o["h2c"], "FirewallProfileProtocolOptionsHttp-H2C"); ok {
+			if err = d.Set("h2c", vv); err != nil {
+				return fmt.Errorf("Error reading h2c: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading h2c: %v", err)
+		}
+	}
+
+	if err = d.Set("http_09", flattenFirewallProfileProtocolOptionsHttpHttp092edl(o["http-0.9"], d, "http_09")); err != nil {
+		if vv, ok := fortiAPIPatch(o["http-0.9"], "FirewallProfileProtocolOptionsHttp-Http09"); ok {
+			if err = d.Set("http_09", vv); err != nil {
+				return fmt.Errorf("Error reading http_09: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading http_09: %v", err)
+		}
+	}
+
+	if err = d.Set("inspect_all", flattenFirewallProfileProtocolOptionsHttpInspectAll2edl(o["inspect-all"], d, "inspect_all")); err != nil {
+		if vv, ok := fortiAPIPatch(o["inspect-all"], "FirewallProfileProtocolOptionsHttp-InspectAll"); ok {
+			if err = d.Set("inspect_all", vv); err != nil {
+				return fmt.Errorf("Error reading inspect_all: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading inspect_all: %v", err)
+		}
+	}
+
+	if err = d.Set("options", flattenFirewallProfileProtocolOptionsHttpOptions2edl(o["options"], d, "options")); err != nil {
+		if vv, ok := fortiAPIPatch(o["options"], "FirewallProfileProtocolOptionsHttp-Options"); ok {
+			if err = d.Set("options", vv); err != nil {
+				return fmt.Errorf("Error reading options: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading options: %v", err)
+		}
+	}
+
+	if err = d.Set("oversize_limit", flattenFirewallProfileProtocolOptionsHttpOversizeLimit2edl(o["oversize-limit"], d, "oversize_limit")); err != nil {
+		if vv, ok := fortiAPIPatch(o["oversize-limit"], "FirewallProfileProtocolOptionsHttp-OversizeLimit"); ok {
+			if err = d.Set("oversize_limit", vv); err != nil {
+				return fmt.Errorf("Error reading oversize_limit: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading oversize_limit: %v", err)
+		}
+	}
+
+	if err = d.Set("ports", flattenFirewallProfileProtocolOptionsHttpPorts2edl(o["ports"], d, "ports")); err != nil {
+		if vv, ok := fortiAPIPatch(o["ports"], "FirewallProfileProtocolOptionsHttp-Ports"); ok {
+			if err = d.Set("ports", vv); err != nil {
+				return fmt.Errorf("Error reading ports: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading ports: %v", err)
+		}
+	}
+
+	if err = d.Set("post_lang", flattenFirewallProfileProtocolOptionsHttpPostLang2edl(o["post-lang"], d, "post_lang")); err != nil {
+		if vv, ok := fortiAPIPatch(o["post-lang"], "FirewallProfileProtocolOptionsHttp-PostLang"); ok {
+			if err = d.Set("post_lang", vv); err != nil {
+				return fmt.Errorf("Error reading post_lang: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading post_lang: %v", err)
+		}
+	}
+
+	if err = d.Set("proxy_after_tcp_handshake", flattenFirewallProfileProtocolOptionsHttpProxyAfterTcpHandshake2edl(o["proxy-after-tcp-handshake"], d, "proxy_after_tcp_handshake")); err != nil {
+		if vv, ok := fortiAPIPatch(o["proxy-after-tcp-handshake"], "FirewallProfileProtocolOptionsHttp-ProxyAfterTcpHandshake"); ok {
+			if err = d.Set("proxy_after_tcp_handshake", vv); err != nil {
+				return fmt.Errorf("Error reading proxy_after_tcp_handshake: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading proxy_after_tcp_handshake: %v", err)
+		}
+	}
+
+	if err = d.Set("range_block", flattenFirewallProfileProtocolOptionsHttpRangeBlock2edl(o["range-block"], d, "range_block")); err != nil {
+		if vv, ok := fortiAPIPatch(o["range-block"], "FirewallProfileProtocolOptionsHttp-RangeBlock"); ok {
+			if err = d.Set("range_block", vv); err != nil {
+				return fmt.Errorf("Error reading range_block: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading range_block: %v", err)
+		}
+	}
+
+	if err = d.Set("retry_count", flattenFirewallProfileProtocolOptionsHttpRetryCount2edl(o["retry-count"], d, "retry_count")); err != nil {
+		if vv, ok := fortiAPIPatch(o["retry-count"], "FirewallProfileProtocolOptionsHttp-RetryCount"); ok {
+			if err = d.Set("retry_count", vv); err != nil {
+				return fmt.Errorf("Error reading retry_count: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading retry_count: %v", err)
+		}
+	}
+
+	if err = d.Set("scan_bzip2", flattenFirewallProfileProtocolOptionsHttpScanBzip22edl(o["scan-bzip2"], d, "scan_bzip2")); err != nil {
+		if vv, ok := fortiAPIPatch(o["scan-bzip2"], "FirewallProfileProtocolOptionsHttp-ScanBzip2"); ok {
+			if err = d.Set("scan_bzip2", vv); err != nil {
+				return fmt.Errorf("Error reading scan_bzip2: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading scan_bzip2: %v", err)
+		}
+	}
+
+	if err = d.Set("ssl_offloaded", flattenFirewallProfileProtocolOptionsHttpSslOffloaded2edl(o["ssl-offloaded"], d, "ssl_offloaded")); err != nil {
+		if vv, ok := fortiAPIPatch(o["ssl-offloaded"], "FirewallProfileProtocolOptionsHttp-SslOffloaded"); ok {
+			if err = d.Set("ssl_offloaded", vv); err != nil {
+				return fmt.Errorf("Error reading ssl_offloaded: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading ssl_offloaded: %v", err)
+		}
+	}
+
+	if err = d.Set("status", flattenFirewallProfileProtocolOptionsHttpStatus2edl(o["status"], d, "status")); err != nil {
+		if vv, ok := fortiAPIPatch(o["status"], "FirewallProfileProtocolOptionsHttp-Status"); ok {
+			if err = d.Set("status", vv); err != nil {
+				return fmt.Errorf("Error reading status: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading status: %v", err)
+		}
+	}
+
+	if err = d.Set("stream_based_uncompressed_limit", flattenFirewallProfileProtocolOptionsHttpStreamBasedUncompressedLimit2edl(o["stream-based-uncompressed-limit"], d, "stream_based_uncompressed_limit")); err != nil {
+		if vv, ok := fortiAPIPatch(o["stream-based-uncompressed-limit"], "FirewallProfileProtocolOptionsHttp-StreamBasedUncompressedLimit"); ok {
+			if err = d.Set("stream_based_uncompressed_limit", vv); err != nil {
+				return fmt.Errorf("Error reading stream_based_uncompressed_limit: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading stream_based_uncompressed_limit: %v", err)
+		}
+	}
+
+	if err = d.Set("streaming_content_bypass", flattenFirewallProfileProtocolOptionsHttpStreamingContentBypass2edl(o["streaming-content-bypass"], d, "streaming_content_bypass")); err != nil {
+		if vv, ok := fortiAPIPatch(o["streaming-content-bypass"], "FirewallProfileProtocolOptionsHttp-StreamingContentBypass"); ok {
+			if err = d.Set("streaming_content_bypass", vv); err != nil {
+				return fmt.Errorf("Error reading streaming_content_bypass: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading streaming_content_bypass: %v", err)
+		}
+	}
+
+	if err = d.Set("strip_x_forwarded_for", flattenFirewallProfileProtocolOptionsHttpStripXForwardedFor2edl(o["strip-x-forwarded-for"], d, "strip_x_forwarded_for")); err != nil {
+		if vv, ok := fortiAPIPatch(o["strip-x-forwarded-for"], "FirewallProfileProtocolOptionsHttp-StripXForwardedFor"); ok {
+			if err = d.Set("strip_x_forwarded_for", vv); err != nil {
+				return fmt.Errorf("Error reading strip_x_forwarded_for: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading strip_x_forwarded_for: %v", err)
+		}
+	}
+
+	if err = d.Set("switching_protocols", flattenFirewallProfileProtocolOptionsHttpSwitchingProtocols2edl(o["switching-protocols"], d, "switching_protocols")); err != nil {
+		if vv, ok := fortiAPIPatch(o["switching-protocols"], "FirewallProfileProtocolOptionsHttp-SwitchingProtocols"); ok {
+			if err = d.Set("switching_protocols", vv); err != nil {
+				return fmt.Errorf("Error reading switching_protocols: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading switching_protocols: %v", err)
+		}
+	}
+
+	if err = d.Set("tcp_window_maximum", flattenFirewallProfileProtocolOptionsHttpTcpWindowMaximum2edl(o["tcp-window-maximum"], d, "tcp_window_maximum")); err != nil {
+		if vv, ok := fortiAPIPatch(o["tcp-window-maximum"], "FirewallProfileProtocolOptionsHttp-TcpWindowMaximum"); ok {
+			if err = d.Set("tcp_window_maximum", vv); err != nil {
+				return fmt.Errorf("Error reading tcp_window_maximum: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading tcp_window_maximum: %v", err)
+		}
+	}
+
+	if err = d.Set("tcp_window_minimum", flattenFirewallProfileProtocolOptionsHttpTcpWindowMinimum2edl(o["tcp-window-minimum"], d, "tcp_window_minimum")); err != nil {
+		if vv, ok := fortiAPIPatch(o["tcp-window-minimum"], "FirewallProfileProtocolOptionsHttp-TcpWindowMinimum"); ok {
+			if err = d.Set("tcp_window_minimum", vv); err != nil {
+				return fmt.Errorf("Error reading tcp_window_minimum: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading tcp_window_minimum: %v", err)
+		}
+	}
+
+	if err = d.Set("tcp_window_size", flattenFirewallProfileProtocolOptionsHttpTcpWindowSize2edl(o["tcp-window-size"], d, "tcp_window_size")); err != nil {
+		if vv, ok := fortiAPIPatch(o["tcp-window-size"], "FirewallProfileProtocolOptionsHttp-TcpWindowSize"); ok {
+			if err = d.Set("tcp_window_size", vv); err != nil {
+				return fmt.Errorf("Error reading tcp_window_size: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading tcp_window_size: %v", err)
+		}
+	}
+
+	if err = d.Set("tcp_window_type", flattenFirewallProfileProtocolOptionsHttpTcpWindowType2edl(o["tcp-window-type"], d, "tcp_window_type")); err != nil {
+		if vv, ok := fortiAPIPatch(o["tcp-window-type"], "FirewallProfileProtocolOptionsHttp-TcpWindowType"); ok {
+			if err = d.Set("tcp_window_type", vv); err != nil {
+				return fmt.Errorf("Error reading tcp_window_type: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading tcp_window_type: %v", err)
+		}
+	}
+
+	if err = d.Set("tunnel_non_http", flattenFirewallProfileProtocolOptionsHttpTunnelNonHttp2edl(o["tunnel-non-http"], d, "tunnel_non_http")); err != nil {
+		if vv, ok := fortiAPIPatch(o["tunnel-non-http"], "FirewallProfileProtocolOptionsHttp-TunnelNonHttp"); ok {
+			if err = d.Set("tunnel_non_http", vv); err != nil {
+				return fmt.Errorf("Error reading tunnel_non_http: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading tunnel_non_http: %v", err)
+		}
+	}
+
+	if err = d.Set("uncompressed_nest_limit", flattenFirewallProfileProtocolOptionsHttpUncompressedNestLimit2edl(o["uncompressed-nest-limit"], d, "uncompressed_nest_limit")); err != nil {
+		if vv, ok := fortiAPIPatch(o["uncompressed-nest-limit"], "FirewallProfileProtocolOptionsHttp-UncompressedNestLimit"); ok {
+			if err = d.Set("uncompressed_nest_limit", vv); err != nil {
+				return fmt.Errorf("Error reading uncompressed_nest_limit: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading uncompressed_nest_limit: %v", err)
+		}
+	}
+
+	if err = d.Set("uncompressed_oversize_limit", flattenFirewallProfileProtocolOptionsHttpUncompressedOversizeLimit2edl(o["uncompressed-oversize-limit"], d, "uncompressed_oversize_limit")); err != nil {
+		if vv, ok := fortiAPIPatch(o["uncompressed-oversize-limit"], "FirewallProfileProtocolOptionsHttp-UncompressedOversizeLimit"); ok {
+			if err = d.Set("uncompressed_oversize_limit", vv); err != nil {
+				return fmt.Errorf("Error reading uncompressed_oversize_limit: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading uncompressed_oversize_limit: %v", err)
+		}
+	}
+
+	if err = d.Set("unknown_content_encoding", flattenFirewallProfileProtocolOptionsHttpUnknownContentEncoding2edl(o["unknown-content-encoding"], d, "unknown_content_encoding")); err != nil {
+		if vv, ok := fortiAPIPatch(o["unknown-content-encoding"], "FirewallProfileProtocolOptionsHttp-UnknownContentEncoding"); ok {
+			if err = d.Set("unknown_content_encoding", vv); err != nil {
+				return fmt.Errorf("Error reading unknown_content_encoding: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading unknown_content_encoding: %v", err)
+		}
+	}
+
+	if err = d.Set("unknown_http_version", flattenFirewallProfileProtocolOptionsHttpUnknownHttpVersion2edl(o["unknown-http-version"], d, "unknown_http_version")); err != nil {
+		if vv, ok := fortiAPIPatch(o["unknown-http-version"], "FirewallProfileProtocolOptionsHttp-UnknownHttpVersion"); ok {
+			if err = d.Set("unknown_http_version", vv); err != nil {
+				return fmt.Errorf("Error reading unknown_http_version: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading unknown_http_version: %v", err)
+		}
+	}
+
+	if err = d.Set("verify_dns_for_policy_matching", flattenFirewallProfileProtocolOptionsHttpVerifyDnsForPolicyMatching2edl(o["verify-dns-for-policy-matching"], d, "verify_dns_for_policy_matching")); err != nil {
+		if vv, ok := fortiAPIPatch(o["verify-dns-for-policy-matching"], "FirewallProfileProtocolOptionsHttp-VerifyDnsForPolicyMatching"); ok {
+			if err = d.Set("verify_dns_for_policy_matching", vv); err != nil {
+				return fmt.Errorf("Error reading verify_dns_for_policy_matching: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading verify_dns_for_policy_matching: %v", err)
+		}
+	}
+
+	if err = d.Set("dns_protection", flattenFirewallProfileProtocolOptionsHttpDnsProtection2edl(o["dns-protection"], d, "dns_protection")); err != nil {
+		if vv, ok := fortiAPIPatch(o["dns-protection"], "FirewallProfileProtocolOptionsHttp-DnsProtection"); ok {
+			if err = d.Set("dns_protection", vv); err != nil {
+				return fmt.Errorf("Error reading dns_protection: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading dns_protection: %v", err)
+		}
+	}
+
+	if err = d.Set("encrypted_file", flattenFirewallProfileProtocolOptionsHttpEncryptedFile2edl(o["encrypted-file"], d, "encrypted_file")); err != nil {
+		if vv, ok := fortiAPIPatch(o["encrypted-file"], "FirewallProfileProtocolOptionsHttp-EncryptedFile"); ok {
+			if err = d.Set("encrypted_file", vv); err != nil {
+				return fmt.Errorf("Error reading encrypted_file: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading encrypted_file: %v", err)
+		}
+	}
+
+	if err = d.Set("encrypted_file_log", flattenFirewallProfileProtocolOptionsHttpEncryptedFileLog2edl(o["encrypted-file-log"], d, "encrypted_file_log")); err != nil {
+		if vv, ok := fortiAPIPatch(o["encrypted-file-log"], "FirewallProfileProtocolOptionsHttp-EncryptedFileLog"); ok {
+			if err = d.Set("encrypted_file_log", vv); err != nil {
+				return fmt.Errorf("Error reading encrypted_file_log: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading encrypted_file_log: %v", err)
+		}
+	}
+
+	return nil
+}
+
+func flattenFirewallProfileProtocolOptionsHttpFortiTestDebug(d *schema.ResourceData, fosdebugsn int, fosdebugbeg int, fosdebugend int) {
+	log.Printf(strconv.Itoa(fosdebugsn))
+	e := validation.IntBetween(fosdebugbeg, fosdebugend)
+	log.Printf("ER List: %v", e)
+}
+
+func expandFirewallProfileProtocolOptionsHttpAddressIpRating2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandFirewallProfileProtocolOptionsHttpBlockPageStatusCode2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandFirewallProfileProtocolOptionsHttpComfortAmount2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandFirewallProfileProtocolOptionsHttpComfortInterval2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandFirewallProfileProtocolOptionsHttpFortinetBar2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandFirewallProfileProtocolOptionsHttpFortinetBarPort2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandFirewallProfileProtocolOptionsHttpDomainFronting2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandFirewallProfileProtocolOptionsHttpH2C2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandFirewallProfileProtocolOptionsHttpHttp092edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandFirewallProfileProtocolOptionsHttpInspectAll2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandFirewallProfileProtocolOptionsHttpOptions2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandFirewallProfileProtocolOptionsHttpOversizeLimit2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandFirewallProfileProtocolOptionsHttpPorts2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandIntegerList(v.(*schema.Set).List()), nil
+}
+
+func expandFirewallProfileProtocolOptionsHttpPostLang2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandFirewallProfileProtocolOptionsHttpProxyAfterTcpHandshake2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandFirewallProfileProtocolOptionsHttpRangeBlock2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandFirewallProfileProtocolOptionsHttpRetryCount2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandFirewallProfileProtocolOptionsHttpScanBzip22edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandFirewallProfileProtocolOptionsHttpSslOffloaded2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandFirewallProfileProtocolOptionsHttpStatus2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandFirewallProfileProtocolOptionsHttpStreamBasedUncompressedLimit2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandFirewallProfileProtocolOptionsHttpStreamingContentBypass2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandFirewallProfileProtocolOptionsHttpStripXForwardedFor2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandFirewallProfileProtocolOptionsHttpSwitchingProtocols2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandFirewallProfileProtocolOptionsHttpTcpWindowMaximum2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandFirewallProfileProtocolOptionsHttpTcpWindowMinimum2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandFirewallProfileProtocolOptionsHttpTcpWindowSize2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandFirewallProfileProtocolOptionsHttpTcpWindowType2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandFirewallProfileProtocolOptionsHttpTunnelNonHttp2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandFirewallProfileProtocolOptionsHttpUncompressedNestLimit2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandFirewallProfileProtocolOptionsHttpUncompressedOversizeLimit2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandFirewallProfileProtocolOptionsHttpUnknownContentEncoding2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandFirewallProfileProtocolOptionsHttpUnknownHttpVersion2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandFirewallProfileProtocolOptionsHttpVerifyDnsForPolicyMatching2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandFirewallProfileProtocolOptionsHttpDnsProtection2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandFirewallProfileProtocolOptionsHttpEncryptedFile2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandFirewallProfileProtocolOptionsHttpEncryptedFileLog2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func getObjectFirewallProfileProtocolOptionsHttp(d *schema.ResourceData) (*map[string]interface{}, error) {
+	obj := make(map[string]interface{})
+
+	if v, ok := d.GetOk("address_ip_rating"); ok || d.HasChange("address_ip_rating") {
+		t, err := expandFirewallProfileProtocolOptionsHttpAddressIpRating2edl(d, v, "address_ip_rating")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["address-ip-rating"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("block_page_status_code"); ok || d.HasChange("block_page_status_code") {
+		t, err := expandFirewallProfileProtocolOptionsHttpBlockPageStatusCode2edl(d, v, "block_page_status_code")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["block-page-status-code"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("comfort_amount"); ok || d.HasChange("comfort_amount") {
+		t, err := expandFirewallProfileProtocolOptionsHttpComfortAmount2edl(d, v, "comfort_amount")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["comfort-amount"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("comfort_interval"); ok || d.HasChange("comfort_interval") {
+		t, err := expandFirewallProfileProtocolOptionsHttpComfortInterval2edl(d, v, "comfort_interval")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["comfort-interval"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("fortinet_bar"); ok || d.HasChange("fortinet_bar") {
+		t, err := expandFirewallProfileProtocolOptionsHttpFortinetBar2edl(d, v, "fortinet_bar")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["fortinet-bar"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("fortinet_bar_port"); ok || d.HasChange("fortinet_bar_port") {
+		t, err := expandFirewallProfileProtocolOptionsHttpFortinetBarPort2edl(d, v, "fortinet_bar_port")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["fortinet-bar-port"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("domain_fronting"); ok || d.HasChange("domain_fronting") {
+		t, err := expandFirewallProfileProtocolOptionsHttpDomainFronting2edl(d, v, "domain_fronting")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["domain-fronting"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("h2c"); ok || d.HasChange("h2c") {
+		t, err := expandFirewallProfileProtocolOptionsHttpH2C2edl(d, v, "h2c")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["h2c"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("http_09"); ok || d.HasChange("http_09") {
+		t, err := expandFirewallProfileProtocolOptionsHttpHttp092edl(d, v, "http_09")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["http-0.9"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("inspect_all"); ok || d.HasChange("inspect_all") {
+		t, err := expandFirewallProfileProtocolOptionsHttpInspectAll2edl(d, v, "inspect_all")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["inspect-all"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("options"); ok || d.HasChange("options") {
+		t, err := expandFirewallProfileProtocolOptionsHttpOptions2edl(d, v, "options")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["options"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("oversize_limit"); ok || d.HasChange("oversize_limit") {
+		t, err := expandFirewallProfileProtocolOptionsHttpOversizeLimit2edl(d, v, "oversize_limit")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["oversize-limit"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("ports"); ok || d.HasChange("ports") {
+		t, err := expandFirewallProfileProtocolOptionsHttpPorts2edl(d, v, "ports")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["ports"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("post_lang"); ok || d.HasChange("post_lang") {
+		t, err := expandFirewallProfileProtocolOptionsHttpPostLang2edl(d, v, "post_lang")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["post-lang"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("proxy_after_tcp_handshake"); ok || d.HasChange("proxy_after_tcp_handshake") {
+		t, err := expandFirewallProfileProtocolOptionsHttpProxyAfterTcpHandshake2edl(d, v, "proxy_after_tcp_handshake")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["proxy-after-tcp-handshake"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("range_block"); ok || d.HasChange("range_block") {
+		t, err := expandFirewallProfileProtocolOptionsHttpRangeBlock2edl(d, v, "range_block")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["range-block"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("retry_count"); ok || d.HasChange("retry_count") {
+		t, err := expandFirewallProfileProtocolOptionsHttpRetryCount2edl(d, v, "retry_count")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["retry-count"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("scan_bzip2"); ok || d.HasChange("scan_bzip2") {
+		t, err := expandFirewallProfileProtocolOptionsHttpScanBzip22edl(d, v, "scan_bzip2")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["scan-bzip2"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("ssl_offloaded"); ok || d.HasChange("ssl_offloaded") {
+		t, err := expandFirewallProfileProtocolOptionsHttpSslOffloaded2edl(d, v, "ssl_offloaded")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["ssl-offloaded"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("status"); ok || d.HasChange("status") {
+		t, err := expandFirewallProfileProtocolOptionsHttpStatus2edl(d, v, "status")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["status"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("stream_based_uncompressed_limit"); ok || d.HasChange("stream_based_uncompressed_limit") {
+		t, err := expandFirewallProfileProtocolOptionsHttpStreamBasedUncompressedLimit2edl(d, v, "stream_based_uncompressed_limit")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["stream-based-uncompressed-limit"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("streaming_content_bypass"); ok || d.HasChange("streaming_content_bypass") {
+		t, err := expandFirewallProfileProtocolOptionsHttpStreamingContentBypass2edl(d, v, "streaming_content_bypass")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["streaming-content-bypass"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("strip_x_forwarded_for"); ok || d.HasChange("strip_x_forwarded_for") {
+		t, err := expandFirewallProfileProtocolOptionsHttpStripXForwardedFor2edl(d, v, "strip_x_forwarded_for")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["strip-x-forwarded-for"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("switching_protocols"); ok || d.HasChange("switching_protocols") {
+		t, err := expandFirewallProfileProtocolOptionsHttpSwitchingProtocols2edl(d, v, "switching_protocols")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["switching-protocols"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("tcp_window_maximum"); ok || d.HasChange("tcp_window_maximum") {
+		t, err := expandFirewallProfileProtocolOptionsHttpTcpWindowMaximum2edl(d, v, "tcp_window_maximum")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["tcp-window-maximum"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("tcp_window_minimum"); ok || d.HasChange("tcp_window_minimum") {
+		t, err := expandFirewallProfileProtocolOptionsHttpTcpWindowMinimum2edl(d, v, "tcp_window_minimum")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["tcp-window-minimum"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("tcp_window_size"); ok || d.HasChange("tcp_window_size") {
+		t, err := expandFirewallProfileProtocolOptionsHttpTcpWindowSize2edl(d, v, "tcp_window_size")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["tcp-window-size"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("tcp_window_type"); ok || d.HasChange("tcp_window_type") {
+		t, err := expandFirewallProfileProtocolOptionsHttpTcpWindowType2edl(d, v, "tcp_window_type")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["tcp-window-type"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("tunnel_non_http"); ok || d.HasChange("tunnel_non_http") {
+		t, err := expandFirewallProfileProtocolOptionsHttpTunnelNonHttp2edl(d, v, "tunnel_non_http")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["tunnel-non-http"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("uncompressed_nest_limit"); ok || d.HasChange("uncompressed_nest_limit") {
+		t, err := expandFirewallProfileProtocolOptionsHttpUncompressedNestLimit2edl(d, v, "uncompressed_nest_limit")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["uncompressed-nest-limit"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("uncompressed_oversize_limit"); ok || d.HasChange("uncompressed_oversize_limit") {
+		t, err := expandFirewallProfileProtocolOptionsHttpUncompressedOversizeLimit2edl(d, v, "uncompressed_oversize_limit")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["uncompressed-oversize-limit"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("unknown_content_encoding"); ok || d.HasChange("unknown_content_encoding") {
+		t, err := expandFirewallProfileProtocolOptionsHttpUnknownContentEncoding2edl(d, v, "unknown_content_encoding")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["unknown-content-encoding"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("unknown_http_version"); ok || d.HasChange("unknown_http_version") {
+		t, err := expandFirewallProfileProtocolOptionsHttpUnknownHttpVersion2edl(d, v, "unknown_http_version")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["unknown-http-version"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("verify_dns_for_policy_matching"); ok || d.HasChange("verify_dns_for_policy_matching") {
+		t, err := expandFirewallProfileProtocolOptionsHttpVerifyDnsForPolicyMatching2edl(d, v, "verify_dns_for_policy_matching")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["verify-dns-for-policy-matching"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("dns_protection"); ok || d.HasChange("dns_protection") {
+		t, err := expandFirewallProfileProtocolOptionsHttpDnsProtection2edl(d, v, "dns_protection")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["dns-protection"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("encrypted_file"); ok || d.HasChange("encrypted_file") {
+		t, err := expandFirewallProfileProtocolOptionsHttpEncryptedFile2edl(d, v, "encrypted_file")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["encrypted-file"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("encrypted_file_log"); ok || d.HasChange("encrypted_file_log") {
+		t, err := expandFirewallProfileProtocolOptionsHttpEncryptedFileLog2edl(d, v, "encrypted_file_log")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["encrypted-file-log"] = t
+		}
+	}
+
+	return &obj, nil
+}

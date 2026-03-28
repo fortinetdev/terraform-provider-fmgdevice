@@ -28,6 +28,12 @@ func resourceSwitchControllerSnmpSysinfo() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
+
+			"adom": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"device_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -72,8 +78,12 @@ func resourceSwitchControllerSnmpSysinfoUpdate(d *schema.ResourceData, m interfa
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -85,13 +95,12 @@ func resourceSwitchControllerSnmpSysinfoUpdate(d *schema.ResourceData, m interfa
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectSwitchControllerSnmpSysinfo(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SwitchControllerSnmpSysinfo resource while getting object: %v", err)
 	}
+
+	wsParams["adom"] = adomv
 
 	_, err = c.UpdateSwitchControllerSnmpSysinfo(obj, mkey, paradict, wsParams)
 	if err != nil {
@@ -113,8 +122,12 @@ func resourceSwitchControllerSnmpSysinfoDelete(d *schema.ResourceData, m interfa
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -126,9 +139,7 @@ func resourceSwitchControllerSnmpSysinfoDelete(d *schema.ResourceData, m interfa
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
+	wsParams["adom"] = adomv
 
 	err = c.DeleteSwitchControllerSnmpSysinfo(mkey, paradict, wsParams)
 	if err != nil {
@@ -147,8 +158,8 @@ func resourceSwitchControllerSnmpSysinfoRead(d *schema.ResourceData, m interface
 	c.Retries = 1
 
 	paradict := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	device_vdom, err := getVariable(cfg, d, "device_vdom")
 	if device_name == "" {
@@ -174,6 +185,7 @@ func resourceSwitchControllerSnmpSysinfoRead(d *schema.ResourceData, m interface
 
 	o, err := c.ReadSwitchControllerSnmpSysinfo(mkey, paradict)
 	if err != nil {
+		d.SetId("")
 		return fmt.Errorf("Error reading SwitchControllerSnmpSysinfo resource: %v", err)
 	}
 

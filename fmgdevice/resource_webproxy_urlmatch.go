@@ -28,6 +28,17 @@ func resourceWebProxyUrlMatch() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
+			"update_if_exist": &schema.Schema{
+				Type:     schema.TypeBool,
+				Optional: true,
+				Computed: true,
+			},
+
+			"adom": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"device_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -75,6 +86,29 @@ func resourceWebProxyUrlMatch() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
+			"explicit_web_proxy": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Computed: true,
+			},
+			"ftp_forward_server": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Computed: true,
+			},
+			"type": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+			"url_list": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Computed: true,
+			},
 		},
 	}
 }
@@ -85,8 +119,12 @@ func resourceWebProxyUrlMatchCreate(d *schema.ResourceData, m interface{}) error
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -98,17 +136,37 @@ func resourceWebProxyUrlMatchCreate(d *schema.ResourceData, m interface{}) error
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectWebProxyUrlMatch(d)
 	if err != nil {
 		return fmt.Errorf("Error creating WebProxyUrlMatch resource while getting object: %v", err)
 	}
+	wsParams["adom"] = adomv
 
-	_, err = c.CreateWebProxyUrlMatch(obj, paradict, wsParams)
-	if err != nil {
-		return fmt.Errorf("Error creating WebProxyUrlMatch resource: %v", err)
+	update_if_exist := getUpdateIfExist(c, d)
+	mkey_tf, mkey_ok := d.GetOk("name")
+	mkey := fmt.Sprint(mkey_tf)
+	o := make(map[string]interface{})
+	existing := false
+
+	if update_if_exist && mkey_ok {
+		// check existing
+		o, err = c.ReadWebProxyUrlMatch(mkey, paradict)
+		if err == nil && o != nil {
+			existing = true
+			// update if existing
+			o, err = c.UpdateWebProxyUrlMatch(obj, mkey, paradict, wsParams)
+			if err != nil {
+				return fmt.Errorf("Error updating WebProxyUrlMatch resource: %v", err)
+			}
+		}
+	}
+
+	if !existing {
+		_, err = c.CreateWebProxyUrlMatch(obj, paradict, wsParams)
+		if err != nil {
+			return fmt.Errorf("Error creating WebProxyUrlMatch resource: %v", err)
+		}
+
 	}
 
 	d.SetId(getStringKey(d, "name"))
@@ -123,8 +181,12 @@ func resourceWebProxyUrlMatchUpdate(d *schema.ResourceData, m interface{}) error
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -136,13 +198,12 @@ func resourceWebProxyUrlMatchUpdate(d *schema.ResourceData, m interface{}) error
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectWebProxyUrlMatch(d)
 	if err != nil {
 		return fmt.Errorf("Error updating WebProxyUrlMatch resource while getting object: %v", err)
 	}
+
+	wsParams["adom"] = adomv
 
 	_, err = c.UpdateWebProxyUrlMatch(obj, mkey, paradict, wsParams)
 	if err != nil {
@@ -164,8 +225,12 @@ func resourceWebProxyUrlMatchDelete(d *schema.ResourceData, m interface{}) error
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -177,9 +242,7 @@ func resourceWebProxyUrlMatchDelete(d *schema.ResourceData, m interface{}) error
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
+	wsParams["adom"] = adomv
 
 	err = c.DeleteWebProxyUrlMatch(mkey, paradict, wsParams)
 	if err != nil {
@@ -198,8 +261,8 @@ func resourceWebProxyUrlMatchRead(d *schema.ResourceData, m interface{}) error {
 	c.Retries = 1
 
 	paradict := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	device_vdom, err := getVariable(cfg, d, "device_vdom")
 	if device_name == "" {
@@ -225,6 +288,7 @@ func resourceWebProxyUrlMatchRead(d *schema.ResourceData, m interface{}) error {
 
 	o, err := c.ReadWebProxyUrlMatch(mkey, paradict)
 	if err != nil {
+		d.SetId("")
 		return fmt.Errorf("Error reading WebProxyUrlMatch resource: %v", err)
 	}
 
@@ -267,6 +331,22 @@ func flattenWebProxyUrlMatchStatus(v interface{}, d *schema.ResourceData, pre st
 
 func flattenWebProxyUrlMatchUrlPattern(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
+}
+
+func flattenWebProxyUrlMatchExplicitWebProxy(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
+func flattenWebProxyUrlMatchFtpForwardServer(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
+func flattenWebProxyUrlMatchType(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWebProxyUrlMatchUrlList(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
 }
 
 func refreshObjectWebProxyUrlMatch(d *schema.ResourceData, o map[string]interface{}) error {
@@ -342,6 +422,46 @@ func refreshObjectWebProxyUrlMatch(d *schema.ResourceData, o map[string]interfac
 		}
 	}
 
+	if err = d.Set("explicit_web_proxy", flattenWebProxyUrlMatchExplicitWebProxy(o["explicit-web-proxy"], d, "explicit_web_proxy")); err != nil {
+		if vv, ok := fortiAPIPatch(o["explicit-web-proxy"], "WebProxyUrlMatch-ExplicitWebProxy"); ok {
+			if err = d.Set("explicit_web_proxy", vv); err != nil {
+				return fmt.Errorf("Error reading explicit_web_proxy: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading explicit_web_proxy: %v", err)
+		}
+	}
+
+	if err = d.Set("ftp_forward_server", flattenWebProxyUrlMatchFtpForwardServer(o["ftp-forward-server"], d, "ftp_forward_server")); err != nil {
+		if vv, ok := fortiAPIPatch(o["ftp-forward-server"], "WebProxyUrlMatch-FtpForwardServer"); ok {
+			if err = d.Set("ftp_forward_server", vv); err != nil {
+				return fmt.Errorf("Error reading ftp_forward_server: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading ftp_forward_server: %v", err)
+		}
+	}
+
+	if err = d.Set("type", flattenWebProxyUrlMatchType(o["type"], d, "type")); err != nil {
+		if vv, ok := fortiAPIPatch(o["type"], "WebProxyUrlMatch-Type"); ok {
+			if err = d.Set("type", vv); err != nil {
+				return fmt.Errorf("Error reading type: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading type: %v", err)
+		}
+	}
+
+	if err = d.Set("url_list", flattenWebProxyUrlMatchUrlList(o["url-list"], d, "url_list")); err != nil {
+		if vv, ok := fortiAPIPatch(o["url-list"], "WebProxyUrlMatch-UrlList"); ok {
+			if err = d.Set("url_list", vv); err != nil {
+				return fmt.Errorf("Error reading url_list: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading url_list: %v", err)
+		}
+	}
+
 	return nil
 }
 
@@ -377,6 +497,22 @@ func expandWebProxyUrlMatchStatus(d *schema.ResourceData, v interface{}, pre str
 
 func expandWebProxyUrlMatchUrlPattern(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
+}
+
+func expandWebProxyUrlMatchExplicitWebProxy(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandWebProxyUrlMatchFtpForwardServer(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandWebProxyUrlMatchType(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWebProxyUrlMatchUrlList(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
 }
 
 func getObjectWebProxyUrlMatch(d *schema.ResourceData) (*map[string]interface{}, error) {
@@ -442,6 +578,42 @@ func getObjectWebProxyUrlMatch(d *schema.ResourceData) (*map[string]interface{},
 			return &obj, err
 		} else if t != nil {
 			obj["url-pattern"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("explicit_web_proxy"); ok || d.HasChange("explicit_web_proxy") {
+		t, err := expandWebProxyUrlMatchExplicitWebProxy(d, v, "explicit_web_proxy")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["explicit-web-proxy"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("ftp_forward_server"); ok || d.HasChange("ftp_forward_server") {
+		t, err := expandWebProxyUrlMatchFtpForwardServer(d, v, "ftp_forward_server")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["ftp-forward-server"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("type"); ok || d.HasChange("type") {
+		t, err := expandWebProxyUrlMatchType(d, v, "type")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["type"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("url_list"); ok || d.HasChange("url_list") {
+		t, err := expandWebProxyUrlMatchUrlList(d, v, "url_list")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["url-list"] = t
 		}
 	}
 

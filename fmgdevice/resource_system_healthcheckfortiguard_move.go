@@ -33,6 +33,12 @@ func resourceSystemHealthCheckFortiguardMove() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+
+			"adom": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"device_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -63,8 +69,12 @@ func resourceSystemHealthCheckFortiguardMoveUpdate(d *schema.ResourceData, m int
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -73,14 +83,13 @@ func resourceSystemHealthCheckFortiguardMoveUpdate(d *schema.ResourceData, m int
 	paradict["device"] = device_name
 	paradict["health_check_fortiguard"] = health_check_fortiguard
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	target := d.Get("target").(string)
 	obj, err := getObjectSystemHealthCheckFortiguardMove(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemHealthCheckFortiguardMove resource while getting object: %v", err)
 	}
+
+	wsParams["adom"] = adomv
 
 	_, err = c.UpdateSystemHealthCheckFortiguardMove(obj, mkey, paradict, wsParams)
 	if err != nil {
@@ -107,12 +116,12 @@ func resourceSystemHealthCheckFortiguardMoveRead(d *schema.ResourceData, m inter
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	cfg := m.(*FortiClient).Cfg
 
 	sid := d.Get("health_check_fortiguard").(string)
 	did := d.Get("target").(string)
 	action := d.Get("option").(string)
 
-	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
 	if device_name == "" {
 		device_name = importOptionChecking(m.(*FortiClient).Cfg, "device_name")

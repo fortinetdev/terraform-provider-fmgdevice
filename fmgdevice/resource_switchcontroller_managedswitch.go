@@ -28,6 +28,17 @@ func resourceSwitchControllerManagedSwitch() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
+			"update_if_exist": &schema.Schema{
+				Type:     schema.TypeBool,
+				Optional: true,
+				Computed: true,
+			},
+
+			"adom": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"device_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -278,10 +289,8 @@ func resourceSwitchControllerManagedSwitch() *schema.Resource {
 										Computed: true,
 									},
 									"vlan_name": &schema.Schema{
-										Type:     schema.TypeSet,
-										Elem:     &schema.Schema{Type: schema.TypeString},
+										Type:     schema.TypeString,
 										Optional: true,
-										Computed: true,
 									},
 								},
 							},
@@ -487,10 +496,8 @@ func resourceSwitchControllerManagedSwitch() *schema.Resource {
 										Optional: true,
 									},
 									"vlan_name": &schema.Schema{
-										Type:     schema.TypeSet,
-										Elem:     &schema.Schema{Type: schema.TypeString},
+										Type:     schema.TypeString,
 										Optional: true,
-										Computed: true,
 									},
 								},
 							},
@@ -1029,10 +1036,96 @@ func resourceSwitchControllerManagedSwitch() *schema.Resource {
 							Computed: true,
 						},
 						"vlan_name": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+					},
+				},
+			},
+			"router_static": &schema.Schema{
+				Type:     schema.TypeList,
+				Optional: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"blackhole": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+							Computed: true,
+						},
+						"comment": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"device": &schema.Schema{
 							Type:     schema.TypeSet,
 							Elem:     &schema.Schema{Type: schema.TypeString},
 							Optional: true,
 							Computed: true,
+						},
+						"distance": &schema.Schema{
+							Type:     schema.TypeInt,
+							Optional: true,
+							Computed: true,
+						},
+						"dst": &schema.Schema{
+							Type:     schema.TypeList,
+							Elem:     &schema.Schema{Type: schema.TypeString},
+							Optional: true,
+							Computed: true,
+						},
+						"dynamic_gateway": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+							Computed: true,
+						},
+						"gateway": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+							Computed: true,
+						},
+						"id": &schema.Schema{
+							Type:     schema.TypeInt,
+							Optional: true,
+							Computed: true,
+						},
+						"status": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+							Computed: true,
+						},
+						"switch_id": &schema.Schema{
+							Type:     schema.TypeSet,
+							Elem:     &schema.Schema{Type: schema.TypeString},
+							Optional: true,
+							Computed: true,
+						},
+						"vrf": &schema.Schema{
+							Type:     schema.TypeSet,
+							Elem:     &schema.Schema{Type: schema.TypeString},
+							Optional: true,
+							Computed: true,
+						},
+					},
+				},
+			},
+			"router_vrf": &schema.Schema{
+				Type:     schema.TypeList,
+				Optional: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"name": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"switch_id": &schema.Schema{
+							Type:     schema.TypeSet,
+							Elem:     &schema.Schema{Type: schema.TypeString},
+							Optional: true,
+							Computed: true,
+						},
+						"vrfid": &schema.Schema{
+							Type:     schema.TypeInt,
+							Optional: true,
 						},
 					},
 				},
@@ -1293,6 +1386,10 @@ func resourceSwitchControllerManagedSwitch() *schema.Resource {
 							Type:     schema.TypeString,
 							Optional: true,
 						},
+						"burst_size_level": &schema.Schema{
+							Type:     schema.TypeInt,
+							Optional: true,
+						},
 						"local_override": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
@@ -1429,6 +1526,198 @@ func resourceSwitchControllerManagedSwitch() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"system_dhcp_server": &schema.Schema{
+				Type:     schema.TypeList,
+				Optional: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"default_gateway": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+							Computed: true,
+						},
+						"dns_server1": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+							Computed: true,
+						},
+						"dns_server2": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+							Computed: true,
+						},
+						"dns_server3": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+							Computed: true,
+						},
+						"dns_service": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+							Computed: true,
+						},
+						"id": &schema.Schema{
+							Type:     schema.TypeInt,
+							Optional: true,
+						},
+						"interface": &schema.Schema{
+							Type:     schema.TypeSet,
+							Elem:     &schema.Schema{Type: schema.TypeString},
+							Optional: true,
+							Computed: true,
+						},
+						"ip_range": &schema.Schema{
+							Type:     schema.TypeList,
+							Optional: true,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"end_ip": &schema.Schema{
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+									"id": &schema.Schema{
+										Type:     schema.TypeInt,
+										Optional: true,
+									},
+									"start_ip": &schema.Schema{
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+								},
+							},
+						},
+						"lease_time": &schema.Schema{
+							Type:     schema.TypeInt,
+							Optional: true,
+							Computed: true,
+						},
+						"netmask": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+							Computed: true,
+						},
+						"ntp_server1": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+							Computed: true,
+						},
+						"ntp_server2": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+							Computed: true,
+						},
+						"ntp_server3": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+							Computed: true,
+						},
+						"ntp_service": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+							Computed: true,
+						},
+						"options": &schema.Schema{
+							Type:     schema.TypeList,
+							Optional: true,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"code": &schema.Schema{
+										Type:     schema.TypeInt,
+										Optional: true,
+									},
+									"id": &schema.Schema{
+										Type:     schema.TypeInt,
+										Optional: true,
+									},
+									"ip": &schema.Schema{
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+									"type": &schema.Schema{
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+									"value": &schema.Schema{
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+								},
+							},
+						},
+						"status": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+							Computed: true,
+						},
+						"switch_id": &schema.Schema{
+							Type:     schema.TypeSet,
+							Elem:     &schema.Schema{Type: schema.TypeString},
+							Optional: true,
+							Computed: true,
+						},
+					},
+				},
+			},
+			"system_interface": &schema.Schema{
+				Type:     schema.TypeList,
+				Optional: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"allowaccess": &schema.Schema{
+							Type:     schema.TypeSet,
+							Elem:     &schema.Schema{Type: schema.TypeString},
+							Optional: true,
+							Computed: true,
+						},
+						"interface": &schema.Schema{
+							Type:     schema.TypeSet,
+							Elem:     &schema.Schema{Type: schema.TypeString},
+							Optional: true,
+							Computed: true,
+						},
+						"ip": &schema.Schema{
+							Type:     schema.TypeList,
+							Elem:     &schema.Schema{Type: schema.TypeString},
+							Optional: true,
+							Computed: true,
+						},
+						"mode": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"name": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"status": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"switch_id": &schema.Schema{
+							Type:     schema.TypeSet,
+							Elem:     &schema.Schema{Type: schema.TypeString},
+							Optional: true,
+							Computed: true,
+						},
+						"type": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"vlan": &schema.Schema{
+							Type:     schema.TypeSet,
+							Elem:     &schema.Schema{Type: schema.TypeString},
+							Optional: true,
+							Computed: true,
+						},
+						"vrf": &schema.Schema{
+							Type:     schema.TypeSet,
+							Elem:     &schema.Schema{Type: schema.TypeString},
+							Optional: true,
+							Computed: true,
+						},
+					},
+				},
+			},
 			"tdr_supported": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -1458,10 +1747,8 @@ func resourceSwitchControllerManagedSwitch() *schema.Resource {
 							Computed: true,
 						},
 						"vlan_name": &schema.Schema{
-							Type:     schema.TypeSet,
-							Elem:     &schema.Schema{Type: schema.TypeString},
+							Type:     schema.TypeString,
 							Optional: true,
-							Computed: true,
 						},
 					},
 				},
@@ -1481,8 +1768,12 @@ func resourceSwitchControllerManagedSwitchCreate(d *schema.ResourceData, m inter
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -1494,17 +1785,37 @@ func resourceSwitchControllerManagedSwitchCreate(d *schema.ResourceData, m inter
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectSwitchControllerManagedSwitch(d)
 	if err != nil {
 		return fmt.Errorf("Error creating SwitchControllerManagedSwitch resource while getting object: %v", err)
 	}
+	wsParams["adom"] = adomv
 
-	_, err = c.CreateSwitchControllerManagedSwitch(obj, paradict, wsParams)
-	if err != nil {
-		return fmt.Errorf("Error creating SwitchControllerManagedSwitch resource: %v", err)
+	update_if_exist := getUpdateIfExist(c, d)
+	mkey_tf, mkey_ok := d.GetOk("switch_id")
+	mkey := fmt.Sprint(mkey_tf)
+	o := make(map[string]interface{})
+	existing := false
+
+	if update_if_exist && mkey_ok {
+		// check existing
+		o, err = c.ReadSwitchControllerManagedSwitch(mkey, paradict)
+		if err == nil && o != nil {
+			existing = true
+			// update if existing
+			o, err = c.UpdateSwitchControllerManagedSwitch(obj, mkey, paradict, wsParams)
+			if err != nil {
+				return fmt.Errorf("Error updating SwitchControllerManagedSwitch resource: %v", err)
+			}
+		}
+	}
+
+	if !existing {
+		_, err = c.CreateSwitchControllerManagedSwitch(obj, paradict, wsParams)
+		if err != nil {
+			return fmt.Errorf("Error creating SwitchControllerManagedSwitch resource: %v", err)
+		}
+
 	}
 
 	d.SetId(getStringKey(d, "switch_id"))
@@ -1519,8 +1830,12 @@ func resourceSwitchControllerManagedSwitchUpdate(d *schema.ResourceData, m inter
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -1532,13 +1847,12 @@ func resourceSwitchControllerManagedSwitchUpdate(d *schema.ResourceData, m inter
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectSwitchControllerManagedSwitch(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SwitchControllerManagedSwitch resource while getting object: %v", err)
 	}
+
+	wsParams["adom"] = adomv
 
 	_, err = c.UpdateSwitchControllerManagedSwitch(obj, mkey, paradict, wsParams)
 	if err != nil {
@@ -1560,8 +1874,12 @@ func resourceSwitchControllerManagedSwitchDelete(d *schema.ResourceData, m inter
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -1573,9 +1891,7 @@ func resourceSwitchControllerManagedSwitchDelete(d *schema.ResourceData, m inter
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
+	wsParams["adom"] = adomv
 
 	err = c.DeleteSwitchControllerManagedSwitch(mkey, paradict, wsParams)
 	if err != nil {
@@ -1594,8 +1910,8 @@ func resourceSwitchControllerManagedSwitchRead(d *schema.ResourceData, m interfa
 	c.Retries = 1
 
 	paradict := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	device_vdom, err := getVariable(cfg, d, "device_vdom")
 	if device_name == "" {
@@ -1621,6 +1937,7 @@ func resourceSwitchControllerManagedSwitchRead(d *schema.ResourceData, m interfa
 
 	o, err := c.ReadSwitchControllerManagedSwitch(mkey, paradict)
 	if err != nil {
+		d.SetId("")
 		return fmt.Errorf("Error reading SwitchControllerManagedSwitch resource: %v", err)
 	}
 
@@ -2062,7 +2379,7 @@ func flattenSwitchControllerManagedSwitchIgmpSnoopingVlansVersion(v interface{},
 }
 
 func flattenSwitchControllerManagedSwitchIgmpSnoopingVlansVlanName(v interface{}, d *schema.ResourceData, pre string) interface{} {
-	return flattenStringList(v)
+	return conv2str(v)
 }
 
 func flattenSwitchControllerManagedSwitchIpSourceGuard(v interface{}, d *schema.ResourceData, pre string) []map[string]interface{} {
@@ -3111,7 +3428,7 @@ func flattenSwitchControllerManagedSwitchPortsDhcpSnoopOption82OverrideRemoteId(
 }
 
 func flattenSwitchControllerManagedSwitchPortsDhcpSnoopOption82OverrideVlanName(v interface{}, d *schema.ResourceData, pre string) interface{} {
-	return flattenStringList(v)
+	return conv2str(v)
 }
 
 func flattenSwitchControllerManagedSwitchPortsDhcpSnoopOption82Trust(v interface{}, d *schema.ResourceData, pre string) interface{} {
@@ -3699,7 +4016,205 @@ func flattenSwitchControllerManagedSwitchRouteOffloadRouterRouterIp(v interface{
 }
 
 func flattenSwitchControllerManagedSwitchRouteOffloadRouterVlanName(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return conv2str(v)
+}
+
+func flattenSwitchControllerManagedSwitchRouterStatic(v interface{}, d *schema.ResourceData, pre string) []map[string]interface{} {
+	if v == nil {
+		return nil
+	}
+
+	l := v.([]interface{})
+	if len(l) == 0 || l[0] == nil {
+		return nil
+	}
+
+	result := make([]map[string]interface{}, 0, len(l))
+
+	con := 0
+	for _, r := range l {
+		tmp := make(map[string]interface{})
+		i := r.(map[string]interface{})
+
+		pre_append := "" // table
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "blackhole"
+		if _, ok := i["blackhole"]; ok {
+			v := flattenSwitchControllerManagedSwitchRouterStaticBlackhole(i["blackhole"], d, pre_append)
+			tmp["blackhole"] = fortiAPISubPartPatch(v, "SwitchControllerManagedSwitch-RouterStatic-Blackhole")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "comment"
+		if _, ok := i["comment"]; ok {
+			v := flattenSwitchControllerManagedSwitchRouterStaticComment(i["comment"], d, pre_append)
+			tmp["comment"] = fortiAPISubPartPatch(v, "SwitchControllerManagedSwitch-RouterStatic-Comment")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "device"
+		if _, ok := i["device"]; ok {
+			v := flattenSwitchControllerManagedSwitchRouterStaticDevice(i["device"], d, pre_append)
+			tmp["device"] = fortiAPISubPartPatch(v, "SwitchControllerManagedSwitch-RouterStatic-Device")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "distance"
+		if _, ok := i["distance"]; ok {
+			v := flattenSwitchControllerManagedSwitchRouterStaticDistance(i["distance"], d, pre_append)
+			tmp["distance"] = fortiAPISubPartPatch(v, "SwitchControllerManagedSwitch-RouterStatic-Distance")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "dst"
+		if _, ok := i["dst"]; ok {
+			v := flattenSwitchControllerManagedSwitchRouterStaticDst(i["dst"], d, pre_append)
+			tmp["dst"] = fortiAPISubPartPatch(v, "SwitchControllerManagedSwitch-RouterStatic-Dst")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "dynamic_gateway"
+		if _, ok := i["dynamic-gateway"]; ok {
+			v := flattenSwitchControllerManagedSwitchRouterStaticDynamicGateway(i["dynamic-gateway"], d, pre_append)
+			tmp["dynamic_gateway"] = fortiAPISubPartPatch(v, "SwitchControllerManagedSwitch-RouterStatic-DynamicGateway")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "gateway"
+		if _, ok := i["gateway"]; ok {
+			v := flattenSwitchControllerManagedSwitchRouterStaticGateway(i["gateway"], d, pre_append)
+			tmp["gateway"] = fortiAPISubPartPatch(v, "SwitchControllerManagedSwitch-RouterStatic-Gateway")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "id"
+		if _, ok := i["id"]; ok {
+			v := flattenSwitchControllerManagedSwitchRouterStaticId(i["id"], d, pre_append)
+			tmp["id"] = fortiAPISubPartPatch(v, "SwitchControllerManagedSwitch-RouterStatic-Id")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "status"
+		if _, ok := i["status"]; ok {
+			v := flattenSwitchControllerManagedSwitchRouterStaticStatus(i["status"], d, pre_append)
+			tmp["status"] = fortiAPISubPartPatch(v, "SwitchControllerManagedSwitch-RouterStatic-Status")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "switch_id"
+		if _, ok := i["switch-id"]; ok {
+			v := flattenSwitchControllerManagedSwitchRouterStaticSwitchId(i["switch-id"], d, pre_append)
+			tmp["switch_id"] = fortiAPISubPartPatch(v, "SwitchControllerManagedSwitch-RouterStatic-SwitchId")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "vrf"
+		if _, ok := i["vrf"]; ok {
+			v := flattenSwitchControllerManagedSwitchRouterStaticVrf(i["vrf"], d, pre_append)
+			tmp["vrf"] = fortiAPISubPartPatch(v, "SwitchControllerManagedSwitch-RouterStatic-Vrf")
+		}
+
+		if len(tmp) > 0 {
+			result = append(result, tmp)
+		}
+
+		con += 1
+	}
+
+	return result
+}
+
+func flattenSwitchControllerManagedSwitchRouterStaticBlackhole(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSwitchControllerManagedSwitchRouterStaticComment(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSwitchControllerManagedSwitchRouterStaticDevice(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return flattenStringList(v)
+}
+
+func flattenSwitchControllerManagedSwitchRouterStaticDistance(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSwitchControllerManagedSwitchRouterStaticDst(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
+func flattenSwitchControllerManagedSwitchRouterStaticDynamicGateway(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSwitchControllerManagedSwitchRouterStaticGateway(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSwitchControllerManagedSwitchRouterStaticId(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSwitchControllerManagedSwitchRouterStaticStatus(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSwitchControllerManagedSwitchRouterStaticSwitchId(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
+func flattenSwitchControllerManagedSwitchRouterStaticVrf(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
+func flattenSwitchControllerManagedSwitchRouterVrf(v interface{}, d *schema.ResourceData, pre string) []map[string]interface{} {
+	if v == nil {
+		return nil
+	}
+
+	l := v.([]interface{})
+	if len(l) == 0 || l[0] == nil {
+		return nil
+	}
+
+	result := make([]map[string]interface{}, 0, len(l))
+
+	con := 0
+	for _, r := range l {
+		tmp := make(map[string]interface{})
+		i := r.(map[string]interface{})
+
+		pre_append := "" // table
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "name"
+		if _, ok := i["name"]; ok {
+			v := flattenSwitchControllerManagedSwitchRouterVrfName(i["name"], d, pre_append)
+			tmp["name"] = fortiAPISubPartPatch(v, "SwitchControllerManagedSwitch-RouterVrf-Name")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "switch_id"
+		if _, ok := i["switch-id"]; ok {
+			v := flattenSwitchControllerManagedSwitchRouterVrfSwitchId(i["switch-id"], d, pre_append)
+			tmp["switch_id"] = fortiAPISubPartPatch(v, "SwitchControllerManagedSwitch-RouterVrf-SwitchId")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "vrfid"
+		if _, ok := i["vrfid"]; ok {
+			v := flattenSwitchControllerManagedSwitchRouterVrfVrfid(i["vrfid"], d, pre_append)
+			tmp["vrfid"] = fortiAPISubPartPatch(v, "SwitchControllerManagedSwitch-RouterVrf-Vrfid")
+		}
+
+		if len(tmp) > 0 {
+			result = append(result, tmp)
+		}
+
+		con += 1
+	}
+
+	return result
+}
+
+func flattenSwitchControllerManagedSwitchRouterVrfName(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSwitchControllerManagedSwitchRouterVrfSwitchId(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
+func flattenSwitchControllerManagedSwitchRouterVrfVrfid(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
 }
 
 func flattenSwitchControllerManagedSwitchSn(v interface{}, d *schema.ResourceData, pre string) interface{} {
@@ -4224,6 +4739,11 @@ func flattenSwitchControllerManagedSwitchStormControl(v interface{}, d *schema.R
 		result["broadcast"] = flattenSwitchControllerManagedSwitchStormControlBroadcast(i["broadcast"], d, pre_append)
 	}
 
+	pre_append = pre + ".0." + "burst_size_level"
+	if _, ok := i["burst-size-level"]; ok {
+		result["burst_size_level"] = flattenSwitchControllerManagedSwitchStormControlBurstSizeLevel(i["burst-size-level"], d, pre_append)
+	}
+
 	pre_append = pre + ".0." + "local_override"
 	if _, ok := i["local-override"]; ok {
 		result["local_override"] = flattenSwitchControllerManagedSwitchStormControlLocalOverride(i["local-override"], d, pre_append)
@@ -4249,6 +4769,10 @@ func flattenSwitchControllerManagedSwitchStormControl(v interface{}, d *schema.R
 }
 
 func flattenSwitchControllerManagedSwitchStormControlBroadcast(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSwitchControllerManagedSwitchStormControlBurstSizeLevel(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -4467,6 +4991,464 @@ func flattenSwitchControllerManagedSwitchSwitchProfile(v interface{}, d *schema.
 	return flattenStringList(v)
 }
 
+func flattenSwitchControllerManagedSwitchSystemDhcpServer(v interface{}, d *schema.ResourceData, pre string) []map[string]interface{} {
+	if v == nil {
+		return nil
+	}
+
+	l := v.([]interface{})
+	if len(l) == 0 || l[0] == nil {
+		return nil
+	}
+
+	result := make([]map[string]interface{}, 0, len(l))
+
+	con := 0
+	for _, r := range l {
+		tmp := make(map[string]interface{})
+		i := r.(map[string]interface{})
+
+		pre_append := "" // table
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "default_gateway"
+		if _, ok := i["default-gateway"]; ok {
+			v := flattenSwitchControllerManagedSwitchSystemDhcpServerDefaultGateway(i["default-gateway"], d, pre_append)
+			tmp["default_gateway"] = fortiAPISubPartPatch(v, "SwitchControllerManagedSwitch-SystemDhcpServer-DefaultGateway")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "dns_server1"
+		if _, ok := i["dns-server1"]; ok {
+			v := flattenSwitchControllerManagedSwitchSystemDhcpServerDnsServer1(i["dns-server1"], d, pre_append)
+			tmp["dns_server1"] = fortiAPISubPartPatch(v, "SwitchControllerManagedSwitch-SystemDhcpServer-DnsServer1")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "dns_server2"
+		if _, ok := i["dns-server2"]; ok {
+			v := flattenSwitchControllerManagedSwitchSystemDhcpServerDnsServer2(i["dns-server2"], d, pre_append)
+			tmp["dns_server2"] = fortiAPISubPartPatch(v, "SwitchControllerManagedSwitch-SystemDhcpServer-DnsServer2")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "dns_server3"
+		if _, ok := i["dns-server3"]; ok {
+			v := flattenSwitchControllerManagedSwitchSystemDhcpServerDnsServer3(i["dns-server3"], d, pre_append)
+			tmp["dns_server3"] = fortiAPISubPartPatch(v, "SwitchControllerManagedSwitch-SystemDhcpServer-DnsServer3")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "dns_service"
+		if _, ok := i["dns-service"]; ok {
+			v := flattenSwitchControllerManagedSwitchSystemDhcpServerDnsService(i["dns-service"], d, pre_append)
+			tmp["dns_service"] = fortiAPISubPartPatch(v, "SwitchControllerManagedSwitch-SystemDhcpServer-DnsService")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "id"
+		if _, ok := i["id"]; ok {
+			v := flattenSwitchControllerManagedSwitchSystemDhcpServerId(i["id"], d, pre_append)
+			tmp["id"] = fortiAPISubPartPatch(v, "SwitchControllerManagedSwitch-SystemDhcpServer-Id")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "interface"
+		if _, ok := i["interface"]; ok {
+			v := flattenSwitchControllerManagedSwitchSystemDhcpServerInterface(i["interface"], d, pre_append)
+			tmp["interface"] = fortiAPISubPartPatch(v, "SwitchControllerManagedSwitch-SystemDhcpServer-Interface")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "ip_range"
+		if _, ok := i["ip-range"]; ok {
+			v := flattenSwitchControllerManagedSwitchSystemDhcpServerIpRange(i["ip-range"], d, pre_append)
+			tmp["ip_range"] = fortiAPISubPartPatch(v, "SwitchControllerManagedSwitch-SystemDhcpServer-IpRange")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "lease_time"
+		if _, ok := i["lease-time"]; ok {
+			v := flattenSwitchControllerManagedSwitchSystemDhcpServerLeaseTime(i["lease-time"], d, pre_append)
+			tmp["lease_time"] = fortiAPISubPartPatch(v, "SwitchControllerManagedSwitch-SystemDhcpServer-LeaseTime")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "netmask"
+		if _, ok := i["netmask"]; ok {
+			v := flattenSwitchControllerManagedSwitchSystemDhcpServerNetmask(i["netmask"], d, pre_append)
+			tmp["netmask"] = fortiAPISubPartPatch(v, "SwitchControllerManagedSwitch-SystemDhcpServer-Netmask")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "ntp_server1"
+		if _, ok := i["ntp-server1"]; ok {
+			v := flattenSwitchControllerManagedSwitchSystemDhcpServerNtpServer1(i["ntp-server1"], d, pre_append)
+			tmp["ntp_server1"] = fortiAPISubPartPatch(v, "SwitchControllerManagedSwitch-SystemDhcpServer-NtpServer1")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "ntp_server2"
+		if _, ok := i["ntp-server2"]; ok {
+			v := flattenSwitchControllerManagedSwitchSystemDhcpServerNtpServer2(i["ntp-server2"], d, pre_append)
+			tmp["ntp_server2"] = fortiAPISubPartPatch(v, "SwitchControllerManagedSwitch-SystemDhcpServer-NtpServer2")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "ntp_server3"
+		if _, ok := i["ntp-server3"]; ok {
+			v := flattenSwitchControllerManagedSwitchSystemDhcpServerNtpServer3(i["ntp-server3"], d, pre_append)
+			tmp["ntp_server3"] = fortiAPISubPartPatch(v, "SwitchControllerManagedSwitch-SystemDhcpServer-NtpServer3")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "ntp_service"
+		if _, ok := i["ntp-service"]; ok {
+			v := flattenSwitchControllerManagedSwitchSystemDhcpServerNtpService(i["ntp-service"], d, pre_append)
+			tmp["ntp_service"] = fortiAPISubPartPatch(v, "SwitchControllerManagedSwitch-SystemDhcpServer-NtpService")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "options"
+		if _, ok := i["options"]; ok {
+			v := flattenSwitchControllerManagedSwitchSystemDhcpServerOptions(i["options"], d, pre_append)
+			tmp["options"] = fortiAPISubPartPatch(v, "SwitchControllerManagedSwitch-SystemDhcpServer-Options")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "status"
+		if _, ok := i["status"]; ok {
+			v := flattenSwitchControllerManagedSwitchSystemDhcpServerStatus(i["status"], d, pre_append)
+			tmp["status"] = fortiAPISubPartPatch(v, "SwitchControllerManagedSwitch-SystemDhcpServer-Status")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "switch_id"
+		if _, ok := i["switch-id"]; ok {
+			v := flattenSwitchControllerManagedSwitchSystemDhcpServerSwitchId(i["switch-id"], d, pre_append)
+			tmp["switch_id"] = fortiAPISubPartPatch(v, "SwitchControllerManagedSwitch-SystemDhcpServer-SwitchId")
+		}
+
+		if len(tmp) > 0 {
+			result = append(result, tmp)
+		}
+
+		con += 1
+	}
+
+	return result
+}
+
+func flattenSwitchControllerManagedSwitchSystemDhcpServerDefaultGateway(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSwitchControllerManagedSwitchSystemDhcpServerDnsServer1(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSwitchControllerManagedSwitchSystemDhcpServerDnsServer2(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSwitchControllerManagedSwitchSystemDhcpServerDnsServer3(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSwitchControllerManagedSwitchSystemDhcpServerDnsService(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSwitchControllerManagedSwitchSystemDhcpServerId(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSwitchControllerManagedSwitchSystemDhcpServerInterface(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
+func flattenSwitchControllerManagedSwitchSystemDhcpServerIpRange(v interface{}, d *schema.ResourceData, pre string) []map[string]interface{} {
+	if v == nil {
+		return nil
+	}
+
+	l := v.([]interface{})
+	if len(l) == 0 || l[0] == nil {
+		return nil
+	}
+
+	result := make([]map[string]interface{}, 0, len(l))
+
+	con := 0
+	for _, r := range l {
+		tmp := make(map[string]interface{})
+		i := r.(map[string]interface{})
+
+		pre_append := "" // table
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "end_ip"
+		if _, ok := i["end-ip"]; ok {
+			v := flattenSwitchControllerManagedSwitchSystemDhcpServerIpRangeEndIp(i["end-ip"], d, pre_append)
+			tmp["end_ip"] = fortiAPISubPartPatch(v, "SwitchControllerManagedSwitchSystemDhcpServer-IpRange-EndIp")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "id"
+		if _, ok := i["id"]; ok {
+			v := flattenSwitchControllerManagedSwitchSystemDhcpServerIpRangeId(i["id"], d, pre_append)
+			tmp["id"] = fortiAPISubPartPatch(v, "SwitchControllerManagedSwitchSystemDhcpServer-IpRange-Id")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "start_ip"
+		if _, ok := i["start-ip"]; ok {
+			v := flattenSwitchControllerManagedSwitchSystemDhcpServerIpRangeStartIp(i["start-ip"], d, pre_append)
+			tmp["start_ip"] = fortiAPISubPartPatch(v, "SwitchControllerManagedSwitchSystemDhcpServer-IpRange-StartIp")
+		}
+
+		if len(tmp) > 0 {
+			result = append(result, tmp)
+		}
+
+		con += 1
+	}
+
+	return result
+}
+
+func flattenSwitchControllerManagedSwitchSystemDhcpServerIpRangeEndIp(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSwitchControllerManagedSwitchSystemDhcpServerIpRangeId(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSwitchControllerManagedSwitchSystemDhcpServerIpRangeStartIp(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSwitchControllerManagedSwitchSystemDhcpServerLeaseTime(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSwitchControllerManagedSwitchSystemDhcpServerNetmask(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSwitchControllerManagedSwitchSystemDhcpServerNtpServer1(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSwitchControllerManagedSwitchSystemDhcpServerNtpServer2(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSwitchControllerManagedSwitchSystemDhcpServerNtpServer3(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSwitchControllerManagedSwitchSystemDhcpServerNtpService(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSwitchControllerManagedSwitchSystemDhcpServerOptions(v interface{}, d *schema.ResourceData, pre string) []map[string]interface{} {
+	if v == nil {
+		return nil
+	}
+
+	l := v.([]interface{})
+	if len(l) == 0 || l[0] == nil {
+		return nil
+	}
+
+	result := make([]map[string]interface{}, 0, len(l))
+
+	con := 0
+	for _, r := range l {
+		tmp := make(map[string]interface{})
+		i := r.(map[string]interface{})
+
+		pre_append := "" // table
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "code"
+		if _, ok := i["code"]; ok {
+			v := flattenSwitchControllerManagedSwitchSystemDhcpServerOptionsCode(i["code"], d, pre_append)
+			tmp["code"] = fortiAPISubPartPatch(v, "SwitchControllerManagedSwitchSystemDhcpServer-Options-Code")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "id"
+		if _, ok := i["id"]; ok {
+			v := flattenSwitchControllerManagedSwitchSystemDhcpServerOptionsId(i["id"], d, pre_append)
+			tmp["id"] = fortiAPISubPartPatch(v, "SwitchControllerManagedSwitchSystemDhcpServer-Options-Id")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "ip"
+		if _, ok := i["ip"]; ok {
+			v := flattenSwitchControllerManagedSwitchSystemDhcpServerOptionsIp(i["ip"], d, pre_append)
+			tmp["ip"] = fortiAPISubPartPatch(v, "SwitchControllerManagedSwitchSystemDhcpServer-Options-Ip")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "type"
+		if _, ok := i["type"]; ok {
+			v := flattenSwitchControllerManagedSwitchSystemDhcpServerOptionsType(i["type"], d, pre_append)
+			tmp["type"] = fortiAPISubPartPatch(v, "SwitchControllerManagedSwitchSystemDhcpServer-Options-Type")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "value"
+		if _, ok := i["value"]; ok {
+			v := flattenSwitchControllerManagedSwitchSystemDhcpServerOptionsValue(i["value"], d, pre_append)
+			tmp["value"] = fortiAPISubPartPatch(v, "SwitchControllerManagedSwitchSystemDhcpServer-Options-Value")
+		}
+
+		if len(tmp) > 0 {
+			result = append(result, tmp)
+		}
+
+		con += 1
+	}
+
+	return result
+}
+
+func flattenSwitchControllerManagedSwitchSystemDhcpServerOptionsCode(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSwitchControllerManagedSwitchSystemDhcpServerOptionsId(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSwitchControllerManagedSwitchSystemDhcpServerOptionsIp(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSwitchControllerManagedSwitchSystemDhcpServerOptionsType(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSwitchControllerManagedSwitchSystemDhcpServerOptionsValue(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSwitchControllerManagedSwitchSystemDhcpServerStatus(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSwitchControllerManagedSwitchSystemDhcpServerSwitchId(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
+func flattenSwitchControllerManagedSwitchSystemInterface(v interface{}, d *schema.ResourceData, pre string) []map[string]interface{} {
+	if v == nil {
+		return nil
+	}
+
+	l := v.([]interface{})
+	if len(l) == 0 || l[0] == nil {
+		return nil
+	}
+
+	result := make([]map[string]interface{}, 0, len(l))
+
+	con := 0
+	for _, r := range l {
+		tmp := make(map[string]interface{})
+		i := r.(map[string]interface{})
+
+		pre_append := "" // table
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "allowaccess"
+		if _, ok := i["allowaccess"]; ok {
+			v := flattenSwitchControllerManagedSwitchSystemInterfaceAllowaccess(i["allowaccess"], d, pre_append)
+			tmp["allowaccess"] = fortiAPISubPartPatch(v, "SwitchControllerManagedSwitch-SystemInterface-Allowaccess")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "interface"
+		if _, ok := i["interface"]; ok {
+			v := flattenSwitchControllerManagedSwitchSystemInterfaceInterface(i["interface"], d, pre_append)
+			tmp["interface"] = fortiAPISubPartPatch(v, "SwitchControllerManagedSwitch-SystemInterface-Interface")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "ip"
+		if _, ok := i["ip"]; ok {
+			v := flattenSwitchControllerManagedSwitchSystemInterfaceIp(i["ip"], d, pre_append)
+			tmp["ip"] = fortiAPISubPartPatch(v, "SwitchControllerManagedSwitch-SystemInterface-Ip")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "mode"
+		if _, ok := i["mode"]; ok {
+			v := flattenSwitchControllerManagedSwitchSystemInterfaceMode(i["mode"], d, pre_append)
+			tmp["mode"] = fortiAPISubPartPatch(v, "SwitchControllerManagedSwitch-SystemInterface-Mode")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "name"
+		if _, ok := i["name"]; ok {
+			v := flattenSwitchControllerManagedSwitchSystemInterfaceName(i["name"], d, pre_append)
+			tmp["name"] = fortiAPISubPartPatch(v, "SwitchControllerManagedSwitch-SystemInterface-Name")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "status"
+		if _, ok := i["status"]; ok {
+			v := flattenSwitchControllerManagedSwitchSystemInterfaceStatus(i["status"], d, pre_append)
+			tmp["status"] = fortiAPISubPartPatch(v, "SwitchControllerManagedSwitch-SystemInterface-Status")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "switch_id"
+		if _, ok := i["switch-id"]; ok {
+			v := flattenSwitchControllerManagedSwitchSystemInterfaceSwitchId(i["switch-id"], d, pre_append)
+			tmp["switch_id"] = fortiAPISubPartPatch(v, "SwitchControllerManagedSwitch-SystemInterface-SwitchId")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "type"
+		if _, ok := i["type"]; ok {
+			v := flattenSwitchControllerManagedSwitchSystemInterfaceType(i["type"], d, pre_append)
+			tmp["type"] = fortiAPISubPartPatch(v, "SwitchControllerManagedSwitch-SystemInterface-Type")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "vlan"
+		if _, ok := i["vlan"]; ok {
+			v := flattenSwitchControllerManagedSwitchSystemInterfaceVlan(i["vlan"], d, pre_append)
+			tmp["vlan"] = fortiAPISubPartPatch(v, "SwitchControllerManagedSwitch-SystemInterface-Vlan")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "vrf"
+		if _, ok := i["vrf"]; ok {
+			v := flattenSwitchControllerManagedSwitchSystemInterfaceVrf(i["vrf"], d, pre_append)
+			tmp["vrf"] = fortiAPISubPartPatch(v, "SwitchControllerManagedSwitch-SystemInterface-Vrf")
+		}
+
+		if len(tmp) > 0 {
+			result = append(result, tmp)
+		}
+
+		con += 1
+	}
+
+	return result
+}
+
+func flattenSwitchControllerManagedSwitchSystemInterfaceAllowaccess(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
+func flattenSwitchControllerManagedSwitchSystemInterfaceInterface(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
+func flattenSwitchControllerManagedSwitchSystemInterfaceIp(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
+func flattenSwitchControllerManagedSwitchSystemInterfaceMode(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSwitchControllerManagedSwitchSystemInterfaceName(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSwitchControllerManagedSwitchSystemInterfaceStatus(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSwitchControllerManagedSwitchSystemInterfaceSwitchId(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
+func flattenSwitchControllerManagedSwitchSystemInterfaceType(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSwitchControllerManagedSwitchSystemInterfaceVlan(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
+func flattenSwitchControllerManagedSwitchSystemInterfaceVrf(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
 func flattenSwitchControllerManagedSwitchTdrSupported(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -4529,7 +5511,7 @@ func flattenSwitchControllerManagedSwitchVlanAssignmentPriority(v interface{}, d
 }
 
 func flattenSwitchControllerManagedSwitchVlanVlanName(v interface{}, d *schema.ResourceData, pre string) interface{} {
-	return flattenStringList(v)
+	return conv2str(v)
 }
 
 func refreshObjectSwitchControllerManagedSwitch(d *schema.ResourceData, o map[string]interface{}) error {
@@ -5145,6 +6127,54 @@ func refreshObjectSwitchControllerManagedSwitch(d *schema.ResourceData, o map[st
 		}
 	}
 
+	if isImportTable() {
+		if err = d.Set("router_static", flattenSwitchControllerManagedSwitchRouterStatic(o["router-static"], d, "router_static")); err != nil {
+			if vv, ok := fortiAPIPatch(o["router-static"], "SwitchControllerManagedSwitch-RouterStatic"); ok {
+				if err = d.Set("router_static", vv); err != nil {
+					return fmt.Errorf("Error reading router_static: %v", err)
+				}
+			} else {
+				return fmt.Errorf("Error reading router_static: %v", err)
+			}
+		}
+	} else {
+		if _, ok := d.GetOk("router_static"); ok {
+			if err = d.Set("router_static", flattenSwitchControllerManagedSwitchRouterStatic(o["router-static"], d, "router_static")); err != nil {
+				if vv, ok := fortiAPIPatch(o["router-static"], "SwitchControllerManagedSwitch-RouterStatic"); ok {
+					if err = d.Set("router_static", vv); err != nil {
+						return fmt.Errorf("Error reading router_static: %v", err)
+					}
+				} else {
+					return fmt.Errorf("Error reading router_static: %v", err)
+				}
+			}
+		}
+	}
+
+	if isImportTable() {
+		if err = d.Set("router_vrf", flattenSwitchControllerManagedSwitchRouterVrf(o["router-vrf"], d, "router_vrf")); err != nil {
+			if vv, ok := fortiAPIPatch(o["router-vrf"], "SwitchControllerManagedSwitch-RouterVrf"); ok {
+				if err = d.Set("router_vrf", vv); err != nil {
+					return fmt.Errorf("Error reading router_vrf: %v", err)
+				}
+			} else {
+				return fmt.Errorf("Error reading router_vrf: %v", err)
+			}
+		}
+	} else {
+		if _, ok := d.GetOk("router_vrf"); ok {
+			if err = d.Set("router_vrf", flattenSwitchControllerManagedSwitchRouterVrf(o["router-vrf"], d, "router_vrf")); err != nil {
+				if vv, ok := fortiAPIPatch(o["router-vrf"], "SwitchControllerManagedSwitch-RouterVrf"); ok {
+					if err = d.Set("router_vrf", vv); err != nil {
+						return fmt.Errorf("Error reading router_vrf: %v", err)
+					}
+				} else {
+					return fmt.Errorf("Error reading router_vrf: %v", err)
+				}
+			}
+		}
+	}
+
 	if err = d.Set("sn", flattenSwitchControllerManagedSwitchSn(o["sn"], d, "sn")); err != nil {
 		if vv, ok := fortiAPIPatch(o["sn"], "SwitchControllerManagedSwitch-Sn"); ok {
 			if err = d.Set("sn", vv); err != nil {
@@ -5418,6 +6448,54 @@ func refreshObjectSwitchControllerManagedSwitch(d *schema.ResourceData, o map[st
 			}
 		} else {
 			return fmt.Errorf("Error reading switch_profile: %v", err)
+		}
+	}
+
+	if isImportTable() {
+		if err = d.Set("system_dhcp_server", flattenSwitchControllerManagedSwitchSystemDhcpServer(o["system-dhcp-server"], d, "system_dhcp_server")); err != nil {
+			if vv, ok := fortiAPIPatch(o["system-dhcp-server"], "SwitchControllerManagedSwitch-SystemDhcpServer"); ok {
+				if err = d.Set("system_dhcp_server", vv); err != nil {
+					return fmt.Errorf("Error reading system_dhcp_server: %v", err)
+				}
+			} else {
+				return fmt.Errorf("Error reading system_dhcp_server: %v", err)
+			}
+		}
+	} else {
+		if _, ok := d.GetOk("system_dhcp_server"); ok {
+			if err = d.Set("system_dhcp_server", flattenSwitchControllerManagedSwitchSystemDhcpServer(o["system-dhcp-server"], d, "system_dhcp_server")); err != nil {
+				if vv, ok := fortiAPIPatch(o["system-dhcp-server"], "SwitchControllerManagedSwitch-SystemDhcpServer"); ok {
+					if err = d.Set("system_dhcp_server", vv); err != nil {
+						return fmt.Errorf("Error reading system_dhcp_server: %v", err)
+					}
+				} else {
+					return fmt.Errorf("Error reading system_dhcp_server: %v", err)
+				}
+			}
+		}
+	}
+
+	if isImportTable() {
+		if err = d.Set("system_interface", flattenSwitchControllerManagedSwitchSystemInterface(o["system-interface"], d, "system_interface")); err != nil {
+			if vv, ok := fortiAPIPatch(o["system-interface"], "SwitchControllerManagedSwitch-SystemInterface"); ok {
+				if err = d.Set("system_interface", vv); err != nil {
+					return fmt.Errorf("Error reading system_interface: %v", err)
+				}
+			} else {
+				return fmt.Errorf("Error reading system_interface: %v", err)
+			}
+		}
+	} else {
+		if _, ok := d.GetOk("system_interface"); ok {
+			if err = d.Set("system_interface", flattenSwitchControllerManagedSwitchSystemInterface(o["system-interface"], d, "system_interface")); err != nil {
+				if vv, ok := fortiAPIPatch(o["system-interface"], "SwitchControllerManagedSwitch-SystemInterface"); ok {
+					if err = d.Set("system_interface", vv); err != nil {
+						return fmt.Errorf("Error reading system_interface: %v", err)
+					}
+				} else {
+					return fmt.Errorf("Error reading system_interface: %v", err)
+				}
+			}
 		}
 	}
 
@@ -5884,7 +6962,7 @@ func expandSwitchControllerManagedSwitchIgmpSnoopingVlansVersion(d *schema.Resou
 }
 
 func expandSwitchControllerManagedSwitchIgmpSnoopingVlansVlanName(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
-	return expandStringList(v.(*schema.Set).List()), nil
+	return v, nil
 }
 
 func expandSwitchControllerManagedSwitchIpSourceGuard(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
@@ -6792,7 +7870,7 @@ func expandSwitchControllerManagedSwitchPortsDhcpSnoopOption82OverrideRemoteId(d
 }
 
 func expandSwitchControllerManagedSwitchPortsDhcpSnoopOption82OverrideVlanName(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
-	return expandStringList(v.(*schema.Set).List()), nil
+	return v, nil
 }
 
 func expandSwitchControllerManagedSwitchPortsDhcpSnoopOption82Trust(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
@@ -7361,7 +8439,181 @@ func expandSwitchControllerManagedSwitchRouteOffloadRouterRouterIp(d *schema.Res
 }
 
 func expandSwitchControllerManagedSwitchRouteOffloadRouterVlanName(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSwitchControllerManagedSwitchRouterStatic(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	l := v.([]interface{})
+	result := make([]map[string]interface{}, 0, len(l))
+
+	if len(l) == 0 || l[0] == nil {
+		return result, nil
+	}
+
+	con := 0
+	for _, r := range l {
+		tmp := make(map[string]interface{})
+		i := r.(map[string]interface{})
+		pre_append := "" // table
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "blackhole"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["blackhole"], _ = expandSwitchControllerManagedSwitchRouterStaticBlackhole(d, i["blackhole"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "comment"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["comment"], _ = expandSwitchControllerManagedSwitchRouterStaticComment(d, i["comment"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "device"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["device"], _ = expandSwitchControllerManagedSwitchRouterStaticDevice(d, i["device"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "distance"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["distance"], _ = expandSwitchControllerManagedSwitchRouterStaticDistance(d, i["distance"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "dst"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["dst"], _ = expandSwitchControllerManagedSwitchRouterStaticDst(d, i["dst"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "dynamic_gateway"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["dynamic-gateway"], _ = expandSwitchControllerManagedSwitchRouterStaticDynamicGateway(d, i["dynamic_gateway"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "gateway"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["gateway"], _ = expandSwitchControllerManagedSwitchRouterStaticGateway(d, i["gateway"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "id"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["id"], _ = expandSwitchControllerManagedSwitchRouterStaticId(d, i["id"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "status"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["status"], _ = expandSwitchControllerManagedSwitchRouterStaticStatus(d, i["status"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "switch_id"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["switch-id"], _ = expandSwitchControllerManagedSwitchRouterStaticSwitchId(d, i["switch_id"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "vrf"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["vrf"], _ = expandSwitchControllerManagedSwitchRouterStaticVrf(d, i["vrf"], pre_append)
+		}
+
+		if len(tmp) > 0 {
+			result = append(result, tmp)
+		}
+
+		con += 1
+	}
+
+	return result, nil
+}
+
+func expandSwitchControllerManagedSwitchRouterStaticBlackhole(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSwitchControllerManagedSwitchRouterStaticComment(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSwitchControllerManagedSwitchRouterStaticDevice(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandSwitchControllerManagedSwitchRouterStaticDistance(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSwitchControllerManagedSwitchRouterStaticDst(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.([]interface{})), nil
+}
+
+func expandSwitchControllerManagedSwitchRouterStaticDynamicGateway(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSwitchControllerManagedSwitchRouterStaticGateway(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSwitchControllerManagedSwitchRouterStaticId(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSwitchControllerManagedSwitchRouterStaticStatus(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSwitchControllerManagedSwitchRouterStaticSwitchId(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandSwitchControllerManagedSwitchRouterStaticVrf(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandSwitchControllerManagedSwitchRouterVrf(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	l := v.([]interface{})
+	result := make([]map[string]interface{}, 0, len(l))
+
+	if len(l) == 0 || l[0] == nil {
+		return result, nil
+	}
+
+	con := 0
+	for _, r := range l {
+		tmp := make(map[string]interface{})
+		i := r.(map[string]interface{})
+		pre_append := "" // table
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "name"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["name"], _ = expandSwitchControllerManagedSwitchRouterVrfName(d, i["name"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "switch_id"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["switch-id"], _ = expandSwitchControllerManagedSwitchRouterVrfSwitchId(d, i["switch_id"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "vrfid"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["vrfid"], _ = expandSwitchControllerManagedSwitchRouterVrfVrfid(d, i["vrfid"], pre_append)
+		}
+
+		if len(tmp) > 0 {
+			result = append(result, tmp)
+		}
+
+		con += 1
+	}
+
+	return result, nil
+}
+
+func expandSwitchControllerManagedSwitchRouterVrfName(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSwitchControllerManagedSwitchRouterVrfSwitchId(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandSwitchControllerManagedSwitchRouterVrfVrfid(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
 }
 
 func expandSwitchControllerManagedSwitchSn(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
@@ -7854,6 +9106,10 @@ func expandSwitchControllerManagedSwitchStormControl(d *schema.ResourceData, v i
 	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
 		result["broadcast"], _ = expandSwitchControllerManagedSwitchStormControlBroadcast(d, i["broadcast"], pre_append)
 	}
+	pre_append = pre + ".0." + "burst_size_level"
+	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+		result["burst-size-level"], _ = expandSwitchControllerManagedSwitchStormControlBurstSizeLevel(d, i["burst_size_level"], pre_append)
+	}
 	pre_append = pre + ".0." + "local_override"
 	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
 		result["local-override"], _ = expandSwitchControllerManagedSwitchStormControlLocalOverride(d, i["local_override"], pre_append)
@@ -7875,6 +9131,10 @@ func expandSwitchControllerManagedSwitchStormControl(d *schema.ResourceData, v i
 }
 
 func expandSwitchControllerManagedSwitchStormControlBroadcast(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSwitchControllerManagedSwitchStormControlBurstSizeLevel(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -8076,6 +9336,419 @@ func expandSwitchControllerManagedSwitchSwitchProfile(d *schema.ResourceData, v 
 	return expandStringList(v.(*schema.Set).List()), nil
 }
 
+func expandSwitchControllerManagedSwitchSystemDhcpServer(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	l := v.([]interface{})
+	result := make([]map[string]interface{}, 0, len(l))
+
+	if len(l) == 0 || l[0] == nil {
+		return result, nil
+	}
+
+	con := 0
+	for _, r := range l {
+		tmp := make(map[string]interface{})
+		i := r.(map[string]interface{})
+		pre_append := "" // table
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "default_gateway"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["default-gateway"], _ = expandSwitchControllerManagedSwitchSystemDhcpServerDefaultGateway(d, i["default_gateway"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "dns_server1"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["dns-server1"], _ = expandSwitchControllerManagedSwitchSystemDhcpServerDnsServer1(d, i["dns_server1"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "dns_server2"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["dns-server2"], _ = expandSwitchControllerManagedSwitchSystemDhcpServerDnsServer2(d, i["dns_server2"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "dns_server3"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["dns-server3"], _ = expandSwitchControllerManagedSwitchSystemDhcpServerDnsServer3(d, i["dns_server3"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "dns_service"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["dns-service"], _ = expandSwitchControllerManagedSwitchSystemDhcpServerDnsService(d, i["dns_service"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "id"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["id"], _ = expandSwitchControllerManagedSwitchSystemDhcpServerId(d, i["id"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "interface"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["interface"], _ = expandSwitchControllerManagedSwitchSystemDhcpServerInterface(d, i["interface"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "ip_range"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			t, err := expandSwitchControllerManagedSwitchSystemDhcpServerIpRange(d, i["ip_range"], pre_append)
+			if err != nil {
+				return result, err
+			} else if t != nil {
+				tmp["ip-range"] = t
+			}
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "lease_time"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["lease-time"], _ = expandSwitchControllerManagedSwitchSystemDhcpServerLeaseTime(d, i["lease_time"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "netmask"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["netmask"], _ = expandSwitchControllerManagedSwitchSystemDhcpServerNetmask(d, i["netmask"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "ntp_server1"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["ntp-server1"], _ = expandSwitchControllerManagedSwitchSystemDhcpServerNtpServer1(d, i["ntp_server1"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "ntp_server2"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["ntp-server2"], _ = expandSwitchControllerManagedSwitchSystemDhcpServerNtpServer2(d, i["ntp_server2"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "ntp_server3"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["ntp-server3"], _ = expandSwitchControllerManagedSwitchSystemDhcpServerNtpServer3(d, i["ntp_server3"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "ntp_service"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["ntp-service"], _ = expandSwitchControllerManagedSwitchSystemDhcpServerNtpService(d, i["ntp_service"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "options"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			t, err := expandSwitchControllerManagedSwitchSystemDhcpServerOptions(d, i["options"], pre_append)
+			if err != nil {
+				return result, err
+			} else if t != nil {
+				tmp["options"] = t
+			}
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "status"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["status"], _ = expandSwitchControllerManagedSwitchSystemDhcpServerStatus(d, i["status"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "switch_id"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["switch-id"], _ = expandSwitchControllerManagedSwitchSystemDhcpServerSwitchId(d, i["switch_id"], pre_append)
+		}
+
+		if len(tmp) > 0 {
+			result = append(result, tmp)
+		}
+
+		con += 1
+	}
+
+	return result, nil
+}
+
+func expandSwitchControllerManagedSwitchSystemDhcpServerDefaultGateway(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSwitchControllerManagedSwitchSystemDhcpServerDnsServer1(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSwitchControllerManagedSwitchSystemDhcpServerDnsServer2(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSwitchControllerManagedSwitchSystemDhcpServerDnsServer3(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSwitchControllerManagedSwitchSystemDhcpServerDnsService(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSwitchControllerManagedSwitchSystemDhcpServerId(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSwitchControllerManagedSwitchSystemDhcpServerInterface(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandSwitchControllerManagedSwitchSystemDhcpServerIpRange(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	l := v.([]interface{})
+	result := make([]map[string]interface{}, 0, len(l))
+
+	if len(l) == 0 || l[0] == nil {
+		return result, nil
+	}
+
+	con := 0
+	for _, r := range l {
+		tmp := make(map[string]interface{})
+		i := r.(map[string]interface{})
+		pre_append := "" // table
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "end_ip"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["end-ip"], _ = expandSwitchControllerManagedSwitchSystemDhcpServerIpRangeEndIp(d, i["end_ip"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "id"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["id"], _ = expandSwitchControllerManagedSwitchSystemDhcpServerIpRangeId(d, i["id"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "start_ip"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["start-ip"], _ = expandSwitchControllerManagedSwitchSystemDhcpServerIpRangeStartIp(d, i["start_ip"], pre_append)
+		}
+
+		if len(tmp) > 0 {
+			result = append(result, tmp)
+		}
+
+		con += 1
+	}
+
+	return result, nil
+}
+
+func expandSwitchControllerManagedSwitchSystemDhcpServerIpRangeEndIp(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSwitchControllerManagedSwitchSystemDhcpServerIpRangeId(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSwitchControllerManagedSwitchSystemDhcpServerIpRangeStartIp(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSwitchControllerManagedSwitchSystemDhcpServerLeaseTime(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSwitchControllerManagedSwitchSystemDhcpServerNetmask(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSwitchControllerManagedSwitchSystemDhcpServerNtpServer1(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSwitchControllerManagedSwitchSystemDhcpServerNtpServer2(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSwitchControllerManagedSwitchSystemDhcpServerNtpServer3(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSwitchControllerManagedSwitchSystemDhcpServerNtpService(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSwitchControllerManagedSwitchSystemDhcpServerOptions(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	l := v.([]interface{})
+	result := make([]map[string]interface{}, 0, len(l))
+
+	if len(l) == 0 || l[0] == nil {
+		return result, nil
+	}
+
+	con := 0
+	for _, r := range l {
+		tmp := make(map[string]interface{})
+		i := r.(map[string]interface{})
+		pre_append := "" // table
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "code"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["code"], _ = expandSwitchControllerManagedSwitchSystemDhcpServerOptionsCode(d, i["code"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "id"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["id"], _ = expandSwitchControllerManagedSwitchSystemDhcpServerOptionsId(d, i["id"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "ip"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["ip"], _ = expandSwitchControllerManagedSwitchSystemDhcpServerOptionsIp(d, i["ip"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "type"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["type"], _ = expandSwitchControllerManagedSwitchSystemDhcpServerOptionsType(d, i["type"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "value"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["value"], _ = expandSwitchControllerManagedSwitchSystemDhcpServerOptionsValue(d, i["value"], pre_append)
+		}
+
+		if len(tmp) > 0 {
+			result = append(result, tmp)
+		}
+
+		con += 1
+	}
+
+	return result, nil
+}
+
+func expandSwitchControllerManagedSwitchSystemDhcpServerOptionsCode(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSwitchControllerManagedSwitchSystemDhcpServerOptionsId(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSwitchControllerManagedSwitchSystemDhcpServerOptionsIp(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSwitchControllerManagedSwitchSystemDhcpServerOptionsType(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSwitchControllerManagedSwitchSystemDhcpServerOptionsValue(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSwitchControllerManagedSwitchSystemDhcpServerStatus(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSwitchControllerManagedSwitchSystemDhcpServerSwitchId(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandSwitchControllerManagedSwitchSystemInterface(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	l := v.([]interface{})
+	result := make([]map[string]interface{}, 0, len(l))
+
+	if len(l) == 0 || l[0] == nil {
+		return result, nil
+	}
+
+	con := 0
+	for _, r := range l {
+		tmp := make(map[string]interface{})
+		i := r.(map[string]interface{})
+		pre_append := "" // table
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "allowaccess"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["allowaccess"], _ = expandSwitchControllerManagedSwitchSystemInterfaceAllowaccess(d, i["allowaccess"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "interface"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["interface"], _ = expandSwitchControllerManagedSwitchSystemInterfaceInterface(d, i["interface"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "ip"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["ip"], _ = expandSwitchControllerManagedSwitchSystemInterfaceIp(d, i["ip"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "mode"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["mode"], _ = expandSwitchControllerManagedSwitchSystemInterfaceMode(d, i["mode"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "name"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["name"], _ = expandSwitchControllerManagedSwitchSystemInterfaceName(d, i["name"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "status"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["status"], _ = expandSwitchControllerManagedSwitchSystemInterfaceStatus(d, i["status"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "switch_id"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["switch-id"], _ = expandSwitchControllerManagedSwitchSystemInterfaceSwitchId(d, i["switch_id"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "type"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["type"], _ = expandSwitchControllerManagedSwitchSystemInterfaceType(d, i["type"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "vlan"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["vlan"], _ = expandSwitchControllerManagedSwitchSystemInterfaceVlan(d, i["vlan"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "vrf"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["vrf"], _ = expandSwitchControllerManagedSwitchSystemInterfaceVrf(d, i["vrf"], pre_append)
+		}
+
+		if len(tmp) > 0 {
+			result = append(result, tmp)
+		}
+
+		con += 1
+	}
+
+	return result, nil
+}
+
+func expandSwitchControllerManagedSwitchSystemInterfaceAllowaccess(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandSwitchControllerManagedSwitchSystemInterfaceInterface(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandSwitchControllerManagedSwitchSystemInterfaceIp(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.([]interface{})), nil
+}
+
+func expandSwitchControllerManagedSwitchSystemInterfaceMode(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSwitchControllerManagedSwitchSystemInterfaceName(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSwitchControllerManagedSwitchSystemInterfaceStatus(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSwitchControllerManagedSwitchSystemInterfaceSwitchId(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandSwitchControllerManagedSwitchSystemInterfaceType(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSwitchControllerManagedSwitchSystemInterfaceVlan(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandSwitchControllerManagedSwitchSystemInterfaceVrf(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
 func expandSwitchControllerManagedSwitchTdrSupported(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -8131,7 +9804,7 @@ func expandSwitchControllerManagedSwitchVlanAssignmentPriority(d *schema.Resourc
 }
 
 func expandSwitchControllerManagedSwitchVlanVlanName(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
-	return expandStringList(v.(*schema.Set).List()), nil
+	return v, nil
 }
 
 func getObjectSwitchControllerManagedSwitch(d *schema.ResourceData) (*map[string]interface{}, error) {
@@ -8569,6 +10242,24 @@ func getObjectSwitchControllerManagedSwitch(d *schema.ResourceData) (*map[string
 		}
 	}
 
+	if v, ok := d.GetOk("router_static"); ok || d.HasChange("router_static") {
+		t, err := expandSwitchControllerManagedSwitchRouterStatic(d, v, "router_static")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["router-static"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("router_vrf"); ok || d.HasChange("router_vrf") {
+		t, err := expandSwitchControllerManagedSwitchRouterVrf(d, v, "router_vrf")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["router-vrf"] = t
+		}
+	}
+
 	if v, ok := d.GetOk("sn"); ok || d.HasChange("sn") {
 		t, err := expandSwitchControllerManagedSwitchSn(d, v, "sn")
 		if err != nil {
@@ -8701,6 +10392,24 @@ func getObjectSwitchControllerManagedSwitch(d *schema.ResourceData) (*map[string
 			return &obj, err
 		} else if t != nil {
 			obj["switch-profile"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("system_dhcp_server"); ok || d.HasChange("system_dhcp_server") {
+		t, err := expandSwitchControllerManagedSwitchSystemDhcpServer(d, v, "system_dhcp_server")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["system-dhcp-server"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("system_interface"); ok || d.HasChange("system_interface") {
+		t, err := expandSwitchControllerManagedSwitchSystemInterface(d, v, "system_interface")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["system-interface"] = t
 		}
 	}
 

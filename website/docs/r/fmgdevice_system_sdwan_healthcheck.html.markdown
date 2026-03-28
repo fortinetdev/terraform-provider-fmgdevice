@@ -40,6 +40,8 @@ The following arguments are supported:
 
 * `addr_mode` - Address mode (IPv4 or IPv6). Valid values: `ipv4`, `ipv6`.
 
+* `agent_probe_timeout` - Time to wait before a probe packet is considered lost when detect-mode is agent (5000 - 3600*1000 msec, default = 60000).
+* `bandwidth_weight` - Coefficient of reciprocal of available bidirectional bandwidth in the formula of custom-profile-1.
 * `class_id` - Traffic class ID.
 * `detect_mode` - The mode determining how to detect the server. Valid values: `active`, `passive`, `prefer-passive`, `remote`, `agent-based`.
 
@@ -60,10 +62,13 @@ The following arguments are supported:
 * `http_get` - URL used to communicate with the server if the protocol if the protocol is HTTP.
 * `http_match` - Response string expected from the server if the protocol is HTTP.
 * `interval` - Status check interval in milliseconds, or the time between attempting to connect to the server (20 - 3600*1000 msec, default = 500).
+* `jitter_weight` - Coefficient of jitter in the formula of custom-profile-1.
+* `latency_weight` - Coefficient of latency in the formula of custom-profile-1.
 * `members` - Member sequence number list.
 * `mos_codec` - Codec to use for MOS calculation (default = g711). Valid values: `g711`, `g722`, `g729`.
 
 * `name` - Status check or health check name.
+* `packet_loss_weight` - Coefficient of packet-loss in the formula of custom-profile-1.
 * `packet_size` - Packet size of a TWAMP test session. (124/158 - 1024)
 * `password` - TWAMP controller password in authentication mode.
 * `port` - Port number used to communicate with the server over the selected protocol (0 - 65535, default = 0, auto select. http, tcp-connect: 80, udp-echo, tcp-echo: 7, dns: 53, ftp: 21, twamp: 862).
@@ -76,6 +81,7 @@ The following arguments are supported:
 * `quality_measured_method` - Method to measure the quality of tcp-connect. Valid values: `half-close`, `half-open`.
 
 * `recoverytime` - Number of successful responses received before server is considered recovered (1 - 3600, default = 5).
+* `remote_probe_timeout` - Time to wait before a probe packet is considered lost when detect-mode is remote (20 - 3600*1000 msec, default = 5000).
 * `security_mode` - Twamp controller security mode. Valid values: `none`, `authentication`.
 
 * `server` - IP address or FQDN name of the server.
@@ -103,6 +109,7 @@ The following arguments are supported:
 
 The `sla` block supports:
 
+* `custom_profile_threshold` - Custom profile threshold for SLA to be marked as pass(0 - 10000000, default = 0).
 * `id` - SLA ID.
 * `jitter_threshold` - Jitter for SLA to make decision in milliseconds. (0 - 10000000, default = 5).
 * `latency_threshold` - Latency for SLA to make decision in milliseconds. (0 - 10000000, default = 5).

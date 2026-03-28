@@ -28,6 +28,17 @@ func resourceSystemClusterSyncSessionSyncFilterCustomService() *schema.Resource 
 		},
 
 		Schema: map[string]*schema.Schema{
+			"update_if_exist": &schema.Schema{
+				Type:     schema.TypeBool,
+				Optional: true,
+				Computed: true,
+			},
+
+			"adom": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"device_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -64,8 +75,12 @@ func resourceSystemClusterSyncSessionSyncFilterCustomServiceCreate(d *schema.Res
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -74,17 +89,37 @@ func resourceSystemClusterSyncSessionSyncFilterCustomServiceCreate(d *schema.Res
 	paradict["device"] = device_name
 	paradict["cluster_sync"] = cluster_sync
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectSystemClusterSyncSessionSyncFilterCustomService(d)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemClusterSyncSessionSyncFilterCustomService resource while getting object: %v", err)
 	}
+	wsParams["adom"] = adomv
 
-	_, err = c.CreateSystemClusterSyncSessionSyncFilterCustomService(obj, paradict, wsParams)
-	if err != nil {
-		return fmt.Errorf("Error creating SystemClusterSyncSessionSyncFilterCustomService resource: %v", err)
+	update_if_exist := getUpdateIfExist(c, d)
+	mkey_tf, mkey_ok := d.GetOk("fosid")
+	mkey := fmt.Sprint(mkey_tf)
+	o := make(map[string]interface{})
+	existing := false
+
+	if update_if_exist && mkey_ok {
+		// check existing
+		o, err = c.ReadSystemClusterSyncSessionSyncFilterCustomService(mkey, paradict)
+		if err == nil && o != nil {
+			existing = true
+			// update if existing
+			o, err = c.UpdateSystemClusterSyncSessionSyncFilterCustomService(obj, mkey, paradict, wsParams)
+			if err != nil {
+				return fmt.Errorf("Error updating SystemClusterSyncSessionSyncFilterCustomService resource: %v", err)
+			}
+		}
+	}
+
+	if !existing {
+		_, err = c.CreateSystemClusterSyncSessionSyncFilterCustomService(obj, paradict, wsParams)
+		if err != nil {
+			return fmt.Errorf("Error creating SystemClusterSyncSessionSyncFilterCustomService resource: %v", err)
+		}
+
 	}
 
 	d.SetId(strconv.Itoa(getIntKey(d, "fosid")))
@@ -99,8 +134,12 @@ func resourceSystemClusterSyncSessionSyncFilterCustomServiceUpdate(d *schema.Res
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -109,13 +148,12 @@ func resourceSystemClusterSyncSessionSyncFilterCustomServiceUpdate(d *schema.Res
 	paradict["device"] = device_name
 	paradict["cluster_sync"] = cluster_sync
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectSystemClusterSyncSessionSyncFilterCustomService(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemClusterSyncSessionSyncFilterCustomService resource while getting object: %v", err)
 	}
+
+	wsParams["adom"] = adomv
 
 	_, err = c.UpdateSystemClusterSyncSessionSyncFilterCustomService(obj, mkey, paradict, wsParams)
 	if err != nil {
@@ -137,8 +175,12 @@ func resourceSystemClusterSyncSessionSyncFilterCustomServiceDelete(d *schema.Res
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -147,9 +189,7 @@ func resourceSystemClusterSyncSessionSyncFilterCustomServiceDelete(d *schema.Res
 	paradict["device"] = device_name
 	paradict["cluster_sync"] = cluster_sync
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
+	wsParams["adom"] = adomv
 
 	err = c.DeleteSystemClusterSyncSessionSyncFilterCustomService(mkey, paradict, wsParams)
 	if err != nil {
@@ -168,8 +208,8 @@ func resourceSystemClusterSyncSessionSyncFilterCustomServiceRead(d *schema.Resou
 	c.Retries = 1
 
 	paradict := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	cluster_sync := d.Get("cluster_sync").(string)
 	if device_name == "" {
@@ -195,6 +235,7 @@ func resourceSystemClusterSyncSessionSyncFilterCustomServiceRead(d *schema.Resou
 
 	o, err := c.ReadSystemClusterSyncSessionSyncFilterCustomService(mkey, paradict)
 	if err != nil {
+		d.SetId("")
 		return fmt.Errorf("Error reading SystemClusterSyncSessionSyncFilterCustomService resource: %v", err)
 	}
 

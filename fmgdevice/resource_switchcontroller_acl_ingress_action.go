@@ -28,6 +28,12 @@ func resourceSwitchControllerAclIngressAction() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
+
+			"adom": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"device_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -66,8 +72,12 @@ func resourceSwitchControllerAclIngressActionUpdate(d *schema.ResourceData, m in
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -81,13 +91,12 @@ func resourceSwitchControllerAclIngressActionUpdate(d *schema.ResourceData, m in
 	paradict["vdom"] = device_vdom
 	paradict["ingress"] = ingress
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectSwitchControllerAclIngressAction(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SwitchControllerAclIngressAction resource while getting object: %v", err)
 	}
+
+	wsParams["adom"] = adomv
 
 	_, err = c.UpdateSwitchControllerAclIngressAction(obj, mkey, paradict, wsParams)
 	if err != nil {
@@ -109,8 +118,12 @@ func resourceSwitchControllerAclIngressActionDelete(d *schema.ResourceData, m in
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -124,9 +137,7 @@ func resourceSwitchControllerAclIngressActionDelete(d *schema.ResourceData, m in
 	paradict["vdom"] = device_vdom
 	paradict["ingress"] = ingress
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
+	wsParams["adom"] = adomv
 
 	err = c.DeleteSwitchControllerAclIngressAction(mkey, paradict, wsParams)
 	if err != nil {
@@ -145,8 +156,8 @@ func resourceSwitchControllerAclIngressActionRead(d *schema.ResourceData, m inte
 	c.Retries = 1
 
 	paradict := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	device_vdom, err := getVariable(cfg, d, "device_vdom")
 	ingress := d.Get("ingress").(string)
@@ -183,6 +194,7 @@ func resourceSwitchControllerAclIngressActionRead(d *schema.ResourceData, m inte
 
 	o, err := c.ReadSwitchControllerAclIngressAction(mkey, paradict)
 	if err != nil {
+		d.SetId("")
 		return fmt.Errorf("Error reading SwitchControllerAclIngressAction resource: %v", err)
 	}
 

@@ -28,6 +28,12 @@ func resourceSystemSdwan() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
+
+			"adom": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"device_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -150,6 +156,14 @@ func resourceSystemSdwan() *schema.Resource {
 							Optional: true,
 							Computed: true,
 						},
+						"agent_probe_timeout": &schema.Schema{
+							Type:     schema.TypeInt,
+							Optional: true,
+						},
+						"bandwidth_weight": &schema.Schema{
+							Type:     schema.TypeInt,
+							Optional: true,
+						},
 						"class_id": &schema.Schema{
 							Type:     schema.TypeSet,
 							Elem:     &schema.Schema{Type: schema.TypeString},
@@ -229,6 +243,14 @@ func resourceSystemSdwan() *schema.Resource {
 							Optional: true,
 							Computed: true,
 						},
+						"jitter_weight": &schema.Schema{
+							Type:     schema.TypeInt,
+							Optional: true,
+						},
+						"latency_weight": &schema.Schema{
+							Type:     schema.TypeInt,
+							Optional: true,
+						},
 						"members": &schema.Schema{
 							Type:     schema.TypeSet,
 							Elem:     &schema.Schema{Type: schema.TypeString},
@@ -242,6 +264,10 @@ func resourceSystemSdwan() *schema.Resource {
 						},
 						"name": &schema.Schema{
 							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"packet_loss_weight": &schema.Schema{
+							Type:     schema.TypeInt,
 							Optional: true,
 						},
 						"packet_size": &schema.Schema{
@@ -289,6 +315,10 @@ func resourceSystemSdwan() *schema.Resource {
 							Optional: true,
 							Computed: true,
 						},
+						"remote_probe_timeout": &schema.Schema{
+							Type:     schema.TypeInt,
+							Optional: true,
+						},
 						"security_mode": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
@@ -304,6 +334,10 @@ func resourceSystemSdwan() *schema.Resource {
 							Optional: true,
 							Elem: &schema.Resource{
 								Schema: map[string]*schema.Schema{
+									"custom_profile_threshold": &schema.Schema{
+										Type:     schema.TypeInt,
+										Optional: true,
+									},
 									"id": &schema.Schema{
 										Type:     schema.TypeInt,
 										Optional: true,
@@ -423,7 +457,6 @@ func resourceSystemSdwan() *schema.Resource {
 						"addr_mode": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
-							Computed: true,
 						},
 						"class_id": &schema.Schema{
 							Type:     schema.TypeSet,
@@ -434,32 +467,26 @@ func resourceSystemSdwan() *schema.Resource {
 						"detect_mode": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
-							Computed: true,
 						},
 						"diffservcode": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
-							Computed: true,
 						},
 						"dns_match_ip": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
-							Computed: true,
 						},
 						"dns_request_domain": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
-							Computed: true,
 						},
 						"embed_measured_health": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
-							Computed: true,
 						},
 						"failtime": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
-							Computed: true,
 						},
 						"ftp_file": &schema.Schema{
 							Type:     schema.TypeString,
@@ -468,22 +495,18 @@ func resourceSystemSdwan() *schema.Resource {
 						"ftp_mode": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
-							Computed: true,
 						},
 						"ha_priority": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
-							Computed: true,
 						},
 						"http_agent": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
-							Computed: true,
 						},
 						"http_get": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
-							Computed: true,
 						},
 						"http_match": &schema.Schema{
 							Type:     schema.TypeString,
@@ -492,7 +515,6 @@ func resourceSystemSdwan() *schema.Resource {
 						"interval": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
-							Computed: true,
 						},
 						"members": &schema.Schema{
 							Type:     schema.TypeSet,
@@ -503,12 +525,10 @@ func resourceSystemSdwan() *schema.Resource {
 						"mos_codec": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
-							Computed: true,
 						},
 						"packet_size": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
-							Computed: true,
 						},
 						"password": &schema.Schema{
 							Type:      schema.TypeSet,
@@ -524,37 +544,30 @@ func resourceSystemSdwan() *schema.Resource {
 						"probe_count": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
-							Computed: true,
 						},
 						"probe_packets": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
-							Computed: true,
 						},
 						"probe_timeout": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
-							Computed: true,
 						},
 						"protocol": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
-							Computed: true,
 						},
 						"quality_measured_method": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
-							Computed: true,
 						},
 						"recoverytime": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
-							Computed: true,
 						},
 						"security_mode": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
-							Computed: true,
 						},
 						"server": &schema.Schema{
 							Type:     schema.TypeSet,
@@ -574,12 +587,10 @@ func resourceSystemSdwan() *schema.Resource {
 									"jitter_threshold": &schema.Schema{
 										Type:     schema.TypeInt,
 										Optional: true,
-										Computed: true,
 									},
 									"latency_threshold": &schema.Schema{
 										Type:     schema.TypeInt,
 										Optional: true,
-										Computed: true,
 									},
 									"link_cost_factor": &schema.Schema{
 										Type:     schema.TypeSet,
@@ -590,7 +601,6 @@ func resourceSystemSdwan() *schema.Resource {
 									"mos_threshold": &schema.Schema{
 										Type:     schema.TypeString,
 										Optional: true,
-										Computed: true,
 									},
 									"packetloss_threshold": &schema.Schema{
 										Type:     schema.TypeInt,
@@ -622,17 +632,14 @@ func resourceSystemSdwan() *schema.Resource {
 						"source": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
-							Computed: true,
 						},
 						"source6": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
-							Computed: true,
 						},
 						"system_dns": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
-							Computed: true,
 						},
 						"target_name": &schema.Schema{
 							Type:     schema.TypeString,
@@ -665,12 +672,10 @@ func resourceSystemSdwan() *schema.Resource {
 						"update_cascade_interface": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
-							Computed: true,
 						},
 						"update_static_route": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
-							Computed: true,
 						},
 						"user": &schema.Schema{
 							Type:     schema.TypeString,
@@ -800,10 +805,8 @@ func resourceSystemSdwan() *schema.Resource {
 							Computed: true,
 						},
 						"ip": &schema.Schema{
-							Type:     schema.TypeSet,
-							Elem:     &schema.Schema{Type: schema.TypeString},
+							Type:     schema.TypeString,
 							Optional: true,
-							Computed: true,
 						},
 						"member": &schema.Schema{
 							Type:     schema.TypeSet,
@@ -932,6 +935,11 @@ func resourceSystemSdwan() *schema.Resource {
 							Optional: true,
 							Computed: true,
 						},
+						"fib_best_match_force": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+							Computed: true,
+						},
 						"gateway": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
@@ -1008,6 +1016,12 @@ func resourceSystemSdwan() *schema.Resource {
 							Computed: true,
 						},
 						"internet_service_custom_group": &schema.Schema{
+							Type:     schema.TypeSet,
+							Elem:     &schema.Schema{Type: schema.TypeString},
+							Optional: true,
+							Computed: true,
+						},
+						"internet_service_fortiguard": &schema.Schema{
 							Type:     schema.TypeSet,
 							Elem:     &schema.Schema{Type: schema.TypeString},
 							Optional: true,
@@ -1114,10 +1128,8 @@ func resourceSystemSdwan() *schema.Resource {
 							Elem: &schema.Resource{
 								Schema: map[string]*schema.Schema{
 									"health_check": &schema.Schema{
-										Type:     schema.TypeSet,
-										Elem:     &schema.Schema{Type: schema.TypeString},
+										Type:     schema.TypeString,
 										Optional: true,
-										Computed: true,
 									},
 									"id": &schema.Schema{
 										Type:     schema.TypeInt,
@@ -1129,6 +1141,7 @@ func resourceSystemSdwan() *schema.Resource {
 						"sla_compare_method": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"sla_stickiness": &schema.Schema{
 							Type:     schema.TypeString,
@@ -1264,8 +1277,12 @@ func resourceSystemSdwanUpdate(d *schema.ResourceData, m interface{}) error {
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -1277,13 +1294,12 @@ func resourceSystemSdwanUpdate(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectSystemSdwan(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemSdwan resource while getting object: %v", err)
 	}
+
+	wsParams["adom"] = adomv
 
 	_, err = c.UpdateSystemSdwan(obj, mkey, paradict, wsParams)
 	if err != nil {
@@ -1305,8 +1321,12 @@ func resourceSystemSdwanDelete(d *schema.ResourceData, m interface{}) error {
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -1318,9 +1338,7 @@ func resourceSystemSdwanDelete(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
+	wsParams["adom"] = adomv
 
 	err = c.DeleteSystemSdwan(mkey, paradict, wsParams)
 	if err != nil {
@@ -1339,8 +1357,8 @@ func resourceSystemSdwanRead(d *schema.ResourceData, m interface{}) error {
 	c.Retries = 1
 
 	paradict := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	device_vdom, err := getVariable(cfg, d, "device_vdom")
 	if device_name == "" {
@@ -1366,6 +1384,7 @@ func resourceSystemSdwanRead(d *schema.ResourceData, m interface{}) error {
 
 	o, err := c.ReadSystemSdwan(mkey, paradict)
 	if err != nil {
+		d.SetId("")
 		return fmt.Errorf("Error reading SystemSdwan resource: %v", err)
 	}
 
@@ -1576,6 +1595,18 @@ func flattenSystemSdwanHealthCheck(v interface{}, d *schema.ResourceData, pre st
 			tmp["addr_mode"] = fortiAPISubPartPatch(v, "SystemSdwan-HealthCheck-AddrMode")
 		}
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "agent_probe_timeout"
+		if _, ok := i["agent-probe-timeout"]; ok {
+			v := flattenSystemSdwanHealthCheckAgentProbeTimeout(i["agent-probe-timeout"], d, pre_append)
+			tmp["agent_probe_timeout"] = fortiAPISubPartPatch(v, "SystemSdwan-HealthCheck-AgentProbeTimeout")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "bandwidth_weight"
+		if _, ok := i["bandwidth-weight"]; ok {
+			v := flattenSystemSdwanHealthCheckBandwidthWeight(i["bandwidth-weight"], d, pre_append)
+			tmp["bandwidth_weight"] = fortiAPISubPartPatch(v, "SystemSdwan-HealthCheck-BandwidthWeight")
+		}
+
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "class_id"
 		if _, ok := i["class-id"]; ok {
 			v := flattenSystemSdwanHealthCheckClassId(i["class-id"], d, pre_append)
@@ -1672,6 +1703,18 @@ func flattenSystemSdwanHealthCheck(v interface{}, d *schema.ResourceData, pre st
 			tmp["interval"] = fortiAPISubPartPatch(v, "SystemSdwan-HealthCheck-Interval")
 		}
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "jitter_weight"
+		if _, ok := i["jitter-weight"]; ok {
+			v := flattenSystemSdwanHealthCheckJitterWeight(i["jitter-weight"], d, pre_append)
+			tmp["jitter_weight"] = fortiAPISubPartPatch(v, "SystemSdwan-HealthCheck-JitterWeight")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "latency_weight"
+		if _, ok := i["latency-weight"]; ok {
+			v := flattenSystemSdwanHealthCheckLatencyWeight(i["latency-weight"], d, pre_append)
+			tmp["latency_weight"] = fortiAPISubPartPatch(v, "SystemSdwan-HealthCheck-LatencyWeight")
+		}
+
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "members"
 		if _, ok := i["members"]; ok {
 			v := flattenSystemSdwanHealthCheckMembers(i["members"], d, pre_append)
@@ -1688,6 +1731,12 @@ func flattenSystemSdwanHealthCheck(v interface{}, d *schema.ResourceData, pre st
 		if _, ok := i["name"]; ok {
 			v := flattenSystemSdwanHealthCheckName(i["name"], d, pre_append)
 			tmp["name"] = fortiAPISubPartPatch(v, "SystemSdwan-HealthCheck-Name")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "packet_loss_weight"
+		if _, ok := i["packet-loss-weight"]; ok {
+			v := flattenSystemSdwanHealthCheckPacketLossWeight(i["packet-loss-weight"], d, pre_append)
+			tmp["packet_loss_weight"] = fortiAPISubPartPatch(v, "SystemSdwan-HealthCheck-PacketLossWeight")
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "packet_size"
@@ -1736,6 +1785,12 @@ func flattenSystemSdwanHealthCheck(v interface{}, d *schema.ResourceData, pre st
 		if _, ok := i["recoverytime"]; ok {
 			v := flattenSystemSdwanHealthCheckRecoverytime(i["recoverytime"], d, pre_append)
 			tmp["recoverytime"] = fortiAPISubPartPatch(v, "SystemSdwan-HealthCheck-Recoverytime")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "remote_probe_timeout"
+		if _, ok := i["remote-probe-timeout"]; ok {
+			v := flattenSystemSdwanHealthCheckRemoteProbeTimeout(i["remote-probe-timeout"], d, pre_append)
+			tmp["remote_probe_timeout"] = fortiAPISubPartPatch(v, "SystemSdwan-HealthCheck-RemoteProbeTimeout")
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "security_mode"
@@ -1866,6 +1921,14 @@ func flattenSystemSdwanHealthCheckAddrMode(v interface{}, d *schema.ResourceData
 	return v
 }
 
+func flattenSystemSdwanHealthCheckAgentProbeTimeout(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemSdwanHealthCheckBandwidthWeight(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenSystemSdwanHealthCheckClassId(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return flattenStringList(v)
 }
@@ -1891,6 +1954,10 @@ func flattenSystemSdwanHealthCheckEmbedMeasuredHealth(v interface{}, d *schema.R
 }
 
 func flattenSystemSdwanHealthCheckFailtime(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemSdwanHealthCheckFortiguard(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -1926,6 +1993,14 @@ func flattenSystemSdwanHealthCheckInterval(v interface{}, d *schema.ResourceData
 	return v
 }
 
+func flattenSystemSdwanHealthCheckJitterWeight(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemSdwanHealthCheckLatencyWeight(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenSystemSdwanHealthCheckMembers(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return flattenStringList(v)
 }
@@ -1935,6 +2010,10 @@ func flattenSystemSdwanHealthCheckMosCodec(v interface{}, d *schema.ResourceData
 }
 
 func flattenSystemSdwanHealthCheckName(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemSdwanHealthCheckPacketLossWeight(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -1970,6 +2049,10 @@ func flattenSystemSdwanHealthCheckRecoverytime(v interface{}, d *schema.Resource
 	return v
 }
 
+func flattenSystemSdwanHealthCheckRemoteProbeTimeout(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenSystemSdwanHealthCheckSecurityMode(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -1996,6 +2079,12 @@ func flattenSystemSdwanHealthCheckSla(v interface{}, d *schema.ResourceData, pre
 		i := r.(map[string]interface{})
 
 		pre_append := "" // table
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "custom_profile_threshold"
+		if _, ok := i["custom-profile-threshold"]; ok {
+			v := flattenSystemSdwanHealthCheckSlaCustomProfileThreshold(i["custom-profile-threshold"], d, pre_append)
+			tmp["custom_profile_threshold"] = fortiAPISubPartPatch(v, "SystemSdwanHealthCheck-Sla-CustomProfileThreshold")
+		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "id"
 		if _, ok := i["id"]; ok {
@@ -2053,6 +2142,10 @@ func flattenSystemSdwanHealthCheckSla(v interface{}, d *schema.ResourceData, pre
 	}
 
 	return result
+}
+
+func flattenSystemSdwanHealthCheckSlaCustomProfileThreshold(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
 }
 
 func flattenSystemSdwanHealthCheckSlaId(v interface{}, d *schema.ResourceData, pre string) interface{} {
@@ -2151,7 +2244,7 @@ func flattenSystemSdwanHealthCheckVrf(v interface{}, d *schema.ResourceData, pre
 	return v
 }
 
-func flattenSystemSdwanHealthCheckFortiguard(v interface{}, d *schema.ResourceData, pre string) []map[string]interface{} {
+func flattenSystemSdwanHealthCheckFortiguardU(v interface{}, d *schema.ResourceData, pre string) []map[string]interface{} {
 	if v == nil {
 		return nil
 	}
@@ -2172,271 +2265,271 @@ func flattenSystemSdwanHealthCheckFortiguard(v interface{}, d *schema.ResourceDa
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "addr_mode"
 		if _, ok := i["addr-mode"]; ok {
-			v := flattenSystemSdwanHealthCheckFortiguardAddrMode(i["addr-mode"], d, pre_append)
+			v := flattenSystemSdwanHealthCheckFortiguardUAddrMode(i["addr-mode"], d, pre_append)
 			tmp["addr_mode"] = fortiAPISubPartPatch(v, "SystemSdwan-HealthCheckFortiguard-AddrMode")
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "class_id"
 		if _, ok := i["class-id"]; ok {
-			v := flattenSystemSdwanHealthCheckFortiguardClassId(i["class-id"], d, pre_append)
+			v := flattenSystemSdwanHealthCheckFortiguardUClassId(i["class-id"], d, pre_append)
 			tmp["class_id"] = fortiAPISubPartPatch(v, "SystemSdwan-HealthCheckFortiguard-ClassId")
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "detect_mode"
 		if _, ok := i["detect-mode"]; ok {
-			v := flattenSystemSdwanHealthCheckFortiguardDetectMode(i["detect-mode"], d, pre_append)
+			v := flattenSystemSdwanHealthCheckFortiguardUDetectMode(i["detect-mode"], d, pre_append)
 			tmp["detect_mode"] = fortiAPISubPartPatch(v, "SystemSdwan-HealthCheckFortiguard-DetectMode")
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "diffservcode"
 		if _, ok := i["diffservcode"]; ok {
-			v := flattenSystemSdwanHealthCheckFortiguardDiffservcode(i["diffservcode"], d, pre_append)
+			v := flattenSystemSdwanHealthCheckFortiguardUDiffservcode(i["diffservcode"], d, pre_append)
 			tmp["diffservcode"] = fortiAPISubPartPatch(v, "SystemSdwan-HealthCheckFortiguard-Diffservcode")
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "dns_match_ip"
 		if _, ok := i["dns-match-ip"]; ok {
-			v := flattenSystemSdwanHealthCheckFortiguardDnsMatchIp(i["dns-match-ip"], d, pre_append)
+			v := flattenSystemSdwanHealthCheckFortiguardUDnsMatchIp(i["dns-match-ip"], d, pre_append)
 			tmp["dns_match_ip"] = fortiAPISubPartPatch(v, "SystemSdwan-HealthCheckFortiguard-DnsMatchIp")
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "dns_request_domain"
 		if _, ok := i["dns-request-domain"]; ok {
-			v := flattenSystemSdwanHealthCheckFortiguardDnsRequestDomain(i["dns-request-domain"], d, pre_append)
+			v := flattenSystemSdwanHealthCheckFortiguardUDnsRequestDomain(i["dns-request-domain"], d, pre_append)
 			tmp["dns_request_domain"] = fortiAPISubPartPatch(v, "SystemSdwan-HealthCheckFortiguard-DnsRequestDomain")
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "embed_measured_health"
 		if _, ok := i["embed-measured-health"]; ok {
-			v := flattenSystemSdwanHealthCheckFortiguardEmbedMeasuredHealth(i["embed-measured-health"], d, pre_append)
+			v := flattenSystemSdwanHealthCheckFortiguardUEmbedMeasuredHealth(i["embed-measured-health"], d, pre_append)
 			tmp["embed_measured_health"] = fortiAPISubPartPatch(v, "SystemSdwan-HealthCheckFortiguard-EmbedMeasuredHealth")
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "failtime"
 		if _, ok := i["failtime"]; ok {
-			v := flattenSystemSdwanHealthCheckFortiguardFailtime(i["failtime"], d, pre_append)
+			v := flattenSystemSdwanHealthCheckFortiguardUFailtime(i["failtime"], d, pre_append)
 			tmp["failtime"] = fortiAPISubPartPatch(v, "SystemSdwan-HealthCheckFortiguard-Failtime")
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "ftp_file"
 		if _, ok := i["ftp-file"]; ok {
-			v := flattenSystemSdwanHealthCheckFortiguardFtpFile(i["ftp-file"], d, pre_append)
+			v := flattenSystemSdwanHealthCheckFortiguardUFtpFile(i["ftp-file"], d, pre_append)
 			tmp["ftp_file"] = fortiAPISubPartPatch(v, "SystemSdwan-HealthCheckFortiguard-FtpFile")
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "ftp_mode"
 		if _, ok := i["ftp-mode"]; ok {
-			v := flattenSystemSdwanHealthCheckFortiguardFtpMode(i["ftp-mode"], d, pre_append)
+			v := flattenSystemSdwanHealthCheckFortiguardUFtpMode(i["ftp-mode"], d, pre_append)
 			tmp["ftp_mode"] = fortiAPISubPartPatch(v, "SystemSdwan-HealthCheckFortiguard-FtpMode")
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "ha_priority"
 		if _, ok := i["ha-priority"]; ok {
-			v := flattenSystemSdwanHealthCheckFortiguardHaPriority(i["ha-priority"], d, pre_append)
+			v := flattenSystemSdwanHealthCheckFortiguardUHaPriority(i["ha-priority"], d, pre_append)
 			tmp["ha_priority"] = fortiAPISubPartPatch(v, "SystemSdwan-HealthCheckFortiguard-HaPriority")
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "http_agent"
 		if _, ok := i["http-agent"]; ok {
-			v := flattenSystemSdwanHealthCheckFortiguardHttpAgent(i["http-agent"], d, pre_append)
+			v := flattenSystemSdwanHealthCheckFortiguardUHttpAgent(i["http-agent"], d, pre_append)
 			tmp["http_agent"] = fortiAPISubPartPatch(v, "SystemSdwan-HealthCheckFortiguard-HttpAgent")
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "http_get"
 		if _, ok := i["http-get"]; ok {
-			v := flattenSystemSdwanHealthCheckFortiguardHttpGet(i["http-get"], d, pre_append)
+			v := flattenSystemSdwanHealthCheckFortiguardUHttpGet(i["http-get"], d, pre_append)
 			tmp["http_get"] = fortiAPISubPartPatch(v, "SystemSdwan-HealthCheckFortiguard-HttpGet")
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "http_match"
 		if _, ok := i["http-match"]; ok {
-			v := flattenSystemSdwanHealthCheckFortiguardHttpMatch(i["http-match"], d, pre_append)
+			v := flattenSystemSdwanHealthCheckFortiguardUHttpMatch(i["http-match"], d, pre_append)
 			tmp["http_match"] = fortiAPISubPartPatch(v, "SystemSdwan-HealthCheckFortiguard-HttpMatch")
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "interval"
 		if _, ok := i["interval"]; ok {
-			v := flattenSystemSdwanHealthCheckFortiguardInterval(i["interval"], d, pre_append)
+			v := flattenSystemSdwanHealthCheckFortiguardUInterval(i["interval"], d, pre_append)
 			tmp["interval"] = fortiAPISubPartPatch(v, "SystemSdwan-HealthCheckFortiguard-Interval")
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "members"
 		if _, ok := i["members"]; ok {
-			v := flattenSystemSdwanHealthCheckFortiguardMembers(i["members"], d, pre_append)
+			v := flattenSystemSdwanHealthCheckFortiguardUMembers(i["members"], d, pre_append)
 			tmp["members"] = fortiAPISubPartPatch(v, "SystemSdwan-HealthCheckFortiguard-Members")
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "mos_codec"
 		if _, ok := i["mos-codec"]; ok {
-			v := flattenSystemSdwanHealthCheckFortiguardMosCodec(i["mos-codec"], d, pre_append)
+			v := flattenSystemSdwanHealthCheckFortiguardUMosCodec(i["mos-codec"], d, pre_append)
 			tmp["mos_codec"] = fortiAPISubPartPatch(v, "SystemSdwan-HealthCheckFortiguard-MosCodec")
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "packet_size"
 		if _, ok := i["packet-size"]; ok {
-			v := flattenSystemSdwanHealthCheckFortiguardPacketSize(i["packet-size"], d, pre_append)
+			v := flattenSystemSdwanHealthCheckFortiguardUPacketSize(i["packet-size"], d, pre_append)
 			tmp["packet_size"] = fortiAPISubPartPatch(v, "SystemSdwan-HealthCheckFortiguard-PacketSize")
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "port"
 		if _, ok := i["port"]; ok {
-			v := flattenSystemSdwanHealthCheckFortiguardPort(i["port"], d, pre_append)
+			v := flattenSystemSdwanHealthCheckFortiguardUPort(i["port"], d, pre_append)
 			tmp["port"] = fortiAPISubPartPatch(v, "SystemSdwan-HealthCheckFortiguard-Port")
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "probe_count"
 		if _, ok := i["probe-count"]; ok {
-			v := flattenSystemSdwanHealthCheckFortiguardProbeCount(i["probe-count"], d, pre_append)
+			v := flattenSystemSdwanHealthCheckFortiguardUProbeCount(i["probe-count"], d, pre_append)
 			tmp["probe_count"] = fortiAPISubPartPatch(v, "SystemSdwan-HealthCheckFortiguard-ProbeCount")
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "probe_packets"
 		if _, ok := i["probe-packets"]; ok {
-			v := flattenSystemSdwanHealthCheckFortiguardProbePackets(i["probe-packets"], d, pre_append)
+			v := flattenSystemSdwanHealthCheckFortiguardUProbePackets(i["probe-packets"], d, pre_append)
 			tmp["probe_packets"] = fortiAPISubPartPatch(v, "SystemSdwan-HealthCheckFortiguard-ProbePackets")
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "probe_timeout"
 		if _, ok := i["probe-timeout"]; ok {
-			v := flattenSystemSdwanHealthCheckFortiguardProbeTimeout(i["probe-timeout"], d, pre_append)
+			v := flattenSystemSdwanHealthCheckFortiguardUProbeTimeout(i["probe-timeout"], d, pre_append)
 			tmp["probe_timeout"] = fortiAPISubPartPatch(v, "SystemSdwan-HealthCheckFortiguard-ProbeTimeout")
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "protocol"
 		if _, ok := i["protocol"]; ok {
-			v := flattenSystemSdwanHealthCheckFortiguardProtocol(i["protocol"], d, pre_append)
+			v := flattenSystemSdwanHealthCheckFortiguardUProtocol(i["protocol"], d, pre_append)
 			tmp["protocol"] = fortiAPISubPartPatch(v, "SystemSdwan-HealthCheckFortiguard-Protocol")
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "quality_measured_method"
 		if _, ok := i["quality-measured-method"]; ok {
-			v := flattenSystemSdwanHealthCheckFortiguardQualityMeasuredMethod(i["quality-measured-method"], d, pre_append)
+			v := flattenSystemSdwanHealthCheckFortiguardUQualityMeasuredMethod(i["quality-measured-method"], d, pre_append)
 			tmp["quality_measured_method"] = fortiAPISubPartPatch(v, "SystemSdwan-HealthCheckFortiguard-QualityMeasuredMethod")
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "recoverytime"
 		if _, ok := i["recoverytime"]; ok {
-			v := flattenSystemSdwanHealthCheckFortiguardRecoverytime(i["recoverytime"], d, pre_append)
+			v := flattenSystemSdwanHealthCheckFortiguardURecoverytime(i["recoverytime"], d, pre_append)
 			tmp["recoverytime"] = fortiAPISubPartPatch(v, "SystemSdwan-HealthCheckFortiguard-Recoverytime")
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "security_mode"
 		if _, ok := i["security-mode"]; ok {
-			v := flattenSystemSdwanHealthCheckFortiguardSecurityMode(i["security-mode"], d, pre_append)
+			v := flattenSystemSdwanHealthCheckFortiguardUSecurityMode(i["security-mode"], d, pre_append)
 			tmp["security_mode"] = fortiAPISubPartPatch(v, "SystemSdwan-HealthCheckFortiguard-SecurityMode")
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "server"
 		if _, ok := i["server"]; ok {
-			v := flattenSystemSdwanHealthCheckFortiguardServer(i["server"], d, pre_append)
+			v := flattenSystemSdwanHealthCheckFortiguardUServer(i["server"], d, pre_append)
 			tmp["server"] = fortiAPISubPartPatch(v, "SystemSdwan-HealthCheckFortiguard-Server")
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "sla"
 		if _, ok := i["sla"]; ok {
-			v := flattenSystemSdwanHealthCheckFortiguardSla(i["sla"], d, pre_append)
+			v := flattenSystemSdwanHealthCheckFortiguardUSla(i["sla"], d, pre_append)
 			tmp["sla"] = fortiAPISubPartPatch(v, "SystemSdwan-HealthCheckFortiguard-Sla")
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "sla_fail_log_period"
 		if _, ok := i["sla-fail-log-period"]; ok {
-			v := flattenSystemSdwanHealthCheckFortiguardSlaFailLogPeriod(i["sla-fail-log-period"], d, pre_append)
+			v := flattenSystemSdwanHealthCheckFortiguardUSlaFailLogPeriod(i["sla-fail-log-period"], d, pre_append)
 			tmp["sla_fail_log_period"] = fortiAPISubPartPatch(v, "SystemSdwan-HealthCheckFortiguard-SlaFailLogPeriod")
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "sla_id_redistribute"
 		if _, ok := i["sla-id-redistribute"]; ok {
-			v := flattenSystemSdwanHealthCheckFortiguardSlaIdRedistribute(i["sla-id-redistribute"], d, pre_append)
+			v := flattenSystemSdwanHealthCheckFortiguardUSlaIdRedistribute(i["sla-id-redistribute"], d, pre_append)
 			tmp["sla_id_redistribute"] = fortiAPISubPartPatch(v, "SystemSdwan-HealthCheckFortiguard-SlaIdRedistribute")
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "sla_pass_log_period"
 		if _, ok := i["sla-pass-log-period"]; ok {
-			v := flattenSystemSdwanHealthCheckFortiguardSlaPassLogPeriod(i["sla-pass-log-period"], d, pre_append)
+			v := flattenSystemSdwanHealthCheckFortiguardUSlaPassLogPeriod(i["sla-pass-log-period"], d, pre_append)
 			tmp["sla_pass_log_period"] = fortiAPISubPartPatch(v, "SystemSdwan-HealthCheckFortiguard-SlaPassLogPeriod")
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "source"
 		if _, ok := i["source"]; ok {
-			v := flattenSystemSdwanHealthCheckFortiguardSource(i["source"], d, pre_append)
+			v := flattenSystemSdwanHealthCheckFortiguardUSource(i["source"], d, pre_append)
 			tmp["source"] = fortiAPISubPartPatch(v, "SystemSdwan-HealthCheckFortiguard-Source")
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "source6"
 		if _, ok := i["source6"]; ok {
-			v := flattenSystemSdwanHealthCheckFortiguardSource6(i["source6"], d, pre_append)
+			v := flattenSystemSdwanHealthCheckFortiguardUSource6(i["source6"], d, pre_append)
 			tmp["source6"] = fortiAPISubPartPatch(v, "SystemSdwan-HealthCheckFortiguard-Source6")
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "system_dns"
 		if _, ok := i["system-dns"]; ok {
-			v := flattenSystemSdwanHealthCheckFortiguardSystemDns(i["system-dns"], d, pre_append)
+			v := flattenSystemSdwanHealthCheckFortiguardUSystemDns(i["system-dns"], d, pre_append)
 			tmp["system_dns"] = fortiAPISubPartPatch(v, "SystemSdwan-HealthCheckFortiguard-SystemDns")
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "target_name"
 		if _, ok := i["target-name"]; ok {
-			v := flattenSystemSdwanHealthCheckFortiguardTargetName(i["target-name"], d, pre_append)
+			v := flattenSystemSdwanHealthCheckFortiguardUTargetName(i["target-name"], d, pre_append)
 			tmp["target_name"] = fortiAPISubPartPatch(v, "SystemSdwan-HealthCheckFortiguard-TargetName")
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "threshold_alert_jitter"
 		if _, ok := i["threshold-alert-jitter"]; ok {
-			v := flattenSystemSdwanHealthCheckFortiguardThresholdAlertJitter(i["threshold-alert-jitter"], d, pre_append)
+			v := flattenSystemSdwanHealthCheckFortiguardUThresholdAlertJitter(i["threshold-alert-jitter"], d, pre_append)
 			tmp["threshold_alert_jitter"] = fortiAPISubPartPatch(v, "SystemSdwan-HealthCheckFortiguard-ThresholdAlertJitter")
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "threshold_alert_latency"
 		if _, ok := i["threshold-alert-latency"]; ok {
-			v := flattenSystemSdwanHealthCheckFortiguardThresholdAlertLatency(i["threshold-alert-latency"], d, pre_append)
+			v := flattenSystemSdwanHealthCheckFortiguardUThresholdAlertLatency(i["threshold-alert-latency"], d, pre_append)
 			tmp["threshold_alert_latency"] = fortiAPISubPartPatch(v, "SystemSdwan-HealthCheckFortiguard-ThresholdAlertLatency")
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "threshold_alert_packetloss"
 		if _, ok := i["threshold-alert-packetloss"]; ok {
-			v := flattenSystemSdwanHealthCheckFortiguardThresholdAlertPacketloss(i["threshold-alert-packetloss"], d, pre_append)
+			v := flattenSystemSdwanHealthCheckFortiguardUThresholdAlertPacketloss(i["threshold-alert-packetloss"], d, pre_append)
 			tmp["threshold_alert_packetloss"] = fortiAPISubPartPatch(v, "SystemSdwan-HealthCheckFortiguard-ThresholdAlertPacketloss")
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "threshold_warning_jitter"
 		if _, ok := i["threshold-warning-jitter"]; ok {
-			v := flattenSystemSdwanHealthCheckFortiguardThresholdWarningJitter(i["threshold-warning-jitter"], d, pre_append)
+			v := flattenSystemSdwanHealthCheckFortiguardUThresholdWarningJitter(i["threshold-warning-jitter"], d, pre_append)
 			tmp["threshold_warning_jitter"] = fortiAPISubPartPatch(v, "SystemSdwan-HealthCheckFortiguard-ThresholdWarningJitter")
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "threshold_warning_latency"
 		if _, ok := i["threshold-warning-latency"]; ok {
-			v := flattenSystemSdwanHealthCheckFortiguardThresholdWarningLatency(i["threshold-warning-latency"], d, pre_append)
+			v := flattenSystemSdwanHealthCheckFortiguardUThresholdWarningLatency(i["threshold-warning-latency"], d, pre_append)
 			tmp["threshold_warning_latency"] = fortiAPISubPartPatch(v, "SystemSdwan-HealthCheckFortiguard-ThresholdWarningLatency")
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "threshold_warning_packetloss"
 		if _, ok := i["threshold-warning-packetloss"]; ok {
-			v := flattenSystemSdwanHealthCheckFortiguardThresholdWarningPacketloss(i["threshold-warning-packetloss"], d, pre_append)
+			v := flattenSystemSdwanHealthCheckFortiguardUThresholdWarningPacketloss(i["threshold-warning-packetloss"], d, pre_append)
 			tmp["threshold_warning_packetloss"] = fortiAPISubPartPatch(v, "SystemSdwan-HealthCheckFortiguard-ThresholdWarningPacketloss")
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "update_cascade_interface"
 		if _, ok := i["update-cascade-interface"]; ok {
-			v := flattenSystemSdwanHealthCheckFortiguardUpdateCascadeInterface(i["update-cascade-interface"], d, pre_append)
+			v := flattenSystemSdwanHealthCheckFortiguardUUpdateCascadeInterface(i["update-cascade-interface"], d, pre_append)
 			tmp["update_cascade_interface"] = fortiAPISubPartPatch(v, "SystemSdwan-HealthCheckFortiguard-UpdateCascadeInterface")
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "update_static_route"
 		if _, ok := i["update-static-route"]; ok {
-			v := flattenSystemSdwanHealthCheckFortiguardUpdateStaticRoute(i["update-static-route"], d, pre_append)
+			v := flattenSystemSdwanHealthCheckFortiguardUUpdateStaticRoute(i["update-static-route"], d, pre_append)
 			tmp["update_static_route"] = fortiAPISubPartPatch(v, "SystemSdwan-HealthCheckFortiguard-UpdateStaticRoute")
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "user"
 		if _, ok := i["user"]; ok {
-			v := flattenSystemSdwanHealthCheckFortiguardUser(i["user"], d, pre_append)
+			v := flattenSystemSdwanHealthCheckFortiguardUUser(i["user"], d, pre_append)
 			tmp["user"] = fortiAPISubPartPatch(v, "SystemSdwan-HealthCheckFortiguard-User")
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "vrf"
 		if _, ok := i["vrf"]; ok {
-			v := flattenSystemSdwanHealthCheckFortiguardVrf(i["vrf"], d, pre_append)
+			v := flattenSystemSdwanHealthCheckFortiguardUVrf(i["vrf"], d, pre_append)
 			tmp["vrf"] = fortiAPISubPartPatch(v, "SystemSdwan-HealthCheckFortiguard-Vrf")
 		}
 
@@ -2450,115 +2543,115 @@ func flattenSystemSdwanHealthCheckFortiguard(v interface{}, d *schema.ResourceDa
 	return result
 }
 
-func flattenSystemSdwanHealthCheckFortiguardAddrMode(v interface{}, d *schema.ResourceData, pre string) interface{} {
+func flattenSystemSdwanHealthCheckFortiguardUAddrMode(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
-func flattenSystemSdwanHealthCheckFortiguardClassId(v interface{}, d *schema.ResourceData, pre string) interface{} {
+func flattenSystemSdwanHealthCheckFortiguardUClassId(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return flattenStringList(v)
 }
 
-func flattenSystemSdwanHealthCheckFortiguardDetectMode(v interface{}, d *schema.ResourceData, pre string) interface{} {
+func flattenSystemSdwanHealthCheckFortiguardUDetectMode(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
-func flattenSystemSdwanHealthCheckFortiguardDiffservcode(v interface{}, d *schema.ResourceData, pre string) interface{} {
+func flattenSystemSdwanHealthCheckFortiguardUDiffservcode(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
-func flattenSystemSdwanHealthCheckFortiguardDnsMatchIp(v interface{}, d *schema.ResourceData, pre string) interface{} {
+func flattenSystemSdwanHealthCheckFortiguardUDnsMatchIp(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
-func flattenSystemSdwanHealthCheckFortiguardDnsRequestDomain(v interface{}, d *schema.ResourceData, pre string) interface{} {
+func flattenSystemSdwanHealthCheckFortiguardUDnsRequestDomain(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
-func flattenSystemSdwanHealthCheckFortiguardEmbedMeasuredHealth(v interface{}, d *schema.ResourceData, pre string) interface{} {
+func flattenSystemSdwanHealthCheckFortiguardUEmbedMeasuredHealth(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
-func flattenSystemSdwanHealthCheckFortiguardFailtime(v interface{}, d *schema.ResourceData, pre string) interface{} {
+func flattenSystemSdwanHealthCheckFortiguardUFailtime(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
-func flattenSystemSdwanHealthCheckFortiguardFtpFile(v interface{}, d *schema.ResourceData, pre string) interface{} {
+func flattenSystemSdwanHealthCheckFortiguardUFtpFile(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
-func flattenSystemSdwanHealthCheckFortiguardFtpMode(v interface{}, d *schema.ResourceData, pre string) interface{} {
+func flattenSystemSdwanHealthCheckFortiguardUFtpMode(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
-func flattenSystemSdwanHealthCheckFortiguardHaPriority(v interface{}, d *schema.ResourceData, pre string) interface{} {
+func flattenSystemSdwanHealthCheckFortiguardUHaPriority(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
-func flattenSystemSdwanHealthCheckFortiguardHttpAgent(v interface{}, d *schema.ResourceData, pre string) interface{} {
-	return conv2str(v)
-}
-
-func flattenSystemSdwanHealthCheckFortiguardHttpGet(v interface{}, d *schema.ResourceData, pre string) interface{} {
+func flattenSystemSdwanHealthCheckFortiguardUHttpAgent(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
-func flattenSystemSdwanHealthCheckFortiguardHttpMatch(v interface{}, d *schema.ResourceData, pre string) interface{} {
+func flattenSystemSdwanHealthCheckFortiguardUHttpGet(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
-func flattenSystemSdwanHealthCheckFortiguardInterval(v interface{}, d *schema.ResourceData, pre string) interface{} {
+func flattenSystemSdwanHealthCheckFortiguardUHttpMatch(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
-func flattenSystemSdwanHealthCheckFortiguardMembers(v interface{}, d *schema.ResourceData, pre string) interface{} {
+func flattenSystemSdwanHealthCheckFortiguardUInterval(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemSdwanHealthCheckFortiguardUMembers(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return flattenStringList(v)
 }
 
-func flattenSystemSdwanHealthCheckFortiguardMosCodec(v interface{}, d *schema.ResourceData, pre string) interface{} {
+func flattenSystemSdwanHealthCheckFortiguardUMosCodec(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
-func flattenSystemSdwanHealthCheckFortiguardPacketSize(v interface{}, d *schema.ResourceData, pre string) interface{} {
+func flattenSystemSdwanHealthCheckFortiguardUPacketSize(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
-func flattenSystemSdwanHealthCheckFortiguardPort(v interface{}, d *schema.ResourceData, pre string) interface{} {
+func flattenSystemSdwanHealthCheckFortiguardUPort(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
-func flattenSystemSdwanHealthCheckFortiguardProbeCount(v interface{}, d *schema.ResourceData, pre string) interface{} {
+func flattenSystemSdwanHealthCheckFortiguardUProbeCount(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
-func flattenSystemSdwanHealthCheckFortiguardProbePackets(v interface{}, d *schema.ResourceData, pre string) interface{} {
+func flattenSystemSdwanHealthCheckFortiguardUProbePackets(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
-func flattenSystemSdwanHealthCheckFortiguardProbeTimeout(v interface{}, d *schema.ResourceData, pre string) interface{} {
+func flattenSystemSdwanHealthCheckFortiguardUProbeTimeout(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
-func flattenSystemSdwanHealthCheckFortiguardProtocol(v interface{}, d *schema.ResourceData, pre string) interface{} {
+func flattenSystemSdwanHealthCheckFortiguardUProtocol(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
-func flattenSystemSdwanHealthCheckFortiguardQualityMeasuredMethod(v interface{}, d *schema.ResourceData, pre string) interface{} {
+func flattenSystemSdwanHealthCheckFortiguardUQualityMeasuredMethod(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
-func flattenSystemSdwanHealthCheckFortiguardRecoverytime(v interface{}, d *schema.ResourceData, pre string) interface{} {
+func flattenSystemSdwanHealthCheckFortiguardURecoverytime(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
-func flattenSystemSdwanHealthCheckFortiguardSecurityMode(v interface{}, d *schema.ResourceData, pre string) interface{} {
+func flattenSystemSdwanHealthCheckFortiguardUSecurityMode(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
-func flattenSystemSdwanHealthCheckFortiguardServer(v interface{}, d *schema.ResourceData, pre string) interface{} {
+func flattenSystemSdwanHealthCheckFortiguardUServer(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return flattenStringList(v)
 }
 
-func flattenSystemSdwanHealthCheckFortiguardSla(v interface{}, d *schema.ResourceData, pre string) []map[string]interface{} {
+func flattenSystemSdwanHealthCheckFortiguardUSla(v interface{}, d *schema.ResourceData, pre string) []map[string]interface{} {
 	if v == nil {
 		return nil
 	}
@@ -2579,50 +2672,50 @@ func flattenSystemSdwanHealthCheckFortiguardSla(v interface{}, d *schema.Resourc
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "id"
 		if _, ok := i["id"]; ok {
-			v := flattenSystemSdwanHealthCheckFortiguardSlaId(i["id"], d, pre_append)
-			tmp["id"] = fortiAPISubPartPatch(v, "SystemSdwanHealthCheckFortiguard-Sla-Id")
+			v := flattenSystemSdwanHealthCheckFortiguardUSlaId(i["id"], d, pre_append)
+			tmp["id"] = fortiAPISubPartPatch(v, "SystemSdwanHealthCheckFortiguardU-Sla-Id")
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "jitter_threshold"
 		if _, ok := i["jitter-threshold"]; ok {
-			v := flattenSystemSdwanHealthCheckFortiguardSlaJitterThreshold(i["jitter-threshold"], d, pre_append)
-			tmp["jitter_threshold"] = fortiAPISubPartPatch(v, "SystemSdwanHealthCheckFortiguard-Sla-JitterThreshold")
+			v := flattenSystemSdwanHealthCheckFortiguardUSlaJitterThreshold(i["jitter-threshold"], d, pre_append)
+			tmp["jitter_threshold"] = fortiAPISubPartPatch(v, "SystemSdwanHealthCheckFortiguardU-Sla-JitterThreshold")
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "latency_threshold"
 		if _, ok := i["latency-threshold"]; ok {
-			v := flattenSystemSdwanHealthCheckFortiguardSlaLatencyThreshold(i["latency-threshold"], d, pre_append)
-			tmp["latency_threshold"] = fortiAPISubPartPatch(v, "SystemSdwanHealthCheckFortiguard-Sla-LatencyThreshold")
+			v := flattenSystemSdwanHealthCheckFortiguardUSlaLatencyThreshold(i["latency-threshold"], d, pre_append)
+			tmp["latency_threshold"] = fortiAPISubPartPatch(v, "SystemSdwanHealthCheckFortiguardU-Sla-LatencyThreshold")
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "link_cost_factor"
 		if _, ok := i["link-cost-factor"]; ok {
-			v := flattenSystemSdwanHealthCheckFortiguardSlaLinkCostFactor(i["link-cost-factor"], d, pre_append)
-			tmp["link_cost_factor"] = fortiAPISubPartPatch(v, "SystemSdwanHealthCheckFortiguard-Sla-LinkCostFactor")
+			v := flattenSystemSdwanHealthCheckFortiguardUSlaLinkCostFactor(i["link-cost-factor"], d, pre_append)
+			tmp["link_cost_factor"] = fortiAPISubPartPatch(v, "SystemSdwanHealthCheckFortiguardU-Sla-LinkCostFactor")
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "mos_threshold"
 		if _, ok := i["mos-threshold"]; ok {
-			v := flattenSystemSdwanHealthCheckFortiguardSlaMosThreshold(i["mos-threshold"], d, pre_append)
-			tmp["mos_threshold"] = fortiAPISubPartPatch(v, "SystemSdwanHealthCheckFortiguard-Sla-MosThreshold")
+			v := flattenSystemSdwanHealthCheckFortiguardUSlaMosThreshold(i["mos-threshold"], d, pre_append)
+			tmp["mos_threshold"] = fortiAPISubPartPatch(v, "SystemSdwanHealthCheckFortiguardU-Sla-MosThreshold")
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "packetloss_threshold"
 		if _, ok := i["packetloss-threshold"]; ok {
-			v := flattenSystemSdwanHealthCheckFortiguardSlaPacketlossThreshold(i["packetloss-threshold"], d, pre_append)
-			tmp["packetloss_threshold"] = fortiAPISubPartPatch(v, "SystemSdwanHealthCheckFortiguard-Sla-PacketlossThreshold")
+			v := flattenSystemSdwanHealthCheckFortiguardUSlaPacketlossThreshold(i["packetloss-threshold"], d, pre_append)
+			tmp["packetloss_threshold"] = fortiAPISubPartPatch(v, "SystemSdwanHealthCheckFortiguardU-Sla-PacketlossThreshold")
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "priority_in_sla"
 		if _, ok := i["priority-in-sla"]; ok {
-			v := flattenSystemSdwanHealthCheckFortiguardSlaPriorityInSla(i["priority-in-sla"], d, pre_append)
-			tmp["priority_in_sla"] = fortiAPISubPartPatch(v, "SystemSdwanHealthCheckFortiguard-Sla-PriorityInSla")
+			v := flattenSystemSdwanHealthCheckFortiguardUSlaPriorityInSla(i["priority-in-sla"], d, pre_append)
+			tmp["priority_in_sla"] = fortiAPISubPartPatch(v, "SystemSdwanHealthCheckFortiguardU-Sla-PriorityInSla")
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "priority_out_sla"
 		if _, ok := i["priority-out-sla"]; ok {
-			v := flattenSystemSdwanHealthCheckFortiguardSlaPriorityOutSla(i["priority-out-sla"], d, pre_append)
-			tmp["priority_out_sla"] = fortiAPISubPartPatch(v, "SystemSdwanHealthCheckFortiguard-Sla-PriorityOutSla")
+			v := flattenSystemSdwanHealthCheckFortiguardUSlaPriorityOutSla(i["priority-out-sla"], d, pre_append)
+			tmp["priority_out_sla"] = fortiAPISubPartPatch(v, "SystemSdwanHealthCheckFortiguardU-Sla-PriorityOutSla")
 		}
 
 		if len(tmp) > 0 {
@@ -2635,103 +2728,103 @@ func flattenSystemSdwanHealthCheckFortiguardSla(v interface{}, d *schema.Resourc
 	return result
 }
 
-func flattenSystemSdwanHealthCheckFortiguardSlaId(v interface{}, d *schema.ResourceData, pre string) interface{} {
+func flattenSystemSdwanHealthCheckFortiguardUSlaId(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
-func flattenSystemSdwanHealthCheckFortiguardSlaJitterThreshold(v interface{}, d *schema.ResourceData, pre string) interface{} {
+func flattenSystemSdwanHealthCheckFortiguardUSlaJitterThreshold(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
-func flattenSystemSdwanHealthCheckFortiguardSlaLatencyThreshold(v interface{}, d *schema.ResourceData, pre string) interface{} {
+func flattenSystemSdwanHealthCheckFortiguardUSlaLatencyThreshold(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
-func flattenSystemSdwanHealthCheckFortiguardSlaLinkCostFactor(v interface{}, d *schema.ResourceData, pre string) interface{} {
+func flattenSystemSdwanHealthCheckFortiguardUSlaLinkCostFactor(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return flattenStringList(v)
 }
 
-func flattenSystemSdwanHealthCheckFortiguardSlaMosThreshold(v interface{}, d *schema.ResourceData, pre string) interface{} {
+func flattenSystemSdwanHealthCheckFortiguardUSlaMosThreshold(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
-func flattenSystemSdwanHealthCheckFortiguardSlaPacketlossThreshold(v interface{}, d *schema.ResourceData, pre string) interface{} {
+func flattenSystemSdwanHealthCheckFortiguardUSlaPacketlossThreshold(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
-func flattenSystemSdwanHealthCheckFortiguardSlaPriorityInSla(v interface{}, d *schema.ResourceData, pre string) interface{} {
+func flattenSystemSdwanHealthCheckFortiguardUSlaPriorityInSla(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
-func flattenSystemSdwanHealthCheckFortiguardSlaPriorityOutSla(v interface{}, d *schema.ResourceData, pre string) interface{} {
+func flattenSystemSdwanHealthCheckFortiguardUSlaPriorityOutSla(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
-func flattenSystemSdwanHealthCheckFortiguardSlaFailLogPeriod(v interface{}, d *schema.ResourceData, pre string) interface{} {
+func flattenSystemSdwanHealthCheckFortiguardUSlaFailLogPeriod(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
-func flattenSystemSdwanHealthCheckFortiguardSlaIdRedistribute(v interface{}, d *schema.ResourceData, pre string) interface{} {
+func flattenSystemSdwanHealthCheckFortiguardUSlaIdRedistribute(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
-func flattenSystemSdwanHealthCheckFortiguardSlaPassLogPeriod(v interface{}, d *schema.ResourceData, pre string) interface{} {
+func flattenSystemSdwanHealthCheckFortiguardUSlaPassLogPeriod(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
-func flattenSystemSdwanHealthCheckFortiguardSource(v interface{}, d *schema.ResourceData, pre string) interface{} {
+func flattenSystemSdwanHealthCheckFortiguardUSource(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
-func flattenSystemSdwanHealthCheckFortiguardSource6(v interface{}, d *schema.ResourceData, pre string) interface{} {
+func flattenSystemSdwanHealthCheckFortiguardUSource6(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
-func flattenSystemSdwanHealthCheckFortiguardSystemDns(v interface{}, d *schema.ResourceData, pre string) interface{} {
+func flattenSystemSdwanHealthCheckFortiguardUSystemDns(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
-func flattenSystemSdwanHealthCheckFortiguardTargetName(v interface{}, d *schema.ResourceData, pre string) interface{} {
+func flattenSystemSdwanHealthCheckFortiguardUTargetName(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
-func flattenSystemSdwanHealthCheckFortiguardThresholdAlertJitter(v interface{}, d *schema.ResourceData, pre string) interface{} {
+func flattenSystemSdwanHealthCheckFortiguardUThresholdAlertJitter(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
-func flattenSystemSdwanHealthCheckFortiguardThresholdAlertLatency(v interface{}, d *schema.ResourceData, pre string) interface{} {
+func flattenSystemSdwanHealthCheckFortiguardUThresholdAlertLatency(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
-func flattenSystemSdwanHealthCheckFortiguardThresholdAlertPacketloss(v interface{}, d *schema.ResourceData, pre string) interface{} {
+func flattenSystemSdwanHealthCheckFortiguardUThresholdAlertPacketloss(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
-func flattenSystemSdwanHealthCheckFortiguardThresholdWarningJitter(v interface{}, d *schema.ResourceData, pre string) interface{} {
+func flattenSystemSdwanHealthCheckFortiguardUThresholdWarningJitter(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
-func flattenSystemSdwanHealthCheckFortiguardThresholdWarningLatency(v interface{}, d *schema.ResourceData, pre string) interface{} {
+func flattenSystemSdwanHealthCheckFortiguardUThresholdWarningLatency(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
-func flattenSystemSdwanHealthCheckFortiguardThresholdWarningPacketloss(v interface{}, d *schema.ResourceData, pre string) interface{} {
+func flattenSystemSdwanHealthCheckFortiguardUThresholdWarningPacketloss(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
-func flattenSystemSdwanHealthCheckFortiguardUpdateCascadeInterface(v interface{}, d *schema.ResourceData, pre string) interface{} {
+func flattenSystemSdwanHealthCheckFortiguardUUpdateCascadeInterface(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
-func flattenSystemSdwanHealthCheckFortiguardUpdateStaticRoute(v interface{}, d *schema.ResourceData, pre string) interface{} {
+func flattenSystemSdwanHealthCheckFortiguardUUpdateStaticRoute(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
-func flattenSystemSdwanHealthCheckFortiguardUser(v interface{}, d *schema.ResourceData, pre string) interface{} {
+func flattenSystemSdwanHealthCheckFortiguardUUser(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
-func flattenSystemSdwanHealthCheckFortiguardVrf(v interface{}, d *schema.ResourceData, pre string) interface{} {
+func flattenSystemSdwanHealthCheckFortiguardUVrf(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -3056,7 +3149,7 @@ func flattenSystemSdwanNeighborHealthCheck(v interface{}, d *schema.ResourceData
 }
 
 func flattenSystemSdwanNeighborIp(v interface{}, d *schema.ResourceData, pre string) interface{} {
-	return flattenStringList(v)
+	return conv2str(v)
 }
 
 func flattenSystemSdwanNeighborMember(v interface{}, d *schema.ResourceData, pre string) interface{} {
@@ -3206,6 +3299,12 @@ func flattenSystemSdwanService(v interface{}, d *schema.ResourceData, pre string
 			tmp["end_src_port"] = fortiAPISubPartPatch(v, "SystemSdwan-Service-EndSrcPort")
 		}
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "fib_best_match_force"
+		if _, ok := i["fib-best-match-force"]; ok {
+			v := flattenSystemSdwanServiceFibBestMatchForce(i["fib-best-match-force"], d, pre_append)
+			tmp["fib_best_match_force"] = fortiAPISubPartPatch(v, "SystemSdwan-Service-FibBestMatchForce")
+		}
+
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "gateway"
 		if _, ok := i["gateway"]; ok {
 			v := flattenSystemSdwanServiceGateway(i["gateway"], d, pre_append)
@@ -3294,6 +3393,12 @@ func flattenSystemSdwanService(v interface{}, d *schema.ResourceData, pre string
 		if _, ok := i["internet-service-custom-group"]; ok {
 			v := flattenSystemSdwanServiceInternetServiceCustomGroup(i["internet-service-custom-group"], d, pre_append)
 			tmp["internet_service_custom_group"] = fortiAPISubPartPatch(v, "SystemSdwan-Service-InternetServiceCustomGroup")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "internet_service_fortiguard"
+		if _, ok := i["internet-service-fortiguard"]; ok {
+			v := flattenSystemSdwanServiceInternetServiceFortiguard(i["internet-service-fortiguard"], d, pre_append)
+			tmp["internet_service_fortiguard"] = fortiAPISubPartPatch(v, "SystemSdwan-Service-InternetServiceFortiguard")
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "internet_service_group"
@@ -3578,6 +3683,10 @@ func flattenSystemSdwanServiceEndSrcPort(v interface{}, d *schema.ResourceData, 
 	return v
 }
 
+func flattenSystemSdwanServiceFibBestMatchForce(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenSystemSdwanServiceGateway(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -3635,6 +3744,10 @@ func flattenSystemSdwanServiceInternetServiceCustom(v interface{}, d *schema.Res
 }
 
 func flattenSystemSdwanServiceInternetServiceCustomGroup(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
+func flattenSystemSdwanServiceInternetServiceFortiguard(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return flattenStringList(v)
 }
 
@@ -3760,7 +3873,7 @@ func flattenSystemSdwanServiceSla(v interface{}, d *schema.ResourceData, pre str
 }
 
 func flattenSystemSdwanServiceSlaHealthCheck(v interface{}, d *schema.ResourceData, pre string) interface{} {
-	return flattenStringList(v)
+	return conv2str(v)
 }
 
 func flattenSystemSdwanServiceSlaId(v interface{}, d *schema.ResourceData, pre string) interface{} {
@@ -4020,7 +4133,7 @@ func refreshObjectSystemSdwan(d *schema.ResourceData, o map[string]interface{}) 
 	}
 
 	if isImportTable() {
-		if err = d.Set("health_check_fortiguard", flattenSystemSdwanHealthCheckFortiguard(o["health-check-fortiguard"], d, "health_check_fortiguard")); err != nil {
+		if err = d.Set("health_check_fortiguard", flattenSystemSdwanHealthCheckFortiguardU(o["health-check-fortiguard"], d, "health_check_fortiguard")); err != nil {
 			if vv, ok := fortiAPIPatch(o["health-check-fortiguard"], "SystemSdwan-HealthCheckFortiguard"); ok {
 				if err = d.Set("health_check_fortiguard", vv); err != nil {
 					return fmt.Errorf("Error reading health_check_fortiguard: %v", err)
@@ -4031,7 +4144,7 @@ func refreshObjectSystemSdwan(d *schema.ResourceData, o map[string]interface{}) 
 		}
 	} else {
 		if _, ok := d.GetOk("health_check_fortiguard"); ok {
-			if err = d.Set("health_check_fortiguard", flattenSystemSdwanHealthCheckFortiguard(o["health-check-fortiguard"], d, "health_check_fortiguard")); err != nil {
+			if err = d.Set("health_check_fortiguard", flattenSystemSdwanHealthCheckFortiguardU(o["health-check-fortiguard"], d, "health_check_fortiguard")); err != nil {
 				if vv, ok := fortiAPIPatch(o["health-check-fortiguard"], "SystemSdwan-HealthCheckFortiguard"); ok {
 					if err = d.Set("health_check_fortiguard", vv); err != nil {
 						return fmt.Errorf("Error reading health_check_fortiguard: %v", err)
@@ -4389,6 +4502,16 @@ func expandSystemSdwanHealthCheck(d *schema.ResourceData, v interface{}, pre str
 			tmp["addr-mode"], _ = expandSystemSdwanHealthCheckAddrMode(d, i["addr_mode"], pre_append)
 		}
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "agent_probe_timeout"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["agent-probe-timeout"], _ = expandSystemSdwanHealthCheckAgentProbeTimeout(d, i["agent_probe_timeout"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "bandwidth_weight"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["bandwidth-weight"], _ = expandSystemSdwanHealthCheckBandwidthWeight(d, i["bandwidth_weight"], pre_append)
+		}
+
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "class_id"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
 			tmp["class-id"], _ = expandSystemSdwanHealthCheckClassId(d, i["class_id"], pre_append)
@@ -4469,6 +4592,16 @@ func expandSystemSdwanHealthCheck(d *schema.ResourceData, v interface{}, pre str
 			tmp["interval"], _ = expandSystemSdwanHealthCheckInterval(d, i["interval"], pre_append)
 		}
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "jitter_weight"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["jitter-weight"], _ = expandSystemSdwanHealthCheckJitterWeight(d, i["jitter_weight"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "latency_weight"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["latency-weight"], _ = expandSystemSdwanHealthCheckLatencyWeight(d, i["latency_weight"], pre_append)
+		}
+
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "members"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
 			tmp["members"], _ = expandSystemSdwanHealthCheckMembers(d, i["members"], pre_append)
@@ -4482,6 +4615,11 @@ func expandSystemSdwanHealthCheck(d *schema.ResourceData, v interface{}, pre str
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "name"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
 			tmp["name"], _ = expandSystemSdwanHealthCheckName(d, i["name"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "packet_loss_weight"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["packet-loss-weight"], _ = expandSystemSdwanHealthCheckPacketLossWeight(d, i["packet_loss_weight"], pre_append)
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "packet_size"
@@ -4527,6 +4665,11 @@ func expandSystemSdwanHealthCheck(d *schema.ResourceData, v interface{}, pre str
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "recoverytime"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
 			tmp["recoverytime"], _ = expandSystemSdwanHealthCheckRecoverytime(d, i["recoverytime"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "remote_probe_timeout"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["remote-probe-timeout"], _ = expandSystemSdwanHealthCheckRemoteProbeTimeout(d, i["remote_probe_timeout"], pre_append)
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "security_mode"
@@ -4643,6 +4786,14 @@ func expandSystemSdwanHealthCheckAddrMode(d *schema.ResourceData, v interface{},
 	return v, nil
 }
 
+func expandSystemSdwanHealthCheckAgentProbeTimeout(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemSdwanHealthCheckBandwidthWeight(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandSystemSdwanHealthCheckClassId(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return expandStringList(v.(*schema.Set).List()), nil
 }
@@ -4668,6 +4819,10 @@ func expandSystemSdwanHealthCheckEmbedMeasuredHealth(d *schema.ResourceData, v i
 }
 
 func expandSystemSdwanHealthCheckFailtime(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemSdwanHealthCheckFortiguard(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -4703,6 +4858,14 @@ func expandSystemSdwanHealthCheckInterval(d *schema.ResourceData, v interface{},
 	return v, nil
 }
 
+func expandSystemSdwanHealthCheckJitterWeight(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemSdwanHealthCheckLatencyWeight(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandSystemSdwanHealthCheckMembers(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return expandStringList(v.(*schema.Set).List()), nil
 }
@@ -4712,6 +4875,10 @@ func expandSystemSdwanHealthCheckMosCodec(d *schema.ResourceData, v interface{},
 }
 
 func expandSystemSdwanHealthCheckName(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemSdwanHealthCheckPacketLossWeight(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -4751,6 +4918,10 @@ func expandSystemSdwanHealthCheckRecoverytime(d *schema.ResourceData, v interfac
 	return v, nil
 }
 
+func expandSystemSdwanHealthCheckRemoteProbeTimeout(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandSystemSdwanHealthCheckSecurityMode(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -4772,6 +4943,11 @@ func expandSystemSdwanHealthCheckSla(d *schema.ResourceData, v interface{}, pre 
 		tmp := make(map[string]interface{})
 		i := r.(map[string]interface{})
 		pre_append := "" // table
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "custom_profile_threshold"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["custom-profile-threshold"], _ = expandSystemSdwanHealthCheckSlaCustomProfileThreshold(d, i["custom_profile_threshold"], pre_append)
+		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "id"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
@@ -4821,6 +4997,10 @@ func expandSystemSdwanHealthCheckSla(d *schema.ResourceData, v interface{}, pre 
 	}
 
 	return result, nil
+}
+
+func expandSystemSdwanHealthCheckSlaCustomProfileThreshold(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
 }
 
 func expandSystemSdwanHealthCheckSlaId(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
@@ -4919,7 +5099,7 @@ func expandSystemSdwanHealthCheckVrf(d *schema.ResourceData, v interface{}, pre 
 	return v, nil
 }
 
-func expandSystemSdwanHealthCheckFortiguard(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+func expandSystemSdwanHealthCheckFortiguardU(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	l := v.([]interface{})
 	result := make([]map[string]interface{}, 0, len(l))
 
@@ -4935,147 +5115,147 @@ func expandSystemSdwanHealthCheckFortiguard(d *schema.ResourceData, v interface{
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "addr_mode"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
-			tmp["addr-mode"], _ = expandSystemSdwanHealthCheckFortiguardAddrMode(d, i["addr_mode"], pre_append)
+			tmp["addr-mode"], _ = expandSystemSdwanHealthCheckFortiguardUAddrMode(d, i["addr_mode"], pre_append)
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "class_id"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
-			tmp["class-id"], _ = expandSystemSdwanHealthCheckFortiguardClassId(d, i["class_id"], pre_append)
+			tmp["class-id"], _ = expandSystemSdwanHealthCheckFortiguardUClassId(d, i["class_id"], pre_append)
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "detect_mode"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
-			tmp["detect-mode"], _ = expandSystemSdwanHealthCheckFortiguardDetectMode(d, i["detect_mode"], pre_append)
+			tmp["detect-mode"], _ = expandSystemSdwanHealthCheckFortiguardUDetectMode(d, i["detect_mode"], pre_append)
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "diffservcode"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
-			tmp["diffservcode"], _ = expandSystemSdwanHealthCheckFortiguardDiffservcode(d, i["diffservcode"], pre_append)
+			tmp["diffservcode"], _ = expandSystemSdwanHealthCheckFortiguardUDiffservcode(d, i["diffservcode"], pre_append)
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "dns_match_ip"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
-			tmp["dns-match-ip"], _ = expandSystemSdwanHealthCheckFortiguardDnsMatchIp(d, i["dns_match_ip"], pre_append)
+			tmp["dns-match-ip"], _ = expandSystemSdwanHealthCheckFortiguardUDnsMatchIp(d, i["dns_match_ip"], pre_append)
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "dns_request_domain"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
-			tmp["dns-request-domain"], _ = expandSystemSdwanHealthCheckFortiguardDnsRequestDomain(d, i["dns_request_domain"], pre_append)
+			tmp["dns-request-domain"], _ = expandSystemSdwanHealthCheckFortiguardUDnsRequestDomain(d, i["dns_request_domain"], pre_append)
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "embed_measured_health"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
-			tmp["embed-measured-health"], _ = expandSystemSdwanHealthCheckFortiguardEmbedMeasuredHealth(d, i["embed_measured_health"], pre_append)
+			tmp["embed-measured-health"], _ = expandSystemSdwanHealthCheckFortiguardUEmbedMeasuredHealth(d, i["embed_measured_health"], pre_append)
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "failtime"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
-			tmp["failtime"], _ = expandSystemSdwanHealthCheckFortiguardFailtime(d, i["failtime"], pre_append)
+			tmp["failtime"], _ = expandSystemSdwanHealthCheckFortiguardUFailtime(d, i["failtime"], pre_append)
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "ftp_file"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
-			tmp["ftp-file"], _ = expandSystemSdwanHealthCheckFortiguardFtpFile(d, i["ftp_file"], pre_append)
+			tmp["ftp-file"], _ = expandSystemSdwanHealthCheckFortiguardUFtpFile(d, i["ftp_file"], pre_append)
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "ftp_mode"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
-			tmp["ftp-mode"], _ = expandSystemSdwanHealthCheckFortiguardFtpMode(d, i["ftp_mode"], pre_append)
+			tmp["ftp-mode"], _ = expandSystemSdwanHealthCheckFortiguardUFtpMode(d, i["ftp_mode"], pre_append)
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "ha_priority"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
-			tmp["ha-priority"], _ = expandSystemSdwanHealthCheckFortiguardHaPriority(d, i["ha_priority"], pre_append)
+			tmp["ha-priority"], _ = expandSystemSdwanHealthCheckFortiguardUHaPriority(d, i["ha_priority"], pre_append)
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "http_agent"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
-			tmp["http-agent"], _ = expandSystemSdwanHealthCheckFortiguardHttpAgent(d, i["http_agent"], pre_append)
+			tmp["http-agent"], _ = expandSystemSdwanHealthCheckFortiguardUHttpAgent(d, i["http_agent"], pre_append)
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "http_get"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
-			tmp["http-get"], _ = expandSystemSdwanHealthCheckFortiguardHttpGet(d, i["http_get"], pre_append)
+			tmp["http-get"], _ = expandSystemSdwanHealthCheckFortiguardUHttpGet(d, i["http_get"], pre_append)
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "http_match"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
-			tmp["http-match"], _ = expandSystemSdwanHealthCheckFortiguardHttpMatch(d, i["http_match"], pre_append)
+			tmp["http-match"], _ = expandSystemSdwanHealthCheckFortiguardUHttpMatch(d, i["http_match"], pre_append)
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "interval"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
-			tmp["interval"], _ = expandSystemSdwanHealthCheckFortiguardInterval(d, i["interval"], pre_append)
+			tmp["interval"], _ = expandSystemSdwanHealthCheckFortiguardUInterval(d, i["interval"], pre_append)
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "members"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
-			tmp["members"], _ = expandSystemSdwanHealthCheckFortiguardMembers(d, i["members"], pre_append)
+			tmp["members"], _ = expandSystemSdwanHealthCheckFortiguardUMembers(d, i["members"], pre_append)
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "mos_codec"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
-			tmp["mos-codec"], _ = expandSystemSdwanHealthCheckFortiguardMosCodec(d, i["mos_codec"], pre_append)
+			tmp["mos-codec"], _ = expandSystemSdwanHealthCheckFortiguardUMosCodec(d, i["mos_codec"], pre_append)
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "packet_size"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
-			tmp["packet-size"], _ = expandSystemSdwanHealthCheckFortiguardPacketSize(d, i["packet_size"], pre_append)
+			tmp["packet-size"], _ = expandSystemSdwanHealthCheckFortiguardUPacketSize(d, i["packet_size"], pre_append)
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "password"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
-			tmp["password"], _ = expandSystemSdwanHealthCheckFortiguardPassword(d, i["password"], pre_append)
+			tmp["password"], _ = expandSystemSdwanHealthCheckFortiguardUPassword(d, i["password"], pre_append)
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "port"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
-			tmp["port"], _ = expandSystemSdwanHealthCheckFortiguardPort(d, i["port"], pre_append)
+			tmp["port"], _ = expandSystemSdwanHealthCheckFortiguardUPort(d, i["port"], pre_append)
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "probe_count"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
-			tmp["probe-count"], _ = expandSystemSdwanHealthCheckFortiguardProbeCount(d, i["probe_count"], pre_append)
+			tmp["probe-count"], _ = expandSystemSdwanHealthCheckFortiguardUProbeCount(d, i["probe_count"], pre_append)
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "probe_packets"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
-			tmp["probe-packets"], _ = expandSystemSdwanHealthCheckFortiguardProbePackets(d, i["probe_packets"], pre_append)
+			tmp["probe-packets"], _ = expandSystemSdwanHealthCheckFortiguardUProbePackets(d, i["probe_packets"], pre_append)
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "probe_timeout"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
-			tmp["probe-timeout"], _ = expandSystemSdwanHealthCheckFortiguardProbeTimeout(d, i["probe_timeout"], pre_append)
+			tmp["probe-timeout"], _ = expandSystemSdwanHealthCheckFortiguardUProbeTimeout(d, i["probe_timeout"], pre_append)
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "protocol"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
-			tmp["protocol"], _ = expandSystemSdwanHealthCheckFortiguardProtocol(d, i["protocol"], pre_append)
+			tmp["protocol"], _ = expandSystemSdwanHealthCheckFortiguardUProtocol(d, i["protocol"], pre_append)
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "quality_measured_method"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
-			tmp["quality-measured-method"], _ = expandSystemSdwanHealthCheckFortiguardQualityMeasuredMethod(d, i["quality_measured_method"], pre_append)
+			tmp["quality-measured-method"], _ = expandSystemSdwanHealthCheckFortiguardUQualityMeasuredMethod(d, i["quality_measured_method"], pre_append)
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "recoverytime"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
-			tmp["recoverytime"], _ = expandSystemSdwanHealthCheckFortiguardRecoverytime(d, i["recoverytime"], pre_append)
+			tmp["recoverytime"], _ = expandSystemSdwanHealthCheckFortiguardURecoverytime(d, i["recoverytime"], pre_append)
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "security_mode"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
-			tmp["security-mode"], _ = expandSystemSdwanHealthCheckFortiguardSecurityMode(d, i["security_mode"], pre_append)
+			tmp["security-mode"], _ = expandSystemSdwanHealthCheckFortiguardUSecurityMode(d, i["security_mode"], pre_append)
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "server"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
-			tmp["server"], _ = expandSystemSdwanHealthCheckFortiguardServer(d, i["server"], pre_append)
+			tmp["server"], _ = expandSystemSdwanHealthCheckFortiguardUServer(d, i["server"], pre_append)
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "sla"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
-			t, err := expandSystemSdwanHealthCheckFortiguardSla(d, i["sla"], pre_append)
+			t, err := expandSystemSdwanHealthCheckFortiguardUSla(d, i["sla"], pre_append)
 			if err != nil {
 				return result, err
 			} else if t != nil {
@@ -5085,87 +5265,87 @@ func expandSystemSdwanHealthCheckFortiguard(d *schema.ResourceData, v interface{
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "sla_fail_log_period"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
-			tmp["sla-fail-log-period"], _ = expandSystemSdwanHealthCheckFortiguardSlaFailLogPeriod(d, i["sla_fail_log_period"], pre_append)
+			tmp["sla-fail-log-period"], _ = expandSystemSdwanHealthCheckFortiguardUSlaFailLogPeriod(d, i["sla_fail_log_period"], pre_append)
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "sla_id_redistribute"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
-			tmp["sla-id-redistribute"], _ = expandSystemSdwanHealthCheckFortiguardSlaIdRedistribute(d, i["sla_id_redistribute"], pre_append)
+			tmp["sla-id-redistribute"], _ = expandSystemSdwanHealthCheckFortiguardUSlaIdRedistribute(d, i["sla_id_redistribute"], pre_append)
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "sla_pass_log_period"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
-			tmp["sla-pass-log-period"], _ = expandSystemSdwanHealthCheckFortiguardSlaPassLogPeriod(d, i["sla_pass_log_period"], pre_append)
+			tmp["sla-pass-log-period"], _ = expandSystemSdwanHealthCheckFortiguardUSlaPassLogPeriod(d, i["sla_pass_log_period"], pre_append)
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "source"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
-			tmp["source"], _ = expandSystemSdwanHealthCheckFortiguardSource(d, i["source"], pre_append)
+			tmp["source"], _ = expandSystemSdwanHealthCheckFortiguardUSource(d, i["source"], pre_append)
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "source6"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
-			tmp["source6"], _ = expandSystemSdwanHealthCheckFortiguardSource6(d, i["source6"], pre_append)
+			tmp["source6"], _ = expandSystemSdwanHealthCheckFortiguardUSource6(d, i["source6"], pre_append)
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "system_dns"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
-			tmp["system-dns"], _ = expandSystemSdwanHealthCheckFortiguardSystemDns(d, i["system_dns"], pre_append)
+			tmp["system-dns"], _ = expandSystemSdwanHealthCheckFortiguardUSystemDns(d, i["system_dns"], pre_append)
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "target_name"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
-			tmp["target-name"], _ = expandSystemSdwanHealthCheckFortiguardTargetName(d, i["target_name"], pre_append)
+			tmp["target-name"], _ = expandSystemSdwanHealthCheckFortiguardUTargetName(d, i["target_name"], pre_append)
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "threshold_alert_jitter"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
-			tmp["threshold-alert-jitter"], _ = expandSystemSdwanHealthCheckFortiguardThresholdAlertJitter(d, i["threshold_alert_jitter"], pre_append)
+			tmp["threshold-alert-jitter"], _ = expandSystemSdwanHealthCheckFortiguardUThresholdAlertJitter(d, i["threshold_alert_jitter"], pre_append)
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "threshold_alert_latency"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
-			tmp["threshold-alert-latency"], _ = expandSystemSdwanHealthCheckFortiguardThresholdAlertLatency(d, i["threshold_alert_latency"], pre_append)
+			tmp["threshold-alert-latency"], _ = expandSystemSdwanHealthCheckFortiguardUThresholdAlertLatency(d, i["threshold_alert_latency"], pre_append)
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "threshold_alert_packetloss"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
-			tmp["threshold-alert-packetloss"], _ = expandSystemSdwanHealthCheckFortiguardThresholdAlertPacketloss(d, i["threshold_alert_packetloss"], pre_append)
+			tmp["threshold-alert-packetloss"], _ = expandSystemSdwanHealthCheckFortiguardUThresholdAlertPacketloss(d, i["threshold_alert_packetloss"], pre_append)
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "threshold_warning_jitter"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
-			tmp["threshold-warning-jitter"], _ = expandSystemSdwanHealthCheckFortiguardThresholdWarningJitter(d, i["threshold_warning_jitter"], pre_append)
+			tmp["threshold-warning-jitter"], _ = expandSystemSdwanHealthCheckFortiguardUThresholdWarningJitter(d, i["threshold_warning_jitter"], pre_append)
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "threshold_warning_latency"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
-			tmp["threshold-warning-latency"], _ = expandSystemSdwanHealthCheckFortiguardThresholdWarningLatency(d, i["threshold_warning_latency"], pre_append)
+			tmp["threshold-warning-latency"], _ = expandSystemSdwanHealthCheckFortiguardUThresholdWarningLatency(d, i["threshold_warning_latency"], pre_append)
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "threshold_warning_packetloss"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
-			tmp["threshold-warning-packetloss"], _ = expandSystemSdwanHealthCheckFortiguardThresholdWarningPacketloss(d, i["threshold_warning_packetloss"], pre_append)
+			tmp["threshold-warning-packetloss"], _ = expandSystemSdwanHealthCheckFortiguardUThresholdWarningPacketloss(d, i["threshold_warning_packetloss"], pre_append)
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "update_cascade_interface"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
-			tmp["update-cascade-interface"], _ = expandSystemSdwanHealthCheckFortiguardUpdateCascadeInterface(d, i["update_cascade_interface"], pre_append)
+			tmp["update-cascade-interface"], _ = expandSystemSdwanHealthCheckFortiguardUUpdateCascadeInterface(d, i["update_cascade_interface"], pre_append)
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "update_static_route"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
-			tmp["update-static-route"], _ = expandSystemSdwanHealthCheckFortiguardUpdateStaticRoute(d, i["update_static_route"], pre_append)
+			tmp["update-static-route"], _ = expandSystemSdwanHealthCheckFortiguardUUpdateStaticRoute(d, i["update_static_route"], pre_append)
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "user"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
-			tmp["user"], _ = expandSystemSdwanHealthCheckFortiguardUser(d, i["user"], pre_append)
+			tmp["user"], _ = expandSystemSdwanHealthCheckFortiguardUUser(d, i["user"], pre_append)
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "vrf"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
-			tmp["vrf"], _ = expandSystemSdwanHealthCheckFortiguardVrf(d, i["vrf"], pre_append)
+			tmp["vrf"], _ = expandSystemSdwanHealthCheckFortiguardUVrf(d, i["vrf"], pre_append)
 		}
 
 		if len(tmp) > 0 {
@@ -5178,119 +5358,119 @@ func expandSystemSdwanHealthCheckFortiguard(d *schema.ResourceData, v interface{
 	return result, nil
 }
 
-func expandSystemSdwanHealthCheckFortiguardAddrMode(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+func expandSystemSdwanHealthCheckFortiguardUAddrMode(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
-func expandSystemSdwanHealthCheckFortiguardClassId(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+func expandSystemSdwanHealthCheckFortiguardUClassId(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return expandStringList(v.(*schema.Set).List()), nil
 }
 
-func expandSystemSdwanHealthCheckFortiguardDetectMode(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+func expandSystemSdwanHealthCheckFortiguardUDetectMode(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
-func expandSystemSdwanHealthCheckFortiguardDiffservcode(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+func expandSystemSdwanHealthCheckFortiguardUDiffservcode(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
-func expandSystemSdwanHealthCheckFortiguardDnsMatchIp(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+func expandSystemSdwanHealthCheckFortiguardUDnsMatchIp(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
-func expandSystemSdwanHealthCheckFortiguardDnsRequestDomain(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+func expandSystemSdwanHealthCheckFortiguardUDnsRequestDomain(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
-func expandSystemSdwanHealthCheckFortiguardEmbedMeasuredHealth(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+func expandSystemSdwanHealthCheckFortiguardUEmbedMeasuredHealth(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
-func expandSystemSdwanHealthCheckFortiguardFailtime(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+func expandSystemSdwanHealthCheckFortiguardUFailtime(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
-func expandSystemSdwanHealthCheckFortiguardFtpFile(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+func expandSystemSdwanHealthCheckFortiguardUFtpFile(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
-func expandSystemSdwanHealthCheckFortiguardFtpMode(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+func expandSystemSdwanHealthCheckFortiguardUFtpMode(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
-func expandSystemSdwanHealthCheckFortiguardHaPriority(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+func expandSystemSdwanHealthCheckFortiguardUHaPriority(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
-func expandSystemSdwanHealthCheckFortiguardHttpAgent(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+func expandSystemSdwanHealthCheckFortiguardUHttpAgent(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
-func expandSystemSdwanHealthCheckFortiguardHttpGet(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+func expandSystemSdwanHealthCheckFortiguardUHttpGet(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
-func expandSystemSdwanHealthCheckFortiguardHttpMatch(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+func expandSystemSdwanHealthCheckFortiguardUHttpMatch(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
-func expandSystemSdwanHealthCheckFortiguardInterval(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+func expandSystemSdwanHealthCheckFortiguardUInterval(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
-func expandSystemSdwanHealthCheckFortiguardMembers(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+func expandSystemSdwanHealthCheckFortiguardUMembers(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return expandStringList(v.(*schema.Set).List()), nil
 }
 
-func expandSystemSdwanHealthCheckFortiguardMosCodec(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+func expandSystemSdwanHealthCheckFortiguardUMosCodec(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
-func expandSystemSdwanHealthCheckFortiguardPacketSize(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+func expandSystemSdwanHealthCheckFortiguardUPacketSize(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
-func expandSystemSdwanHealthCheckFortiguardPassword(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+func expandSystemSdwanHealthCheckFortiguardUPassword(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return expandStringList(v.(*schema.Set).List()), nil
 }
 
-func expandSystemSdwanHealthCheckFortiguardPort(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+func expandSystemSdwanHealthCheckFortiguardUPort(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
-func expandSystemSdwanHealthCheckFortiguardProbeCount(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+func expandSystemSdwanHealthCheckFortiguardUProbeCount(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
-func expandSystemSdwanHealthCheckFortiguardProbePackets(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+func expandSystemSdwanHealthCheckFortiguardUProbePackets(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
-func expandSystemSdwanHealthCheckFortiguardProbeTimeout(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+func expandSystemSdwanHealthCheckFortiguardUProbeTimeout(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
-func expandSystemSdwanHealthCheckFortiguardProtocol(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+func expandSystemSdwanHealthCheckFortiguardUProtocol(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
-func expandSystemSdwanHealthCheckFortiguardQualityMeasuredMethod(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+func expandSystemSdwanHealthCheckFortiguardUQualityMeasuredMethod(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
-func expandSystemSdwanHealthCheckFortiguardRecoverytime(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+func expandSystemSdwanHealthCheckFortiguardURecoverytime(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
-func expandSystemSdwanHealthCheckFortiguardSecurityMode(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+func expandSystemSdwanHealthCheckFortiguardUSecurityMode(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
-func expandSystemSdwanHealthCheckFortiguardServer(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+func expandSystemSdwanHealthCheckFortiguardUServer(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return expandStringList(v.(*schema.Set).List()), nil
 }
 
-func expandSystemSdwanHealthCheckFortiguardSla(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+func expandSystemSdwanHealthCheckFortiguardUSla(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	l := v.([]interface{})
 	result := make([]map[string]interface{}, 0, len(l))
 
@@ -5306,42 +5486,42 @@ func expandSystemSdwanHealthCheckFortiguardSla(d *schema.ResourceData, v interfa
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "id"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
-			tmp["id"], _ = expandSystemSdwanHealthCheckFortiguardSlaId(d, i["id"], pre_append)
+			tmp["id"], _ = expandSystemSdwanHealthCheckFortiguardUSlaId(d, i["id"], pre_append)
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "jitter_threshold"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
-			tmp["jitter-threshold"], _ = expandSystemSdwanHealthCheckFortiguardSlaJitterThreshold(d, i["jitter_threshold"], pre_append)
+			tmp["jitter-threshold"], _ = expandSystemSdwanHealthCheckFortiguardUSlaJitterThreshold(d, i["jitter_threshold"], pre_append)
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "latency_threshold"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
-			tmp["latency-threshold"], _ = expandSystemSdwanHealthCheckFortiguardSlaLatencyThreshold(d, i["latency_threshold"], pre_append)
+			tmp["latency-threshold"], _ = expandSystemSdwanHealthCheckFortiguardUSlaLatencyThreshold(d, i["latency_threshold"], pre_append)
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "link_cost_factor"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
-			tmp["link-cost-factor"], _ = expandSystemSdwanHealthCheckFortiguardSlaLinkCostFactor(d, i["link_cost_factor"], pre_append)
+			tmp["link-cost-factor"], _ = expandSystemSdwanHealthCheckFortiguardUSlaLinkCostFactor(d, i["link_cost_factor"], pre_append)
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "mos_threshold"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
-			tmp["mos-threshold"], _ = expandSystemSdwanHealthCheckFortiguardSlaMosThreshold(d, i["mos_threshold"], pre_append)
+			tmp["mos-threshold"], _ = expandSystemSdwanHealthCheckFortiguardUSlaMosThreshold(d, i["mos_threshold"], pre_append)
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "packetloss_threshold"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
-			tmp["packetloss-threshold"], _ = expandSystemSdwanHealthCheckFortiguardSlaPacketlossThreshold(d, i["packetloss_threshold"], pre_append)
+			tmp["packetloss-threshold"], _ = expandSystemSdwanHealthCheckFortiguardUSlaPacketlossThreshold(d, i["packetloss_threshold"], pre_append)
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "priority_in_sla"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
-			tmp["priority-in-sla"], _ = expandSystemSdwanHealthCheckFortiguardSlaPriorityInSla(d, i["priority_in_sla"], pre_append)
+			tmp["priority-in-sla"], _ = expandSystemSdwanHealthCheckFortiguardUSlaPriorityInSla(d, i["priority_in_sla"], pre_append)
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "priority_out_sla"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
-			tmp["priority-out-sla"], _ = expandSystemSdwanHealthCheckFortiguardSlaPriorityOutSla(d, i["priority_out_sla"], pre_append)
+			tmp["priority-out-sla"], _ = expandSystemSdwanHealthCheckFortiguardUSlaPriorityOutSla(d, i["priority_out_sla"], pre_append)
 		}
 
 		if len(tmp) > 0 {
@@ -5354,103 +5534,103 @@ func expandSystemSdwanHealthCheckFortiguardSla(d *schema.ResourceData, v interfa
 	return result, nil
 }
 
-func expandSystemSdwanHealthCheckFortiguardSlaId(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+func expandSystemSdwanHealthCheckFortiguardUSlaId(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
-func expandSystemSdwanHealthCheckFortiguardSlaJitterThreshold(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+func expandSystemSdwanHealthCheckFortiguardUSlaJitterThreshold(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
-func expandSystemSdwanHealthCheckFortiguardSlaLatencyThreshold(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+func expandSystemSdwanHealthCheckFortiguardUSlaLatencyThreshold(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
-func expandSystemSdwanHealthCheckFortiguardSlaLinkCostFactor(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+func expandSystemSdwanHealthCheckFortiguardUSlaLinkCostFactor(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return expandStringList(v.(*schema.Set).List()), nil
 }
 
-func expandSystemSdwanHealthCheckFortiguardSlaMosThreshold(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+func expandSystemSdwanHealthCheckFortiguardUSlaMosThreshold(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
-func expandSystemSdwanHealthCheckFortiguardSlaPacketlossThreshold(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+func expandSystemSdwanHealthCheckFortiguardUSlaPacketlossThreshold(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
-func expandSystemSdwanHealthCheckFortiguardSlaPriorityInSla(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+func expandSystemSdwanHealthCheckFortiguardUSlaPriorityInSla(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
-func expandSystemSdwanHealthCheckFortiguardSlaPriorityOutSla(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+func expandSystemSdwanHealthCheckFortiguardUSlaPriorityOutSla(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
-func expandSystemSdwanHealthCheckFortiguardSlaFailLogPeriod(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+func expandSystemSdwanHealthCheckFortiguardUSlaFailLogPeriod(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
-func expandSystemSdwanHealthCheckFortiguardSlaIdRedistribute(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+func expandSystemSdwanHealthCheckFortiguardUSlaIdRedistribute(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
-func expandSystemSdwanHealthCheckFortiguardSlaPassLogPeriod(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+func expandSystemSdwanHealthCheckFortiguardUSlaPassLogPeriod(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
-func expandSystemSdwanHealthCheckFortiguardSource(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+func expandSystemSdwanHealthCheckFortiguardUSource(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
-func expandSystemSdwanHealthCheckFortiguardSource6(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+func expandSystemSdwanHealthCheckFortiguardUSource6(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
-func expandSystemSdwanHealthCheckFortiguardSystemDns(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+func expandSystemSdwanHealthCheckFortiguardUSystemDns(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
-func expandSystemSdwanHealthCheckFortiguardTargetName(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+func expandSystemSdwanHealthCheckFortiguardUTargetName(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
-func expandSystemSdwanHealthCheckFortiguardThresholdAlertJitter(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+func expandSystemSdwanHealthCheckFortiguardUThresholdAlertJitter(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
-func expandSystemSdwanHealthCheckFortiguardThresholdAlertLatency(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+func expandSystemSdwanHealthCheckFortiguardUThresholdAlertLatency(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
-func expandSystemSdwanHealthCheckFortiguardThresholdAlertPacketloss(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+func expandSystemSdwanHealthCheckFortiguardUThresholdAlertPacketloss(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
-func expandSystemSdwanHealthCheckFortiguardThresholdWarningJitter(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+func expandSystemSdwanHealthCheckFortiguardUThresholdWarningJitter(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
-func expandSystemSdwanHealthCheckFortiguardThresholdWarningLatency(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+func expandSystemSdwanHealthCheckFortiguardUThresholdWarningLatency(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
-func expandSystemSdwanHealthCheckFortiguardThresholdWarningPacketloss(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+func expandSystemSdwanHealthCheckFortiguardUThresholdWarningPacketloss(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
-func expandSystemSdwanHealthCheckFortiguardUpdateCascadeInterface(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+func expandSystemSdwanHealthCheckFortiguardUUpdateCascadeInterface(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
-func expandSystemSdwanHealthCheckFortiguardUpdateStaticRoute(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+func expandSystemSdwanHealthCheckFortiguardUUpdateStaticRoute(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
-func expandSystemSdwanHealthCheckFortiguardUser(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+func expandSystemSdwanHealthCheckFortiguardUUser(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
-func expandSystemSdwanHealthCheckFortiguardVrf(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+func expandSystemSdwanHealthCheckFortiguardUVrf(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -5736,7 +5916,7 @@ func expandSystemSdwanNeighborHealthCheck(d *schema.ResourceData, v interface{},
 }
 
 func expandSystemSdwanNeighborIp(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
-	return expandStringList(v.(*schema.Set).List()), nil
+	return v, nil
 }
 
 func expandSystemSdwanNeighborMember(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
@@ -5867,6 +6047,11 @@ func expandSystemSdwanService(d *schema.ResourceData, v interface{}, pre string)
 			tmp["end-src-port"], _ = expandSystemSdwanServiceEndSrcPort(d, i["end_src_port"], pre_append)
 		}
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "fib_best_match_force"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["fib-best-match-force"], _ = expandSystemSdwanServiceFibBestMatchForce(d, i["fib_best_match_force"], pre_append)
+		}
+
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "gateway"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
 			tmp["gateway"], _ = expandSystemSdwanServiceGateway(d, i["gateway"], pre_append)
@@ -5940,6 +6125,11 @@ func expandSystemSdwanService(d *schema.ResourceData, v interface{}, pre string)
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "internet_service_custom_group"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
 			tmp["internet-service-custom-group"], _ = expandSystemSdwanServiceInternetServiceCustomGroup(d, i["internet_service_custom_group"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "internet_service_fortiguard"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["internet-service-fortiguard"], _ = expandSystemSdwanServiceInternetServiceFortiguard(d, i["internet_service_fortiguard"], pre_append)
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "internet_service_group"
@@ -6193,6 +6383,10 @@ func expandSystemSdwanServiceEndSrcPort(d *schema.ResourceData, v interface{}, p
 	return v, nil
 }
 
+func expandSystemSdwanServiceFibBestMatchForce(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandSystemSdwanServiceGateway(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -6250,6 +6444,10 @@ func expandSystemSdwanServiceInternetServiceCustom(d *schema.ResourceData, v int
 }
 
 func expandSystemSdwanServiceInternetServiceCustomGroup(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandSystemSdwanServiceInternetServiceFortiguard(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return expandStringList(v.(*schema.Set).List()), nil
 }
 
@@ -6368,7 +6566,7 @@ func expandSystemSdwanServiceSla(d *schema.ResourceData, v interface{}, pre stri
 }
 
 func expandSystemSdwanServiceSlaHealthCheck(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
-	return expandStringList(v.(*schema.Set).List()), nil
+	return v, nil
 }
 
 func expandSystemSdwanServiceSlaId(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
@@ -6579,7 +6777,7 @@ func getObjectSystemSdwan(d *schema.ResourceData) (*map[string]interface{}, erro
 	}
 
 	if v, ok := d.GetOk("health_check_fortiguard"); ok || d.HasChange("health_check_fortiguard") {
-		t, err := expandSystemSdwanHealthCheckFortiguard(d, v, "health_check_fortiguard")
+		t, err := expandSystemSdwanHealthCheckFortiguardU(d, v, "health_check_fortiguard")
 		if err != nil {
 			return &obj, err
 		} else if t != nil {

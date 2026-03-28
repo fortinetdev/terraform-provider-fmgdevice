@@ -28,6 +28,12 @@ func resourceSwitchControllerStormControl() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
+
+			"adom": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"device_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -44,6 +50,10 @@ func resourceSwitchControllerStormControl() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+			},
+			"burst_size_level": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
 			},
 			"rate": &schema.Schema{
 				Type:     schema.TypeInt,
@@ -71,8 +81,12 @@ func resourceSwitchControllerStormControlUpdate(d *schema.ResourceData, m interf
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -84,13 +98,12 @@ func resourceSwitchControllerStormControlUpdate(d *schema.ResourceData, m interf
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectSwitchControllerStormControl(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SwitchControllerStormControl resource while getting object: %v", err)
 	}
+
+	wsParams["adom"] = adomv
 
 	_, err = c.UpdateSwitchControllerStormControl(obj, mkey, paradict, wsParams)
 	if err != nil {
@@ -112,8 +125,12 @@ func resourceSwitchControllerStormControlDelete(d *schema.ResourceData, m interf
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -125,9 +142,7 @@ func resourceSwitchControllerStormControlDelete(d *schema.ResourceData, m interf
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
+	wsParams["adom"] = adomv
 
 	err = c.DeleteSwitchControllerStormControl(mkey, paradict, wsParams)
 	if err != nil {
@@ -146,8 +161,8 @@ func resourceSwitchControllerStormControlRead(d *schema.ResourceData, m interfac
 	c.Retries = 1
 
 	paradict := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	device_vdom, err := getVariable(cfg, d, "device_vdom")
 	if device_name == "" {
@@ -173,6 +188,7 @@ func resourceSwitchControllerStormControlRead(d *schema.ResourceData, m interfac
 
 	o, err := c.ReadSwitchControllerStormControl(mkey, paradict)
 	if err != nil {
+		d.SetId("")
 		return fmt.Errorf("Error reading SwitchControllerStormControl resource: %v", err)
 	}
 
@@ -190,6 +206,10 @@ func resourceSwitchControllerStormControlRead(d *schema.ResourceData, m interfac
 }
 
 func flattenSwitchControllerStormControlBroadcast(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSwitchControllerStormControlBurstSizeLevel(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -215,6 +235,16 @@ func refreshObjectSwitchControllerStormControl(d *schema.ResourceData, o map[str
 			}
 		} else {
 			return fmt.Errorf("Error reading broadcast: %v", err)
+		}
+	}
+
+	if err = d.Set("burst_size_level", flattenSwitchControllerStormControlBurstSizeLevel(o["burst-size-level"], d, "burst_size_level")); err != nil {
+		if vv, ok := fortiAPIPatch(o["burst-size-level"], "SwitchControllerStormControl-BurstSizeLevel"); ok {
+			if err = d.Set("burst_size_level", vv); err != nil {
+				return fmt.Errorf("Error reading burst_size_level: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading burst_size_level: %v", err)
 		}
 	}
 
@@ -261,6 +291,10 @@ func expandSwitchControllerStormControlBroadcast(d *schema.ResourceData, v inter
 	return v, nil
 }
 
+func expandSwitchControllerStormControlBurstSizeLevel(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandSwitchControllerStormControlRate(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -282,6 +316,15 @@ func getObjectSwitchControllerStormControl(d *schema.ResourceData) (*map[string]
 			return &obj, err
 		} else if t != nil {
 			obj["broadcast"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("burst_size_level"); ok || d.HasChange("burst_size_level") {
+		t, err := expandSwitchControllerStormControlBurstSizeLevel(d, v, "burst_size_level")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["burst-size-level"] = t
 		}
 	}
 

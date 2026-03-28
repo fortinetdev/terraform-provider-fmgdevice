@@ -40,6 +40,8 @@ The following arguments are supported:
 
 * `safesearch_str` - Safe search parameter used in the URL in URL mode. In translate mode, it provides either the regex to translate the URL or the special case to translate the URL.
 * `url` - URL (regular expression).
+* `source_url` - Source-Url. Valid values: `disable`, `enable`.
+
 
 
 ## Attribute Reference

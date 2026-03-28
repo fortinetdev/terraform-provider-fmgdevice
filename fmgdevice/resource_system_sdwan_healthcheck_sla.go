@@ -28,6 +28,17 @@ func resourceSystemSdwanHealthCheckSla() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
+			"update_if_exist": &schema.Schema{
+				Type:     schema.TypeBool,
+				Optional: true,
+				Computed: true,
+			},
+
+			"adom": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"device_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -44,6 +55,10 @@ func resourceSystemSdwanHealthCheckSla() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 				ForceNew: true,
+			},
+			"custom_profile_threshold": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
 			},
 			"fosid": &schema.Schema{
 				Type:     schema.TypeInt,
@@ -93,8 +108,12 @@ func resourceSystemSdwanHealthCheckSlaCreate(d *schema.ResourceData, m interface
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -108,17 +127,37 @@ func resourceSystemSdwanHealthCheckSlaCreate(d *schema.ResourceData, m interface
 	paradict["vdom"] = device_vdom
 	paradict["health_check"] = health_check
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectSystemSdwanHealthCheckSla(d)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemSdwanHealthCheckSla resource while getting object: %v", err)
 	}
+	wsParams["adom"] = adomv
 
-	_, err = c.CreateSystemSdwanHealthCheckSla(obj, paradict, wsParams)
-	if err != nil {
-		return fmt.Errorf("Error creating SystemSdwanHealthCheckSla resource: %v", err)
+	update_if_exist := getUpdateIfExist(c, d)
+	mkey_tf, mkey_ok := d.GetOk("fosid")
+	mkey := fmt.Sprint(mkey_tf)
+	o := make(map[string]interface{})
+	existing := false
+
+	if update_if_exist && mkey_ok {
+		// check existing
+		o, err = c.ReadSystemSdwanHealthCheckSla(mkey, paradict)
+		if err == nil && o != nil {
+			existing = true
+			// update if existing
+			o, err = c.UpdateSystemSdwanHealthCheckSla(obj, mkey, paradict, wsParams)
+			if err != nil {
+				return fmt.Errorf("Error updating SystemSdwanHealthCheckSla resource: %v", err)
+			}
+		}
+	}
+
+	if !existing {
+		_, err = c.CreateSystemSdwanHealthCheckSla(obj, paradict, wsParams)
+		if err != nil {
+			return fmt.Errorf("Error creating SystemSdwanHealthCheckSla resource: %v", err)
+		}
+
 	}
 
 	d.SetId(strconv.Itoa(getIntKey(d, "fosid")))
@@ -133,8 +172,12 @@ func resourceSystemSdwanHealthCheckSlaUpdate(d *schema.ResourceData, m interface
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -148,13 +191,12 @@ func resourceSystemSdwanHealthCheckSlaUpdate(d *schema.ResourceData, m interface
 	paradict["vdom"] = device_vdom
 	paradict["health_check"] = health_check
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectSystemSdwanHealthCheckSla(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemSdwanHealthCheckSla resource while getting object: %v", err)
 	}
+
+	wsParams["adom"] = adomv
 
 	_, err = c.UpdateSystemSdwanHealthCheckSla(obj, mkey, paradict, wsParams)
 	if err != nil {
@@ -176,8 +218,12 @@ func resourceSystemSdwanHealthCheckSlaDelete(d *schema.ResourceData, m interface
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -191,9 +237,7 @@ func resourceSystemSdwanHealthCheckSlaDelete(d *schema.ResourceData, m interface
 	paradict["vdom"] = device_vdom
 	paradict["health_check"] = health_check
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
+	wsParams["adom"] = adomv
 
 	err = c.DeleteSystemSdwanHealthCheckSla(mkey, paradict, wsParams)
 	if err != nil {
@@ -212,8 +256,8 @@ func resourceSystemSdwanHealthCheckSlaRead(d *schema.ResourceData, m interface{}
 	c.Retries = 1
 
 	paradict := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	device_vdom, err := getVariable(cfg, d, "device_vdom")
 	health_check := d.Get("health_check").(string)
@@ -250,6 +294,7 @@ func resourceSystemSdwanHealthCheckSlaRead(d *schema.ResourceData, m interface{}
 
 	o, err := c.ReadSystemSdwanHealthCheckSla(mkey, paradict)
 	if err != nil {
+		d.SetId("")
 		return fmt.Errorf("Error reading SystemSdwanHealthCheckSla resource: %v", err)
 	}
 
@@ -264,6 +309,10 @@ func resourceSystemSdwanHealthCheckSlaRead(d *schema.ResourceData, m interface{}
 		return fmt.Errorf("Error reading SystemSdwanHealthCheckSla resource from API: %v", err)
 	}
 	return nil
+}
+
+func flattenSystemSdwanHealthCheckSlaCustomProfileThreshold3rdl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
 }
 
 func flattenSystemSdwanHealthCheckSlaId3rdl(v interface{}, d *schema.ResourceData, pre string) interface{} {
@@ -300,6 +349,16 @@ func flattenSystemSdwanHealthCheckSlaPriorityOutSla3rdl(v interface{}, d *schema
 
 func refreshObjectSystemSdwanHealthCheckSla(d *schema.ResourceData, o map[string]interface{}) error {
 	var err error
+
+	if err = d.Set("custom_profile_threshold", flattenSystemSdwanHealthCheckSlaCustomProfileThreshold3rdl(o["custom-profile-threshold"], d, "custom_profile_threshold")); err != nil {
+		if vv, ok := fortiAPIPatch(o["custom-profile-threshold"], "SystemSdwanHealthCheckSla-CustomProfileThreshold"); ok {
+			if err = d.Set("custom_profile_threshold", vv); err != nil {
+				return fmt.Errorf("Error reading custom_profile_threshold: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading custom_profile_threshold: %v", err)
+		}
+	}
 
 	if err = d.Set("fosid", flattenSystemSdwanHealthCheckSlaId3rdl(o["id"], d, "fosid")); err != nil {
 		if vv, ok := fortiAPIPatch(o["id"], "SystemSdwanHealthCheckSla-Id"); ok {
@@ -390,6 +449,10 @@ func flattenSystemSdwanHealthCheckSlaFortiTestDebug(d *schema.ResourceData, fosd
 	log.Printf("ER List: %v", e)
 }
 
+func expandSystemSdwanHealthCheckSlaCustomProfileThreshold3rdl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandSystemSdwanHealthCheckSlaId3rdl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -424,6 +487,15 @@ func expandSystemSdwanHealthCheckSlaPriorityOutSla3rdl(d *schema.ResourceData, v
 
 func getObjectSystemSdwanHealthCheckSla(d *schema.ResourceData) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
+
+	if v, ok := d.GetOk("custom_profile_threshold"); ok || d.HasChange("custom_profile_threshold") {
+		t, err := expandSystemSdwanHealthCheckSlaCustomProfileThreshold3rdl(d, v, "custom_profile_threshold")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["custom-profile-threshold"] = t
+		}
+	}
 
 	if v, ok := d.GetOk("fosid"); ok || d.HasChange("fosid") {
 		t, err := expandSystemSdwanHealthCheckSlaId3rdl(d, v, "fosid")

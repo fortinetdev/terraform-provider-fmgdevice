@@ -28,6 +28,12 @@ func resourceSystemLldpNetworkPolicySoftphone() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
+
+			"adom": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"device_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -79,8 +85,12 @@ func resourceSystemLldpNetworkPolicySoftphoneUpdate(d *schema.ResourceData, m in
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -94,13 +104,12 @@ func resourceSystemLldpNetworkPolicySoftphoneUpdate(d *schema.ResourceData, m in
 	paradict["vdom"] = device_vdom
 	paradict["network_policy"] = network_policy
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectSystemLldpNetworkPolicySoftphone(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemLldpNetworkPolicySoftphone resource while getting object: %v", err)
 	}
+
+	wsParams["adom"] = adomv
 
 	_, err = c.UpdateSystemLldpNetworkPolicySoftphone(obj, mkey, paradict, wsParams)
 	if err != nil {
@@ -122,8 +131,12 @@ func resourceSystemLldpNetworkPolicySoftphoneDelete(d *schema.ResourceData, m in
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -137,9 +150,7 @@ func resourceSystemLldpNetworkPolicySoftphoneDelete(d *schema.ResourceData, m in
 	paradict["vdom"] = device_vdom
 	paradict["network_policy"] = network_policy
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
+	wsParams["adom"] = adomv
 
 	err = c.DeleteSystemLldpNetworkPolicySoftphone(mkey, paradict, wsParams)
 	if err != nil {
@@ -158,8 +169,8 @@ func resourceSystemLldpNetworkPolicySoftphoneRead(d *schema.ResourceData, m inte
 	c.Retries = 1
 
 	paradict := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	device_vdom, err := getVariable(cfg, d, "device_vdom")
 	network_policy := d.Get("network_policy").(string)
@@ -196,6 +207,7 @@ func resourceSystemLldpNetworkPolicySoftphoneRead(d *schema.ResourceData, m inte
 
 	o, err := c.ReadSystemLldpNetworkPolicySoftphone(mkey, paradict)
 	if err != nil {
+		d.SetId("")
 		return fmt.Errorf("Error reading SystemLldpNetworkPolicySoftphone resource: %v", err)
 	}
 

@@ -28,6 +28,17 @@ func resourceSystemSdwanService() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
+			"update_if_exist": &schema.Schema{
+				Type:     schema.TypeBool,
+				Optional: true,
+				Computed: true,
+			},
+
+			"adom": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"device_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -108,6 +119,11 @@ func resourceSystemSdwanService() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"fib_best_match_force": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
 			"gateway": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -185,6 +201,12 @@ func resourceSystemSdwanService() *schema.Resource {
 				Computed: true,
 			},
 			"internet_service_custom_group": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Computed: true,
+			},
+			"internet_service_fortiguard": &schema.Schema{
 				Type:     schema.TypeSet,
 				Elem:     &schema.Schema{Type: schema.TypeString},
 				Optional: true,
@@ -291,10 +313,8 @@ func resourceSystemSdwanService() *schema.Resource {
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"health_check": &schema.Schema{
-							Type:     schema.TypeSet,
-							Elem:     &schema.Schema{Type: schema.TypeString},
+							Type:     schema.TypeString,
 							Optional: true,
-							Computed: true,
 						},
 						"id": &schema.Schema{
 							Type:     schema.TypeInt,
@@ -306,6 +326,7 @@ func resourceSystemSdwanService() *schema.Resource {
 			"sla_compare_method": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"sla_stickiness": &schema.Schema{
 				Type:     schema.TypeString,
@@ -394,8 +415,12 @@ func resourceSystemSdwanServiceCreate(d *schema.ResourceData, m interface{}) err
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -407,17 +432,37 @@ func resourceSystemSdwanServiceCreate(d *schema.ResourceData, m interface{}) err
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectSystemSdwanService(d)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemSdwanService resource while getting object: %v", err)
 	}
+	wsParams["adom"] = adomv
 
-	_, err = c.CreateSystemSdwanService(obj, paradict, wsParams)
-	if err != nil {
-		return fmt.Errorf("Error creating SystemSdwanService resource: %v", err)
+	update_if_exist := getUpdateIfExist(c, d)
+	mkey_tf, mkey_ok := d.GetOk("fosid")
+	mkey := fmt.Sprint(mkey_tf)
+	o := make(map[string]interface{})
+	existing := false
+
+	if update_if_exist && mkey_ok {
+		// check existing
+		o, err = c.ReadSystemSdwanService(mkey, paradict)
+		if err == nil && o != nil {
+			existing = true
+			// update if existing
+			o, err = c.UpdateSystemSdwanService(obj, mkey, paradict, wsParams)
+			if err != nil {
+				return fmt.Errorf("Error updating SystemSdwanService resource: %v", err)
+			}
+		}
+	}
+
+	if !existing {
+		_, err = c.CreateSystemSdwanService(obj, paradict, wsParams)
+		if err != nil {
+			return fmt.Errorf("Error creating SystemSdwanService resource: %v", err)
+		}
+
 	}
 
 	d.SetId(strconv.Itoa(getIntKey(d, "fosid")))
@@ -432,8 +477,12 @@ func resourceSystemSdwanServiceUpdate(d *schema.ResourceData, m interface{}) err
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -445,13 +494,12 @@ func resourceSystemSdwanServiceUpdate(d *schema.ResourceData, m interface{}) err
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectSystemSdwanService(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemSdwanService resource while getting object: %v", err)
 	}
+
+	wsParams["adom"] = adomv
 
 	_, err = c.UpdateSystemSdwanService(obj, mkey, paradict, wsParams)
 	if err != nil {
@@ -473,8 +521,12 @@ func resourceSystemSdwanServiceDelete(d *schema.ResourceData, m interface{}) err
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -486,9 +538,7 @@ func resourceSystemSdwanServiceDelete(d *schema.ResourceData, m interface{}) err
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
+	wsParams["adom"] = adomv
 
 	err = c.DeleteSystemSdwanService(mkey, paradict, wsParams)
 	if err != nil {
@@ -507,8 +557,8 @@ func resourceSystemSdwanServiceRead(d *schema.ResourceData, m interface{}) error
 	c.Retries = 1
 
 	paradict := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	device_vdom, err := getVariable(cfg, d, "device_vdom")
 	if device_name == "" {
@@ -534,6 +584,7 @@ func resourceSystemSdwanServiceRead(d *schema.ResourceData, m interface{}) error
 
 	o, err := c.ReadSystemSdwanService(mkey, paradict)
 	if err != nil {
+		d.SetId("")
 		return fmt.Errorf("Error reading SystemSdwanService resource: %v", err)
 	}
 
@@ -606,6 +657,10 @@ func flattenSystemSdwanServiceEndSrcPort2edl(v interface{}, d *schema.ResourceDa
 	return v
 }
 
+func flattenSystemSdwanServiceFibBestMatchForce2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenSystemSdwanServiceGateway2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -663,6 +718,10 @@ func flattenSystemSdwanServiceInternetServiceCustom2edl(v interface{}, d *schema
 }
 
 func flattenSystemSdwanServiceInternetServiceCustomGroup2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
+func flattenSystemSdwanServiceInternetServiceFortiguard2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return flattenStringList(v)
 }
 
@@ -788,7 +847,7 @@ func flattenSystemSdwanServiceSla2edl(v interface{}, d *schema.ResourceData, pre
 }
 
 func flattenSystemSdwanServiceSlaHealthCheck2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
-	return flattenStringList(v)
+	return conv2str(v)
 }
 
 func flattenSystemSdwanServiceSlaId2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
@@ -1002,6 +1061,16 @@ func refreshObjectSystemSdwanService(d *schema.ResourceData, o map[string]interf
 		}
 	}
 
+	if err = d.Set("fib_best_match_force", flattenSystemSdwanServiceFibBestMatchForce2edl(o["fib-best-match-force"], d, "fib_best_match_force")); err != nil {
+		if vv, ok := fortiAPIPatch(o["fib-best-match-force"], "SystemSdwanService-FibBestMatchForce"); ok {
+			if err = d.Set("fib_best_match_force", vv); err != nil {
+				return fmt.Errorf("Error reading fib_best_match_force: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading fib_best_match_force: %v", err)
+		}
+	}
+
 	if err = d.Set("gateway", flattenSystemSdwanServiceGateway2edl(o["gateway"], d, "gateway")); err != nil {
 		if vv, ok := fortiAPIPatch(o["gateway"], "SystemSdwanService-Gateway"); ok {
 			if err = d.Set("gateway", vv); err != nil {
@@ -1149,6 +1218,16 @@ func refreshObjectSystemSdwanService(d *schema.ResourceData, o map[string]interf
 			}
 		} else {
 			return fmt.Errorf("Error reading internet_service_custom_group: %v", err)
+		}
+	}
+
+	if err = d.Set("internet_service_fortiguard", flattenSystemSdwanServiceInternetServiceFortiguard2edl(o["internet-service-fortiguard"], d, "internet_service_fortiguard")); err != nil {
+		if vv, ok := fortiAPIPatch(o["internet-service-fortiguard"], "SystemSdwanService-InternetServiceFortiguard"); ok {
+			if err = d.Set("internet_service_fortiguard", vv); err != nil {
+				return fmt.Errorf("Error reading internet_service_fortiguard: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading internet_service_fortiguard: %v", err)
 		}
 	}
 
@@ -1591,6 +1670,10 @@ func expandSystemSdwanServiceEndSrcPort2edl(d *schema.ResourceData, v interface{
 	return v, nil
 }
 
+func expandSystemSdwanServiceFibBestMatchForce2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandSystemSdwanServiceGateway2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -1648,6 +1731,10 @@ func expandSystemSdwanServiceInternetServiceCustom2edl(d *schema.ResourceData, v
 }
 
 func expandSystemSdwanServiceInternetServiceCustomGroup2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandSystemSdwanServiceInternetServiceFortiguard2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return expandStringList(v.(*schema.Set).List()), nil
 }
 
@@ -1766,7 +1853,7 @@ func expandSystemSdwanServiceSla2edl(d *schema.ResourceData, v interface{}, pre 
 }
 
 func expandSystemSdwanServiceSlaHealthCheck2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
-	return expandStringList(v.(*schema.Set).List()), nil
+	return v, nil
 }
 
 func expandSystemSdwanServiceSlaId2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
@@ -1962,6 +2049,15 @@ func getObjectSystemSdwanService(d *schema.ResourceData) (*map[string]interface{
 		}
 	}
 
+	if v, ok := d.GetOk("fib_best_match_force"); ok || d.HasChange("fib_best_match_force") {
+		t, err := expandSystemSdwanServiceFibBestMatchForce2edl(d, v, "fib_best_match_force")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["fib-best-match-force"] = t
+		}
+	}
+
 	if v, ok := d.GetOk("gateway"); ok || d.HasChange("gateway") {
 		t, err := expandSystemSdwanServiceGateway2edl(d, v, "gateway")
 		if err != nil {
@@ -2094,6 +2190,15 @@ func getObjectSystemSdwanService(d *schema.ResourceData) (*map[string]interface{
 			return &obj, err
 		} else if t != nil {
 			obj["internet-service-custom-group"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("internet_service_fortiguard"); ok || d.HasChange("internet_service_fortiguard") {
+		t, err := expandSystemSdwanServiceInternetServiceFortiguard2edl(d, v, "internet_service_fortiguard")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["internet-service-fortiguard"] = t
 		}
 	}
 

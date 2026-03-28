@@ -28,6 +28,17 @@ func resourceLogFortianalyzer3OverrideFilterFreeStyle() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
+			"update_if_exist": &schema.Schema{
+				Type:     schema.TypeBool,
+				Optional: true,
+				Computed: true,
+			},
+
+			"adom": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"device_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -69,8 +80,12 @@ func resourceLogFortianalyzer3OverrideFilterFreeStyleCreate(d *schema.ResourceDa
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -82,17 +97,37 @@ func resourceLogFortianalyzer3OverrideFilterFreeStyleCreate(d *schema.ResourceDa
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectLogFortianalyzer3OverrideFilterFreeStyle(d)
 	if err != nil {
 		return fmt.Errorf("Error creating LogFortianalyzer3OverrideFilterFreeStyle resource while getting object: %v", err)
 	}
+	wsParams["adom"] = adomv
 
-	_, err = c.CreateLogFortianalyzer3OverrideFilterFreeStyle(obj, paradict, wsParams)
-	if err != nil {
-		return fmt.Errorf("Error creating LogFortianalyzer3OverrideFilterFreeStyle resource: %v", err)
+	update_if_exist := getUpdateIfExist(c, d)
+	mkey_tf, mkey_ok := d.GetOk("fosid")
+	mkey := fmt.Sprint(mkey_tf)
+	o := make(map[string]interface{})
+	existing := false
+
+	if update_if_exist && mkey_ok {
+		// check existing
+		o, err = c.ReadLogFortianalyzer3OverrideFilterFreeStyle(mkey, paradict)
+		if err == nil && o != nil {
+			existing = true
+			// update if existing
+			o, err = c.UpdateLogFortianalyzer3OverrideFilterFreeStyle(obj, mkey, paradict, wsParams)
+			if err != nil {
+				return fmt.Errorf("Error updating LogFortianalyzer3OverrideFilterFreeStyle resource: %v", err)
+			}
+		}
+	}
+
+	if !existing {
+		_, err = c.CreateLogFortianalyzer3OverrideFilterFreeStyle(obj, paradict, wsParams)
+		if err != nil {
+			return fmt.Errorf("Error creating LogFortianalyzer3OverrideFilterFreeStyle resource: %v", err)
+		}
+
 	}
 
 	d.SetId(strconv.Itoa(getIntKey(d, "fosid")))
@@ -107,8 +142,12 @@ func resourceLogFortianalyzer3OverrideFilterFreeStyleUpdate(d *schema.ResourceDa
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -120,13 +159,12 @@ func resourceLogFortianalyzer3OverrideFilterFreeStyleUpdate(d *schema.ResourceDa
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectLogFortianalyzer3OverrideFilterFreeStyle(d)
 	if err != nil {
 		return fmt.Errorf("Error updating LogFortianalyzer3OverrideFilterFreeStyle resource while getting object: %v", err)
 	}
+
+	wsParams["adom"] = adomv
 
 	_, err = c.UpdateLogFortianalyzer3OverrideFilterFreeStyle(obj, mkey, paradict, wsParams)
 	if err != nil {
@@ -148,8 +186,12 @@ func resourceLogFortianalyzer3OverrideFilterFreeStyleDelete(d *schema.ResourceDa
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -161,9 +203,7 @@ func resourceLogFortianalyzer3OverrideFilterFreeStyleDelete(d *schema.ResourceDa
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
+	wsParams["adom"] = adomv
 
 	err = c.DeleteLogFortianalyzer3OverrideFilterFreeStyle(mkey, paradict, wsParams)
 	if err != nil {
@@ -182,8 +222,8 @@ func resourceLogFortianalyzer3OverrideFilterFreeStyleRead(d *schema.ResourceData
 	c.Retries = 1
 
 	paradict := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	device_vdom, err := getVariable(cfg, d, "device_vdom")
 	if device_name == "" {
@@ -209,6 +249,7 @@ func resourceLogFortianalyzer3OverrideFilterFreeStyleRead(d *schema.ResourceData
 
 	o, err := c.ReadLogFortianalyzer3OverrideFilterFreeStyle(mkey, paradict)
 	if err != nil {
+		d.SetId("")
 		return fmt.Errorf("Error reading LogFortianalyzer3OverrideFilterFreeStyle resource: %v", err)
 	}
 

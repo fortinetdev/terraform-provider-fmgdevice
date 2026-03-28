@@ -28,6 +28,12 @@ func resourceRouterBgp() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
+
+			"adom": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"device_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -39,6 +45,11 @@ func resourceRouterBgp() *schema.Resource {
 				Optional: true,
 				Computed: true,
 				ForceNew: true,
+			},
+			"_auto_override": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
 			},
 			"additional_path": &schema.Schema{
 				Type:     schema.TypeString,
@@ -604,10 +615,8 @@ func resourceRouterBgp() *schema.Resource {
 							Elem: &schema.Resource{
 								Schema: map[string]*schema.Schema{
 									"advertise_routemap": &schema.Schema{
-										Type:     schema.TypeSet,
-										Elem:     &schema.Schema{Type: schema.TypeString},
+										Type:     schema.TypeString,
 										Optional: true,
-										Computed: true,
 									},
 									"condition_routemap": &schema.Schema{
 										Type:     schema.TypeSet,
@@ -2519,8 +2528,12 @@ func resourceRouterBgpUpdate(d *schema.ResourceData, m interface{}) error {
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -2532,13 +2545,12 @@ func resourceRouterBgpUpdate(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectRouterBgp(d)
 	if err != nil {
 		return fmt.Errorf("Error updating RouterBgp resource while getting object: %v", err)
 	}
+
+	wsParams["adom"] = adomv
 
 	_, err = c.UpdateRouterBgp(obj, mkey, paradict, wsParams)
 	if err != nil {
@@ -2560,8 +2572,12 @@ func resourceRouterBgpDelete(d *schema.ResourceData, m interface{}) error {
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -2573,9 +2589,7 @@ func resourceRouterBgpDelete(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
+	wsParams["adom"] = adomv
 
 	err = c.DeleteRouterBgp(mkey, paradict, wsParams)
 	if err != nil {
@@ -2594,8 +2608,8 @@ func resourceRouterBgpRead(d *schema.ResourceData, m interface{}) error {
 	c.Retries = 1
 
 	paradict := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	device_vdom, err := getVariable(cfg, d, "device_vdom")
 	if device_name == "" {
@@ -2621,6 +2635,7 @@ func resourceRouterBgpRead(d *schema.ResourceData, m interface{}) error {
 
 	o, err := c.ReadRouterBgp(mkey, paradict)
 	if err != nil {
+		d.SetId("")
 		return fmt.Errorf("Error reading RouterBgp resource: %v", err)
 	}
 
@@ -2635,6 +2650,10 @@ func resourceRouterBgpRead(d *schema.ResourceData, m interface{}) error {
 		return fmt.Errorf("Error reading RouterBgp resource from API: %v", err)
 	}
 	return nil
+}
+
+func flattenRouterBgpAutoOverride(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
 }
 
 func flattenRouterBgpAdditionalPath(v interface{}, d *schema.ResourceData, pre string) interface{} {
@@ -2881,7 +2900,7 @@ func flattenRouterBgpAlwaysCompareMed(v interface{}, d *schema.ResourceData, pre
 }
 
 func flattenRouterBgpAs(v interface{}, d *schema.ResourceData, pre string) interface{} {
-	return v
+	return conv2num(v)
 }
 
 func flattenRouterBgpBestpathAsPathIgnore(v interface{}, d *schema.ResourceData, pre string) interface{} {
@@ -4302,7 +4321,7 @@ func flattenRouterBgpNeighborConditionalAdvertise6(v interface{}, d *schema.Reso
 }
 
 func flattenRouterBgpNeighborConditionalAdvertise6AdvertiseRoutemap(v interface{}, d *schema.ResourceData, pre string) interface{} {
-	return flattenStringList(v)
+	return conv2str(v)
 }
 
 func flattenRouterBgpNeighborConditionalAdvertise6ConditionRoutemap(v interface{}, d *schema.ResourceData, pre string) interface{} {
@@ -4426,7 +4445,7 @@ func flattenRouterBgpNeighborLinkDownFailover(v interface{}, d *schema.ResourceD
 }
 
 func flattenRouterBgpNeighborLocalAs(v interface{}, d *schema.ResourceData, pre string) interface{} {
-	return v
+	return conv2num(v)
 }
 
 func flattenRouterBgpNeighborLocalAsNoPrepend(v interface{}, d *schema.ResourceData, pre string) interface{} {
@@ -6047,7 +6066,7 @@ func flattenRouterBgpNeighborGroupLinkDownFailover(v interface{}, d *schema.Reso
 }
 
 func flattenRouterBgpNeighborGroupLocalAs(v interface{}, d *schema.ResourceData, pre string) interface{} {
-	return v
+	return conv2num(v)
 }
 
 func flattenRouterBgpNeighborGroupLocalAsNoPrepend(v interface{}, d *schema.ResourceData, pre string) interface{} {
@@ -7381,6 +7400,16 @@ func refreshObjectRouterBgp(d *schema.ResourceData, o map[string]interface{}) er
 		d.Set("dynamic_sort_subtable", "false")
 	}
 
+	if err = d.Set("_auto_override", flattenRouterBgpAutoOverride(o["_auto_override"], d, "_auto_override")); err != nil {
+		if vv, ok := fortiAPIPatch(o["_auto_override"], "RouterBgp-AutoOverride"); ok {
+			if err = d.Set("_auto_override", vv); err != nil {
+				return fmt.Errorf("Error reading _auto_override: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading _auto_override: %v", err)
+		}
+	}
+
 	if err = d.Set("additional_path", flattenRouterBgpAdditionalPath(o["additional-path"], d, "additional_path")); err != nil {
 		if vv, ok := fortiAPIPatch(o["additional-path"], "RouterBgp-AdditionalPath"); ok {
 			if err = d.Set("additional_path", vv); err != nil {
@@ -8278,6 +8307,10 @@ func flattenRouterBgpFortiTestDebug(d *schema.ResourceData, fosdebugsn int, fosd
 	log.Printf(strconv.Itoa(fosdebugsn))
 	e := validation.IntBetween(fosdebugbeg, fosdebugend)
 	log.Printf("ER List: %v", e)
+}
+
+func expandRouterBgpAutoOverride(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
 }
 
 func expandRouterBgpAdditionalPath(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
@@ -9751,7 +9784,7 @@ func expandRouterBgpNeighborConditionalAdvertise6(d *schema.ResourceData, v inte
 }
 
 func expandRouterBgpNeighborConditionalAdvertise6AdvertiseRoutemap(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
-	return expandStringList(v.(*schema.Set).List()), nil
+	return v, nil
 }
 
 func expandRouterBgpNeighborConditionalAdvertise6ConditionRoutemap(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
@@ -12568,6 +12601,15 @@ func expandRouterBgpVrf6Vrf(d *schema.ResourceData, v interface{}, pre string) (
 
 func getObjectRouterBgp(d *schema.ResourceData) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
+
+	if v, ok := d.GetOk("_auto_override"); ok || d.HasChange("_auto_override") {
+		t, err := expandRouterBgpAutoOverride(d, v, "_auto_override")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["_auto_override"] = t
+		}
+	}
 
 	if v, ok := d.GetOk("additional_path"); ok || d.HasChange("additional_path") {
 		t, err := expandRouterBgpAdditionalPath(d, v, "additional_path")

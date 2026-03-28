@@ -28,6 +28,12 @@ func resourceWebfilterIpsUrlfilterCacheSetting() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
+
+			"adom": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"device_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -53,21 +59,24 @@ func resourceWebfilterIpsUrlfilterCacheSettingUpdate(d *schema.ResourceData, m i
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
 	}
 	paradict["device"] = device_name
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectWebfilterIpsUrlfilterCacheSetting(d)
 	if err != nil {
 		return fmt.Errorf("Error updating WebfilterIpsUrlfilterCacheSetting resource while getting object: %v", err)
 	}
+
+	wsParams["adom"] = adomv
 
 	_, err = c.UpdateWebfilterIpsUrlfilterCacheSetting(obj, mkey, paradict, wsParams)
 	if err != nil {
@@ -89,17 +98,19 @@ func resourceWebfilterIpsUrlfilterCacheSettingDelete(d *schema.ResourceData, m i
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
 	}
 	paradict["device"] = device_name
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
+	wsParams["adom"] = adomv
 
 	err = c.DeleteWebfilterIpsUrlfilterCacheSetting(mkey, paradict, wsParams)
 	if err != nil {
@@ -118,8 +129,8 @@ func resourceWebfilterIpsUrlfilterCacheSettingRead(d *schema.ResourceData, m int
 	c.Retries = 1
 
 	paradict := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if device_name == "" {
 		device_name = importOptionChecking(m.(*FortiClient).Cfg, "device_name")
@@ -134,6 +145,7 @@ func resourceWebfilterIpsUrlfilterCacheSettingRead(d *schema.ResourceData, m int
 
 	o, err := c.ReadWebfilterIpsUrlfilterCacheSetting(mkey, paradict)
 	if err != nil {
+		d.SetId("")
 		return fmt.Errorf("Error reading WebfilterIpsUrlfilterCacheSetting resource: %v", err)
 	}
 

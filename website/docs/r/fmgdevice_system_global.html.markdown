@@ -34,6 +34,41 @@ The following arguments are supported:
 
 * `device_name` - FortiManager managed device name. This variable is used in the request URL. If not specified, it will inherit the variable `device_name` of the provider.
 
+* `close_wait_timeout` - Close-Wait-Timeout.
+* `conntrack` - Conntrack.
+* `crwl_log` - Crwl-Log. Valid values: `disable`, `enable`.
+
+* `established_timeout` - Established-Timeout.
+* `fin_wait_timeout` - Fin-Wait-Timeout.
+* `http_view` - Http-View. Valid values: `disable`, `enable`.
+
+* `img_cache_mode` - Img-Cache-Mode. Valid values: `stop`, `rolling`.
+
+* `kernel_panic_debug` - Kernel-Panic-Debug. Valid values: `disable`, `enable`.
+
+* `kernel_panic_on_warn` - Kernel-Panic-On-Warn. Valid values: `disable`, `enable`.
+
+* `kernel_panic_timeout` - Kernel-Panic-Timeout.
+* `last_ack_timeout` - Last-Ack-Timeout.
+* `license_overlimit` - License-Overlimit. Valid values: `block`, `bypass`.
+
+* `max_img_cache_size` - Max-Img-Cache-Size.
+* `max_session_per_user` - Max-Session-Per-User.
+* `proxy_auth_machine_timeout` - Proxy-Auth-Machine-Timeout.
+* `resigned_pkey_period` - Resigned-Pkey-Period.
+* `syn_recv_timeout` - Syn-Recv-Timeout.
+* `syn_sent_timeout` - Syn-Sent-Timeout.
+* `tcp_random_source_port` - Tcp-Random-Source-Port. Valid values: `disable`, `enable`.
+
+* `time_wait_timeout` - Time-Wait-Timeout.
+* `udp_stream_timeout` - Udp-Stream-Timeout.
+* `udp_timeout` - Udp-Timeout.
+* `update_tls_finger_print` - Update-Tls-Finger-Print. Valid values: `disable`, `enable`.
+
+* `username_case_sensitivity` - Username-Case-Sensitivity. Valid values: `disable`, `enable`.
+
+* `v_tpm` - V-Tpm. Valid values: `disable`, `enable`.
+
 * `admin_ble_button` - press the BLE button can enable BLE function Valid values: `disable`, `enable`.
 
 * `admin_concurrent` - Enable/disable concurrent administrator logins. Use policy-auth-concurrent for firewall authenticated users. Valid values: `disable`, `enable`.
@@ -111,6 +146,9 @@ The following arguments are supported:
 
 * `batch_cmdb` - Enable/disable batch mode, allowing you to enter a series of CLI commands that will execute as a group once they are loaded. Valid values: `disable`, `enable`.
 
+* `black_box` - Enable/disable the black box. Valid values: `disable`, `enable`.
+
+* `black_box_interval` - Black box recording interval (seconds). Minumum is 20.
 * `bfd_affinity` - Affinity setting for BFD daemon (hexadecimal value up to 256 bits in the format of xxxxxxxxxxxxxxxx).
 * `block_session_timer` - Duration in seconds for blocked sessions (1 - 300 sec  (5 minutes), default = 30).
 * `br_fdb_max_entry` - Maximum number of bridge forwarding database (FDB) entries.
@@ -194,6 +232,7 @@ The following arguments are supported:
 
 * `fortitoken_cloud_push_status` - Enable/disable FTM push service of FortiToken Cloud. Valid values: `disable`, `enable`.
 
+* `fortitoken_cloud_region` - Region domain of FortiToken Cloud(unset to non-region).
 * `fortitoken_cloud_sync_interval` - Interval in which to clean up remote users in FortiToken Cloud (0 - 336 hours (14 days), default = 24, disable = 0).
 * `gtpu_dynamic_source_port` - Enable/disable GTP-U dynamic source port support. Valid values: `disable`, `enable`.
 
@@ -294,6 +333,8 @@ The following arguments are supported:
 * `ipv6_allow_traffic_redirect` - Disable to prevent IPv6 traffic with same local ingress and egress interface from being forwarded without policy check. Valid values: `disable`, `enable`.
 
 * `ipv6_fragment_timeout` - Timeout value in seconds for any IPv6 fragment not being reassembled
+* `ipv6_snat_route_change` - Enable/disable the ability to change the IPv6 source NAT route. Valid values: `disable`, `enable`.
+
 * `irq_time_accounting` - Configure CPU IRQ time accounting mode. Valid values: `auto`, `force`.
 
 * `language` - GUI display language. Valid values: `english`, `simch`, `japanese`, `korean`, `spanish`, `trach`, `french`, `portuguese`.
@@ -398,6 +439,7 @@ The following arguments are supported:
 
 * `revision_image_auto_backup` - Enable/disable back-up of the latest image revision after the firmware is upgraded. Valid values: `disable`, `enable`.
 
+* `router_affinity` - Affinity setting for BFD/VRRP/BGP/OSPF daemons (hexadecimal value up to 256 bits in the format of xxxxxxxxxxxxxxxx).
 * `scanunit_count` - Number of scanunits. The range and the default depend on the number of CPUs. Only available on FortiGate units with multiple CPUs.
 * `scim_http_port` - SCIM http port (0 - 65535, default = 44558).
 * `scim_https_port` - SCIM port (0 - 65535, default = 44559).
@@ -455,6 +497,7 @@ The following arguments are supported:
 
 * `ssl_static_key_ciphers` - Enable/disable static key ciphers in SSL/TLS connections (e.g. AES128-SHA, AES256-SHA, AES128-SHA256, AES256-SHA256). Valid values: `disable`, `enable`.
 
+* `sslvpn_affinity` - Agentless VPN CPU affinity.
 * `sslvpn_cipher_hardware_acceleration` - Enable/disable SSL-VPN hardware acceleration. Valid values: `disable`, `enable`.
 
 * `sslvpn_ems_sn_check` - Enable/disable verification of EMS serial number in SSL-VPN connection. Valid values: `disable`, `enable`.
@@ -482,9 +525,14 @@ The following arguments are supported:
 
 * `tcp_rst_timer` - Length of the TCP CLOSE state in seconds (5 - 300 sec, default = 5).
 * `tcp_timewait_timer` - Length of the TCP TIME-WAIT state in seconds (1 - 300 sec, default = 1).
+* `telemetry_controller` - Enable/disable FortiTelemetry controller to manage FortiTelemetry agents. Valid values: `disable`, `enable`.
+
+* `telemetry_data_port` - FortiTelemetry data channel port (1024 - 49150, default = 35246).
 * `tftp` - Enable/disable TFTP. Valid values: `disable`, `enable`.
 
 * `timezone` - Timezone database name. Enter ? to view the list of timezone.
+* `tls_session_cache` - Enable/disable TLS session cache. Valid values: `disable`, `enable`.
+
 * `traffic_priority` - Choose Type of Service (ToS) or Differentiated Services Code Point (DSCP) for traffic prioritization in traffic shaping. Valid values: `tos`, `dscp`.
 
 * `traffic_priority_level` - Default system-wide level of priority for traffic prioritization. Valid values: `high`, `medium`, `low`.
@@ -499,6 +547,7 @@ The following arguments are supported:
 
 * `url_filter_affinity` - URL filter CPU affinity.
 * `url_filter_count` - URL filter daemon count.
+* `user_device_store_max_device_mem` - Maximum percentage of total system memory allowed to be used for devices in the user device store.
 * `user_device_store_max_devices` - Maximum number of devices allowed in user device store.
 * `user_device_store_max_unified_mem` - Maximum unified memory allowed in user device store.
 * `user_device_store_max_users` - Maximum number of users allowed in user device store.
@@ -519,6 +568,7 @@ The following arguments are supported:
 * `wad_csvc_cs_count` - Number of concurrent WAD-cache-service object-cache processes.
 * `wad_csvc_db_count` - Number of concurrent WAD-cache-service byte-cache processes.
 * `wad_memory_change_granularity` - Minimum percentage change in system memory usage detected by the wad daemon prior to adjusting TCP window size for any active connection.
+* `wad_p2s_max_body_size` - Maximum size of the body of the local out HTTP request (1 - 32 Mbytes, default = 4).
 * `wad_restart_end_time` - WAD workers daily restart end time (hh:mm).
 * `wad_restart_mode` - WAD worker restart mode (default = none). Valid values: `none`, `time`, `memory`.
 

@@ -28,6 +28,12 @@ func resourceSwitchControllerInitialConfigVlans() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
+
+			"adom": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"device_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -55,6 +61,11 @@ func resourceSwitchControllerInitialConfigVlans() *schema.Resource {
 			"nac_segment": &schema.Schema{
 				Type:     schema.TypeSet,
 				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Computed: true,
+			},
+			"optional_vlans": &schema.Schema{
+				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
 			},
@@ -93,8 +104,12 @@ func resourceSwitchControllerInitialConfigVlansUpdate(d *schema.ResourceData, m 
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -106,13 +121,12 @@ func resourceSwitchControllerInitialConfigVlansUpdate(d *schema.ResourceData, m 
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectSwitchControllerInitialConfigVlans(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SwitchControllerInitialConfigVlans resource while getting object: %v", err)
 	}
+
+	wsParams["adom"] = adomv
 
 	_, err = c.UpdateSwitchControllerInitialConfigVlans(obj, mkey, paradict, wsParams)
 	if err != nil {
@@ -134,8 +148,12 @@ func resourceSwitchControllerInitialConfigVlansDelete(d *schema.ResourceData, m 
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -147,9 +165,7 @@ func resourceSwitchControllerInitialConfigVlansDelete(d *schema.ResourceData, m 
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
+	wsParams["adom"] = adomv
 
 	err = c.DeleteSwitchControllerInitialConfigVlans(mkey, paradict, wsParams)
 	if err != nil {
@@ -168,8 +184,8 @@ func resourceSwitchControllerInitialConfigVlansRead(d *schema.ResourceData, m in
 	c.Retries = 1
 
 	paradict := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	device_vdom, err := getVariable(cfg, d, "device_vdom")
 	if device_name == "" {
@@ -195,6 +211,7 @@ func resourceSwitchControllerInitialConfigVlansRead(d *schema.ResourceData, m in
 
 	o, err := c.ReadSwitchControllerInitialConfigVlans(mkey, paradict)
 	if err != nil {
+		d.SetId("")
 		return fmt.Errorf("Error reading SwitchControllerInitialConfigVlans resource: %v", err)
 	}
 
@@ -221,6 +238,10 @@ func flattenSwitchControllerInitialConfigVlansNac(v interface{}, d *schema.Resou
 
 func flattenSwitchControllerInitialConfigVlansNacSegment(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return flattenStringList(v)
+}
+
+func flattenSwitchControllerInitialConfigVlansOptionalVlans(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
 }
 
 func flattenSwitchControllerInitialConfigVlansQuarantine(v interface{}, d *schema.ResourceData, pre string) interface{} {
@@ -269,6 +290,16 @@ func refreshObjectSwitchControllerInitialConfigVlans(d *schema.ResourceData, o m
 			}
 		} else {
 			return fmt.Errorf("Error reading nac_segment: %v", err)
+		}
+	}
+
+	if err = d.Set("optional_vlans", flattenSwitchControllerInitialConfigVlansOptionalVlans(o["optional-vlans"], d, "optional_vlans")); err != nil {
+		if vv, ok := fortiAPIPatch(o["optional-vlans"], "SwitchControllerInitialConfigVlans-OptionalVlans"); ok {
+			if err = d.Set("optional_vlans", vv); err != nil {
+				return fmt.Errorf("Error reading optional_vlans: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading optional_vlans: %v", err)
 		}
 	}
 
@@ -333,6 +364,10 @@ func expandSwitchControllerInitialConfigVlansNacSegment(d *schema.ResourceData, 
 	return expandStringList(v.(*schema.Set).List()), nil
 }
 
+func expandSwitchControllerInitialConfigVlansOptionalVlans(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandSwitchControllerInitialConfigVlansQuarantine(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return expandStringList(v.(*schema.Set).List()), nil
 }
@@ -376,6 +411,15 @@ func getObjectSwitchControllerInitialConfigVlans(d *schema.ResourceData) (*map[s
 			return &obj, err
 		} else if t != nil {
 			obj["nac-segment"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("optional_vlans"); ok || d.HasChange("optional_vlans") {
+		t, err := expandSwitchControllerInitialConfigVlansOptionalVlans(d, v, "optional_vlans")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["optional-vlans"] = t
 		}
 	}
 

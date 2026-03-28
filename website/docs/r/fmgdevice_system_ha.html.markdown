@@ -45,6 +45,8 @@ The following arguments are supported:
 * `auto_virtual_mac_interface` - The physical interface that will be assigned an auto-generated virtual MAC address.
 * `backup_hbdev` - Backup heartbeat interfaces. Must be the same for all members.
 * `board_failover_tolerance` - Worker board failure failover threshold.
+* `bounce_intf_upon_failover` - Enable/disable notification of kernel to bring down and up all monitored interfaces. The setting is used during failovers if gratuitous ARPs do not update the network. Valid values: `disable`, `enable`.
+
 * `chassis_id` - chassis id
 * `check_secondary_dev_health` - Enable/disable secondary dev health check for session load-balance in HA A-A mode. Valid values: `disable`, `enable`.
 
@@ -179,6 +181,9 @@ The following arguments are supported:
 * `vcluster_status` - Enable/disable virtual cluster for virtual clustering. Valid values: `disable`, `enable`.
 
 * `weight` - Weight-round-robin weight for each cluster unit. Syntax &lt;priority&gt; &lt;weight&gt;.
+* `primary_hold_before_reboot` - Primary-Hold-Before-Reboot.
+* `sequential_upgrade` - Sequential-Upgrade. Valid values: `disable`, `enable`.
+
 * `dynamic_sort_subtable` - true or false, set this parameter to true when using dynamic for_each + toset to configure and sort sub-tables, please do not set this parameter when configuring static sub-tables.
 
 The `frup_settings` block supports:
@@ -191,6 +196,7 @@ The `frup_settings` block supports:
 The `ha_mgmt_interfaces` block supports:
 
 * `dst` - Default route destination for reserved HA management interface.
+* `dst6` - Default IPv6 destination for reserved HA management interface.
 * `gateway` - Default route gateway for reserved HA management interface.
 * `gateway6` - Default IPv6 gateway for reserved HA management interface.
 * `id` - Table ID.

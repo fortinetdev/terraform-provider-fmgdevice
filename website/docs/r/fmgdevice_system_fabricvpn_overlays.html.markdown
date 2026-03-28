@@ -39,6 +39,7 @@ The following arguments are supported:
 * `bgp_neighbor_range` - Underlying BGP neighbor range entry.
 * `bgp_network` - Underlying BGP network.
 * `interface` - Underlying interface name.
+* `ipsec_network_id` - VPN gateway network ID.
 * `ipsec_phase1` - IPsec interface.
 * `name` - Overlay name.
 * `overlay_policy` - The overlay policy to allow ADVPN thru traffic.

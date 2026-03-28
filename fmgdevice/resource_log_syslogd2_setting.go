@@ -28,6 +28,12 @@ func resourceLogSyslogd2Setting() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
+
+			"adom": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"device_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -130,6 +136,32 @@ func resourceLogSyslogd2Setting() *schema.Resource {
 				Type:     schema.TypeInt,
 				Optional: true,
 			},
+			"log_templates": &schema.Schema{
+				Type:     schema.TypeList,
+				Optional: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"category": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+							Computed: true,
+						},
+						"empty_value_indicator": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"id": &schema.Schema{
+							Type:     schema.TypeInt,
+							Optional: true,
+							Computed: true,
+						},
+						"template": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+					},
+				},
+			},
 			"dynamic_sort_subtable": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -146,21 +178,24 @@ func resourceLogSyslogd2SettingUpdate(d *schema.ResourceData, m interface{}) err
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
 	}
 	paradict["device"] = device_name
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectLogSyslogd2Setting(d)
 	if err != nil {
 		return fmt.Errorf("Error updating LogSyslogd2Setting resource while getting object: %v", err)
 	}
+
+	wsParams["adom"] = adomv
 
 	_, err = c.UpdateLogSyslogd2Setting(obj, mkey, paradict, wsParams)
 	if err != nil {
@@ -182,17 +217,19 @@ func resourceLogSyslogd2SettingDelete(d *schema.ResourceData, m interface{}) err
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
 	}
 	paradict["device"] = device_name
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
+	wsParams["adom"] = adomv
 
 	err = c.DeleteLogSyslogd2Setting(mkey, paradict, wsParams)
 	if err != nil {
@@ -211,8 +248,8 @@ func resourceLogSyslogd2SettingRead(d *schema.ResourceData, m interface{}) error
 	c.Retries = 1
 
 	paradict := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if device_name == "" {
 		device_name = importOptionChecking(m.(*FortiClient).Cfg, "device_name")
@@ -227,6 +264,7 @@ func resourceLogSyslogd2SettingRead(d *schema.ResourceData, m interface{}) error
 
 	o, err := c.ReadLogSyslogd2Setting(mkey, paradict)
 	if err != nil {
+		d.SetId("")
 		return fmt.Errorf("Error reading LogSyslogd2Setting resource: %v", err)
 	}
 
@@ -363,6 +401,75 @@ func flattenLogSyslogd2SettingStatus(v interface{}, d *schema.ResourceData, pre 
 }
 
 func flattenLogSyslogd2SettingVrfSelect(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenLogSyslogd2SettingLogTemplates(v interface{}, d *schema.ResourceData, pre string) []map[string]interface{} {
+	if v == nil {
+		return nil
+	}
+
+	l := v.([]interface{})
+	if len(l) == 0 || l[0] == nil {
+		return nil
+	}
+
+	result := make([]map[string]interface{}, 0, len(l))
+
+	con := 0
+	for _, r := range l {
+		tmp := make(map[string]interface{})
+		i := r.(map[string]interface{})
+
+		pre_append := "" // table
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "category"
+		if _, ok := i["category"]; ok {
+			v := flattenLogSyslogd2SettingLogTemplatesCategory(i["category"], d, pre_append)
+			tmp["category"] = fortiAPISubPartPatch(v, "LogSyslogd2Setting-LogTemplates-Category")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "empty_value_indicator"
+		if _, ok := i["empty-value-indicator"]; ok {
+			v := flattenLogSyslogd2SettingLogTemplatesEmptyValueIndicator(i["empty-value-indicator"], d, pre_append)
+			tmp["empty_value_indicator"] = fortiAPISubPartPatch(v, "LogSyslogd2Setting-LogTemplates-EmptyValueIndicator")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "id"
+		if _, ok := i["id"]; ok {
+			v := flattenLogSyslogd2SettingLogTemplatesId(i["id"], d, pre_append)
+			tmp["id"] = fortiAPISubPartPatch(v, "LogSyslogd2Setting-LogTemplates-Id")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "template"
+		if _, ok := i["template"]; ok {
+			v := flattenLogSyslogd2SettingLogTemplatesTemplate(i["template"], d, pre_append)
+			tmp["template"] = fortiAPISubPartPatch(v, "LogSyslogd2Setting-LogTemplates-Template")
+		}
+
+		if len(tmp) > 0 {
+			result = append(result, tmp)
+		}
+
+		con += 1
+	}
+
+	return result
+}
+
+func flattenLogSyslogd2SettingLogTemplatesCategory(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenLogSyslogd2SettingLogTemplatesEmptyValueIndicator(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenLogSyslogd2SettingLogTemplatesId(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenLogSyslogd2SettingLogTemplatesTemplate(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -557,6 +664,30 @@ func refreshObjectLogSyslogd2Setting(d *schema.ResourceData, o map[string]interf
 		}
 	}
 
+	if isImportTable() {
+		if err = d.Set("log_templates", flattenLogSyslogd2SettingLogTemplates(o["log-templates"], d, "log_templates")); err != nil {
+			if vv, ok := fortiAPIPatch(o["log-templates"], "LogSyslogd2Setting-LogTemplates"); ok {
+				if err = d.Set("log_templates", vv); err != nil {
+					return fmt.Errorf("Error reading log_templates: %v", err)
+				}
+			} else {
+				return fmt.Errorf("Error reading log_templates: %v", err)
+			}
+		}
+	} else {
+		if _, ok := d.GetOk("log_templates"); ok {
+			if err = d.Set("log_templates", flattenLogSyslogd2SettingLogTemplates(o["log-templates"], d, "log_templates")); err != nil {
+				if vv, ok := fortiAPIPatch(o["log-templates"], "LogSyslogd2Setting-LogTemplates"); ok {
+					if err = d.Set("log_templates", vv); err != nil {
+						return fmt.Errorf("Error reading log_templates: %v", err)
+					}
+				} else {
+					return fmt.Errorf("Error reading log_templates: %v", err)
+				}
+			}
+		}
+	}
+
 	return nil
 }
 
@@ -678,6 +809,66 @@ func expandLogSyslogd2SettingStatus(d *schema.ResourceData, v interface{}, pre s
 }
 
 func expandLogSyslogd2SettingVrfSelect(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandLogSyslogd2SettingLogTemplates(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	l := v.([]interface{})
+	result := make([]map[string]interface{}, 0, len(l))
+
+	if len(l) == 0 || l[0] == nil {
+		return result, nil
+	}
+
+	con := 0
+	for _, r := range l {
+		tmp := make(map[string]interface{})
+		i := r.(map[string]interface{})
+		pre_append := "" // table
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "category"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["category"], _ = expandLogSyslogd2SettingLogTemplatesCategory(d, i["category"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "empty_value_indicator"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["empty-value-indicator"], _ = expandLogSyslogd2SettingLogTemplatesEmptyValueIndicator(d, i["empty_value_indicator"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "id"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["id"], _ = expandLogSyslogd2SettingLogTemplatesId(d, i["id"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "template"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["template"], _ = expandLogSyslogd2SettingLogTemplatesTemplate(d, i["template"], pre_append)
+		}
+
+		if len(tmp) > 0 {
+			result = append(result, tmp)
+		}
+
+		con += 1
+	}
+
+	return result, nil
+}
+
+func expandLogSyslogd2SettingLogTemplatesCategory(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandLogSyslogd2SettingLogTemplatesEmptyValueIndicator(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandLogSyslogd2SettingLogTemplatesId(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandLogSyslogd2SettingLogTemplatesTemplate(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -834,6 +1025,15 @@ func getObjectLogSyslogd2Setting(d *schema.ResourceData) (*map[string]interface{
 			return &obj, err
 		} else if t != nil {
 			obj["vrf-select"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("log_templates"); ok || d.HasChange("log_templates") {
+		t, err := expandLogSyslogd2SettingLogTemplates(d, v, "log_templates")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["log-templates"] = t
 		}
 	}
 

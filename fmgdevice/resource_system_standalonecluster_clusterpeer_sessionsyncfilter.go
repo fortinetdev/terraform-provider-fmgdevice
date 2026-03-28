@@ -28,6 +28,12 @@ func resourceSystemStandaloneClusterClusterPeerSessionSyncFilter() *schema.Resou
 		},
 
 		Schema: map[string]*schema.Schema{
+
+			"adom": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"device_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -111,8 +117,12 @@ func resourceSystemStandaloneClusterClusterPeerSessionSyncFilterUpdate(d *schema
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -121,13 +131,12 @@ func resourceSystemStandaloneClusterClusterPeerSessionSyncFilterUpdate(d *schema
 	paradict["device"] = device_name
 	paradict["cluster_peer"] = cluster_peer
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectSystemStandaloneClusterClusterPeerSessionSyncFilter(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemStandaloneClusterClusterPeerSessionSyncFilter resource while getting object: %v", err)
 	}
+
+	wsParams["adom"] = adomv
 
 	_, err = c.UpdateSystemStandaloneClusterClusterPeerSessionSyncFilter(obj, mkey, paradict, wsParams)
 	if err != nil {
@@ -149,8 +158,12 @@ func resourceSystemStandaloneClusterClusterPeerSessionSyncFilterDelete(d *schema
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -159,9 +172,7 @@ func resourceSystemStandaloneClusterClusterPeerSessionSyncFilterDelete(d *schema
 	paradict["device"] = device_name
 	paradict["cluster_peer"] = cluster_peer
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
+	wsParams["adom"] = adomv
 
 	err = c.DeleteSystemStandaloneClusterClusterPeerSessionSyncFilter(mkey, paradict, wsParams)
 	if err != nil {
@@ -180,8 +191,8 @@ func resourceSystemStandaloneClusterClusterPeerSessionSyncFilterRead(d *schema.R
 	c.Retries = 1
 
 	paradict := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	cluster_peer := d.Get("cluster_peer").(string)
 	if device_name == "" {
@@ -207,6 +218,7 @@ func resourceSystemStandaloneClusterClusterPeerSessionSyncFilterRead(d *schema.R
 
 	o, err := c.ReadSystemStandaloneClusterClusterPeerSessionSyncFilter(mkey, paradict)
 	if err != nil {
+		d.SetId("")
 		return fmt.Errorf("Error reading SystemStandaloneClusterClusterPeerSessionSyncFilter resource: %v", err)
 	}
 

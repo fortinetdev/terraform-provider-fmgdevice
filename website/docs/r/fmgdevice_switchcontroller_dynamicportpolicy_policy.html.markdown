@@ -51,6 +51,8 @@ The following arguments are supported:
 * `lldp_profile` - LLDP profile to be applied when using this policy.
 * `mac` - Match policy based on MAC address.
 * `match_period` - Number of days the matched devices will be retained (0 - 120, 0 = always retain).
+* `match_remove` - Options to remove the matched override devices. Valid values: `link-down`, `default`.
+
 * `match_type` - Match and retain the devices based on the type. Valid values: `dynamic`, `override`.
 
 * `name` - Policy name.

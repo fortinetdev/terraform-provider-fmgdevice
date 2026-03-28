@@ -28,6 +28,12 @@ func resourceSystemFederatedUpgrade() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
+
+			"adom": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"device_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -82,11 +88,21 @@ func resourceSystemFederatedUpgrade() *schema.Resource {
 				Optional: true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
+						"allow_download": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+							Computed: true,
+						},
 						"coordinating_fortigate": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
 						},
 						"device_type": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+							Computed: true,
+						},
+						"failure_reason": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
 							Computed: true,
@@ -118,6 +134,10 @@ func resourceSystemFederatedUpgrade() *schema.Resource {
 							Computed: true,
 						},
 						"upgrade_path": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"coordinating_fortiproxy": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
 						},
@@ -158,21 +178,24 @@ func resourceSystemFederatedUpgradeUpdate(d *schema.ResourceData, m interface{})
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
 	}
 	paradict["device"] = device_name
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectSystemFederatedUpgrade(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemFederatedUpgrade resource while getting object: %v", err)
 	}
+
+	wsParams["adom"] = adomv
 
 	_, err = c.UpdateSystemFederatedUpgrade(obj, mkey, paradict, wsParams)
 	if err != nil {
@@ -194,17 +217,19 @@ func resourceSystemFederatedUpgradeDelete(d *schema.ResourceData, m interface{})
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
 	}
 	paradict["device"] = device_name
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
+	wsParams["adom"] = adomv
 
 	err = c.DeleteSystemFederatedUpgrade(mkey, paradict, wsParams)
 	if err != nil {
@@ -223,8 +248,8 @@ func resourceSystemFederatedUpgradeRead(d *schema.ResourceData, m interface{}) e
 	c.Retries = 1
 
 	paradict := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if device_name == "" {
 		device_name = importOptionChecking(m.(*FortiClient).Cfg, "device_name")
@@ -239,6 +264,7 @@ func resourceSystemFederatedUpgradeRead(d *schema.ResourceData, m interface{}) e
 
 	o, err := c.ReadSystemFederatedUpgrade(mkey, paradict)
 	if err != nil {
+		d.SetId("")
 		return fmt.Errorf("Error reading SystemFederatedUpgrade resource: %v", err)
 	}
 
@@ -341,6 +367,12 @@ func flattenSystemFederatedUpgradeNodeList(v interface{}, d *schema.ResourceData
 
 		pre_append := "" // table
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "allow_download"
+		if _, ok := i["allow-download"]; ok {
+			v := flattenSystemFederatedUpgradeNodeListAllowDownload(i["allow-download"], d, pre_append)
+			tmp["allow_download"] = fortiAPISubPartPatch(v, "SystemFederatedUpgrade-NodeList-AllowDownload")
+		}
+
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "coordinating_fortigate"
 		if _, ok := i["coordinating-fortigate"]; ok {
 			v := flattenSystemFederatedUpgradeNodeListCoordinatingFortigate(i["coordinating-fortigate"], d, pre_append)
@@ -351,6 +383,12 @@ func flattenSystemFederatedUpgradeNodeList(v interface{}, d *schema.ResourceData
 		if _, ok := i["device-type"]; ok {
 			v := flattenSystemFederatedUpgradeNodeListDeviceType(i["device-type"], d, pre_append)
 			tmp["device_type"] = fortiAPISubPartPatch(v, "SystemFederatedUpgrade-NodeList-DeviceType")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "failure_reason"
+		if _, ok := i["failure-reason"]; ok {
+			v := flattenSystemFederatedUpgradeNodeListFailureReason(i["failure-reason"], d, pre_append)
+			tmp["failure_reason"] = fortiAPISubPartPatch(v, "SystemFederatedUpgrade-NodeList-FailureReason")
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "maximum_minutes"
@@ -389,6 +427,12 @@ func flattenSystemFederatedUpgradeNodeList(v interface{}, d *schema.ResourceData
 			tmp["upgrade_path"] = fortiAPISubPartPatch(v, "SystemFederatedUpgrade-NodeList-UpgradePath")
 		}
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "coordinating_fortiproxy"
+		if _, ok := i["coordinating-fortiproxy"]; ok {
+			v := flattenSystemFederatedUpgradeNodeListCoordinatingFortiproxy(i["coordinating-fortiproxy"], d, pre_append)
+			tmp["coordinating_fortiproxy"] = fortiAPISubPartPatch(v, "SystemFederatedUpgrade-NodeList-CoordinatingFortiproxy")
+		}
+
 		if len(tmp) > 0 {
 			result = append(result, tmp)
 		}
@@ -399,11 +443,19 @@ func flattenSystemFederatedUpgradeNodeList(v interface{}, d *schema.ResourceData
 	return result
 }
 
+func flattenSystemFederatedUpgradeNodeListAllowDownload(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenSystemFederatedUpgradeNodeListCoordinatingFortigate(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
 func flattenSystemFederatedUpgradeNodeListDeviceType(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemFederatedUpgradeNodeListFailureReason(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -428,6 +480,10 @@ func flattenSystemFederatedUpgradeNodeListTiming(v interface{}, d *schema.Resour
 }
 
 func flattenSystemFederatedUpgradeNodeListUpgradePath(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemFederatedUpgradeNodeListCoordinatingFortiproxy(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -696,6 +752,11 @@ func expandSystemFederatedUpgradeNodeList(d *schema.ResourceData, v interface{},
 		i := r.(map[string]interface{})
 		pre_append := "" // table
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "allow_download"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["allow-download"], _ = expandSystemFederatedUpgradeNodeListAllowDownload(d, i["allow_download"], pre_append)
+		}
+
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "coordinating_fortigate"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
 			tmp["coordinating-fortigate"], _ = expandSystemFederatedUpgradeNodeListCoordinatingFortigate(d, i["coordinating_fortigate"], pre_append)
@@ -704,6 +765,11 @@ func expandSystemFederatedUpgradeNodeList(d *schema.ResourceData, v interface{},
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "device_type"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
 			tmp["device-type"], _ = expandSystemFederatedUpgradeNodeListDeviceType(d, i["device_type"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "failure_reason"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["failure-reason"], _ = expandSystemFederatedUpgradeNodeListFailureReason(d, i["failure_reason"], pre_append)
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "maximum_minutes"
@@ -736,6 +802,11 @@ func expandSystemFederatedUpgradeNodeList(d *schema.ResourceData, v interface{},
 			tmp["upgrade-path"], _ = expandSystemFederatedUpgradeNodeListUpgradePath(d, i["upgrade_path"], pre_append)
 		}
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "coordinating_fortiproxy"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["coordinating-fortiproxy"], _ = expandSystemFederatedUpgradeNodeListCoordinatingFortiproxy(d, i["coordinating_fortiproxy"], pre_append)
+		}
+
 		if len(tmp) > 0 {
 			result = append(result, tmp)
 		}
@@ -746,11 +817,19 @@ func expandSystemFederatedUpgradeNodeList(d *schema.ResourceData, v interface{},
 	return result, nil
 }
 
+func expandSystemFederatedUpgradeNodeListAllowDownload(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandSystemFederatedUpgradeNodeListCoordinatingFortigate(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
 func expandSystemFederatedUpgradeNodeListDeviceType(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemFederatedUpgradeNodeListFailureReason(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -775,6 +854,10 @@ func expandSystemFederatedUpgradeNodeListTiming(d *schema.ResourceData, v interf
 }
 
 func expandSystemFederatedUpgradeNodeListUpgradePath(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemFederatedUpgradeNodeListCoordinatingFortiproxy(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 

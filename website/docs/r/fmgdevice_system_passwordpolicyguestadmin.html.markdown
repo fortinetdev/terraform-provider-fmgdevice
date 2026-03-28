@@ -47,6 +47,7 @@ The following arguments are supported:
 * `reuse_password_limit` - Number of times passwords can be reused (0 - 20, default = 0. If set to 0, can reuse password an unlimited number of times.).
 * `status` - Enable/disable setting a password policy for locally defined administrator passwords and IPsec VPN pre-shared keys. Valid values: `disable`, `enable`.
 
+* `password_history` - Password-History.
 
 
 ## Attribute Reference

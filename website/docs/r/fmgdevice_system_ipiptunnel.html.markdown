@@ -35,6 +35,8 @@ The following arguments are supported:
 
 * `interface` - Interface name that is associated with the incoming traffic from available options.
 * `local_gw` - IPv4 address for the local gateway.
+* `loopback_ecmp_offload` - Enable/disable tunnel over loopback ecmp offloading support. Valid values: `disable`, `enable`.
+
 * `name` - IPIP Tunnel name.
 * `remote_gw` - IPv4 address for the remote gateway.
 * `use_sdwan` - Enable/disable use of SD-WAN to reach remote gateway. Valid values: `disable`, `enable`.

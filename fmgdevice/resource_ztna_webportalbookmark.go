@@ -28,6 +28,17 @@ func resourceZtnaWebPortalBookmark() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
+			"update_if_exist": &schema.Schema{
+				Type:     schema.TypeBool,
+				Optional: true,
+				Computed: true,
+			},
+
+			"adom": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"device_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -164,6 +175,10 @@ func resourceZtnaWebPortalBookmark() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"type": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 			"dynamic_sort_subtable": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -179,8 +194,12 @@ func resourceZtnaWebPortalBookmarkCreate(d *schema.ResourceData, m interface{}) 
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -192,17 +211,37 @@ func resourceZtnaWebPortalBookmarkCreate(d *schema.ResourceData, m interface{}) 
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectZtnaWebPortalBookmark(d)
 	if err != nil {
 		return fmt.Errorf("Error creating ZtnaWebPortalBookmark resource while getting object: %v", err)
 	}
+	wsParams["adom"] = adomv
 
-	_, err = c.CreateZtnaWebPortalBookmark(obj, paradict, wsParams)
-	if err != nil {
-		return fmt.Errorf("Error creating ZtnaWebPortalBookmark resource: %v", err)
+	update_if_exist := getUpdateIfExist(c, d)
+	mkey_tf, mkey_ok := d.GetOk("name")
+	mkey := fmt.Sprint(mkey_tf)
+	o := make(map[string]interface{})
+	existing := false
+
+	if update_if_exist && mkey_ok {
+		// check existing
+		o, err = c.ReadZtnaWebPortalBookmark(mkey, paradict)
+		if err == nil && o != nil {
+			existing = true
+			// update if existing
+			o, err = c.UpdateZtnaWebPortalBookmark(obj, mkey, paradict, wsParams)
+			if err != nil {
+				return fmt.Errorf("Error updating ZtnaWebPortalBookmark resource: %v", err)
+			}
+		}
+	}
+
+	if !existing {
+		_, err = c.CreateZtnaWebPortalBookmark(obj, paradict, wsParams)
+		if err != nil {
+			return fmt.Errorf("Error creating ZtnaWebPortalBookmark resource: %v", err)
+		}
+
 	}
 
 	d.SetId(getStringKey(d, "name"))
@@ -217,8 +256,12 @@ func resourceZtnaWebPortalBookmarkUpdate(d *schema.ResourceData, m interface{}) 
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -230,13 +273,12 @@ func resourceZtnaWebPortalBookmarkUpdate(d *schema.ResourceData, m interface{}) 
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectZtnaWebPortalBookmark(d)
 	if err != nil {
 		return fmt.Errorf("Error updating ZtnaWebPortalBookmark resource while getting object: %v", err)
 	}
+
+	wsParams["adom"] = adomv
 
 	_, err = c.UpdateZtnaWebPortalBookmark(obj, mkey, paradict, wsParams)
 	if err != nil {
@@ -258,8 +300,12 @@ func resourceZtnaWebPortalBookmarkDelete(d *schema.ResourceData, m interface{}) 
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -271,9 +317,7 @@ func resourceZtnaWebPortalBookmarkDelete(d *schema.ResourceData, m interface{}) 
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
+	wsParams["adom"] = adomv
 
 	err = c.DeleteZtnaWebPortalBookmark(mkey, paradict, wsParams)
 	if err != nil {
@@ -292,8 +336,8 @@ func resourceZtnaWebPortalBookmarkRead(d *schema.ResourceData, m interface{}) er
 	c.Retries = 1
 
 	paradict := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	device_vdom, err := getVariable(cfg, d, "device_vdom")
 	if device_name == "" {
@@ -319,6 +363,7 @@ func resourceZtnaWebPortalBookmarkRead(d *schema.ResourceData, m interface{}) er
 
 	o, err := c.ReadZtnaWebPortalBookmark(mkey, paradict)
 	if err != nil {
+		d.SetId("")
 		return fmt.Errorf("Error reading ZtnaWebPortalBookmark resource: %v", err)
 	}
 
@@ -586,6 +631,10 @@ func flattenZtnaWebPortalBookmarkUsers(v interface{}, d *schema.ResourceData, pr
 	return flattenStringList(v)
 }
 
+func flattenZtnaWebPortalBookmarkType(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func refreshObjectZtnaWebPortalBookmark(d *schema.ResourceData, o map[string]interface{}) error {
 	var err error
 
@@ -644,6 +693,16 @@ func refreshObjectZtnaWebPortalBookmark(d *schema.ResourceData, o map[string]int
 			}
 		} else {
 			return fmt.Errorf("Error reading users: %v", err)
+		}
+	}
+
+	if err = d.Set("type", flattenZtnaWebPortalBookmarkType(o["type"], d, "type")); err != nil {
+		if vv, ok := fortiAPIPatch(o["type"], "ZtnaWebPortalBookmark-Type"); ok {
+			if err = d.Set("type", vv); err != nil {
+				return fmt.Errorf("Error reading type: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading type: %v", err)
 		}
 	}
 
@@ -890,6 +949,10 @@ func expandZtnaWebPortalBookmarkUsers(d *schema.ResourceData, v interface{}, pre
 	return expandStringList(v.(*schema.Set).List()), nil
 }
 
+func expandZtnaWebPortalBookmarkType(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func getObjectZtnaWebPortalBookmark(d *schema.ResourceData) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
@@ -926,6 +989,15 @@ func getObjectZtnaWebPortalBookmark(d *schema.ResourceData) (*map[string]interfa
 			return &obj, err
 		} else if t != nil {
 			obj["users"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("type"); ok || d.HasChange("type") {
+		t, err := expandZtnaWebPortalBookmarkType(d, v, "type")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["type"] = t
 		}
 	}
 

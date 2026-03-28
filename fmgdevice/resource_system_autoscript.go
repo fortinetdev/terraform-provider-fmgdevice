@@ -28,6 +28,17 @@ func resourceSystemAutoScript() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
+			"update_if_exist": &schema.Schema{
+				Type:     schema.TypeBool,
+				Optional: true,
+				Computed: true,
+			},
+
+			"adom": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"device_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -66,6 +77,13 @@ func resourceSystemAutoScript() *schema.Resource {
 				Type:     schema.TypeInt,
 				Optional: true,
 			},
+			"password": &schema.Schema{
+				Type:      schema.TypeSet,
+				Elem:      &schema.Schema{Type: schema.TypeString},
+				Optional:  true,
+				Sensitive: true,
+				Computed:  true,
+			},
 		},
 	}
 }
@@ -76,25 +94,49 @@ func resourceSystemAutoScriptCreate(d *schema.ResourceData, m interface{}) error
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
 	}
 	paradict["device"] = device_name
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectSystemAutoScript(d)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemAutoScript resource while getting object: %v", err)
 	}
+	wsParams["adom"] = adomv
 
-	_, err = c.CreateSystemAutoScript(obj, paradict, wsParams)
-	if err != nil {
-		return fmt.Errorf("Error creating SystemAutoScript resource: %v", err)
+	update_if_exist := getUpdateIfExist(c, d)
+	mkey_tf, mkey_ok := d.GetOk("name")
+	mkey := fmt.Sprint(mkey_tf)
+	o := make(map[string]interface{})
+	existing := false
+
+	if update_if_exist && mkey_ok {
+		// check existing
+		o, err = c.ReadSystemAutoScript(mkey, paradict)
+		if err == nil && o != nil {
+			existing = true
+			// update if existing
+			o, err = c.UpdateSystemAutoScript(obj, mkey, paradict, wsParams)
+			if err != nil {
+				return fmt.Errorf("Error updating SystemAutoScript resource: %v", err)
+			}
+		}
+	}
+
+	if !existing {
+		_, err = c.CreateSystemAutoScript(obj, paradict, wsParams)
+		if err != nil {
+			return fmt.Errorf("Error creating SystemAutoScript resource: %v", err)
+		}
+
 	}
 
 	d.SetId(getStringKey(d, "name"))
@@ -109,21 +151,24 @@ func resourceSystemAutoScriptUpdate(d *schema.ResourceData, m interface{}) error
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
 	}
 	paradict["device"] = device_name
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectSystemAutoScript(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemAutoScript resource while getting object: %v", err)
 	}
+
+	wsParams["adom"] = adomv
 
 	_, err = c.UpdateSystemAutoScript(obj, mkey, paradict, wsParams)
 	if err != nil {
@@ -145,17 +190,19 @@ func resourceSystemAutoScriptDelete(d *schema.ResourceData, m interface{}) error
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
 	}
 	paradict["device"] = device_name
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
+	wsParams["adom"] = adomv
 
 	err = c.DeleteSystemAutoScript(mkey, paradict, wsParams)
 	if err != nil {
@@ -174,8 +221,8 @@ func resourceSystemAutoScriptRead(d *schema.ResourceData, m interface{}) error {
 	c.Retries = 1
 
 	paradict := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if device_name == "" {
 		device_name = importOptionChecking(m.(*FortiClient).Cfg, "device_name")
@@ -190,6 +237,7 @@ func resourceSystemAutoScriptRead(d *schema.ResourceData, m interface{}) error {
 
 	o, err := c.ReadSystemAutoScript(mkey, paradict)
 	if err != nil {
+		d.SetId("")
 		return fmt.Errorf("Error reading SystemAutoScript resource: %v", err)
 	}
 
@@ -344,6 +392,10 @@ func expandSystemAutoScriptTimeout(d *schema.ResourceData, v interface{}, pre st
 	return v, nil
 }
 
+func expandSystemAutoScriptPassword(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
 func getObjectSystemAutoScript(d *schema.ResourceData) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
@@ -407,6 +459,15 @@ func getObjectSystemAutoScript(d *schema.ResourceData) (*map[string]interface{},
 			return &obj, err
 		} else if t != nil {
 			obj["timeout"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("password"); ok || d.HasChange("password") {
+		t, err := expandSystemAutoScriptPassword(d, v, "password")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["password"] = t
 		}
 	}
 

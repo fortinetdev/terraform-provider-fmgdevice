@@ -33,6 +33,12 @@ func resourceVpnSslWebUserGroupBookmarkBookmarksMove() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+
+			"adom": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"device_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -74,8 +80,12 @@ func resourceVpnSslWebUserGroupBookmarkBookmarksMoveUpdate(d *schema.ResourceDat
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -91,14 +101,13 @@ func resourceVpnSslWebUserGroupBookmarkBookmarksMoveUpdate(d *schema.ResourceDat
 	paradict["user_group_bookmark"] = user_group_bookmark
 	paradict["bookmarks"] = bookmarks
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	target := d.Get("target").(string)
 	obj, err := getObjectVpnSslWebUserGroupBookmarkBookmarksMove(d)
 	if err != nil {
 		return fmt.Errorf("Error updating VpnSslWebUserGroupBookmarkBookmarksMove resource while getting object: %v", err)
 	}
+
+	wsParams["adom"] = adomv
 
 	_, err = c.UpdateVpnSslWebUserGroupBookmarkBookmarksMove(obj, mkey, paradict, wsParams)
 	if err != nil {
@@ -125,12 +134,12 @@ func resourceVpnSslWebUserGroupBookmarkBookmarksMoveRead(d *schema.ResourceData,
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	cfg := m.(*FortiClient).Cfg
 
 	sid := d.Get("bookmarks").(string)
 	did := d.Get("target").(string)
 	action := d.Get("option").(string)
 
-	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
 	device_vdom, err := getVariable(cfg, d, "device_vdom")
 	user_group_bookmark := d.Get("user_group_bookmark").(string)

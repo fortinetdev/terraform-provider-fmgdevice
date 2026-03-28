@@ -156,6 +156,20 @@ func getStringKey(d *schema.ResourceData, field string) string {
 	return ""
 }
 
+func getScopeKey(d *schema.ResourceData, field string) string {
+	if v, ok := d.GetOkExists(field); ok {
+		if field == "_scope" {
+			if scopeList, ok := v.([]interface{}); ok {
+				scopeContent := scopeList[0].(map[string]interface{})
+				scopeName := scopeContent["name"].(string)
+				scopeVdom := scopeContent["vdom"].(string)
+				return fmt.Sprintf("%v %v", scopeName, scopeVdom)
+			}
+		}
+	}
+	return ""
+}
+
 func getIntKey(d *schema.ResourceData, field string) int {
 	if v, ok := d.GetOkExists(field); ok {
 		if v1, ok := v.(int); ok {
@@ -179,22 +193,18 @@ func escapeFilter(filter string) string {
 func adomChecking(c *Config, d *schema.ResourceData) (string, error) {
 	cst := c.ScopeType
 	cadom := c.Adom
-	st := d.Get("scopetype").(string)
 	adom := d.Get("adom").(string)
 
-	if st == "inherit" || st == "" {
+	if adom != "" {
+		if adom == "global" {
+			return "global", nil
+		}
+		return "adom/" + adom, nil
+	} else if cadom != "" || cst != "" {
 		if cst == "global" {
 			return "global", nil
 		}
 		return "adom/" + cadom, nil
-	} else if st == "global" {
-		return "global", nil
-	} else if st == "adom" {
-		if adom == "" {
-			err := fmt.Errorf("Empty adom")
-			return "", err
-		}
-		return "adom/" + adom, nil
 	}
 
 	err := fmt.Errorf("unknown adom configuration error")
@@ -592,4 +602,13 @@ func unlockWorkspace(c *forticlient.FortiSDKClient, adomv string) (err error) {
 		err = fmt.Errorf("Error unlock workspace: %v", err)
 	}
 	return err
+}
+
+func getUpdateIfExist(c *forticlient.FortiSDKClient, d *schema.ResourceData) bool {
+	resourceVI, exists := d.GetOkExists("update_if_exist")
+	if exists {
+		return resourceVI.(bool)
+	} else {
+		return c.Config.Auth.UpdateIfExist
+	}
 }

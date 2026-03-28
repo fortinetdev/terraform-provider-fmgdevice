@@ -28,6 +28,17 @@ func resourceRouterMulticastInterfaceJoinGroup() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
+			"update_if_exist": &schema.Schema{
+				Type:     schema.TypeBool,
+				Optional: true,
+				Computed: true,
+			},
+
+			"adom": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"device_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -59,8 +70,12 @@ func resourceRouterMulticastInterfaceJoinGroupCreate(d *schema.ResourceData, m i
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -74,17 +89,37 @@ func resourceRouterMulticastInterfaceJoinGroupCreate(d *schema.ResourceData, m i
 	paradict["vdom"] = device_vdom
 	paradict["interface"] = var_interface
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectRouterMulticastInterfaceJoinGroup(d)
 	if err != nil {
 		return fmt.Errorf("Error creating RouterMulticastInterfaceJoinGroup resource while getting object: %v", err)
 	}
+	wsParams["adom"] = adomv
 
-	_, err = c.CreateRouterMulticastInterfaceJoinGroup(obj, paradict, wsParams)
-	if err != nil {
-		return fmt.Errorf("Error creating RouterMulticastInterfaceJoinGroup resource: %v", err)
+	update_if_exist := getUpdateIfExist(c, d)
+	mkey_tf, mkey_ok := d.GetOk("address")
+	mkey := fmt.Sprint(mkey_tf)
+	o := make(map[string]interface{})
+	existing := false
+
+	if update_if_exist && mkey_ok {
+		// check existing
+		o, err = c.ReadRouterMulticastInterfaceJoinGroup(mkey, paradict)
+		if err == nil && o != nil {
+			existing = true
+			// update if existing
+			o, err = c.UpdateRouterMulticastInterfaceJoinGroup(obj, mkey, paradict, wsParams)
+			if err != nil {
+				return fmt.Errorf("Error updating RouterMulticastInterfaceJoinGroup resource: %v", err)
+			}
+		}
+	}
+
+	if !existing {
+		_, err = c.CreateRouterMulticastInterfaceJoinGroup(obj, paradict, wsParams)
+		if err != nil {
+			return fmt.Errorf("Error creating RouterMulticastInterfaceJoinGroup resource: %v", err)
+		}
+
 	}
 
 	d.SetId(getStringKey(d, "address"))
@@ -99,8 +134,12 @@ func resourceRouterMulticastInterfaceJoinGroupUpdate(d *schema.ResourceData, m i
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -114,13 +153,12 @@ func resourceRouterMulticastInterfaceJoinGroupUpdate(d *schema.ResourceData, m i
 	paradict["vdom"] = device_vdom
 	paradict["interface"] = var_interface
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectRouterMulticastInterfaceJoinGroup(d)
 	if err != nil {
 		return fmt.Errorf("Error updating RouterMulticastInterfaceJoinGroup resource while getting object: %v", err)
 	}
+
+	wsParams["adom"] = adomv
 
 	_, err = c.UpdateRouterMulticastInterfaceJoinGroup(obj, mkey, paradict, wsParams)
 	if err != nil {
@@ -142,8 +180,12 @@ func resourceRouterMulticastInterfaceJoinGroupDelete(d *schema.ResourceData, m i
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -157,9 +199,7 @@ func resourceRouterMulticastInterfaceJoinGroupDelete(d *schema.ResourceData, m i
 	paradict["vdom"] = device_vdom
 	paradict["interface"] = var_interface
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
+	wsParams["adom"] = adomv
 
 	err = c.DeleteRouterMulticastInterfaceJoinGroup(mkey, paradict, wsParams)
 	if err != nil {
@@ -178,8 +218,8 @@ func resourceRouterMulticastInterfaceJoinGroupRead(d *schema.ResourceData, m int
 	c.Retries = 1
 
 	paradict := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	device_vdom, err := getVariable(cfg, d, "device_vdom")
 	var_interface := d.Get("interface").(string)
@@ -216,6 +256,7 @@ func resourceRouterMulticastInterfaceJoinGroupRead(d *schema.ResourceData, m int
 
 	o, err := c.ReadRouterMulticastInterfaceJoinGroup(mkey, paradict)
 	if err != nil {
+		d.SetId("")
 		return fmt.Errorf("Error reading RouterMulticastInterfaceJoinGroup resource: %v", err)
 	}
 

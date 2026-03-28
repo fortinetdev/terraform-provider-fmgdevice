@@ -47,6 +47,11 @@ The following arguments are supported:
 
 * `status` - Enable/disable the explicit FTP proxy. Valid values: `disable`, `enable`.
 
+* `active_src_port` - Active-Src-Port. Valid values: `default`, `server`.
+
+* `incoming_ip6` - Incoming-Ip6.
+* `ipv6_status` - Ipv6-Status. Valid values: `disable`, `enable`.
+
 
 
 ## Attribute Reference

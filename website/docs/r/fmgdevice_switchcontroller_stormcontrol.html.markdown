@@ -32,6 +32,7 @@ The following arguments are supported:
 
 * `broadcast` - Enable/disable storm control to drop broadcast traffic. Valid values: `disable`, `enable`.
 
+* `burst_size_level` - Increase level to handle bursty traffic (0 - 4, default = 0).
 * `rate` - Rate in packets per second at which storm control drops excess traffic(0-10000000, default=500, drop-all=0).
 * `unknown_multicast` - Enable/disable storm control to drop unknown multicast traffic. Valid values: `disable`, `enable`.
 

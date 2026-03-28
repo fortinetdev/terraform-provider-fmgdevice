@@ -28,6 +28,12 @@ func resourceLogSetting() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
+
+			"adom": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"device_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -183,6 +189,11 @@ func resourceLogSetting() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"zone_name": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
 		},
 	}
 }
@@ -194,8 +205,12 @@ func resourceLogSettingUpdate(d *schema.ResourceData, m interface{}) error {
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -207,13 +222,12 @@ func resourceLogSettingUpdate(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectLogSetting(d)
 	if err != nil {
 		return fmt.Errorf("Error updating LogSetting resource while getting object: %v", err)
 	}
+
+	wsParams["adom"] = adomv
 
 	_, err = c.UpdateLogSetting(obj, mkey, paradict, wsParams)
 	if err != nil {
@@ -235,8 +249,12 @@ func resourceLogSettingDelete(d *schema.ResourceData, m interface{}) error {
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -248,9 +266,7 @@ func resourceLogSettingDelete(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
+	wsParams["adom"] = adomv
 
 	err = c.DeleteLogSetting(mkey, paradict, wsParams)
 	if err != nil {
@@ -269,8 +285,8 @@ func resourceLogSettingRead(d *schema.ResourceData, m interface{}) error {
 	c.Retries = 1
 
 	paradict := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	device_vdom, err := getVariable(cfg, d, "device_vdom")
 	if device_name == "" {
@@ -296,6 +312,7 @@ func resourceLogSettingRead(d *schema.ResourceData, m interface{}) error {
 
 	o, err := c.ReadLogSetting(mkey, paradict)
 	if err != nil {
+		d.SetId("")
 		return fmt.Errorf("Error reading LogSetting resource: %v", err)
 	}
 
@@ -425,6 +442,10 @@ func flattenLogSettingSyslogOverride(v interface{}, d *schema.ResourceData, pre 
 }
 
 func flattenLogSettingUserAnonymize(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenLogSettingZoneName(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -721,6 +742,16 @@ func refreshObjectLogSetting(d *schema.ResourceData, o map[string]interface{}) e
 		}
 	}
 
+	if err = d.Set("zone_name", flattenLogSettingZoneName(o["zone-name"], d, "zone_name")); err != nil {
+		if vv, ok := fortiAPIPatch(o["zone-name"], "LogSetting-ZoneName"); ok {
+			if err = d.Set("zone_name", vv); err != nil {
+				return fmt.Errorf("Error reading zone_name: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading zone_name: %v", err)
+		}
+	}
+
 	return nil
 }
 
@@ -843,6 +874,10 @@ func expandLogSettingSyslogOverride(d *schema.ResourceData, v interface{}, pre s
 }
 
 func expandLogSettingUserAnonymize(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandLogSettingZoneName(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -1107,6 +1142,15 @@ func getObjectLogSetting(d *schema.ResourceData) (*map[string]interface{}, error
 			return &obj, err
 		} else if t != nil {
 			obj["user-anonymize"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("zone_name"); ok || d.HasChange("zone_name") {
+		t, err := expandLogSettingZoneName(d, v, "zone_name")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["zone-name"] = t
 		}
 	}
 

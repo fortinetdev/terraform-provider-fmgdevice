@@ -65,6 +65,9 @@ The following arguments are supported:
 
 * `auth_type` - Supported firewall policy authentication protocols/methods. Valid values: `http`, `https`, `ftp`, `telnet`.
 
+* `cors` - Enable/disable allowed origins white list for CORS. Valid values: `disable`, `enable`.
+
+* `cors_allowed_origins` - Allowed origins white list for CORS.
 * `default_user_password_policy` - Default password policy to apply to all local users unless otherwise specified, as defined in config user password-policy.
 * `per_policy_disclaimer` - Enable/disable per policy disclaimer. Valid values: `disable`, `enable`.
 

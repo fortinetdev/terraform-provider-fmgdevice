@@ -28,6 +28,12 @@ func resourceWebProxyGlobal() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
+
+			"adom": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"device_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -55,6 +61,16 @@ func resourceWebProxyGlobal() *schema.Resource {
 				Computed: true,
 			},
 			"forward_server_affinity_timeout": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+				Computed: true,
+			},
+			"http2_client_window_size": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+				Computed: true,
+			},
+			"http2_server_window_size": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
 				Computed: true,
@@ -180,6 +196,54 @@ func resourceWebProxyGlobal() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"address_ip_rating": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"explicit_outgoing_ip": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Computed: true,
+			},
+			"explicit_outgoing_ip6": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Computed: true,
+			},
+			"extended_log": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"https_replacement_message": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"log_http_transaction": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"message_upon_server_error": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"realm": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"strict_guest": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"trace_auth_no_rsp": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"use_dynamic_pkey": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 		},
 	}
 }
@@ -191,8 +255,12 @@ func resourceWebProxyGlobalUpdate(d *schema.ResourceData, m interface{}) error {
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -204,13 +272,12 @@ func resourceWebProxyGlobalUpdate(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectWebProxyGlobal(d)
 	if err != nil {
 		return fmt.Errorf("Error updating WebProxyGlobal resource while getting object: %v", err)
 	}
+
+	wsParams["adom"] = adomv
 
 	_, err = c.UpdateWebProxyGlobal(obj, mkey, paradict, wsParams)
 	if err != nil {
@@ -232,8 +299,12 @@ func resourceWebProxyGlobalDelete(d *schema.ResourceData, m interface{}) error {
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -245,9 +316,7 @@ func resourceWebProxyGlobalDelete(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
+	wsParams["adom"] = adomv
 
 	err = c.DeleteWebProxyGlobal(mkey, paradict, wsParams)
 	if err != nil {
@@ -266,8 +335,8 @@ func resourceWebProxyGlobalRead(d *schema.ResourceData, m interface{}) error {
 	c.Retries = 1
 
 	paradict := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	device_vdom, err := getVariable(cfg, d, "device_vdom")
 	if device_name == "" {
@@ -293,6 +362,7 @@ func resourceWebProxyGlobalRead(d *schema.ResourceData, m interface{}) error {
 
 	o, err := c.ReadWebProxyGlobal(mkey, paradict)
 	if err != nil {
+		d.SetId("")
 		return fmt.Errorf("Error reading WebProxyGlobal resource: %v", err)
 	}
 
@@ -322,6 +392,14 @@ func flattenWebProxyGlobalForwardProxyAuth(v interface{}, d *schema.ResourceData
 }
 
 func flattenWebProxyGlobalForwardServerAffinityTimeout(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWebProxyGlobalHttp2ClientWindowSize(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWebProxyGlobalHttp2ServerWindowSize(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -417,6 +495,50 @@ func flattenWebProxyGlobalWebproxyProfile(v interface{}, d *schema.ResourceData,
 	return flattenStringList(v)
 }
 
+func flattenWebProxyGlobalAddressIpRating(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWebProxyGlobalExplicitOutgoingIp(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
+func flattenWebProxyGlobalExplicitOutgoingIp6(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
+func flattenWebProxyGlobalExtendedLog(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWebProxyGlobalHttpsReplacementMessage(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWebProxyGlobalLogHttpTransaction(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWebProxyGlobalMessageUponServerError(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWebProxyGlobalRealm(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWebProxyGlobalStrictGuest(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWebProxyGlobalTraceAuthNoRsp(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWebProxyGlobalUseDynamicPkey(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func refreshObjectWebProxyGlobal(d *schema.ResourceData, o map[string]interface{}) error {
 	var err error
 
@@ -457,6 +579,26 @@ func refreshObjectWebProxyGlobal(d *schema.ResourceData, o map[string]interface{
 			}
 		} else {
 			return fmt.Errorf("Error reading forward_server_affinity_timeout: %v", err)
+		}
+	}
+
+	if err = d.Set("http2_client_window_size", flattenWebProxyGlobalHttp2ClientWindowSize(o["http2-client-window-size"], d, "http2_client_window_size")); err != nil {
+		if vv, ok := fortiAPIPatch(o["http2-client-window-size"], "WebProxyGlobal-Http2ClientWindowSize"); ok {
+			if err = d.Set("http2_client_window_size", vv); err != nil {
+				return fmt.Errorf("Error reading http2_client_window_size: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading http2_client_window_size: %v", err)
+		}
+	}
+
+	if err = d.Set("http2_server_window_size", flattenWebProxyGlobalHttp2ServerWindowSize(o["http2-server-window-size"], d, "http2_server_window_size")); err != nil {
+		if vv, ok := fortiAPIPatch(o["http2-server-window-size"], "WebProxyGlobal-Http2ServerWindowSize"); ok {
+			if err = d.Set("http2_server_window_size", vv); err != nil {
+				return fmt.Errorf("Error reading http2_server_window_size: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading http2_server_window_size: %v", err)
 		}
 	}
 
@@ -690,6 +832,116 @@ func refreshObjectWebProxyGlobal(d *schema.ResourceData, o map[string]interface{
 		}
 	}
 
+	if err = d.Set("address_ip_rating", flattenWebProxyGlobalAddressIpRating(o["address-ip-rating"], d, "address_ip_rating")); err != nil {
+		if vv, ok := fortiAPIPatch(o["address-ip-rating"], "WebProxyGlobal-AddressIpRating"); ok {
+			if err = d.Set("address_ip_rating", vv); err != nil {
+				return fmt.Errorf("Error reading address_ip_rating: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading address_ip_rating: %v", err)
+		}
+	}
+
+	if err = d.Set("explicit_outgoing_ip", flattenWebProxyGlobalExplicitOutgoingIp(o["explicit-outgoing-ip"], d, "explicit_outgoing_ip")); err != nil {
+		if vv, ok := fortiAPIPatch(o["explicit-outgoing-ip"], "WebProxyGlobal-ExplicitOutgoingIp"); ok {
+			if err = d.Set("explicit_outgoing_ip", vv); err != nil {
+				return fmt.Errorf("Error reading explicit_outgoing_ip: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading explicit_outgoing_ip: %v", err)
+		}
+	}
+
+	if err = d.Set("explicit_outgoing_ip6", flattenWebProxyGlobalExplicitOutgoingIp6(o["explicit-outgoing-ip6"], d, "explicit_outgoing_ip6")); err != nil {
+		if vv, ok := fortiAPIPatch(o["explicit-outgoing-ip6"], "WebProxyGlobal-ExplicitOutgoingIp6"); ok {
+			if err = d.Set("explicit_outgoing_ip6", vv); err != nil {
+				return fmt.Errorf("Error reading explicit_outgoing_ip6: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading explicit_outgoing_ip6: %v", err)
+		}
+	}
+
+	if err = d.Set("extended_log", flattenWebProxyGlobalExtendedLog(o["extended-log"], d, "extended_log")); err != nil {
+		if vv, ok := fortiAPIPatch(o["extended-log"], "WebProxyGlobal-ExtendedLog"); ok {
+			if err = d.Set("extended_log", vv); err != nil {
+				return fmt.Errorf("Error reading extended_log: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading extended_log: %v", err)
+		}
+	}
+
+	if err = d.Set("https_replacement_message", flattenWebProxyGlobalHttpsReplacementMessage(o["https-replacement-message"], d, "https_replacement_message")); err != nil {
+		if vv, ok := fortiAPIPatch(o["https-replacement-message"], "WebProxyGlobal-HttpsReplacementMessage"); ok {
+			if err = d.Set("https_replacement_message", vv); err != nil {
+				return fmt.Errorf("Error reading https_replacement_message: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading https_replacement_message: %v", err)
+		}
+	}
+
+	if err = d.Set("log_http_transaction", flattenWebProxyGlobalLogHttpTransaction(o["log-http-transaction"], d, "log_http_transaction")); err != nil {
+		if vv, ok := fortiAPIPatch(o["log-http-transaction"], "WebProxyGlobal-LogHttpTransaction"); ok {
+			if err = d.Set("log_http_transaction", vv); err != nil {
+				return fmt.Errorf("Error reading log_http_transaction: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading log_http_transaction: %v", err)
+		}
+	}
+
+	if err = d.Set("message_upon_server_error", flattenWebProxyGlobalMessageUponServerError(o["message-upon-server-error"], d, "message_upon_server_error")); err != nil {
+		if vv, ok := fortiAPIPatch(o["message-upon-server-error"], "WebProxyGlobal-MessageUponServerError"); ok {
+			if err = d.Set("message_upon_server_error", vv); err != nil {
+				return fmt.Errorf("Error reading message_upon_server_error: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading message_upon_server_error: %v", err)
+		}
+	}
+
+	if err = d.Set("realm", flattenWebProxyGlobalRealm(o["realm"], d, "realm")); err != nil {
+		if vv, ok := fortiAPIPatch(o["realm"], "WebProxyGlobal-Realm"); ok {
+			if err = d.Set("realm", vv); err != nil {
+				return fmt.Errorf("Error reading realm: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading realm: %v", err)
+		}
+	}
+
+	if err = d.Set("strict_guest", flattenWebProxyGlobalStrictGuest(o["strict-guest"], d, "strict_guest")); err != nil {
+		if vv, ok := fortiAPIPatch(o["strict-guest"], "WebProxyGlobal-StrictGuest"); ok {
+			if err = d.Set("strict_guest", vv); err != nil {
+				return fmt.Errorf("Error reading strict_guest: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading strict_guest: %v", err)
+		}
+	}
+
+	if err = d.Set("trace_auth_no_rsp", flattenWebProxyGlobalTraceAuthNoRsp(o["trace-auth-no-rsp"], d, "trace_auth_no_rsp")); err != nil {
+		if vv, ok := fortiAPIPatch(o["trace-auth-no-rsp"], "WebProxyGlobal-TraceAuthNoRsp"); ok {
+			if err = d.Set("trace_auth_no_rsp", vv); err != nil {
+				return fmt.Errorf("Error reading trace_auth_no_rsp: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading trace_auth_no_rsp: %v", err)
+		}
+	}
+
+	if err = d.Set("use_dynamic_pkey", flattenWebProxyGlobalUseDynamicPkey(o["use-dynamic-pkey"], d, "use_dynamic_pkey")); err != nil {
+		if vv, ok := fortiAPIPatch(o["use-dynamic-pkey"], "WebProxyGlobal-UseDynamicPkey"); ok {
+			if err = d.Set("use_dynamic_pkey", vv); err != nil {
+				return fmt.Errorf("Error reading use_dynamic_pkey: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading use_dynamic_pkey: %v", err)
+		}
+	}
+
 	return nil
 }
 
@@ -712,6 +964,14 @@ func expandWebProxyGlobalForwardProxyAuth(d *schema.ResourceData, v interface{},
 }
 
 func expandWebProxyGlobalForwardServerAffinityTimeout(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWebProxyGlobalHttp2ClientWindowSize(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWebProxyGlobalHttp2ServerWindowSize(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -807,6 +1067,50 @@ func expandWebProxyGlobalWebproxyProfile(d *schema.ResourceData, v interface{}, 
 	return expandStringList(v.(*schema.Set).List()), nil
 }
 
+func expandWebProxyGlobalAddressIpRating(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWebProxyGlobalExplicitOutgoingIp(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandWebProxyGlobalExplicitOutgoingIp6(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandWebProxyGlobalExtendedLog(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWebProxyGlobalHttpsReplacementMessage(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWebProxyGlobalLogHttpTransaction(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWebProxyGlobalMessageUponServerError(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWebProxyGlobalRealm(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWebProxyGlobalStrictGuest(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWebProxyGlobalTraceAuthNoRsp(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWebProxyGlobalUseDynamicPkey(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func getObjectWebProxyGlobal(d *schema.ResourceData) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
@@ -843,6 +1147,24 @@ func getObjectWebProxyGlobal(d *schema.ResourceData) (*map[string]interface{}, e
 			return &obj, err
 		} else if t != nil {
 			obj["forward-server-affinity-timeout"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("http2_client_window_size"); ok || d.HasChange("http2_client_window_size") {
+		t, err := expandWebProxyGlobalHttp2ClientWindowSize(d, v, "http2_client_window_size")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["http2-client-window-size"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("http2_server_window_size"); ok || d.HasChange("http2_server_window_size") {
+		t, err := expandWebProxyGlobalHttp2ServerWindowSize(d, v, "http2_server_window_size")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["http2-server-window-size"] = t
 		}
 	}
 
@@ -1050,6 +1372,105 @@ func getObjectWebProxyGlobal(d *schema.ResourceData) (*map[string]interface{}, e
 			return &obj, err
 		} else if t != nil {
 			obj["webproxy-profile"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("address_ip_rating"); ok || d.HasChange("address_ip_rating") {
+		t, err := expandWebProxyGlobalAddressIpRating(d, v, "address_ip_rating")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["address-ip-rating"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("explicit_outgoing_ip"); ok || d.HasChange("explicit_outgoing_ip") {
+		t, err := expandWebProxyGlobalExplicitOutgoingIp(d, v, "explicit_outgoing_ip")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["explicit-outgoing-ip"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("explicit_outgoing_ip6"); ok || d.HasChange("explicit_outgoing_ip6") {
+		t, err := expandWebProxyGlobalExplicitOutgoingIp6(d, v, "explicit_outgoing_ip6")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["explicit-outgoing-ip6"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("extended_log"); ok || d.HasChange("extended_log") {
+		t, err := expandWebProxyGlobalExtendedLog(d, v, "extended_log")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["extended-log"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("https_replacement_message"); ok || d.HasChange("https_replacement_message") {
+		t, err := expandWebProxyGlobalHttpsReplacementMessage(d, v, "https_replacement_message")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["https-replacement-message"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("log_http_transaction"); ok || d.HasChange("log_http_transaction") {
+		t, err := expandWebProxyGlobalLogHttpTransaction(d, v, "log_http_transaction")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["log-http-transaction"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("message_upon_server_error"); ok || d.HasChange("message_upon_server_error") {
+		t, err := expandWebProxyGlobalMessageUponServerError(d, v, "message_upon_server_error")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["message-upon-server-error"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("realm"); ok || d.HasChange("realm") {
+		t, err := expandWebProxyGlobalRealm(d, v, "realm")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["realm"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("strict_guest"); ok || d.HasChange("strict_guest") {
+		t, err := expandWebProxyGlobalStrictGuest(d, v, "strict_guest")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["strict-guest"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("trace_auth_no_rsp"); ok || d.HasChange("trace_auth_no_rsp") {
+		t, err := expandWebProxyGlobalTraceAuthNoRsp(d, v, "trace_auth_no_rsp")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["trace-auth-no-rsp"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("use_dynamic_pkey"); ok || d.HasChange("use_dynamic_pkey") {
+		t, err := expandWebProxyGlobalUseDynamicPkey(d, v, "use_dynamic_pkey")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["use-dynamic-pkey"] = t
 		}
 	}
 

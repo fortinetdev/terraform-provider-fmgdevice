@@ -33,6 +33,12 @@ func resourceFirewallSnifferMove() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+
+			"adom": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"device_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -69,8 +75,12 @@ func resourceFirewallSnifferMoveUpdate(d *schema.ResourceData, m interface{}) er
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -84,14 +94,13 @@ func resourceFirewallSnifferMoveUpdate(d *schema.ResourceData, m interface{}) er
 	paradict["vdom"] = device_vdom
 	paradict["sniffer"] = sniffer
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	target := d.Get("target").(string)
 	obj, err := getObjectFirewallSnifferMove(d)
 	if err != nil {
 		return fmt.Errorf("Error updating FirewallSnifferMove resource while getting object: %v", err)
 	}
+
+	wsParams["adom"] = adomv
 
 	_, err = c.UpdateFirewallSnifferMove(obj, mkey, paradict, wsParams)
 	if err != nil {
@@ -118,12 +127,12 @@ func resourceFirewallSnifferMoveRead(d *schema.ResourceData, m interface{}) erro
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	cfg := m.(*FortiClient).Cfg
 
 	sid := d.Get("sniffer").(string)
 	did := d.Get("target").(string)
 	action := d.Get("option").(string)
 
-	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
 	device_vdom, err := getVariable(cfg, d, "device_vdom")
 	if device_name == "" {

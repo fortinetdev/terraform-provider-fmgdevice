@@ -38,6 +38,8 @@ The following arguments are supported:
 
 * `anomaly` - Enable/disable anomaly logging. Valid values: `disable`, `enable`.
 
+* `debug` - Enable/disable debug logging. Valid values: `disable`, `enable`.
+
 * `filter` - Syslog 4 filter.
 * `filter_type` - Include/exclude logs that match the filter. Valid values: `include`, `exclude`.
 

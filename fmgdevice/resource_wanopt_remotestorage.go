@@ -28,6 +28,12 @@ func resourceWanoptRemoteStorage() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
+
+			"adom": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"device_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -63,21 +69,24 @@ func resourceWanoptRemoteStorageUpdate(d *schema.ResourceData, m interface{}) er
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
 	}
 	paradict["device"] = device_name
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectWanoptRemoteStorage(d)
 	if err != nil {
 		return fmt.Errorf("Error updating WanoptRemoteStorage resource while getting object: %v", err)
 	}
+
+	wsParams["adom"] = adomv
 
 	_, err = c.UpdateWanoptRemoteStorage(obj, mkey, paradict, wsParams)
 	if err != nil {
@@ -99,17 +108,19 @@ func resourceWanoptRemoteStorageDelete(d *schema.ResourceData, m interface{}) er
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
 	}
 	paradict["device"] = device_name
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
+	wsParams["adom"] = adomv
 
 	err = c.DeleteWanoptRemoteStorage(mkey, paradict, wsParams)
 	if err != nil {
@@ -128,8 +139,8 @@ func resourceWanoptRemoteStorageRead(d *schema.ResourceData, m interface{}) erro
 	c.Retries = 1
 
 	paradict := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if device_name == "" {
 		device_name = importOptionChecking(m.(*FortiClient).Cfg, "device_name")
@@ -144,6 +155,7 @@ func resourceWanoptRemoteStorageRead(d *schema.ResourceData, m interface{}) erro
 
 	o, err := c.ReadWanoptRemoteStorage(mkey, paradict)
 	if err != nil {
+		d.SetId("")
 		return fmt.Errorf("Error reading WanoptRemoteStorage resource: %v", err)
 	}
 

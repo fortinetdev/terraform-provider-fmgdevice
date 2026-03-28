@@ -53,6 +53,8 @@ The following arguments are supported:
 * `comment` - Comment.
 * `coordinate_latitude` - WTP latitude coordinate.
 * `coordinate_longitude` - WTP longitude coordinate.
+* `default_mesh_root` - Configure default mesh root SSID when it is not included by radio's SSID configuration. Valid values: `disable`, `enable`.
+
 * `firmware_provision` - Firmware version to provision to this FortiAP on bootup (major.minor.build, i.e. 6.2.1234).
 * `firmware_provision_latest` - Enable/disable one-time automatic provisioning of the latest firmware version. Valid values: `disable`, `once`.
 
@@ -72,6 +74,8 @@ The following arguments are supported:
 
 * `name` - WTP, AP or FortiAP configuration name.
 * `override_allowaccess` - Enable to override the WTP profile management access configuration. Valid values: `disable`, `enable`.
+
+* `override_default_mesh_root` - Enable to override the WTP profile default mesh root SSID setting. Valid values: `disable`, `enable`.
 
 * `override_ip_fragment` - Enable/disable overriding the WTP profile IP fragment prevention setting. Valid values: `disable`, `enable`.
 

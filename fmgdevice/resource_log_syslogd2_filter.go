@@ -28,6 +28,12 @@ func resourceLogSyslogd2Filter() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
+
+			"adom": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"device_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -37,6 +43,11 @@ func resourceLogSyslogd2Filter() *schema.Resource {
 			"anomaly": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+			},
+			"debug": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
 			},
 			"filter": &schema.Schema{
 				Type:     schema.TypeString,
@@ -138,21 +149,24 @@ func resourceLogSyslogd2FilterUpdate(d *schema.ResourceData, m interface{}) erro
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
 	}
 	paradict["device"] = device_name
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectLogSyslogd2Filter(d)
 	if err != nil {
 		return fmt.Errorf("Error updating LogSyslogd2Filter resource while getting object: %v", err)
 	}
+
+	wsParams["adom"] = adomv
 
 	_, err = c.UpdateLogSyslogd2Filter(obj, mkey, paradict, wsParams)
 	if err != nil {
@@ -174,17 +188,19 @@ func resourceLogSyslogd2FilterDelete(d *schema.ResourceData, m interface{}) erro
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
 	}
 	paradict["device"] = device_name
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
+	wsParams["adom"] = adomv
 
 	err = c.DeleteLogSyslogd2Filter(mkey, paradict, wsParams)
 	if err != nil {
@@ -203,8 +219,8 @@ func resourceLogSyslogd2FilterRead(d *schema.ResourceData, m interface{}) error 
 	c.Retries = 1
 
 	paradict := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if device_name == "" {
 		device_name = importOptionChecking(m.(*FortiClient).Cfg, "device_name")
@@ -219,6 +235,7 @@ func resourceLogSyslogd2FilterRead(d *schema.ResourceData, m interface{}) error 
 
 	o, err := c.ReadLogSyslogd2Filter(mkey, paradict)
 	if err != nil {
+		d.SetId("")
 		return fmt.Errorf("Error reading LogSyslogd2Filter resource: %v", err)
 	}
 
@@ -236,6 +253,10 @@ func resourceLogSyslogd2FilterRead(d *schema.ResourceData, m interface{}) error 
 }
 
 func flattenLogSyslogd2FilterAnomaly(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenLogSyslogd2FilterDebug(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -370,6 +391,16 @@ func refreshObjectLogSyslogd2Filter(d *schema.ResourceData, o map[string]interfa
 			}
 		} else {
 			return fmt.Errorf("Error reading anomaly: %v", err)
+		}
+	}
+
+	if err = d.Set("debug", flattenLogSyslogd2FilterDebug(o["debug"], d, "debug")); err != nil {
+		if vv, ok := fortiAPIPatch(o["debug"], "LogSyslogd2Filter-Debug"); ok {
+			if err = d.Set("debug", vv); err != nil {
+				return fmt.Errorf("Error reading debug: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading debug: %v", err)
 		}
 	}
 
@@ -530,6 +561,10 @@ func expandLogSyslogd2FilterAnomaly(d *schema.ResourceData, v interface{}, pre s
 	return v, nil
 }
 
+func expandLogSyslogd2FilterDebug(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandLogSyslogd2FilterFilter(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -647,6 +682,15 @@ func getObjectLogSyslogd2Filter(d *schema.ResourceData) (*map[string]interface{}
 			return &obj, err
 		} else if t != nil {
 			obj["anomaly"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("debug"); ok || d.HasChange("debug") {
+		t, err := expandLogSyslogd2FilterDebug(d, v, "debug")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["debug"] = t
 		}
 	}
 

@@ -28,6 +28,12 @@ func resourceLogSyslogd2OverrideFilter() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
+
+			"adom": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"device_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -43,6 +49,11 @@ func resourceLogSyslogd2OverrideFilter() *schema.Resource {
 			"anomaly": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+			},
+			"debug": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
 			},
 			"filter": &schema.Schema{
 				Type:     schema.TypeString,
@@ -144,8 +155,12 @@ func resourceLogSyslogd2OverrideFilterUpdate(d *schema.ResourceData, m interface
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -157,13 +172,12 @@ func resourceLogSyslogd2OverrideFilterUpdate(d *schema.ResourceData, m interface
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectLogSyslogd2OverrideFilter(d)
 	if err != nil {
 		return fmt.Errorf("Error updating LogSyslogd2OverrideFilter resource while getting object: %v", err)
 	}
+
+	wsParams["adom"] = adomv
 
 	_, err = c.UpdateLogSyslogd2OverrideFilter(obj, mkey, paradict, wsParams)
 	if err != nil {
@@ -185,8 +199,12 @@ func resourceLogSyslogd2OverrideFilterDelete(d *schema.ResourceData, m interface
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -198,9 +216,7 @@ func resourceLogSyslogd2OverrideFilterDelete(d *schema.ResourceData, m interface
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
+	wsParams["adom"] = adomv
 
 	err = c.DeleteLogSyslogd2OverrideFilter(mkey, paradict, wsParams)
 	if err != nil {
@@ -219,8 +235,8 @@ func resourceLogSyslogd2OverrideFilterRead(d *schema.ResourceData, m interface{}
 	c.Retries = 1
 
 	paradict := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	device_vdom, err := getVariable(cfg, d, "device_vdom")
 	if device_name == "" {
@@ -246,6 +262,7 @@ func resourceLogSyslogd2OverrideFilterRead(d *schema.ResourceData, m interface{}
 
 	o, err := c.ReadLogSyslogd2OverrideFilter(mkey, paradict)
 	if err != nil {
+		d.SetId("")
 		return fmt.Errorf("Error reading LogSyslogd2OverrideFilter resource: %v", err)
 	}
 
@@ -263,6 +280,10 @@ func resourceLogSyslogd2OverrideFilterRead(d *schema.ResourceData, m interface{}
 }
 
 func flattenLogSyslogd2OverrideFilterAnomaly(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenLogSyslogd2OverrideFilterDebug(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -397,6 +418,16 @@ func refreshObjectLogSyslogd2OverrideFilter(d *schema.ResourceData, o map[string
 			}
 		} else {
 			return fmt.Errorf("Error reading anomaly: %v", err)
+		}
+	}
+
+	if err = d.Set("debug", flattenLogSyslogd2OverrideFilterDebug(o["debug"], d, "debug")); err != nil {
+		if vv, ok := fortiAPIPatch(o["debug"], "LogSyslogd2OverrideFilter-Debug"); ok {
+			if err = d.Set("debug", vv); err != nil {
+				return fmt.Errorf("Error reading debug: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading debug: %v", err)
 		}
 	}
 
@@ -557,6 +588,10 @@ func expandLogSyslogd2OverrideFilterAnomaly(d *schema.ResourceData, v interface{
 	return v, nil
 }
 
+func expandLogSyslogd2OverrideFilterDebug(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandLogSyslogd2OverrideFilterFilter(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -674,6 +709,15 @@ func getObjectLogSyslogd2OverrideFilter(d *schema.ResourceData) (*map[string]int
 			return &obj, err
 		} else if t != nil {
 			obj["anomaly"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("debug"); ok || d.HasChange("debug") {
+		t, err := expandLogSyslogd2OverrideFilterDebug(d, v, "debug")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["debug"] = t
 		}
 	}
 

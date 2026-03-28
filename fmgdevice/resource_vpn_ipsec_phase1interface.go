@@ -28,6 +28,17 @@ func resourceVpnIpsecPhase1Interface() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
+			"update_if_exist": &schema.Schema{
+				Type:     schema.TypeBool,
+				Optional: true,
+				Computed: true,
+			},
+
+			"adom": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"device_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -299,6 +310,12 @@ func resourceVpnIpsecPhase1Interface() *schema.Resource {
 			"dns_mode": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+			},
+			"dns_suffix_search": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Computed: true,
 			},
 			"domain": &schema.Schema{
 				Type:     schema.TypeString,
@@ -825,6 +842,15 @@ func resourceVpnIpsecPhase1Interface() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"peer_egress_shaping": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+			"peer_egress_shaping_value": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+			},
 			"peergrp": &schema.Schema{
 				Type:     schema.TypeSet,
 				Elem:     &schema.Schema{Type: schema.TypeString},
@@ -884,6 +910,10 @@ func resourceVpnIpsecPhase1Interface() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+			},
+			"qkd_hybrid": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
 			},
 			"qkd_profile": &schema.Schema{
 				Type:     schema.TypeSet,
@@ -1044,6 +1074,10 @@ func resourceVpnIpsecPhase1Interface() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"mobike": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 			"dynamic_sort_subtable": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -1059,8 +1093,12 @@ func resourceVpnIpsecPhase1InterfaceCreate(d *schema.ResourceData, m interface{}
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -1072,17 +1110,37 @@ func resourceVpnIpsecPhase1InterfaceCreate(d *schema.ResourceData, m interface{}
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectVpnIpsecPhase1Interface(d)
 	if err != nil {
 		return fmt.Errorf("Error creating VpnIpsecPhase1Interface resource while getting object: %v", err)
 	}
+	wsParams["adom"] = adomv
 
-	_, err = c.CreateVpnIpsecPhase1Interface(obj, paradict, wsParams)
-	if err != nil {
-		return fmt.Errorf("Error creating VpnIpsecPhase1Interface resource: %v", err)
+	update_if_exist := getUpdateIfExist(c, d)
+	mkey_tf, mkey_ok := d.GetOk("name")
+	mkey := fmt.Sprint(mkey_tf)
+	o := make(map[string]interface{})
+	existing := false
+
+	if update_if_exist && mkey_ok {
+		// check existing
+		o, err = c.ReadVpnIpsecPhase1Interface(mkey, paradict)
+		if err == nil && o != nil {
+			existing = true
+			// update if existing
+			o, err = c.UpdateVpnIpsecPhase1Interface(obj, mkey, paradict, wsParams)
+			if err != nil {
+				return fmt.Errorf("Error updating VpnIpsecPhase1Interface resource: %v", err)
+			}
+		}
+	}
+
+	if !existing {
+		_, err = c.CreateVpnIpsecPhase1Interface(obj, paradict, wsParams)
+		if err != nil {
+			return fmt.Errorf("Error creating VpnIpsecPhase1Interface resource: %v", err)
+		}
+
 	}
 
 	d.SetId(getStringKey(d, "name"))
@@ -1097,8 +1155,12 @@ func resourceVpnIpsecPhase1InterfaceUpdate(d *schema.ResourceData, m interface{}
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -1110,13 +1172,12 @@ func resourceVpnIpsecPhase1InterfaceUpdate(d *schema.ResourceData, m interface{}
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectVpnIpsecPhase1Interface(d)
 	if err != nil {
 		return fmt.Errorf("Error updating VpnIpsecPhase1Interface resource while getting object: %v", err)
 	}
+
+	wsParams["adom"] = adomv
 
 	_, err = c.UpdateVpnIpsecPhase1Interface(obj, mkey, paradict, wsParams)
 	if err != nil {
@@ -1138,8 +1199,12 @@ func resourceVpnIpsecPhase1InterfaceDelete(d *schema.ResourceData, m interface{}
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -1151,9 +1216,7 @@ func resourceVpnIpsecPhase1InterfaceDelete(d *schema.ResourceData, m interface{}
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
+	wsParams["adom"] = adomv
 
 	err = c.DeleteVpnIpsecPhase1Interface(mkey, paradict, wsParams)
 	if err != nil {
@@ -1172,8 +1235,8 @@ func resourceVpnIpsecPhase1InterfaceRead(d *schema.ResourceData, m interface{}) 
 	c.Retries = 1
 
 	paradict := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	device_vdom, err := getVariable(cfg, d, "device_vdom")
 	if device_name == "" {
@@ -1199,6 +1262,7 @@ func resourceVpnIpsecPhase1InterfaceRead(d *schema.ResourceData, m interface{}) 
 
 	o, err := c.ReadVpnIpsecPhase1Interface(mkey, paradict)
 	if err != nil {
+		d.SetId("")
 		return fmt.Errorf("Error reading VpnIpsecPhase1Interface resource: %v", err)
 	}
 
@@ -1421,6 +1485,10 @@ func flattenVpnIpsecPhase1InterfaceDistance(v interface{}, d *schema.ResourceDat
 
 func flattenVpnIpsecPhase1InterfaceDnsMode(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
+}
+
+func flattenVpnIpsecPhase1InterfaceDnsSuffixSearch(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
 }
 
 func flattenVpnIpsecPhase1InterfaceDomain(v interface{}, d *schema.ResourceData, pre string) interface{} {
@@ -1937,6 +2005,14 @@ func flattenVpnIpsecPhase1InterfacePeer(v interface{}, d *schema.ResourceData, p
 	return flattenStringList(v)
 }
 
+func flattenVpnIpsecPhase1InterfacePeerEgressShaping(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenVpnIpsecPhase1InterfacePeerEgressShapingValue(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenVpnIpsecPhase1InterfacePeergrp(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return flattenStringList(v)
 }
@@ -1966,6 +2042,10 @@ func flattenVpnIpsecPhase1InterfaceProposal(v interface{}, d *schema.ResourceDat
 }
 
 func flattenVpnIpsecPhase1InterfaceQkd(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenVpnIpsecPhase1InterfaceQkdHybrid(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -2102,6 +2182,10 @@ func flattenVpnIpsecPhase1InterfaceWizardType(v interface{}, d *schema.ResourceD
 }
 
 func flattenVpnIpsecPhase1InterfaceXauthtype(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenVpnIpsecPhase1InterfaceMobike(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -2629,6 +2713,16 @@ func refreshObjectVpnIpsecPhase1Interface(d *schema.ResourceData, o map[string]i
 			}
 		} else {
 			return fmt.Errorf("Error reading dns_mode: %v", err)
+		}
+	}
+
+	if err = d.Set("dns_suffix_search", flattenVpnIpsecPhase1InterfaceDnsSuffixSearch(o["dns-suffix-search"], d, "dns_suffix_search")); err != nil {
+		if vv, ok := fortiAPIPatch(o["dns-suffix-search"], "VpnIpsecPhase1Interface-DnsSuffixSearch"); ok {
+			if err = d.Set("dns_suffix_search", vv); err != nil {
+				return fmt.Errorf("Error reading dns_suffix_search: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading dns_suffix_search: %v", err)
 		}
 	}
 
@@ -3670,6 +3764,26 @@ func refreshObjectVpnIpsecPhase1Interface(d *schema.ResourceData, o map[string]i
 		}
 	}
 
+	if err = d.Set("peer_egress_shaping", flattenVpnIpsecPhase1InterfacePeerEgressShaping(o["peer-egress-shaping"], d, "peer_egress_shaping")); err != nil {
+		if vv, ok := fortiAPIPatch(o["peer-egress-shaping"], "VpnIpsecPhase1Interface-PeerEgressShaping"); ok {
+			if err = d.Set("peer_egress_shaping", vv); err != nil {
+				return fmt.Errorf("Error reading peer_egress_shaping: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading peer_egress_shaping: %v", err)
+		}
+	}
+
+	if err = d.Set("peer_egress_shaping_value", flattenVpnIpsecPhase1InterfacePeerEgressShapingValue(o["peer-egress-shaping-value"], d, "peer_egress_shaping_value")); err != nil {
+		if vv, ok := fortiAPIPatch(o["peer-egress-shaping-value"], "VpnIpsecPhase1Interface-PeerEgressShapingValue"); ok {
+			if err = d.Set("peer_egress_shaping_value", vv); err != nil {
+				return fmt.Errorf("Error reading peer_egress_shaping_value: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading peer_egress_shaping_value: %v", err)
+		}
+	}
+
 	if err = d.Set("peergrp", flattenVpnIpsecPhase1InterfacePeergrp(o["peergrp"], d, "peergrp")); err != nil {
 		if vv, ok := fortiAPIPatch(o["peergrp"], "VpnIpsecPhase1Interface-Peergrp"); ok {
 			if err = d.Set("peergrp", vv); err != nil {
@@ -3747,6 +3861,16 @@ func refreshObjectVpnIpsecPhase1Interface(d *schema.ResourceData, o map[string]i
 			}
 		} else {
 			return fmt.Errorf("Error reading qkd: %v", err)
+		}
+	}
+
+	if err = d.Set("qkd_hybrid", flattenVpnIpsecPhase1InterfaceQkdHybrid(o["qkd-hybrid"], d, "qkd_hybrid")); err != nil {
+		if vv, ok := fortiAPIPatch(o["qkd-hybrid"], "VpnIpsecPhase1Interface-QkdHybrid"); ok {
+			if err = d.Set("qkd_hybrid", vv); err != nil {
+				return fmt.Errorf("Error reading qkd_hybrid: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading qkd_hybrid: %v", err)
 		}
 	}
 
@@ -4090,6 +4214,16 @@ func refreshObjectVpnIpsecPhase1Interface(d *schema.ResourceData, o map[string]i
 		}
 	}
 
+	if err = d.Set("mobike", flattenVpnIpsecPhase1InterfaceMobike(o["mobike"], d, "mobike")); err != nil {
+		if vv, ok := fortiAPIPatch(o["mobike"], "VpnIpsecPhase1Interface-Mobike"); ok {
+			if err = d.Set("mobike", vv); err != nil {
+				return fmt.Errorf("Error reading mobike: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading mobike: %v", err)
+		}
+	}
+
 	return nil
 }
 
@@ -4309,6 +4443,10 @@ func expandVpnIpsecPhase1InterfaceDistance(d *schema.ResourceData, v interface{}
 
 func expandVpnIpsecPhase1InterfaceDnsMode(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
+}
+
+func expandVpnIpsecPhase1InterfaceDnsSuffixSearch(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
 }
 
 func expandVpnIpsecPhase1InterfaceDomain(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
@@ -4813,6 +4951,14 @@ func expandVpnIpsecPhase1InterfacePeer(d *schema.ResourceData, v interface{}, pr
 	return expandStringList(v.(*schema.Set).List()), nil
 }
 
+func expandVpnIpsecPhase1InterfacePeerEgressShaping(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandVpnIpsecPhase1InterfacePeerEgressShapingValue(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandVpnIpsecPhase1InterfacePeergrp(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return expandStringList(v.(*schema.Set).List()), nil
 }
@@ -4854,6 +5000,10 @@ func expandVpnIpsecPhase1InterfacePsksecretRemote(d *schema.ResourceData, v inte
 }
 
 func expandVpnIpsecPhase1InterfaceQkd(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandVpnIpsecPhase1InterfaceQkdHybrid(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -4990,6 +5140,10 @@ func expandVpnIpsecPhase1InterfaceWizardType(d *schema.ResourceData, v interface
 }
 
 func expandVpnIpsecPhase1InterfaceXauthtype(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandVpnIpsecPhase1InterfaceMobike(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -5470,6 +5624,15 @@ func getObjectVpnIpsecPhase1Interface(d *schema.ResourceData) (*map[string]inter
 			return &obj, err
 		} else if t != nil {
 			obj["dns-mode"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("dns_suffix_search"); ok || d.HasChange("dns_suffix_search") {
+		t, err := expandVpnIpsecPhase1InterfaceDnsSuffixSearch(d, v, "dns_suffix_search")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["dns-suffix-search"] = t
 		}
 	}
 
@@ -6391,6 +6554,24 @@ func getObjectVpnIpsecPhase1Interface(d *schema.ResourceData) (*map[string]inter
 		}
 	}
 
+	if v, ok := d.GetOk("peer_egress_shaping"); ok || d.HasChange("peer_egress_shaping") {
+		t, err := expandVpnIpsecPhase1InterfacePeerEgressShaping(d, v, "peer_egress_shaping")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["peer-egress-shaping"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("peer_egress_shaping_value"); ok || d.HasChange("peer_egress_shaping_value") {
+		t, err := expandVpnIpsecPhase1InterfacePeerEgressShapingValue(d, v, "peer_egress_shaping_value")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["peer-egress-shaping-value"] = t
+		}
+	}
+
 	if v, ok := d.GetOk("peergrp"); ok || d.HasChange("peergrp") {
 		t, err := expandVpnIpsecPhase1InterfacePeergrp(d, v, "peergrp")
 		if err != nil {
@@ -6487,6 +6668,15 @@ func getObjectVpnIpsecPhase1Interface(d *schema.ResourceData) (*map[string]inter
 			return &obj, err
 		} else if t != nil {
 			obj["qkd"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("qkd_hybrid"); ok || d.HasChange("qkd_hybrid") {
+		t, err := expandVpnIpsecPhase1InterfaceQkdHybrid(d, v, "qkd_hybrid")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["qkd-hybrid"] = t
 		}
 	}
 
@@ -6793,6 +6983,15 @@ func getObjectVpnIpsecPhase1Interface(d *schema.ResourceData) (*map[string]inter
 			return &obj, err
 		} else if t != nil {
 			obj["xauthtype"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("mobike"); ok || d.HasChange("mobike") {
+		t, err := expandVpnIpsecPhase1InterfaceMobike(d, v, "mobike")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["mobike"] = t
 		}
 	}
 

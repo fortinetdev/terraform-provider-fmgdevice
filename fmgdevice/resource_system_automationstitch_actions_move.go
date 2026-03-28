@@ -33,6 +33,12 @@ func resourceSystemAutomationStitchActionsMove() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+
+			"adom": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"device_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -68,8 +74,12 @@ func resourceSystemAutomationStitchActionsMoveUpdate(d *schema.ResourceData, m i
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -80,14 +90,13 @@ func resourceSystemAutomationStitchActionsMoveUpdate(d *schema.ResourceData, m i
 	paradict["automation_stitch"] = automation_stitch
 	paradict["actions"] = actions
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	target := d.Get("target").(string)
 	obj, err := getObjectSystemAutomationStitchActionsMove(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemAutomationStitchActionsMove resource while getting object: %v", err)
 	}
+
+	wsParams["adom"] = adomv
 
 	_, err = c.UpdateSystemAutomationStitchActionsMove(obj, mkey, paradict, wsParams)
 	if err != nil {
@@ -114,12 +123,12 @@ func resourceSystemAutomationStitchActionsMoveRead(d *schema.ResourceData, m int
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	cfg := m.(*FortiClient).Cfg
 
 	sid := d.Get("actions").(string)
 	did := d.Get("target").(string)
 	action := d.Get("option").(string)
 
-	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
 	automation_stitch := d.Get("automation_stitch").(string)
 	if device_name == "" {

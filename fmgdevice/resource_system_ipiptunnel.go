@@ -28,6 +28,17 @@ func resourceSystemIpipTunnel() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
+			"update_if_exist": &schema.Schema{
+				Type:     schema.TypeBool,
+				Optional: true,
+				Computed: true,
+			},
+
+			"adom": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"device_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -56,6 +67,10 @@ func resourceSystemIpipTunnel() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"loopback_ecmp_offload": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 			"name": &schema.Schema{
 				Type:     schema.TypeString,
 				ForceNew: true,
@@ -81,8 +96,12 @@ func resourceSystemIpipTunnelCreate(d *schema.ResourceData, m interface{}) error
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -94,17 +113,37 @@ func resourceSystemIpipTunnelCreate(d *schema.ResourceData, m interface{}) error
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectSystemIpipTunnel(d)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemIpipTunnel resource while getting object: %v", err)
 	}
+	wsParams["adom"] = adomv
 
-	_, err = c.CreateSystemIpipTunnel(obj, paradict, wsParams)
-	if err != nil {
-		return fmt.Errorf("Error creating SystemIpipTunnel resource: %v", err)
+	update_if_exist := getUpdateIfExist(c, d)
+	mkey_tf, mkey_ok := d.GetOk("name")
+	mkey := fmt.Sprint(mkey_tf)
+	o := make(map[string]interface{})
+	existing := false
+
+	if update_if_exist && mkey_ok {
+		// check existing
+		o, err = c.ReadSystemIpipTunnel(mkey, paradict)
+		if err == nil && o != nil {
+			existing = true
+			// update if existing
+			o, err = c.UpdateSystemIpipTunnel(obj, mkey, paradict, wsParams)
+			if err != nil {
+				return fmt.Errorf("Error updating SystemIpipTunnel resource: %v", err)
+			}
+		}
+	}
+
+	if !existing {
+		_, err = c.CreateSystemIpipTunnel(obj, paradict, wsParams)
+		if err != nil {
+			return fmt.Errorf("Error creating SystemIpipTunnel resource: %v", err)
+		}
+
 	}
 
 	d.SetId(getStringKey(d, "name"))
@@ -119,8 +158,12 @@ func resourceSystemIpipTunnelUpdate(d *schema.ResourceData, m interface{}) error
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -132,13 +175,12 @@ func resourceSystemIpipTunnelUpdate(d *schema.ResourceData, m interface{}) error
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectSystemIpipTunnel(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemIpipTunnel resource while getting object: %v", err)
 	}
+
+	wsParams["adom"] = adomv
 
 	_, err = c.UpdateSystemIpipTunnel(obj, mkey, paradict, wsParams)
 	if err != nil {
@@ -160,8 +202,12 @@ func resourceSystemIpipTunnelDelete(d *schema.ResourceData, m interface{}) error
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -173,9 +219,7 @@ func resourceSystemIpipTunnelDelete(d *schema.ResourceData, m interface{}) error
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
+	wsParams["adom"] = adomv
 
 	err = c.DeleteSystemIpipTunnel(mkey, paradict, wsParams)
 	if err != nil {
@@ -194,8 +238,8 @@ func resourceSystemIpipTunnelRead(d *schema.ResourceData, m interface{}) error {
 	c.Retries = 1
 
 	paradict := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	device_vdom, err := getVariable(cfg, d, "device_vdom")
 	if device_name == "" {
@@ -221,6 +265,7 @@ func resourceSystemIpipTunnelRead(d *schema.ResourceData, m interface{}) error {
 
 	o, err := c.ReadSystemIpipTunnel(mkey, paradict)
 	if err != nil {
+		d.SetId("")
 		return fmt.Errorf("Error reading SystemIpipTunnel resource: %v", err)
 	}
 
@@ -246,6 +291,10 @@ func flattenSystemIpipTunnelInterface(v interface{}, d *schema.ResourceData, pre
 }
 
 func flattenSystemIpipTunnelLocalGw(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemIpipTunnelLoopbackEcmpOffload(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -291,6 +340,16 @@ func refreshObjectSystemIpipTunnel(d *schema.ResourceData, o map[string]interfac
 			}
 		} else {
 			return fmt.Errorf("Error reading local_gw: %v", err)
+		}
+	}
+
+	if err = d.Set("loopback_ecmp_offload", flattenSystemIpipTunnelLoopbackEcmpOffload(o["loopback-ecmp-offload"], d, "loopback_ecmp_offload")); err != nil {
+		if vv, ok := fortiAPIPatch(o["loopback-ecmp-offload"], "SystemIpipTunnel-LoopbackEcmpOffload"); ok {
+			if err = d.Set("loopback_ecmp_offload", vv); err != nil {
+				return fmt.Errorf("Error reading loopback_ecmp_offload: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading loopback_ecmp_offload: %v", err)
 		}
 	}
 
@@ -345,6 +404,10 @@ func expandSystemIpipTunnelLocalGw(d *schema.ResourceData, v interface{}, pre st
 	return v, nil
 }
 
+func expandSystemIpipTunnelLoopbackEcmpOffload(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandSystemIpipTunnelName(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -384,6 +447,15 @@ func getObjectSystemIpipTunnel(d *schema.ResourceData) (*map[string]interface{},
 			return &obj, err
 		} else if t != nil {
 			obj["local-gw"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("loopback_ecmp_offload"); ok || d.HasChange("loopback_ecmp_offload") {
+		t, err := expandSystemIpipTunnelLoopbackEcmpOffload(d, v, "loopback_ecmp_offload")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["loopback-ecmp-offload"] = t
 		}
 	}
 

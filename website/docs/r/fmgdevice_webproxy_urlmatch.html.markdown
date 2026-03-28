@@ -40,6 +40,11 @@ The following arguments are supported:
 * `status` - Enable/disable exempting the URLs matching the URL pattern from web proxy forwarding and caching. Valid values: `disable`, `enable`.
 
 * `url_pattern` - URL pattern to be exempted from web proxy forwarding and caching.
+* `explicit_web_proxy` - Explicit-Web-Proxy.
+* `ftp_forward_server` - Ftp-Forward-Server.
+* `type` - Type. Valid values: `simple`, `wildcard`, `list`.
+
+* `url_list` - Url-List.
 
 
 ## Attribute Reference

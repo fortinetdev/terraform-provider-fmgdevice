@@ -28,6 +28,12 @@ func resourceSystem5GModemModem1() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
+
+			"adom": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"device_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -168,21 +174,24 @@ func resourceSystem5GModemModem1Update(d *schema.ResourceData, m interface{}) er
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
 	}
 	paradict["device"] = device_name
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectSystem5GModemModem1(d)
 	if err != nil {
 		return fmt.Errorf("Error updating System5GModemModem1 resource while getting object: %v", err)
 	}
+
+	wsParams["adom"] = adomv
 
 	_, err = c.UpdateSystem5GModemModem1(obj, mkey, paradict, wsParams)
 	if err != nil {
@@ -204,17 +213,19 @@ func resourceSystem5GModemModem1Delete(d *schema.ResourceData, m interface{}) er
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
 	}
 	paradict["device"] = device_name
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
+	wsParams["adom"] = adomv
 
 	err = c.DeleteSystem5GModemModem1(mkey, paradict, wsParams)
 	if err != nil {
@@ -233,8 +244,8 @@ func resourceSystem5GModemModem1Read(d *schema.ResourceData, m interface{}) erro
 	c.Retries = 1
 
 	paradict := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if device_name == "" {
 		device_name = importOptionChecking(m.(*FortiClient).Cfg, "device_name")
@@ -249,6 +260,7 @@ func resourceSystem5GModemModem1Read(d *schema.ResourceData, m interface{}) erro
 
 	o, err := c.ReadSystem5GModemModem1(mkey, paradict)
 	if err != nil {
+		d.SetId("")
 		return fmt.Errorf("Error reading System5GModemModem1 resource: %v", err)
 	}
 
@@ -371,7 +383,7 @@ func flattenSystem5GModemModem1SimSwitchBySimState2edl(v interface{}, d *schema.
 }
 
 func flattenSystem5GModemModem1SimSwitchLinkMonitor2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
-	return v
+	return convintflist2str(v, d.Get(pre))
 }
 
 func flattenSystem5GModemModem1SimSwitchModemDisconnectionTime2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
@@ -657,7 +669,7 @@ func expandSystem5GModemModem1SimSwitchBySimState2edl(d *schema.ResourceData, v 
 }
 
 func expandSystem5GModemModem1SimSwitchLinkMonitor2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
-	return v, nil
+	return convstr2list(v, nil), nil
 }
 
 func expandSystem5GModemModem1SimSwitchModemDisconnectionTime2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {

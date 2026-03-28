@@ -29,6 +29,7 @@ The following arguments are supported:
 
 * `device_name` - FortiManager managed device name. This variable is used in the request URL. If not specified, it will inherit the variable `device_name` of the provider.
 
+* `interface` - Interface of FortiToken Mobile push services server.
 * `proxy` - Enable/disable communication to the proxy server in FortiGuard configuration. Valid values: `disable`, `enable`.
 
 * `server` - IPv4 address or domain name of FortiToken Mobile push services server.

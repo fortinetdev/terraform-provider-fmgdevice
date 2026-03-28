@@ -34,6 +34,8 @@ The following arguments are supported:
 
 * `acme_ca_url` - The URL for the ACME CA server (Let's Encrypt is the default provider).
 * `acme_domain` - A valid domain that resolves to this FortiGate unit.
+* `acme_eab_key_hmac` - External Account Binding HMAC Key (URL-encoded base64).
+* `acme_eab_key_id` - External Account Binding Key ID (optional setting).
 * `acme_email` - Contact email address that is required by some CAs like LetsEncrypt.
 * `acme_renew_window` - Beginning of the renewal window (in days before certificate expiration, 30 by default).
 * `acme_rsa_key_size` - Length of the RSA private key of the generated cert (Minimum 2048 bits).
@@ -80,6 +82,14 @@ The following arguments are supported:
 * `source_ip` - Source IP address for communications to the SCEP server.
 * `state` - State.
 * `tmp_cert_file` - Temporary certificate file.
+* `hsm_keytype` - Hsm-Keytype. Valid values: `rsa`, `ec`.
+
+* `hsm_slot` - Hsm-Slot.
+* `hsm_vendor` - Hsm-Vendor. Valid values: `safenet`, `primus`.
+
+* `nethsm_slot` - Nethsm-Slot.
+* `type` - Type. Valid values: `normal`, `hsm`.
+
 
 
 ## Attribute Reference

@@ -55,6 +55,8 @@ The following arguments are supported:
 
 * `system` - Enable/disable system event logging. Valid values: `disable`, `enable`.
 
+* `telemetry` - Enable/disable telemetry event logging. Valid values: `disable`, `enable`.
+
 * `user` - Enable/disable user authentication event logging. Valid values: `disable`, `enable`.
 
 * `vpn` - Enable/disable VPN event logging. Valid values: `disable`, `enable`.
@@ -64,6 +66,16 @@ The following arguments are supported:
 * `webproxy` - Enable/disable web proxy event logging. Valid values: `disable`, `enable`.
 
 * `wireless_activity` - Enable/disable wireless event logging. Valid values: `disable`, `enable`.
+
+* `aggd` - Aggd. Valid values: `disable`, `enable`.
+
+* `crwl` - Crwl. Valid values: `disable`, `enable`.
+
+* `iptables` - Iptables. Valid values: `disable`, `enable`.
+
+* `wcs` - Wcs. Valid values: `disable`, `enable`.
+
+* `wdb` - Wdb. Valid values: `disable`, `enable`.
 
 
 

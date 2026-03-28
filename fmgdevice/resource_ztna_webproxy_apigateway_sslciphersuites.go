@@ -28,6 +28,17 @@ func resourceZtnaWebProxyApiGatewaySslCipherSuites() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
+			"update_if_exist": &schema.Schema{
+				Type:     schema.TypeBool,
+				Optional: true,
+				Computed: true,
+			},
+
+			"adom": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"device_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -75,8 +86,12 @@ func resourceZtnaWebProxyApiGatewaySslCipherSuitesCreate(d *schema.ResourceData,
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -92,17 +107,37 @@ func resourceZtnaWebProxyApiGatewaySslCipherSuitesCreate(d *schema.ResourceData,
 	paradict["web_proxy"] = web_proxy
 	paradict["api_gateway"] = api_gateway
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectZtnaWebProxyApiGatewaySslCipherSuites(d)
 	if err != nil {
 		return fmt.Errorf("Error creating ZtnaWebProxyApiGatewaySslCipherSuites resource while getting object: %v", err)
 	}
+	wsParams["adom"] = adomv
 
-	_, err = c.CreateZtnaWebProxyApiGatewaySslCipherSuites(obj, paradict, wsParams)
-	if err != nil {
-		return fmt.Errorf("Error creating ZtnaWebProxyApiGatewaySslCipherSuites resource: %v", err)
+	update_if_exist := getUpdateIfExist(c, d)
+	mkey_tf, mkey_ok := d.GetOk("priority")
+	mkey := fmt.Sprint(mkey_tf)
+	o := make(map[string]interface{})
+	existing := false
+
+	if update_if_exist && mkey_ok {
+		// check existing
+		o, err = c.ReadZtnaWebProxyApiGatewaySslCipherSuites(mkey, paradict)
+		if err == nil && o != nil {
+			existing = true
+			// update if existing
+			o, err = c.UpdateZtnaWebProxyApiGatewaySslCipherSuites(obj, mkey, paradict, wsParams)
+			if err != nil {
+				return fmt.Errorf("Error updating ZtnaWebProxyApiGatewaySslCipherSuites resource: %v", err)
+			}
+		}
+	}
+
+	if !existing {
+		_, err = c.CreateZtnaWebProxyApiGatewaySslCipherSuites(obj, paradict, wsParams)
+		if err != nil {
+			return fmt.Errorf("Error creating ZtnaWebProxyApiGatewaySslCipherSuites resource: %v", err)
+		}
+
 	}
 
 	d.SetId(strconv.Itoa(getIntKey(d, "priority")))
@@ -117,8 +152,12 @@ func resourceZtnaWebProxyApiGatewaySslCipherSuitesUpdate(d *schema.ResourceData,
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -134,13 +173,12 @@ func resourceZtnaWebProxyApiGatewaySslCipherSuitesUpdate(d *schema.ResourceData,
 	paradict["web_proxy"] = web_proxy
 	paradict["api_gateway"] = api_gateway
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectZtnaWebProxyApiGatewaySslCipherSuites(d)
 	if err != nil {
 		return fmt.Errorf("Error updating ZtnaWebProxyApiGatewaySslCipherSuites resource while getting object: %v", err)
 	}
+
+	wsParams["adom"] = adomv
 
 	_, err = c.UpdateZtnaWebProxyApiGatewaySslCipherSuites(obj, mkey, paradict, wsParams)
 	if err != nil {
@@ -162,8 +200,12 @@ func resourceZtnaWebProxyApiGatewaySslCipherSuitesDelete(d *schema.ResourceData,
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -179,9 +221,7 @@ func resourceZtnaWebProxyApiGatewaySslCipherSuitesDelete(d *schema.ResourceData,
 	paradict["web_proxy"] = web_proxy
 	paradict["api_gateway"] = api_gateway
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
+	wsParams["adom"] = adomv
 
 	err = c.DeleteZtnaWebProxyApiGatewaySslCipherSuites(mkey, paradict, wsParams)
 	if err != nil {
@@ -200,8 +240,8 @@ func resourceZtnaWebProxyApiGatewaySslCipherSuitesRead(d *schema.ResourceData, m
 	c.Retries = 1
 
 	paradict := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	device_vdom, err := getVariable(cfg, d, "device_vdom")
 	web_proxy := d.Get("web_proxy").(string)
@@ -249,6 +289,7 @@ func resourceZtnaWebProxyApiGatewaySslCipherSuitesRead(d *schema.ResourceData, m
 
 	o, err := c.ReadZtnaWebProxyApiGatewaySslCipherSuites(mkey, paradict)
 	if err != nil {
+		d.SetId("")
 		return fmt.Errorf("Error reading ZtnaWebProxyApiGatewaySslCipherSuites resource: %v", err)
 	}
 

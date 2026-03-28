@@ -38,6 +38,8 @@ The following arguments are supported:
 
 * `device_name` - FortiManager managed device name. This variable is used in the request URL. If not specified, it will inherit the variable `device_name` of the provider.
 
+* `allow_download` - Enable/disable download firmware images. Valid values: `disable`, `enable`.
+
 * `device_type` - Fortinet device type. Valid values: `fortigate`, `fortiswitch`, `fortiap`, `fortiextender`.
 
 * `failure_reason` - Upgrade failure reason. Valid values: `none`, `internal`, `timeout`, `device-type-unsupported`, `download-failed`, `device-missing`, `version-unavailable`, `staging-failed`, `reboot-failed`, `device-not-reconnected`, `node-not-ready`, `no-final-confirmation`, `no-confirmation-query`, `config-error-log-nonempty`, `node-failed`, `csf-tree-not-supported`.

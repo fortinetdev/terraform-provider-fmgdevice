@@ -28,6 +28,12 @@ func resourceSystemCentralManagement() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
+
+			"adom": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"device_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -82,6 +88,11 @@ func resourceSystemCentralManagement() *schema.Resource {
 				Computed: true,
 			},
 			"fmg_source_ip6": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+			"fmg_update_http_header": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
@@ -226,21 +237,24 @@ func resourceSystemCentralManagementUpdate(d *schema.ResourceData, m interface{}
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
 	}
 	paradict["device"] = device_name
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectSystemCentralManagement(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemCentralManagement resource while getting object: %v", err)
 	}
+
+	wsParams["adom"] = adomv
 
 	_, err = c.UpdateSystemCentralManagement(obj, mkey, paradict, wsParams)
 	if err != nil {
@@ -262,17 +276,19 @@ func resourceSystemCentralManagementDelete(d *schema.ResourceData, m interface{}
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
 	}
 	paradict["device"] = device_name
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
+	wsParams["adom"] = adomv
 
 	err = c.DeleteSystemCentralManagement(mkey, paradict, wsParams)
 	if err != nil {
@@ -291,8 +307,8 @@ func resourceSystemCentralManagementRead(d *schema.ResourceData, m interface{}) 
 	c.Retries = 1
 
 	paradict := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if device_name == "" {
 		device_name = importOptionChecking(m.(*FortiClient).Cfg, "device_name")
@@ -307,6 +323,7 @@ func resourceSystemCentralManagementRead(d *schema.ResourceData, m interface{}) 
 
 	o, err := c.ReadSystemCentralManagement(mkey, paradict)
 	if err != nil {
+		d.SetId("")
 		return fmt.Errorf("Error reading SystemCentralManagement resource: %v", err)
 	}
 
@@ -348,7 +365,7 @@ func flattenSystemCentralManagementAllowRemoteModemFirmwareUpgrade(v interface{}
 }
 
 func flattenSystemCentralManagementCaCert(v interface{}, d *schema.ResourceData, pre string) interface{} {
-	return v
+	return convintflist2str(v, d.Get(pre))
 }
 
 func flattenSystemCentralManagementEncAlgorithm(v interface{}, d *schema.ResourceData, pre string) interface{} {
@@ -364,6 +381,10 @@ func flattenSystemCentralManagementFmgSourceIp(v interface{}, d *schema.Resource
 }
 
 func flattenSystemCentralManagementFmgSourceIp6(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemCentralManagementFmgUpdateHttpHeader(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -388,7 +409,7 @@ func flattenSystemCentralManagementInterfaceSelectMethod(v interface{}, d *schem
 }
 
 func flattenSystemCentralManagementLocalCert(v interface{}, d *schema.ResourceData, pre string) interface{} {
-	return v
+	return convintflist2str(v, d.Get(pre))
 }
 
 func flattenSystemCentralManagementLtefwUpgradeFrequency(v interface{}, d *schema.ResourceData, pre string) interface{} {
@@ -645,6 +666,16 @@ func refreshObjectSystemCentralManagement(d *schema.ResourceData, o map[string]i
 		}
 	}
 
+	if err = d.Set("fmg_update_http_header", flattenSystemCentralManagementFmgUpdateHttpHeader(o["fmg-update-http-header"], d, "fmg_update_http_header")); err != nil {
+		if vv, ok := fortiAPIPatch(o["fmg-update-http-header"], "SystemCentralManagement-FmgUpdateHttpHeader"); ok {
+			if err = d.Set("fmg_update_http_header", vv); err != nil {
+				return fmt.Errorf("Error reading fmg_update_http_header: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading fmg_update_http_header: %v", err)
+		}
+	}
+
 	if err = d.Set("fmg_update_port", flattenSystemCentralManagementFmgUpdatePort(o["fmg-update-port"], d, "fmg_update_port")); err != nil {
 		if vv, ok := fortiAPIPatch(o["fmg-update-port"], "SystemCentralManagement-FmgUpdatePort"); ok {
 			if err = d.Set("fmg_update_port", vv); err != nil {
@@ -883,7 +914,7 @@ func expandSystemCentralManagementAllowRemoteModemFirmwareUpgrade(d *schema.Reso
 }
 
 func expandSystemCentralManagementCaCert(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
-	return v, nil
+	return convstr2list(v, nil), nil
 }
 
 func expandSystemCentralManagementEncAlgorithm(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
@@ -899,6 +930,10 @@ func expandSystemCentralManagementFmgSourceIp(d *schema.ResourceData, v interfac
 }
 
 func expandSystemCentralManagementFmgSourceIp6(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemCentralManagementFmgUpdateHttpHeader(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -923,7 +958,7 @@ func expandSystemCentralManagementInterfaceSelectMethod(d *schema.ResourceData, 
 }
 
 func expandSystemCentralManagementLocalCert(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
-	return v, nil
+	return convstr2list(v, nil), nil
 }
 
 func expandSystemCentralManagementLtefwUpgradeFrequency(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
@@ -1151,6 +1186,15 @@ func getObjectSystemCentralManagement(d *schema.ResourceData) (*map[string]inter
 			return &obj, err
 		} else if t != nil {
 			obj["fmg-source-ip6"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("fmg_update_http_header"); ok || d.HasChange("fmg_update_http_header") {
+		t, err := expandSystemCentralManagementFmgUpdateHttpHeader(d, v, "fmg_update_http_header")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["fmg-update-http-header"] = t
 		}
 	}
 

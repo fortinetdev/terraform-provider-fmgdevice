@@ -107,6 +107,7 @@ The following arguments are supported:
 * `distance` - Distance for routes added by IKE (1 - 255).
 * `dns_mode` - DNS server mode. Valid values: `auto`, `manual`.
 
+* `dns_suffix_search` - One or more DNS domain name suffixes in quotes separated by spaces.
 * `domain` - Instruct unity clients about the single default DNS domain.
 * `dpd` - Dead Peer Detection mode. Valid values: `disable`, `enable`, `on-idle`, `on-demand`.
 
@@ -232,6 +233,8 @@ The following arguments are supported:
 * `psksecret` - Pre-shared secret for PSK authentication (ASCII string or hexadecimal encoded with a leading 0x).
 * `psksecret_remote` - Pre-shared secret for remote side PSK authentication (ASCII string or hexadecimal encoded with a leading 0x).
 * `qkd` - Enable/disable use of Quantum Key Distribution (QKD) server. Valid values: `disable`, `allow`, `require`.
+
+* `qkd_hybrid` - Enable/disable use of Quantum Key Distribution (QKD) hybrid keys. Valid values: `disable`, `require`, `allow`.
 
 * `qkd_profile` - Quantum Key Distribution (QKD) server profile.
 * `reauth` - Enable/disable re-authentication upon IKE SA lifetime expiration. Valid values: `disable`, `enable`.

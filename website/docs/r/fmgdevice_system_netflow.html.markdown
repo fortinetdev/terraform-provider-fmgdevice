@@ -49,6 +49,8 @@ The following arguments are supported:
 * `collectors` - Collectors. The structure of `collectors` block is documented below.
 * `exclusion_filters` - Exclusion-Filters. The structure of `exclusion_filters` block is documented below.
 * `inactive_flow_timeout` - Timeout for periodic report of finished flows (10 - 600 sec, default = 15).
+* `session_cache_size` - Maximum RAM usage allowed for Netflow session cache. Valid values: `max`, `min`, `default`.
+
 * `interface` - Interface.
 * `interface_select_method` - Interface-Select-Method. Valid values: `auto`, `sdwan`, `specify`.
 

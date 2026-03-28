@@ -58,6 +58,8 @@ The following arguments are supported:
 * `dst6` - Destination address6 name.
 * `end_port` - End destination port number.
 * `end_src_port` - End source port number.
+* `fib_best_match_force` - Enable/disable force using fib-best-match oif as outgoing interface. Valid values: `disable`, `enable`.
+
 * `gateway` - Enable/disable SD-WAN service gateway. Valid values: `disable`, `enable`.
 
 * `groups` - User groups.
@@ -77,6 +79,7 @@ The following arguments are supported:
 * `internet_service_app_ctrl_group` - Application control based Internet Service group list.
 * `internet_service_custom` - Custom Internet service name list.
 * `internet_service_custom_group` - Custom Internet Service group list.
+* `internet_service_fortiguard` - FortiGuard Internet service name list.
 * `internet_service_group` - Internet Service group list.
 * `internet_service_name` - Internet service name list.
 * `jitter_weight` - Coefficient of jitter in the formula of custom-profile-1.

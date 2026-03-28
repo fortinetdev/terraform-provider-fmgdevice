@@ -28,6 +28,17 @@ func resourceSwitchControllerManagedSwitchDhcpSnoopingStaticClient() *schema.Res
 		},
 
 		Schema: map[string]*schema.Schema{
+			"update_if_exist": &schema.Schema{
+				Type:     schema.TypeBool,
+				Optional: true,
+				Computed: true,
+			},
+
+			"adom": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"device_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -80,8 +91,12 @@ func resourceSwitchControllerManagedSwitchDhcpSnoopingStaticClientCreate(d *sche
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -95,17 +110,37 @@ func resourceSwitchControllerManagedSwitchDhcpSnoopingStaticClientCreate(d *sche
 	paradict["vdom"] = device_vdom
 	paradict["managed_switch"] = managed_switch
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectSwitchControllerManagedSwitchDhcpSnoopingStaticClient(d)
 	if err != nil {
 		return fmt.Errorf("Error creating SwitchControllerManagedSwitchDhcpSnoopingStaticClient resource while getting object: %v", err)
 	}
+	wsParams["adom"] = adomv
 
-	_, err = c.CreateSwitchControllerManagedSwitchDhcpSnoopingStaticClient(obj, paradict, wsParams)
-	if err != nil {
-		return fmt.Errorf("Error creating SwitchControllerManagedSwitchDhcpSnoopingStaticClient resource: %v", err)
+	update_if_exist := getUpdateIfExist(c, d)
+	mkey_tf, mkey_ok := d.GetOk("name")
+	mkey := fmt.Sprint(mkey_tf)
+	o := make(map[string]interface{})
+	existing := false
+
+	if update_if_exist && mkey_ok {
+		// check existing
+		o, err = c.ReadSwitchControllerManagedSwitchDhcpSnoopingStaticClient(mkey, paradict)
+		if err == nil && o != nil {
+			existing = true
+			// update if existing
+			o, err = c.UpdateSwitchControllerManagedSwitchDhcpSnoopingStaticClient(obj, mkey, paradict, wsParams)
+			if err != nil {
+				return fmt.Errorf("Error updating SwitchControllerManagedSwitchDhcpSnoopingStaticClient resource: %v", err)
+			}
+		}
+	}
+
+	if !existing {
+		_, err = c.CreateSwitchControllerManagedSwitchDhcpSnoopingStaticClient(obj, paradict, wsParams)
+		if err != nil {
+			return fmt.Errorf("Error creating SwitchControllerManagedSwitchDhcpSnoopingStaticClient resource: %v", err)
+		}
+
 	}
 
 	d.SetId(getStringKey(d, "name"))
@@ -120,8 +155,12 @@ func resourceSwitchControllerManagedSwitchDhcpSnoopingStaticClientUpdate(d *sche
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -135,13 +174,12 @@ func resourceSwitchControllerManagedSwitchDhcpSnoopingStaticClientUpdate(d *sche
 	paradict["vdom"] = device_vdom
 	paradict["managed_switch"] = managed_switch
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectSwitchControllerManagedSwitchDhcpSnoopingStaticClient(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SwitchControllerManagedSwitchDhcpSnoopingStaticClient resource while getting object: %v", err)
 	}
+
+	wsParams["adom"] = adomv
 
 	_, err = c.UpdateSwitchControllerManagedSwitchDhcpSnoopingStaticClient(obj, mkey, paradict, wsParams)
 	if err != nil {
@@ -163,8 +201,12 @@ func resourceSwitchControllerManagedSwitchDhcpSnoopingStaticClientDelete(d *sche
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -178,9 +220,7 @@ func resourceSwitchControllerManagedSwitchDhcpSnoopingStaticClientDelete(d *sche
 	paradict["vdom"] = device_vdom
 	paradict["managed_switch"] = managed_switch
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
+	wsParams["adom"] = adomv
 
 	err = c.DeleteSwitchControllerManagedSwitchDhcpSnoopingStaticClient(mkey, paradict, wsParams)
 	if err != nil {
@@ -199,8 +239,8 @@ func resourceSwitchControllerManagedSwitchDhcpSnoopingStaticClientRead(d *schema
 	c.Retries = 1
 
 	paradict := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	device_vdom, err := getVariable(cfg, d, "device_vdom")
 	managed_switch := d.Get("managed_switch").(string)
@@ -237,6 +277,7 @@ func resourceSwitchControllerManagedSwitchDhcpSnoopingStaticClientRead(d *schema
 
 	o, err := c.ReadSwitchControllerManagedSwitchDhcpSnoopingStaticClient(mkey, paradict)
 	if err != nil {
+		d.SetId("")
 		return fmt.Errorf("Error reading SwitchControllerManagedSwitchDhcpSnoopingStaticClient resource: %v", err)
 	}
 

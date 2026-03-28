@@ -28,6 +28,17 @@ func resourceSystemSdwanHealthCheck() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
+			"update_if_exist": &schema.Schema{
+				Type:     schema.TypeBool,
+				Optional: true,
+				Computed: true,
+			},
+
+			"adom": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"device_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -44,6 +55,14 @@ func resourceSystemSdwanHealthCheck() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+			},
+			"agent_probe_timeout": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+			},
+			"bandwidth_weight": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
 			},
 			"class_id": &schema.Schema{
 				Type:     schema.TypeSet,
@@ -124,6 +143,14 @@ func resourceSystemSdwanHealthCheck() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"jitter_weight": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+			},
+			"latency_weight": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+			},
 			"members": &schema.Schema{
 				Type:     schema.TypeSet,
 				Elem:     &schema.Schema{Type: schema.TypeString},
@@ -138,6 +165,10 @@ func resourceSystemSdwanHealthCheck() *schema.Resource {
 			"name": &schema.Schema{
 				Type:     schema.TypeString,
 				ForceNew: true,
+				Optional: true,
+			},
+			"packet_loss_weight": &schema.Schema{
+				Type:     schema.TypeInt,
 				Optional: true,
 			},
 			"packet_size": &schema.Schema{
@@ -185,6 +216,10 @@ func resourceSystemSdwanHealthCheck() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"remote_probe_timeout": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+			},
 			"security_mode": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -200,6 +235,10 @@ func resourceSystemSdwanHealthCheck() *schema.Resource {
 				Optional: true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
+						"custom_profile_threshold": &schema.Schema{
+							Type:     schema.TypeInt,
+							Optional: true,
+						},
 						"id": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
@@ -323,8 +362,12 @@ func resourceSystemSdwanHealthCheckCreate(d *schema.ResourceData, m interface{})
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -336,17 +379,37 @@ func resourceSystemSdwanHealthCheckCreate(d *schema.ResourceData, m interface{})
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectSystemSdwanHealthCheck(d)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemSdwanHealthCheck resource while getting object: %v", err)
 	}
+	wsParams["adom"] = adomv
 
-	_, err = c.CreateSystemSdwanHealthCheck(obj, paradict, wsParams)
-	if err != nil {
-		return fmt.Errorf("Error creating SystemSdwanHealthCheck resource: %v", err)
+	update_if_exist := getUpdateIfExist(c, d)
+	mkey_tf, mkey_ok := d.GetOk("name")
+	mkey := fmt.Sprint(mkey_tf)
+	o := make(map[string]interface{})
+	existing := false
+
+	if update_if_exist && mkey_ok {
+		// check existing
+		o, err = c.ReadSystemSdwanHealthCheck(mkey, paradict)
+		if err == nil && o != nil {
+			existing = true
+			// update if existing
+			o, err = c.UpdateSystemSdwanHealthCheck(obj, mkey, paradict, wsParams)
+			if err != nil {
+				return fmt.Errorf("Error updating SystemSdwanHealthCheck resource: %v", err)
+			}
+		}
+	}
+
+	if !existing {
+		_, err = c.CreateSystemSdwanHealthCheck(obj, paradict, wsParams)
+		if err != nil {
+			return fmt.Errorf("Error creating SystemSdwanHealthCheck resource: %v", err)
+		}
+
 	}
 
 	d.SetId(getStringKey(d, "name"))
@@ -361,8 +424,12 @@ func resourceSystemSdwanHealthCheckUpdate(d *schema.ResourceData, m interface{})
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -374,13 +441,12 @@ func resourceSystemSdwanHealthCheckUpdate(d *schema.ResourceData, m interface{})
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectSystemSdwanHealthCheck(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemSdwanHealthCheck resource while getting object: %v", err)
 	}
+
+	wsParams["adom"] = adomv
 
 	_, err = c.UpdateSystemSdwanHealthCheck(obj, mkey, paradict, wsParams)
 	if err != nil {
@@ -402,8 +468,12 @@ func resourceSystemSdwanHealthCheckDelete(d *schema.ResourceData, m interface{})
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -415,9 +485,7 @@ func resourceSystemSdwanHealthCheckDelete(d *schema.ResourceData, m interface{})
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
+	wsParams["adom"] = adomv
 
 	err = c.DeleteSystemSdwanHealthCheck(mkey, paradict, wsParams)
 	if err != nil {
@@ -436,8 +504,8 @@ func resourceSystemSdwanHealthCheckRead(d *schema.ResourceData, m interface{}) e
 	c.Retries = 1
 
 	paradict := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	device_vdom, err := getVariable(cfg, d, "device_vdom")
 	if device_name == "" {
@@ -463,6 +531,7 @@ func resourceSystemSdwanHealthCheckRead(d *schema.ResourceData, m interface{}) e
 
 	o, err := c.ReadSystemSdwanHealthCheck(mkey, paradict)
 	if err != nil {
+		d.SetId("")
 		return fmt.Errorf("Error reading SystemSdwanHealthCheck resource: %v", err)
 	}
 
@@ -480,6 +549,14 @@ func resourceSystemSdwanHealthCheckRead(d *schema.ResourceData, m interface{}) e
 }
 
 func flattenSystemSdwanHealthCheckAddrMode2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemSdwanHealthCheckAgentProbeTimeout2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemSdwanHealthCheckBandwidthWeight2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -547,6 +624,14 @@ func flattenSystemSdwanHealthCheckInterval2edl(v interface{}, d *schema.Resource
 	return v
 }
 
+func flattenSystemSdwanHealthCheckJitterWeight2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemSdwanHealthCheckLatencyWeight2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenSystemSdwanHealthCheckMembers2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return flattenStringList(v)
 }
@@ -556,6 +641,10 @@ func flattenSystemSdwanHealthCheckMosCodec2edl(v interface{}, d *schema.Resource
 }
 
 func flattenSystemSdwanHealthCheckName2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemSdwanHealthCheckPacketLossWeight2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -591,6 +680,10 @@ func flattenSystemSdwanHealthCheckRecoverytime2edl(v interface{}, d *schema.Reso
 	return v
 }
 
+func flattenSystemSdwanHealthCheckRemoteProbeTimeout2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenSystemSdwanHealthCheckSecurityMode2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -617,6 +710,12 @@ func flattenSystemSdwanHealthCheckSla2edl(v interface{}, d *schema.ResourceData,
 		i := r.(map[string]interface{})
 
 		pre_append := "" // table
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "custom_profile_threshold"
+		if _, ok := i["custom-profile-threshold"]; ok {
+			v := flattenSystemSdwanHealthCheckSlaCustomProfileThreshold2edl(i["custom-profile-threshold"], d, pre_append)
+			tmp["custom_profile_threshold"] = fortiAPISubPartPatch(v, "SystemSdwanHealthCheck-Sla-CustomProfileThreshold")
+		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "id"
 		if _, ok := i["id"]; ok {
@@ -674,6 +773,10 @@ func flattenSystemSdwanHealthCheckSla2edl(v interface{}, d *schema.ResourceData,
 	}
 
 	return result
+}
+
+func flattenSystemSdwanHealthCheckSlaCustomProfileThreshold2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
 }
 
 func flattenSystemSdwanHealthCheckSlaId2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
@@ -786,6 +889,26 @@ func refreshObjectSystemSdwanHealthCheck(d *schema.ResourceData, o map[string]in
 			}
 		} else {
 			return fmt.Errorf("Error reading addr_mode: %v", err)
+		}
+	}
+
+	if err = d.Set("agent_probe_timeout", flattenSystemSdwanHealthCheckAgentProbeTimeout2edl(o["agent-probe-timeout"], d, "agent_probe_timeout")); err != nil {
+		if vv, ok := fortiAPIPatch(o["agent-probe-timeout"], "SystemSdwanHealthCheck-AgentProbeTimeout"); ok {
+			if err = d.Set("agent_probe_timeout", vv); err != nil {
+				return fmt.Errorf("Error reading agent_probe_timeout: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading agent_probe_timeout: %v", err)
+		}
+	}
+
+	if err = d.Set("bandwidth_weight", flattenSystemSdwanHealthCheckBandwidthWeight2edl(o["bandwidth-weight"], d, "bandwidth_weight")); err != nil {
+		if vv, ok := fortiAPIPatch(o["bandwidth-weight"], "SystemSdwanHealthCheck-BandwidthWeight"); ok {
+			if err = d.Set("bandwidth_weight", vv); err != nil {
+				return fmt.Errorf("Error reading bandwidth_weight: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading bandwidth_weight: %v", err)
 		}
 	}
 
@@ -949,6 +1072,26 @@ func refreshObjectSystemSdwanHealthCheck(d *schema.ResourceData, o map[string]in
 		}
 	}
 
+	if err = d.Set("jitter_weight", flattenSystemSdwanHealthCheckJitterWeight2edl(o["jitter-weight"], d, "jitter_weight")); err != nil {
+		if vv, ok := fortiAPIPatch(o["jitter-weight"], "SystemSdwanHealthCheck-JitterWeight"); ok {
+			if err = d.Set("jitter_weight", vv); err != nil {
+				return fmt.Errorf("Error reading jitter_weight: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading jitter_weight: %v", err)
+		}
+	}
+
+	if err = d.Set("latency_weight", flattenSystemSdwanHealthCheckLatencyWeight2edl(o["latency-weight"], d, "latency_weight")); err != nil {
+		if vv, ok := fortiAPIPatch(o["latency-weight"], "SystemSdwanHealthCheck-LatencyWeight"); ok {
+			if err = d.Set("latency_weight", vv); err != nil {
+				return fmt.Errorf("Error reading latency_weight: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading latency_weight: %v", err)
+		}
+	}
+
 	if err = d.Set("members", flattenSystemSdwanHealthCheckMembers2edl(o["members"], d, "members")); err != nil {
 		if vv, ok := fortiAPIPatch(o["members"], "SystemSdwanHealthCheck-Members"); ok {
 			if err = d.Set("members", vv); err != nil {
@@ -976,6 +1119,16 @@ func refreshObjectSystemSdwanHealthCheck(d *schema.ResourceData, o map[string]in
 			}
 		} else {
 			return fmt.Errorf("Error reading name: %v", err)
+		}
+	}
+
+	if err = d.Set("packet_loss_weight", flattenSystemSdwanHealthCheckPacketLossWeight2edl(o["packet-loss-weight"], d, "packet_loss_weight")); err != nil {
+		if vv, ok := fortiAPIPatch(o["packet-loss-weight"], "SystemSdwanHealthCheck-PacketLossWeight"); ok {
+			if err = d.Set("packet_loss_weight", vv); err != nil {
+				return fmt.Errorf("Error reading packet_loss_weight: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading packet_loss_weight: %v", err)
 		}
 	}
 
@@ -1056,6 +1209,16 @@ func refreshObjectSystemSdwanHealthCheck(d *schema.ResourceData, o map[string]in
 			}
 		} else {
 			return fmt.Errorf("Error reading recoverytime: %v", err)
+		}
+	}
+
+	if err = d.Set("remote_probe_timeout", flattenSystemSdwanHealthCheckRemoteProbeTimeout2edl(o["remote-probe-timeout"], d, "remote_probe_timeout")); err != nil {
+		if vv, ok := fortiAPIPatch(o["remote-probe-timeout"], "SystemSdwanHealthCheck-RemoteProbeTimeout"); ok {
+			if err = d.Set("remote_probe_timeout", vv); err != nil {
+				return fmt.Errorf("Error reading remote_probe_timeout: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading remote_probe_timeout: %v", err)
 		}
 	}
 
@@ -1276,6 +1439,14 @@ func expandSystemSdwanHealthCheckAddrMode2edl(d *schema.ResourceData, v interfac
 	return v, nil
 }
 
+func expandSystemSdwanHealthCheckAgentProbeTimeout2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemSdwanHealthCheckBandwidthWeight2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandSystemSdwanHealthCheckClassId2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return expandStringList(v.(*schema.Set).List()), nil
 }
@@ -1340,6 +1511,14 @@ func expandSystemSdwanHealthCheckInterval2edl(d *schema.ResourceData, v interfac
 	return v, nil
 }
 
+func expandSystemSdwanHealthCheckJitterWeight2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemSdwanHealthCheckLatencyWeight2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandSystemSdwanHealthCheckMembers2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return expandStringList(v.(*schema.Set).List()), nil
 }
@@ -1349,6 +1528,10 @@ func expandSystemSdwanHealthCheckMosCodec2edl(d *schema.ResourceData, v interfac
 }
 
 func expandSystemSdwanHealthCheckName2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemSdwanHealthCheckPacketLossWeight2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -1388,6 +1571,10 @@ func expandSystemSdwanHealthCheckRecoverytime2edl(d *schema.ResourceData, v inte
 	return v, nil
 }
 
+func expandSystemSdwanHealthCheckRemoteProbeTimeout2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandSystemSdwanHealthCheckSecurityMode2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -1409,6 +1596,11 @@ func expandSystemSdwanHealthCheckSla2edl(d *schema.ResourceData, v interface{}, 
 		tmp := make(map[string]interface{})
 		i := r.(map[string]interface{})
 		pre_append := "" // table
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "custom_profile_threshold"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["custom-profile-threshold"], _ = expandSystemSdwanHealthCheckSlaCustomProfileThreshold2edl(d, i["custom_profile_threshold"], pre_append)
+		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "id"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
@@ -1458,6 +1650,10 @@ func expandSystemSdwanHealthCheckSla2edl(d *schema.ResourceData, v interface{}, 
 	}
 
 	return result, nil
+}
+
+func expandSystemSdwanHealthCheckSlaCustomProfileThreshold2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
 }
 
 func expandSystemSdwanHealthCheckSlaId2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
@@ -1565,6 +1761,24 @@ func getObjectSystemSdwanHealthCheck(d *schema.ResourceData) (*map[string]interf
 			return &obj, err
 		} else if t != nil {
 			obj["addr-mode"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("agent_probe_timeout"); ok || d.HasChange("agent_probe_timeout") {
+		t, err := expandSystemSdwanHealthCheckAgentProbeTimeout2edl(d, v, "agent_probe_timeout")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["agent-probe-timeout"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("bandwidth_weight"); ok || d.HasChange("bandwidth_weight") {
+		t, err := expandSystemSdwanHealthCheckBandwidthWeight2edl(d, v, "bandwidth_weight")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["bandwidth-weight"] = t
 		}
 	}
 
@@ -1712,6 +1926,24 @@ func getObjectSystemSdwanHealthCheck(d *schema.ResourceData) (*map[string]interf
 		}
 	}
 
+	if v, ok := d.GetOk("jitter_weight"); ok || d.HasChange("jitter_weight") {
+		t, err := expandSystemSdwanHealthCheckJitterWeight2edl(d, v, "jitter_weight")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["jitter-weight"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("latency_weight"); ok || d.HasChange("latency_weight") {
+		t, err := expandSystemSdwanHealthCheckLatencyWeight2edl(d, v, "latency_weight")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["latency-weight"] = t
+		}
+	}
+
 	if v, ok := d.GetOk("members"); ok || d.HasChange("members") {
 		t, err := expandSystemSdwanHealthCheckMembers2edl(d, v, "members")
 		if err != nil {
@@ -1736,6 +1968,15 @@ func getObjectSystemSdwanHealthCheck(d *schema.ResourceData) (*map[string]interf
 			return &obj, err
 		} else if t != nil {
 			obj["name"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("packet_loss_weight"); ok || d.HasChange("packet_loss_weight") {
+		t, err := expandSystemSdwanHealthCheckPacketLossWeight2edl(d, v, "packet_loss_weight")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["packet-loss-weight"] = t
 		}
 	}
 
@@ -1817,6 +2058,15 @@ func getObjectSystemSdwanHealthCheck(d *schema.ResourceData) (*map[string]interf
 			return &obj, err
 		} else if t != nil {
 			obj["recoverytime"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("remote_probe_timeout"); ok || d.HasChange("remote_probe_timeout") {
+		t, err := expandSystemSdwanHealthCheckRemoteProbeTimeout2edl(d, v, "remote_probe_timeout")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["remote-probe-timeout"] = t
 		}
 	}
 

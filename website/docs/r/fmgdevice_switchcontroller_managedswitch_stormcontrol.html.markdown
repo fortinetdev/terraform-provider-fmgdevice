@@ -38,6 +38,7 @@ The following arguments are supported:
 
 * `broadcast` - Enable/disable storm control to drop broadcast traffic. Valid values: `disable`, `enable`.
 
+* `burst_size_level` - Increase level to handle bursty traffic (0 - 4, default = 0).
 * `local_override` - Enable to override global FortiSwitch storm control settings for this FortiSwitch. Valid values: `disable`, `enable`.
 
 * `rate` - Rate in packets per second at which storm control drops excess traffic(0-10000000, default=500, drop-all=0).

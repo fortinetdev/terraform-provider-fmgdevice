@@ -28,6 +28,17 @@ func resourceRouterPolicy6() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
+			"update_if_exist": &schema.Schema{
+				Type:     schema.TypeBool,
+				Optional: true,
+				Computed: true,
+			},
+
+			"adom": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"device_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -81,6 +92,12 @@ func resourceRouterPolicy6() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"groups": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Computed: true,
+			},
 			"input_device": &schema.Schema{
 				Type:     schema.TypeSet,
 				Elem:     &schema.Schema{Type: schema.TypeString},
@@ -93,6 +110,12 @@ func resourceRouterPolicy6() *schema.Resource {
 				Computed: true,
 			},
 			"internet_service_custom": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Computed: true,
+			},
+			"internet_service_fortiguard": &schema.Schema{
 				Type:     schema.TypeSet,
 				Elem:     &schema.Schema{Type: schema.TypeString},
 				Optional: true,
@@ -162,6 +185,12 @@ func resourceRouterPolicy6() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"users": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Computed: true,
+			},
 		},
 	}
 }
@@ -172,8 +201,12 @@ func resourceRouterPolicy6Create(d *schema.ResourceData, m interface{}) error {
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -185,25 +218,44 @@ func resourceRouterPolicy6Create(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectRouterPolicy6(d)
 	if err != nil {
 		return fmt.Errorf("Error creating RouterPolicy6 resource while getting object: %v", err)
 	}
+	wsParams["adom"] = adomv
 
-	v, err := c.CreateRouterPolicy6(obj, paradict, wsParams)
-	if err != nil {
-		return fmt.Errorf("Error creating RouterPolicy6 resource: %v", err)
+	update_if_exist := getUpdateIfExist(c, d)
+	mkey_tf, mkey_ok := d.GetOk("seq_num")
+	mkey := fmt.Sprint(mkey_tf)
+	o := make(map[string]interface{})
+	existing := false
+
+	if update_if_exist && mkey_ok {
+		// check existing
+		o, err = c.ReadRouterPolicy6(mkey, paradict)
+		if err == nil && o != nil {
+			existing = true
+			// update if existing
+			o, err = c.UpdateRouterPolicy6(obj, mkey, paradict, wsParams)
+			if err != nil {
+				return fmt.Errorf("Error updating RouterPolicy6 resource: %v", err)
+			}
+		}
 	}
 
-	if v != nil && v["seq-num"] != nil {
-		if vidn, ok := v["seq-num"].(float64); ok {
-			d.SetId(strconv.Itoa(int(vidn)))
-			return resourceRouterPolicy6Read(d, m)
-		} else {
+	if !existing {
+		v, err := c.CreateRouterPolicy6(obj, paradict, wsParams)
+		if err != nil {
 			return fmt.Errorf("Error creating RouterPolicy6 resource: %v", err)
+		}
+
+		if v != nil && v["seq-num"] != nil {
+			if vidn, ok := v["seq-num"].(float64); ok {
+				d.SetId(strconv.Itoa(int(vidn)))
+				return resourceRouterPolicy6Read(d, m)
+			} else {
+				return fmt.Errorf("Error creating RouterPolicy6 resource: %v", err)
+			}
 		}
 	}
 
@@ -219,8 +271,12 @@ func resourceRouterPolicy6Update(d *schema.ResourceData, m interface{}) error {
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -232,13 +288,12 @@ func resourceRouterPolicy6Update(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectRouterPolicy6(d)
 	if err != nil {
 		return fmt.Errorf("Error updating RouterPolicy6 resource while getting object: %v", err)
 	}
+
+	wsParams["adom"] = adomv
 
 	_, err = c.UpdateRouterPolicy6(obj, mkey, paradict, wsParams)
 	if err != nil {
@@ -260,8 +315,12 @@ func resourceRouterPolicy6Delete(d *schema.ResourceData, m interface{}) error {
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -273,9 +332,7 @@ func resourceRouterPolicy6Delete(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
+	wsParams["adom"] = adomv
 
 	err = c.DeleteRouterPolicy6(mkey, paradict, wsParams)
 	if err != nil {
@@ -294,8 +351,8 @@ func resourceRouterPolicy6Read(d *schema.ResourceData, m interface{}) error {
 	c.Retries = 1
 
 	paradict := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	device_vdom, err := getVariable(cfg, d, "device_vdom")
 	if device_name == "" {
@@ -321,6 +378,7 @@ func resourceRouterPolicy6Read(d *schema.ResourceData, m interface{}) error {
 
 	o, err := c.ReadRouterPolicy6(mkey, paradict)
 	if err != nil {
+		d.SetId("")
 		return fmt.Errorf("Error reading RouterPolicy6 resource: %v", err)
 	}
 
@@ -369,6 +427,10 @@ func flattenRouterPolicy6Gateway(v interface{}, d *schema.ResourceData, pre stri
 	return v
 }
 
+func flattenRouterPolicy6Groups(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
 func flattenRouterPolicy6InputDevice(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return flattenStringList(v)
 }
@@ -378,6 +440,10 @@ func flattenRouterPolicy6InputDeviceNegate(v interface{}, d *schema.ResourceData
 }
 
 func flattenRouterPolicy6InternetServiceCustom(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
+func flattenRouterPolicy6InternetServiceFortiguard(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return flattenStringList(v)
 }
 
@@ -427,6 +493,10 @@ func flattenRouterPolicy6Tos(v interface{}, d *schema.ResourceData, pre string) 
 
 func flattenRouterPolicy6TosMask(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
+}
+
+func flattenRouterPolicy6Users(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
 }
 
 func refreshObjectRouterPolicy6(d *schema.ResourceData, o map[string]interface{}) error {
@@ -512,6 +582,16 @@ func refreshObjectRouterPolicy6(d *schema.ResourceData, o map[string]interface{}
 		}
 	}
 
+	if err = d.Set("groups", flattenRouterPolicy6Groups(o["groups"], d, "groups")); err != nil {
+		if vv, ok := fortiAPIPatch(o["groups"], "RouterPolicy6-Groups"); ok {
+			if err = d.Set("groups", vv); err != nil {
+				return fmt.Errorf("Error reading groups: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading groups: %v", err)
+		}
+	}
+
 	if err = d.Set("input_device", flattenRouterPolicy6InputDevice(o["input-device"], d, "input_device")); err != nil {
 		if vv, ok := fortiAPIPatch(o["input-device"], "RouterPolicy6-InputDevice"); ok {
 			if err = d.Set("input_device", vv); err != nil {
@@ -539,6 +619,16 @@ func refreshObjectRouterPolicy6(d *schema.ResourceData, o map[string]interface{}
 			}
 		} else {
 			return fmt.Errorf("Error reading internet_service_custom: %v", err)
+		}
+	}
+
+	if err = d.Set("internet_service_fortiguard", flattenRouterPolicy6InternetServiceFortiguard(o["internet-service-fortiguard"], d, "internet_service_fortiguard")); err != nil {
+		if vv, ok := fortiAPIPatch(o["internet-service-fortiguard"], "RouterPolicy6-InternetServiceFortiguard"); ok {
+			if err = d.Set("internet_service_fortiguard", vv); err != nil {
+				return fmt.Errorf("Error reading internet_service_fortiguard: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading internet_service_fortiguard: %v", err)
 		}
 	}
 
@@ -662,6 +752,16 @@ func refreshObjectRouterPolicy6(d *schema.ResourceData, o map[string]interface{}
 		}
 	}
 
+	if err = d.Set("users", flattenRouterPolicy6Users(o["users"], d, "users")); err != nil {
+		if vv, ok := fortiAPIPatch(o["users"], "RouterPolicy6-Users"); ok {
+			if err = d.Set("users", vv); err != nil {
+				return fmt.Errorf("Error reading users: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading users: %v", err)
+		}
+	}
+
 	return nil
 }
 
@@ -703,6 +803,10 @@ func expandRouterPolicy6Gateway(d *schema.ResourceData, v interface{}, pre strin
 	return v, nil
 }
 
+func expandRouterPolicy6Groups(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
 func expandRouterPolicy6InputDevice(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return expandStringList(v.(*schema.Set).List()), nil
 }
@@ -712,6 +816,10 @@ func expandRouterPolicy6InputDeviceNegate(d *schema.ResourceData, v interface{},
 }
 
 func expandRouterPolicy6InternetServiceCustom(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandRouterPolicy6InternetServiceFortiguard(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return expandStringList(v.(*schema.Set).List()), nil
 }
 
@@ -761,6 +869,10 @@ func expandRouterPolicy6Tos(d *schema.ResourceData, v interface{}, pre string) (
 
 func expandRouterPolicy6TosMask(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
+}
+
+func expandRouterPolicy6Users(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
 }
 
 func getObjectRouterPolicy6(d *schema.ResourceData) (*map[string]interface{}, error) {
@@ -838,6 +950,15 @@ func getObjectRouterPolicy6(d *schema.ResourceData) (*map[string]interface{}, er
 		}
 	}
 
+	if v, ok := d.GetOk("groups"); ok || d.HasChange("groups") {
+		t, err := expandRouterPolicy6Groups(d, v, "groups")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["groups"] = t
+		}
+	}
+
 	if v, ok := d.GetOk("input_device"); ok || d.HasChange("input_device") {
 		t, err := expandRouterPolicy6InputDevice(d, v, "input_device")
 		if err != nil {
@@ -862,6 +983,15 @@ func getObjectRouterPolicy6(d *schema.ResourceData) (*map[string]interface{}, er
 			return &obj, err
 		} else if t != nil {
 			obj["internet-service-custom"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("internet_service_fortiguard"); ok || d.HasChange("internet_service_fortiguard") {
+		t, err := expandRouterPolicy6InternetServiceFortiguard(d, v, "internet_service_fortiguard")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["internet-service-fortiguard"] = t
 		}
 	}
 
@@ -970,6 +1100,15 @@ func getObjectRouterPolicy6(d *schema.ResourceData) (*map[string]interface{}, er
 			return &obj, err
 		} else if t != nil {
 			obj["tos-mask"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("users"); ok || d.HasChange("users") {
+		t, err := expandRouterPolicy6Users(d, v, "users")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["users"] = t
 		}
 	}
 

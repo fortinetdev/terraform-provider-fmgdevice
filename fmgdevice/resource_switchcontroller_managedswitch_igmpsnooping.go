@@ -28,6 +28,12 @@ func resourceSwitchControllerManagedSwitchIgmpSnooping() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
+
+			"adom": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"device_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -86,10 +92,8 @@ func resourceSwitchControllerManagedSwitchIgmpSnooping() *schema.Resource {
 							Computed: true,
 						},
 						"vlan_name": &schema.Schema{
-							Type:     schema.TypeSet,
-							Elem:     &schema.Schema{Type: schema.TypeString},
+							Type:     schema.TypeString,
 							Optional: true,
-							Computed: true,
 						},
 					},
 				},
@@ -110,8 +114,12 @@ func resourceSwitchControllerManagedSwitchIgmpSnoopingUpdate(d *schema.ResourceD
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -125,13 +133,12 @@ func resourceSwitchControllerManagedSwitchIgmpSnoopingUpdate(d *schema.ResourceD
 	paradict["vdom"] = device_vdom
 	paradict["managed_switch"] = managed_switch
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectSwitchControllerManagedSwitchIgmpSnooping(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SwitchControllerManagedSwitchIgmpSnooping resource while getting object: %v", err)
 	}
+
+	wsParams["adom"] = adomv
 
 	_, err = c.UpdateSwitchControllerManagedSwitchIgmpSnooping(obj, mkey, paradict, wsParams)
 	if err != nil {
@@ -153,8 +160,12 @@ func resourceSwitchControllerManagedSwitchIgmpSnoopingDelete(d *schema.ResourceD
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -168,9 +179,7 @@ func resourceSwitchControllerManagedSwitchIgmpSnoopingDelete(d *schema.ResourceD
 	paradict["vdom"] = device_vdom
 	paradict["managed_switch"] = managed_switch
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
+	wsParams["adom"] = adomv
 
 	err = c.DeleteSwitchControllerManagedSwitchIgmpSnooping(mkey, paradict, wsParams)
 	if err != nil {
@@ -189,8 +198,8 @@ func resourceSwitchControllerManagedSwitchIgmpSnoopingRead(d *schema.ResourceDat
 	c.Retries = 1
 
 	paradict := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	device_vdom, err := getVariable(cfg, d, "device_vdom")
 	managed_switch := d.Get("managed_switch").(string)
@@ -227,6 +236,7 @@ func resourceSwitchControllerManagedSwitchIgmpSnoopingRead(d *schema.ResourceDat
 
 	o, err := c.ReadSwitchControllerManagedSwitchIgmpSnooping(mkey, paradict)
 	if err != nil {
+		d.SetId("")
 		return fmt.Errorf("Error reading SwitchControllerManagedSwitchIgmpSnooping resource: %v", err)
 	}
 
@@ -331,7 +341,7 @@ func flattenSwitchControllerManagedSwitchIgmpSnoopingVlansVersion2edl(v interfac
 }
 
 func flattenSwitchControllerManagedSwitchIgmpSnoopingVlansVlanName2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
-	return flattenStringList(v)
+	return conv2str(v)
 }
 
 func refreshObjectSwitchControllerManagedSwitchIgmpSnooping(d *schema.ResourceData, o map[string]interface{}) error {
@@ -482,7 +492,7 @@ func expandSwitchControllerManagedSwitchIgmpSnoopingVlansVersion2edl(d *schema.R
 }
 
 func expandSwitchControllerManagedSwitchIgmpSnoopingVlansVlanName2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
-	return expandStringList(v.(*schema.Set).List()), nil
+	return v, nil
 }
 
 func getObjectSwitchControllerManagedSwitchIgmpSnooping(d *schema.ResourceData) (*map[string]interface{}, error) {

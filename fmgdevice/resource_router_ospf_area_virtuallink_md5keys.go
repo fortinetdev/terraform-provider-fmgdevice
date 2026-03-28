@@ -28,6 +28,17 @@ func resourceRouterOspfAreaVirtualLinkMd5Keys() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
+			"update_if_exist": &schema.Schema{
+				Type:     schema.TypeBool,
+				Optional: true,
+				Computed: true,
+			},
+
+			"adom": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"device_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -72,8 +83,12 @@ func resourceRouterOspfAreaVirtualLinkMd5KeysCreate(d *schema.ResourceData, m in
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -89,17 +104,37 @@ func resourceRouterOspfAreaVirtualLinkMd5KeysCreate(d *schema.ResourceData, m in
 	paradict["area"] = area
 	paradict["virtual_link"] = virtual_link
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectRouterOspfAreaVirtualLinkMd5Keys(d)
 	if err != nil {
 		return fmt.Errorf("Error creating RouterOspfAreaVirtualLinkMd5Keys resource while getting object: %v", err)
 	}
+	wsParams["adom"] = adomv
 
-	_, err = c.CreateRouterOspfAreaVirtualLinkMd5Keys(obj, paradict, wsParams)
-	if err != nil {
-		return fmt.Errorf("Error creating RouterOspfAreaVirtualLinkMd5Keys resource: %v", err)
+	update_if_exist := getUpdateIfExist(c, d)
+	mkey_tf, mkey_ok := d.GetOk("fosid")
+	mkey := fmt.Sprint(mkey_tf)
+	o := make(map[string]interface{})
+	existing := false
+
+	if update_if_exist && mkey_ok {
+		// check existing
+		o, err = c.ReadRouterOspfAreaVirtualLinkMd5Keys(mkey, paradict)
+		if err == nil && o != nil {
+			existing = true
+			// update if existing
+			o, err = c.UpdateRouterOspfAreaVirtualLinkMd5Keys(obj, mkey, paradict, wsParams)
+			if err != nil {
+				return fmt.Errorf("Error updating RouterOspfAreaVirtualLinkMd5Keys resource: %v", err)
+			}
+		}
+	}
+
+	if !existing {
+		_, err = c.CreateRouterOspfAreaVirtualLinkMd5Keys(obj, paradict, wsParams)
+		if err != nil {
+			return fmt.Errorf("Error creating RouterOspfAreaVirtualLinkMd5Keys resource: %v", err)
+		}
+
 	}
 
 	d.SetId(strconv.Itoa(getIntKey(d, "fosid")))
@@ -114,8 +149,12 @@ func resourceRouterOspfAreaVirtualLinkMd5KeysUpdate(d *schema.ResourceData, m in
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -131,13 +170,12 @@ func resourceRouterOspfAreaVirtualLinkMd5KeysUpdate(d *schema.ResourceData, m in
 	paradict["area"] = area
 	paradict["virtual_link"] = virtual_link
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectRouterOspfAreaVirtualLinkMd5Keys(d)
 	if err != nil {
 		return fmt.Errorf("Error updating RouterOspfAreaVirtualLinkMd5Keys resource while getting object: %v", err)
 	}
+
+	wsParams["adom"] = adomv
 
 	_, err = c.UpdateRouterOspfAreaVirtualLinkMd5Keys(obj, mkey, paradict, wsParams)
 	if err != nil {
@@ -159,8 +197,12 @@ func resourceRouterOspfAreaVirtualLinkMd5KeysDelete(d *schema.ResourceData, m in
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -176,9 +218,7 @@ func resourceRouterOspfAreaVirtualLinkMd5KeysDelete(d *schema.ResourceData, m in
 	paradict["area"] = area
 	paradict["virtual_link"] = virtual_link
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
+	wsParams["adom"] = adomv
 
 	err = c.DeleteRouterOspfAreaVirtualLinkMd5Keys(mkey, paradict, wsParams)
 	if err != nil {
@@ -197,8 +237,8 @@ func resourceRouterOspfAreaVirtualLinkMd5KeysRead(d *schema.ResourceData, m inte
 	c.Retries = 1
 
 	paradict := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	device_vdom, err := getVariable(cfg, d, "device_vdom")
 	area := d.Get("area").(string)
@@ -246,6 +286,7 @@ func resourceRouterOspfAreaVirtualLinkMd5KeysRead(d *schema.ResourceData, m inte
 
 	o, err := c.ReadRouterOspfAreaVirtualLinkMd5Keys(mkey, paradict)
 	if err != nil {
+		d.SetId("")
 		return fmt.Errorf("Error reading RouterOspfAreaVirtualLinkMd5Keys resource: %v", err)
 	}
 

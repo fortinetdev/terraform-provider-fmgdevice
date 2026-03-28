@@ -48,6 +48,7 @@ The following arguments are supported:
 * `gateway` - Gateway IP for this route.
 * `internet_service` - Application ID in the Internet service database.
 * `internet_service_custom` - Application name in the Internet service custom database.
+* `internet_service_fortiguard` - Application name in the Internet service fortiguard database.
 * `link_monitor_exempt` - Enable/disable withdrawal of this static route when link monitor or health check is down. Valid values: `disable`, `enable`.
 
 * `preferred_source` - Preferred source IP for this route.

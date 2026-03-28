@@ -87,6 +87,8 @@ The following arguments are supported:
 
 * `user_anonymize` - Enable/disable anonymizing user names in log messages. Valid values: `disable`, `enable`.
 
+* `zone_name` - Enable/disable zone name logging. Valid values: `disable`, `enable`.
+
 
 
 ## Attribute Reference

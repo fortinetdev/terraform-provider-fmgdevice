@@ -28,6 +28,12 @@ func resourceFirewallIpmacbindingSetting() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
+
+			"adom": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"device_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -64,8 +70,12 @@ func resourceFirewallIpmacbindingSettingUpdate(d *schema.ResourceData, m interfa
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -77,13 +87,12 @@ func resourceFirewallIpmacbindingSettingUpdate(d *schema.ResourceData, m interfa
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectFirewallIpmacbindingSetting(d)
 	if err != nil {
 		return fmt.Errorf("Error updating FirewallIpmacbindingSetting resource while getting object: %v", err)
 	}
+
+	wsParams["adom"] = adomv
 
 	_, err = c.UpdateFirewallIpmacbindingSetting(obj, mkey, paradict, wsParams)
 	if err != nil {
@@ -105,8 +114,12 @@ func resourceFirewallIpmacbindingSettingDelete(d *schema.ResourceData, m interfa
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -118,9 +131,7 @@ func resourceFirewallIpmacbindingSettingDelete(d *schema.ResourceData, m interfa
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
+	wsParams["adom"] = adomv
 
 	err = c.DeleteFirewallIpmacbindingSetting(mkey, paradict, wsParams)
 	if err != nil {
@@ -139,8 +150,8 @@ func resourceFirewallIpmacbindingSettingRead(d *schema.ResourceData, m interface
 	c.Retries = 1
 
 	paradict := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	device_vdom, err := getVariable(cfg, d, "device_vdom")
 	if device_name == "" {
@@ -166,6 +177,7 @@ func resourceFirewallIpmacbindingSettingRead(d *schema.ResourceData, m interface
 
 	o, err := c.ReadFirewallIpmacbindingSetting(mkey, paradict)
 	if err != nil {
+		d.SetId("")
 		return fmt.Errorf("Error reading FirewallIpmacbindingSetting resource: %v", err)
 	}
 

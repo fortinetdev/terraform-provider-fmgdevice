@@ -28,6 +28,17 @@ func resourceZtnaWebProxy() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
+			"update_if_exist": &schema.Schema{
+				Type:     schema.TypeBool,
+				Optional: true,
+				Computed: true,
+			},
+
+			"adom": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"device_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -206,6 +217,11 @@ func resourceZtnaWebProxy() *schema.Resource {
 										Computed: true,
 									},
 									"translate_host": &schema.Schema{
+										Type:     schema.TypeString,
+										Optional: true,
+										Computed: true,
+									},
+									"verify_cert": &schema.Schema{
 										Type:     schema.TypeString,
 										Optional: true,
 										Computed: true,
@@ -453,6 +469,11 @@ func resourceZtnaWebProxy() *schema.Resource {
 										Optional: true,
 										Computed: true,
 									},
+									"verify_cert": &schema.Schema{
+										Type:     schema.TypeString,
+										Optional: true,
+										Computed: true,
+									},
 									"weight": &schema.Schema{
 										Type:     schema.TypeInt,
 										Optional: true,
@@ -604,8 +625,12 @@ func resourceZtnaWebProxyCreate(d *schema.ResourceData, m interface{}) error {
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -617,17 +642,37 @@ func resourceZtnaWebProxyCreate(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectZtnaWebProxy(d)
 	if err != nil {
 		return fmt.Errorf("Error creating ZtnaWebProxy resource while getting object: %v", err)
 	}
+	wsParams["adom"] = adomv
 
-	_, err = c.CreateZtnaWebProxy(obj, paradict, wsParams)
-	if err != nil {
-		return fmt.Errorf("Error creating ZtnaWebProxy resource: %v", err)
+	update_if_exist := getUpdateIfExist(c, d)
+	mkey_tf, mkey_ok := d.GetOk("name")
+	mkey := fmt.Sprint(mkey_tf)
+	o := make(map[string]interface{})
+	existing := false
+
+	if update_if_exist && mkey_ok {
+		// check existing
+		o, err = c.ReadZtnaWebProxy(mkey, paradict)
+		if err == nil && o != nil {
+			existing = true
+			// update if existing
+			o, err = c.UpdateZtnaWebProxy(obj, mkey, paradict, wsParams)
+			if err != nil {
+				return fmt.Errorf("Error updating ZtnaWebProxy resource: %v", err)
+			}
+		}
+	}
+
+	if !existing {
+		_, err = c.CreateZtnaWebProxy(obj, paradict, wsParams)
+		if err != nil {
+			return fmt.Errorf("Error creating ZtnaWebProxy resource: %v", err)
+		}
+
 	}
 
 	d.SetId(getStringKey(d, "name"))
@@ -642,8 +687,12 @@ func resourceZtnaWebProxyUpdate(d *schema.ResourceData, m interface{}) error {
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -655,13 +704,12 @@ func resourceZtnaWebProxyUpdate(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectZtnaWebProxy(d)
 	if err != nil {
 		return fmt.Errorf("Error updating ZtnaWebProxy resource while getting object: %v", err)
 	}
+
+	wsParams["adom"] = adomv
 
 	_, err = c.UpdateZtnaWebProxy(obj, mkey, paradict, wsParams)
 	if err != nil {
@@ -683,8 +731,12 @@ func resourceZtnaWebProxyDelete(d *schema.ResourceData, m interface{}) error {
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -696,9 +748,7 @@ func resourceZtnaWebProxyDelete(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
+	wsParams["adom"] = adomv
 
 	err = c.DeleteZtnaWebProxy(mkey, paradict, wsParams)
 	if err != nil {
@@ -717,8 +767,8 @@ func resourceZtnaWebProxyRead(d *schema.ResourceData, m interface{}) error {
 	c.Retries = 1
 
 	paradict := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	device_vdom, err := getVariable(cfg, d, "device_vdom")
 	if device_name == "" {
@@ -744,6 +794,7 @@ func resourceZtnaWebProxyRead(d *schema.ResourceData, m interface{}) error {
 
 	o, err := c.ReadZtnaWebProxy(mkey, paradict)
 	if err != nil {
+		d.SetId("")
 		return fmt.Errorf("Error reading ZtnaWebProxy resource: %v", err)
 	}
 
@@ -1145,6 +1196,12 @@ func flattenZtnaWebProxyApiGatewayRealservers(v interface{}, d *schema.ResourceD
 			tmp["translate_host"] = fortiAPISubPartPatch(v, "ZtnaWebProxyApiGateway-Realservers-TranslateHost")
 		}
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "verify_cert"
+		if _, ok := i["verify-cert"]; ok {
+			v := flattenZtnaWebProxyApiGatewayRealserversVerifyCert(i["verify-cert"], d, pre_append)
+			tmp["verify_cert"] = fortiAPISubPartPatch(v, "ZtnaWebProxyApiGateway-Realservers-VerifyCert")
+		}
+
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "weight"
 		if _, ok := i["weight"]; ok {
 			v := flattenZtnaWebProxyApiGatewayRealserversWeight(i["weight"], d, pre_append)
@@ -1202,6 +1259,10 @@ func flattenZtnaWebProxyApiGatewayRealserversStatus(v interface{}, d *schema.Res
 }
 
 func flattenZtnaWebProxyApiGatewayRealserversTranslateHost(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenZtnaWebProxyApiGatewayRealserversVerifyCert(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -1685,6 +1746,12 @@ func flattenZtnaWebProxyApiGateway6Realservers(v interface{}, d *schema.Resource
 			tmp["translate_host"] = fortiAPISubPartPatch(v, "ZtnaWebProxyApiGateway6-Realservers-TranslateHost")
 		}
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "verify_cert"
+		if _, ok := i["verify-cert"]; ok {
+			v := flattenZtnaWebProxyApiGateway6RealserversVerifyCert(i["verify-cert"], d, pre_append)
+			tmp["verify_cert"] = fortiAPISubPartPatch(v, "ZtnaWebProxyApiGateway6-Realservers-VerifyCert")
+		}
+
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "weight"
 		if _, ok := i["weight"]; ok {
 			v := flattenZtnaWebProxyApiGateway6RealserversWeight(i["weight"], d, pre_append)
@@ -1742,6 +1809,10 @@ func flattenZtnaWebProxyApiGateway6RealserversStatus(v interface{}, d *schema.Re
 }
 
 func flattenZtnaWebProxyApiGateway6RealserversTranslateHost(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenZtnaWebProxyApiGateway6RealserversVerifyCert(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -2421,6 +2492,11 @@ func expandZtnaWebProxyApiGatewayRealservers(d *schema.ResourceData, v interface
 			tmp["translate-host"], _ = expandZtnaWebProxyApiGatewayRealserversTranslateHost(d, i["translate_host"], pre_append)
 		}
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "verify_cert"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["verify-cert"], _ = expandZtnaWebProxyApiGatewayRealserversVerifyCert(d, i["verify_cert"], pre_append)
+		}
+
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "weight"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
 			tmp["weight"], _ = expandZtnaWebProxyApiGatewayRealserversWeight(d, i["weight"], pre_append)
@@ -2477,6 +2553,10 @@ func expandZtnaWebProxyApiGatewayRealserversStatus(d *schema.ResourceData, v int
 }
 
 func expandZtnaWebProxyApiGatewayRealserversTranslateHost(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandZtnaWebProxyApiGatewayRealserversVerifyCert(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -2916,6 +2996,11 @@ func expandZtnaWebProxyApiGateway6Realservers(d *schema.ResourceData, v interfac
 			tmp["translate-host"], _ = expandZtnaWebProxyApiGateway6RealserversTranslateHost(d, i["translate_host"], pre_append)
 		}
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "verify_cert"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["verify-cert"], _ = expandZtnaWebProxyApiGateway6RealserversVerifyCert(d, i["verify_cert"], pre_append)
+		}
+
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "weight"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
 			tmp["weight"], _ = expandZtnaWebProxyApiGateway6RealserversWeight(d, i["weight"], pre_append)
@@ -2972,6 +3057,10 @@ func expandZtnaWebProxyApiGateway6RealserversStatus(d *schema.ResourceData, v in
 }
 
 func expandZtnaWebProxyApiGateway6RealserversTranslateHost(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandZtnaWebProxyApiGateway6RealserversVerifyCert(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 

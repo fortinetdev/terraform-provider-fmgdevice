@@ -39,6 +39,8 @@ The following arguments are supported:
 
 * `learn_from_traffic` - Enable/disable VXLAN MAC learning from traffic. Valid values: `disable`, `enable`.
 
+* `local_ip` - IPv4 address to use as the source address for egress VXLAN packets.
+* `local_ip6` - IPv6 address to use as the source address for egress VXLAN packets.
 * `multicast_ttl` - VXLAN multicast TTL (1-255, default = 0).
 * `name` - VXLAN device or interface name. Must be a unique interface name.
 * `remote_ip` - IPv4 address of the VXLAN interface on the device at the remote end of the VXLAN.

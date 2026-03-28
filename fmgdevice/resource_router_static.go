@@ -28,6 +28,17 @@ func resourceRouterStatic() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
+			"update_if_exist": &schema.Schema{
+				Type:     schema.TypeBool,
+				Optional: true,
+				Computed: true,
+			},
+
+			"adom": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"device_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -102,6 +113,12 @@ func resourceRouterStatic() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"internet_service_fortiguard": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Computed: true,
+			},
 			"link_monitor_exempt": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -170,8 +187,12 @@ func resourceRouterStaticCreate(d *schema.ResourceData, m interface{}) error {
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -183,25 +204,44 @@ func resourceRouterStaticCreate(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectRouterStatic(d)
 	if err != nil {
 		return fmt.Errorf("Error creating RouterStatic resource while getting object: %v", err)
 	}
+	wsParams["adom"] = adomv
 
-	v, err := c.CreateRouterStatic(obj, paradict, wsParams)
-	if err != nil {
-		return fmt.Errorf("Error creating RouterStatic resource: %v", err)
+	update_if_exist := getUpdateIfExist(c, d)
+	mkey_tf, mkey_ok := d.GetOk("seq_num")
+	mkey := fmt.Sprint(mkey_tf)
+	o := make(map[string]interface{})
+	existing := false
+
+	if update_if_exist && mkey_ok {
+		// check existing
+		o, err = c.ReadRouterStatic(mkey, paradict)
+		if err == nil && o != nil {
+			existing = true
+			// update if existing
+			o, err = c.UpdateRouterStatic(obj, mkey, paradict, wsParams)
+			if err != nil {
+				return fmt.Errorf("Error updating RouterStatic resource: %v", err)
+			}
+		}
 	}
 
-	if v != nil && v["seq-num"] != nil {
-		if vidn, ok := v["seq-num"].(float64); ok {
-			d.SetId(strconv.Itoa(int(vidn)))
-			return resourceRouterStaticRead(d, m)
-		} else {
+	if !existing {
+		v, err := c.CreateRouterStatic(obj, paradict, wsParams)
+		if err != nil {
 			return fmt.Errorf("Error creating RouterStatic resource: %v", err)
+		}
+
+		if v != nil && v["seq-num"] != nil {
+			if vidn, ok := v["seq-num"].(float64); ok {
+				d.SetId(strconv.Itoa(int(vidn)))
+				return resourceRouterStaticRead(d, m)
+			} else {
+				return fmt.Errorf("Error creating RouterStatic resource: %v", err)
+			}
 		}
 	}
 
@@ -217,8 +257,12 @@ func resourceRouterStaticUpdate(d *schema.ResourceData, m interface{}) error {
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -230,13 +274,12 @@ func resourceRouterStaticUpdate(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectRouterStatic(d)
 	if err != nil {
 		return fmt.Errorf("Error updating RouterStatic resource while getting object: %v", err)
 	}
+
+	wsParams["adom"] = adomv
 
 	_, err = c.UpdateRouterStatic(obj, mkey, paradict, wsParams)
 	if err != nil {
@@ -258,8 +301,12 @@ func resourceRouterStaticDelete(d *schema.ResourceData, m interface{}) error {
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -271,9 +318,7 @@ func resourceRouterStaticDelete(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
+	wsParams["adom"] = adomv
 
 	err = c.DeleteRouterStatic(mkey, paradict, wsParams)
 	if err != nil {
@@ -292,8 +337,8 @@ func resourceRouterStaticRead(d *schema.ResourceData, m interface{}) error {
 	c.Retries = 1
 
 	paradict := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	device_vdom, err := getVariable(cfg, d, "device_vdom")
 	if device_name == "" {
@@ -319,6 +364,7 @@ func resourceRouterStaticRead(d *schema.ResourceData, m interface{}) error {
 
 	o, err := c.ReadRouterStatic(mkey, paradict)
 	if err != nil {
+		d.SetId("")
 		return fmt.Errorf("Error reading RouterStatic resource: %v", err)
 	}
 
@@ -380,6 +426,10 @@ func flattenRouterStaticInternetService(v interface{}, d *schema.ResourceData, p
 }
 
 func flattenRouterStaticInternetServiceCustom(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
+func flattenRouterStaticInternetServiceFortiguard(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return flattenStringList(v)
 }
 
@@ -551,6 +601,16 @@ func refreshObjectRouterStatic(d *schema.ResourceData, o map[string]interface{})
 			}
 		} else {
 			return fmt.Errorf("Error reading internet_service_custom: %v", err)
+		}
+	}
+
+	if err = d.Set("internet_service_fortiguard", flattenRouterStaticInternetServiceFortiguard(o["internet-service-fortiguard"], d, "internet_service_fortiguard")); err != nil {
+		if vv, ok := fortiAPIPatch(o["internet-service-fortiguard"], "RouterStatic-InternetServiceFortiguard"); ok {
+			if err = d.Set("internet_service_fortiguard", vv); err != nil {
+				return fmt.Errorf("Error reading internet_service_fortiguard: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading internet_service_fortiguard: %v", err)
 		}
 	}
 
@@ -731,6 +791,10 @@ func expandRouterStaticInternetServiceCustom(d *schema.ResourceData, v interface
 	return expandStringList(v.(*schema.Set).List()), nil
 }
 
+func expandRouterStaticInternetServiceFortiguard(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
 func expandRouterStaticLinkMonitorExempt(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -887,6 +951,15 @@ func getObjectRouterStatic(d *schema.ResourceData) (*map[string]interface{}, err
 			return &obj, err
 		} else if t != nil {
 			obj["internet-service-custom"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("internet_service_fortiguard"); ok || d.HasChange("internet_service_fortiguard") {
+		t, err := expandRouterStaticInternetServiceFortiguard(d, v, "internet_service_fortiguard")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["internet-service-fortiguard"] = t
 		}
 	}
 

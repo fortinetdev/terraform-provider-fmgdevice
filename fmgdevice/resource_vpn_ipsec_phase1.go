@@ -28,6 +28,17 @@ func resourceVpnIpsecPhase1() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
+			"update_if_exist": &schema.Schema{
+				Type:     schema.TypeBool,
+				Optional: true,
+				Computed: true,
+			},
+
+			"adom": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"device_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -240,6 +251,12 @@ func resourceVpnIpsecPhase1() *schema.Resource {
 			"dns_mode": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+			},
+			"dns_suffix_search": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Computed: true,
 			},
 			"domain": &schema.Schema{
 				Type:     schema.TypeString,
@@ -717,6 +734,10 @@ func resourceVpnIpsecPhase1() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"qkd_hybrid": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 			"qkd_profile": &schema.Schema{
 				Type:     schema.TypeSet,
 				Elem:     &schema.Schema{Type: schema.TypeString},
@@ -884,8 +905,12 @@ func resourceVpnIpsecPhase1Create(d *schema.ResourceData, m interface{}) error {
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -897,17 +922,37 @@ func resourceVpnIpsecPhase1Create(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectVpnIpsecPhase1(d)
 	if err != nil {
 		return fmt.Errorf("Error creating VpnIpsecPhase1 resource while getting object: %v", err)
 	}
+	wsParams["adom"] = adomv
 
-	_, err = c.CreateVpnIpsecPhase1(obj, paradict, wsParams)
-	if err != nil {
-		return fmt.Errorf("Error creating VpnIpsecPhase1 resource: %v", err)
+	update_if_exist := getUpdateIfExist(c, d)
+	mkey_tf, mkey_ok := d.GetOk("name")
+	mkey := fmt.Sprint(mkey_tf)
+	o := make(map[string]interface{})
+	existing := false
+
+	if update_if_exist && mkey_ok {
+		// check existing
+		o, err = c.ReadVpnIpsecPhase1(mkey, paradict)
+		if err == nil && o != nil {
+			existing = true
+			// update if existing
+			o, err = c.UpdateVpnIpsecPhase1(obj, mkey, paradict, wsParams)
+			if err != nil {
+				return fmt.Errorf("Error updating VpnIpsecPhase1 resource: %v", err)
+			}
+		}
+	}
+
+	if !existing {
+		_, err = c.CreateVpnIpsecPhase1(obj, paradict, wsParams)
+		if err != nil {
+			return fmt.Errorf("Error creating VpnIpsecPhase1 resource: %v", err)
+		}
+
 	}
 
 	d.SetId(getStringKey(d, "name"))
@@ -922,8 +967,12 @@ func resourceVpnIpsecPhase1Update(d *schema.ResourceData, m interface{}) error {
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -935,13 +984,12 @@ func resourceVpnIpsecPhase1Update(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectVpnIpsecPhase1(d)
 	if err != nil {
 		return fmt.Errorf("Error updating VpnIpsecPhase1 resource while getting object: %v", err)
 	}
+
+	wsParams["adom"] = adomv
 
 	_, err = c.UpdateVpnIpsecPhase1(obj, mkey, paradict, wsParams)
 	if err != nil {
@@ -963,8 +1011,12 @@ func resourceVpnIpsecPhase1Delete(d *schema.ResourceData, m interface{}) error {
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -976,9 +1028,7 @@ func resourceVpnIpsecPhase1Delete(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
+	wsParams["adom"] = adomv
 
 	err = c.DeleteVpnIpsecPhase1(mkey, paradict, wsParams)
 	if err != nil {
@@ -997,8 +1047,8 @@ func resourceVpnIpsecPhase1Read(d *schema.ResourceData, m interface{}) error {
 	c.Retries = 1
 
 	paradict := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	device_vdom, err := getVariable(cfg, d, "device_vdom")
 	if device_name == "" {
@@ -1024,6 +1074,7 @@ func resourceVpnIpsecPhase1Read(d *schema.ResourceData, m interface{}) error {
 
 	o, err := c.ReadVpnIpsecPhase1(mkey, paradict)
 	if err != nil {
+		d.SetId("")
 		return fmt.Errorf("Error reading VpnIpsecPhase1 resource: %v", err)
 	}
 
@@ -1198,6 +1249,10 @@ func flattenVpnIpsecPhase1Distance(v interface{}, d *schema.ResourceData, pre st
 
 func flattenVpnIpsecPhase1DnsMode(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
+}
+
+func flattenVpnIpsecPhase1DnsSuffixSearch(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
 }
 
 func flattenVpnIpsecPhase1Domain(v interface{}, d *schema.ResourceData, pre string) interface{} {
@@ -1655,6 +1710,10 @@ func flattenVpnIpsecPhase1Proposal(v interface{}, d *schema.ResourceData, pre st
 }
 
 func flattenVpnIpsecPhase1Qkd(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenVpnIpsecPhase1QkdHybrid(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -2186,6 +2245,16 @@ func refreshObjectVpnIpsecPhase1(d *schema.ResourceData, o map[string]interface{
 			}
 		} else {
 			return fmt.Errorf("Error reading dns_mode: %v", err)
+		}
+	}
+
+	if err = d.Set("dns_suffix_search", flattenVpnIpsecPhase1DnsSuffixSearch(o["dns-suffix-search"], d, "dns_suffix_search")); err != nil {
+		if vv, ok := fortiAPIPatch(o["dns-suffix-search"], "VpnIpsecPhase1-DnsSuffixSearch"); ok {
+			if err = d.Set("dns_suffix_search", vv); err != nil {
+				return fmt.Errorf("Error reading dns_suffix_search: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading dns_suffix_search: %v", err)
 		}
 	}
 
@@ -3087,6 +3156,16 @@ func refreshObjectVpnIpsecPhase1(d *schema.ResourceData, o map[string]interface{
 		}
 	}
 
+	if err = d.Set("qkd_hybrid", flattenVpnIpsecPhase1QkdHybrid(o["qkd-hybrid"], d, "qkd_hybrid")); err != nil {
+		if vv, ok := fortiAPIPatch(o["qkd-hybrid"], "VpnIpsecPhase1-QkdHybrid"); ok {
+			if err = d.Set("qkd_hybrid", vv); err != nil {
+				return fmt.Errorf("Error reading qkd_hybrid: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading qkd_hybrid: %v", err)
+		}
+	}
+
 	if err = d.Set("qkd_profile", flattenVpnIpsecPhase1QkdProfile(o["qkd-profile"], d, "qkd_profile")); err != nil {
 		if vv, ok := fortiAPIPatch(o["qkd-profile"], "VpnIpsecPhase1-QkdProfile"); ok {
 			if err = d.Set("qkd_profile", vv); err != nil {
@@ -3570,6 +3649,10 @@ func expandVpnIpsecPhase1DnsMode(d *schema.ResourceData, v interface{}, pre stri
 	return v, nil
 }
 
+func expandVpnIpsecPhase1DnsSuffixSearch(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
 func expandVpnIpsecPhase1Domain(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -4025,6 +4108,10 @@ func expandVpnIpsecPhase1PsksecretRemote(d *schema.ResourceData, v interface{}, 
 }
 
 func expandVpnIpsecPhase1Qkd(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandVpnIpsecPhase1QkdHybrid(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -4521,6 +4608,15 @@ func getObjectVpnIpsecPhase1(d *schema.ResourceData) (*map[string]interface{}, e
 			return &obj, err
 		} else if t != nil {
 			obj["dns-mode"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("dns_suffix_search"); ok || d.HasChange("dns_suffix_search") {
+		t, err := expandVpnIpsecPhase1DnsSuffixSearch(d, v, "dns_suffix_search")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["dns-suffix-search"] = t
 		}
 	}
 
@@ -5340,6 +5436,15 @@ func getObjectVpnIpsecPhase1(d *schema.ResourceData) (*map[string]interface{}, e
 			return &obj, err
 		} else if t != nil {
 			obj["qkd"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("qkd_hybrid"); ok || d.HasChange("qkd_hybrid") {
+		t, err := expandVpnIpsecPhase1QkdHybrid(d, v, "qkd_hybrid")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["qkd-hybrid"] = t
 		}
 	}
 

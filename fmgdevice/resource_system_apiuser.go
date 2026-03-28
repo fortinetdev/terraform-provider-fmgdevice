@@ -28,6 +28,17 @@ func resourceSystemApiUser() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
+			"update_if_exist": &schema.Schema{
+				Type:     schema.TypeBool,
+				Optional: true,
+				Computed: true,
+			},
+
+			"adom": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"device_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -55,10 +66,21 @@ func resourceSystemApiUser() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
+			"expire_at": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+			},
 			"name": &schema.Schema{
 				Type:     schema.TypeString,
 				ForceNew: true,
 				Optional: true,
+			},
+			"old_password": &schema.Schema{
+				Type:      schema.TypeSet,
+				Elem:      &schema.Schema{Type: schema.TypeString},
+				Optional:  true,
+				Sensitive: true,
+				Computed:  true,
 			},
 			"peer_auth": &schema.Schema{
 				Type:     schema.TypeString,
@@ -124,25 +146,49 @@ func resourceSystemApiUserCreate(d *schema.ResourceData, m interface{}) error {
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
 	}
 	paradict["device"] = device_name
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectSystemApiUser(d)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemApiUser resource while getting object: %v", err)
 	}
+	wsParams["adom"] = adomv
 
-	_, err = c.CreateSystemApiUser(obj, paradict, wsParams)
-	if err != nil {
-		return fmt.Errorf("Error creating SystemApiUser resource: %v", err)
+	update_if_exist := getUpdateIfExist(c, d)
+	mkey_tf, mkey_ok := d.GetOk("name")
+	mkey := fmt.Sprint(mkey_tf)
+	o := make(map[string]interface{})
+	existing := false
+
+	if update_if_exist && mkey_ok {
+		// check existing
+		o, err = c.ReadSystemApiUser(mkey, paradict)
+		if err == nil && o != nil {
+			existing = true
+			// update if existing
+			o, err = c.UpdateSystemApiUser(obj, mkey, paradict, wsParams)
+			if err != nil {
+				return fmt.Errorf("Error updating SystemApiUser resource: %v", err)
+			}
+		}
+	}
+
+	if !existing {
+		_, err = c.CreateSystemApiUser(obj, paradict, wsParams)
+		if err != nil {
+			return fmt.Errorf("Error creating SystemApiUser resource: %v", err)
+		}
+
 	}
 
 	d.SetId(getStringKey(d, "name"))
@@ -157,21 +203,24 @@ func resourceSystemApiUserUpdate(d *schema.ResourceData, m interface{}) error {
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
 	}
 	paradict["device"] = device_name
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectSystemApiUser(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemApiUser resource while getting object: %v", err)
 	}
+
+	wsParams["adom"] = adomv
 
 	_, err = c.UpdateSystemApiUser(obj, mkey, paradict, wsParams)
 	if err != nil {
@@ -193,17 +242,19 @@ func resourceSystemApiUserDelete(d *schema.ResourceData, m interface{}) error {
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
 	}
 	paradict["device"] = device_name
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
+	wsParams["adom"] = adomv
 
 	err = c.DeleteSystemApiUser(mkey, paradict, wsParams)
 	if err != nil {
@@ -222,8 +273,8 @@ func resourceSystemApiUserRead(d *schema.ResourceData, m interface{}) error {
 	c.Retries = 1
 
 	paradict := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if device_name == "" {
 		device_name = importOptionChecking(m.(*FortiClient).Cfg, "device_name")
@@ -238,6 +289,7 @@ func resourceSystemApiUserRead(d *schema.ResourceData, m interface{}) error {
 
 	o, err := c.ReadSystemApiUser(mkey, paradict)
 	if err != nil {
+		d.SetId("")
 		return fmt.Errorf("Error reading SystemApiUser resource: %v", err)
 	}
 
@@ -263,6 +315,10 @@ func flattenSystemApiUserComments(v interface{}, d *schema.ResourceData, pre str
 }
 
 func flattenSystemApiUserCorsAllowOrigin(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemApiUserExpireAt(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -392,6 +448,16 @@ func refreshObjectSystemApiUser(d *schema.ResourceData, o map[string]interface{}
 		}
 	}
 
+	if err = d.Set("expire_at", flattenSystemApiUserExpireAt(o["expire-at"], d, "expire_at")); err != nil {
+		if vv, ok := fortiAPIPatch(o["expire-at"], "SystemApiUser-ExpireAt"); ok {
+			if err = d.Set("expire_at", vv); err != nil {
+				return fmt.Errorf("Error reading expire_at: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading expire_at: %v", err)
+		}
+	}
+
 	if err = d.Set("name", flattenSystemApiUserName(o["name"], d, "name")); err != nil {
 		if vv, ok := fortiAPIPatch(o["name"], "SystemApiUser-Name"); ok {
 			if err = d.Set("name", vv); err != nil {
@@ -491,8 +557,16 @@ func expandSystemApiUserCorsAllowOrigin(d *schema.ResourceData, v interface{}, p
 	return v, nil
 }
 
+func expandSystemApiUserExpireAt(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandSystemApiUserName(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
+}
+
+func expandSystemApiUserOldPassword(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
 }
 
 func expandSystemApiUserPeerAuth(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
@@ -610,12 +684,30 @@ func getObjectSystemApiUser(d *schema.ResourceData) (*map[string]interface{}, er
 		}
 	}
 
+	if v, ok := d.GetOk("expire_at"); ok || d.HasChange("expire_at") {
+		t, err := expandSystemApiUserExpireAt(d, v, "expire_at")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["expire-at"] = t
+		}
+	}
+
 	if v, ok := d.GetOk("name"); ok || d.HasChange("name") {
 		t, err := expandSystemApiUserName(d, v, "name")
 		if err != nil {
 			return &obj, err
 		} else if t != nil {
 			obj["name"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("old_password"); ok || d.HasChange("old_password") {
+		t, err := expandSystemApiUserOldPassword(d, v, "old_password")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["old-password"] = t
 		}
 	}
 

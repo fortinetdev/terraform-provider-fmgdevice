@@ -28,6 +28,17 @@ func resourceRouterBgpNeighbor() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
+			"update_if_exist": &schema.Schema{
+				Type:     schema.TypeBool,
+				Optional: true,
+				Computed: true,
+			},
+
+			"adom": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"device_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -285,10 +296,8 @@ func resourceRouterBgpNeighbor() *schema.Resource {
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"advertise_routemap": &schema.Schema{
-							Type:     schema.TypeSet,
-							Elem:     &schema.Schema{Type: schema.TypeString},
+							Type:     schema.TypeString,
 							Optional: true,
-							Computed: true,
 						},
 						"condition_routemap": &schema.Schema{
 							Type:     schema.TypeSet,
@@ -939,8 +948,12 @@ func resourceRouterBgpNeighborCreate(d *schema.ResourceData, m interface{}) erro
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -952,17 +965,37 @@ func resourceRouterBgpNeighborCreate(d *schema.ResourceData, m interface{}) erro
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectRouterBgpNeighbor(d)
 	if err != nil {
 		return fmt.Errorf("Error creating RouterBgpNeighbor resource while getting object: %v", err)
 	}
+	wsParams["adom"] = adomv
 
-	_, err = c.CreateRouterBgpNeighbor(obj, paradict, wsParams)
-	if err != nil {
-		return fmt.Errorf("Error creating RouterBgpNeighbor resource: %v", err)
+	update_if_exist := getUpdateIfExist(c, d)
+	mkey_tf, mkey_ok := d.GetOk("ip")
+	mkey := fmt.Sprint(mkey_tf)
+	o := make(map[string]interface{})
+	existing := false
+
+	if update_if_exist && mkey_ok {
+		// check existing
+		o, err = c.ReadRouterBgpNeighbor(mkey, paradict)
+		if err == nil && o != nil {
+			existing = true
+			// update if existing
+			o, err = c.UpdateRouterBgpNeighbor(obj, mkey, paradict, wsParams)
+			if err != nil {
+				return fmt.Errorf("Error updating RouterBgpNeighbor resource: %v", err)
+			}
+		}
+	}
+
+	if !existing {
+		_, err = c.CreateRouterBgpNeighbor(obj, paradict, wsParams)
+		if err != nil {
+			return fmt.Errorf("Error creating RouterBgpNeighbor resource: %v", err)
+		}
+
 	}
 
 	d.SetId(getStringKey(d, "ip"))
@@ -977,8 +1010,12 @@ func resourceRouterBgpNeighborUpdate(d *schema.ResourceData, m interface{}) erro
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -990,13 +1027,12 @@ func resourceRouterBgpNeighborUpdate(d *schema.ResourceData, m interface{}) erro
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectRouterBgpNeighbor(d)
 	if err != nil {
 		return fmt.Errorf("Error updating RouterBgpNeighbor resource while getting object: %v", err)
 	}
+
+	wsParams["adom"] = adomv
 
 	_, err = c.UpdateRouterBgpNeighbor(obj, mkey, paradict, wsParams)
 	if err != nil {
@@ -1018,8 +1054,12 @@ func resourceRouterBgpNeighborDelete(d *schema.ResourceData, m interface{}) erro
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -1031,9 +1071,7 @@ func resourceRouterBgpNeighborDelete(d *schema.ResourceData, m interface{}) erro
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
+	wsParams["adom"] = adomv
 
 	err = c.DeleteRouterBgpNeighbor(mkey, paradict, wsParams)
 	if err != nil {
@@ -1052,8 +1090,8 @@ func resourceRouterBgpNeighborRead(d *schema.ResourceData, m interface{}) error 
 	c.Retries = 1
 
 	paradict := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	device_vdom, err := getVariable(cfg, d, "device_vdom")
 	if device_name == "" {
@@ -1079,6 +1117,7 @@ func resourceRouterBgpNeighborRead(d *schema.ResourceData, m interface{}) error 
 
 	o, err := c.ReadRouterBgpNeighbor(mkey, paradict)
 	if err != nil {
+		d.SetId("")
 		return fmt.Errorf("Error reading RouterBgpNeighbor resource: %v", err)
 	}
 
@@ -1374,7 +1413,7 @@ func flattenRouterBgpNeighborConditionalAdvertise62edl(v interface{}, d *schema.
 }
 
 func flattenRouterBgpNeighborConditionalAdvertise6AdvertiseRoutemap2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
-	return flattenStringList(v)
+	return conv2str(v)
 }
 
 func flattenRouterBgpNeighborConditionalAdvertise6ConditionRoutemap2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
@@ -1498,7 +1537,7 @@ func flattenRouterBgpNeighborLinkDownFailover2edl(v interface{}, d *schema.Resou
 }
 
 func flattenRouterBgpNeighborLocalAs2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
-	return v
+	return conv2num(v)
 }
 
 func flattenRouterBgpNeighborLocalAsNoPrepend2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
@@ -3766,7 +3805,7 @@ func expandRouterBgpNeighborConditionalAdvertise62edl(d *schema.ResourceData, v 
 }
 
 func expandRouterBgpNeighborConditionalAdvertise6AdvertiseRoutemap2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
-	return expandStringList(v.(*schema.Set).List()), nil
+	return v, nil
 }
 
 func expandRouterBgpNeighborConditionalAdvertise6ConditionRoutemap2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {

@@ -20,6 +20,8 @@ The following arguments are supported:
 * `auth_method` - TLS client authentication methods (default = bearer token). Valid values: `token`, `base`.
 
 * `base_url` - Server URL to receive SCIM create, read, update, delete (CRUD) requests.
+* `cascade` - Enable/disable to follow SCIM users/groups changes in IDP. Valid values: `disable`, `enable`.
+
 * `certificate` - Certificate name.
 * `client_authentication_method` - TLS client authentication methods (default = bearer token). Valid values: `token`, `base`.
 

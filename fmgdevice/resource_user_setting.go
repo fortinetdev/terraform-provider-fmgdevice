@@ -28,6 +28,12 @@ func resourceUserSetting() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
+
+			"adom": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"device_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -152,6 +158,17 @@ func resourceUserSetting() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"cors": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+			"cors_allowed_origins": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Computed: true,
+			},
 			"default_user_password_policy": &schema.Schema{
 				Type:     schema.TypeSet,
 				Elem:     &schema.Schema{Type: schema.TypeString},
@@ -184,8 +201,12 @@ func resourceUserSettingUpdate(d *schema.ResourceData, m interface{}) error {
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -197,13 +218,12 @@ func resourceUserSettingUpdate(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectUserSetting(d)
 	if err != nil {
 		return fmt.Errorf("Error updating UserSetting resource while getting object: %v", err)
 	}
+
+	wsParams["adom"] = adomv
 
 	_, err = c.UpdateUserSetting(obj, mkey, paradict, wsParams)
 	if err != nil {
@@ -225,8 +245,12 @@ func resourceUserSettingDelete(d *schema.ResourceData, m interface{}) error {
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -238,9 +262,7 @@ func resourceUserSettingDelete(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
+	wsParams["adom"] = adomv
 
 	err = c.DeleteUserSetting(mkey, paradict, wsParams)
 	if err != nil {
@@ -259,8 +281,8 @@ func resourceUserSettingRead(d *schema.ResourceData, m interface{}) error {
 	c.Retries = 1
 
 	paradict := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	device_vdom, err := getVariable(cfg, d, "device_vdom")
 	if device_name == "" {
@@ -286,6 +308,7 @@ func resourceUserSettingRead(d *schema.ResourceData, m interface{}) error {
 
 	o, err := c.ReadUserSetting(mkey, paradict)
 	if err != nil {
+		d.SetId("")
 		return fmt.Errorf("Error reading UserSetting resource: %v", err)
 	}
 
@@ -430,6 +453,14 @@ func flattenUserSettingAuthTimeoutType(v interface{}, d *schema.ResourceData, pr
 }
 
 func flattenUserSettingAuthType(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
+func flattenUserSettingCors(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenUserSettingCorsAllowedOrigins(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return flattenStringList(v)
 }
 
@@ -656,6 +687,26 @@ func refreshObjectUserSetting(d *schema.ResourceData, o map[string]interface{}) 
 		}
 	}
 
+	if err = d.Set("cors", flattenUserSettingCors(o["cors"], d, "cors")); err != nil {
+		if vv, ok := fortiAPIPatch(o["cors"], "UserSetting-Cors"); ok {
+			if err = d.Set("cors", vv); err != nil {
+				return fmt.Errorf("Error reading cors: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading cors: %v", err)
+		}
+	}
+
+	if err = d.Set("cors_allowed_origins", flattenUserSettingCorsAllowedOrigins(o["cors-allowed-origins"], d, "cors_allowed_origins")); err != nil {
+		if vv, ok := fortiAPIPatch(o["cors-allowed-origins"], "UserSetting-CorsAllowedOrigins"); ok {
+			if err = d.Set("cors_allowed_origins", vv); err != nil {
+				return fmt.Errorf("Error reading cors_allowed_origins: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading cors_allowed_origins: %v", err)
+		}
+	}
+
 	if err = d.Set("default_user_password_policy", flattenUserSettingDefaultUserPasswordPolicy(o["default-user-password-policy"], d, "default_user_password_policy")); err != nil {
 		if vv, ok := fortiAPIPatch(o["default-user-password-policy"], "UserSetting-DefaultUserPasswordPolicy"); ok {
 			if err = d.Set("default_user_password_policy", vv); err != nil {
@@ -815,6 +866,14 @@ func expandUserSettingAuthTimeoutType(d *schema.ResourceData, v interface{}, pre
 }
 
 func expandUserSettingAuthType(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandUserSettingCors(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandUserSettingCorsAllowedOrigins(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return expandStringList(v.(*schema.Set).List()), nil
 }
 
@@ -1001,6 +1060,24 @@ func getObjectUserSetting(d *schema.ResourceData) (*map[string]interface{}, erro
 			return &obj, err
 		} else if t != nil {
 			obj["auth-type"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("cors"); ok || d.HasChange("cors") {
+		t, err := expandUserSettingCors(d, v, "cors")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["cors"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("cors_allowed_origins"); ok || d.HasChange("cors_allowed_origins") {
+		t, err := expandUserSettingCorsAllowedOrigins(d, v, "cors_allowed_origins")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["cors-allowed-origins"] = t
 		}
 	}
 

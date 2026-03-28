@@ -28,6 +28,12 @@ func resourceSystemFortisandbox() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
+
+			"adom": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"device_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -37,6 +43,11 @@ func resourceSystemFortisandbox() *schema.Resource {
 			"ca": &schema.Schema{
 				Type:     schema.TypeSet,
 				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Computed: true,
+			},
+			"certificate_verification": &schema.Schema{
+				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
 			},
@@ -92,6 +103,14 @@ func resourceSystemFortisandbox() *schema.Resource {
 				Type:     schema.TypeInt,
 				Optional: true,
 			},
+			"alt_server": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"health_check_interval": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+			},
 		},
 	}
 }
@@ -103,21 +122,24 @@ func resourceSystemFortisandboxUpdate(d *schema.ResourceData, m interface{}) err
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
 	}
 	paradict["device"] = device_name
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectSystemFortisandbox(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemFortisandbox resource while getting object: %v", err)
 	}
+
+	wsParams["adom"] = adomv
 
 	_, err = c.UpdateSystemFortisandbox(obj, mkey, paradict, wsParams)
 	if err != nil {
@@ -139,17 +161,19 @@ func resourceSystemFortisandboxDelete(d *schema.ResourceData, m interface{}) err
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
 	}
 	paradict["device"] = device_name
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
+	wsParams["adom"] = adomv
 
 	err = c.DeleteSystemFortisandbox(mkey, paradict, wsParams)
 	if err != nil {
@@ -168,8 +192,8 @@ func resourceSystemFortisandboxRead(d *schema.ResourceData, m interface{}) error
 	c.Retries = 1
 
 	paradict := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if device_name == "" {
 		device_name = importOptionChecking(m.(*FortiClient).Cfg, "device_name")
@@ -184,6 +208,7 @@ func resourceSystemFortisandboxRead(d *schema.ResourceData, m interface{}) error
 
 	o, err := c.ReadSystemFortisandbox(mkey, paradict)
 	if err != nil {
+		d.SetId("")
 		return fmt.Errorf("Error reading SystemFortisandbox resource: %v", err)
 	}
 
@@ -202,6 +227,10 @@ func resourceSystemFortisandboxRead(d *schema.ResourceData, m interface{}) error
 
 func flattenSystemFortisandboxCa(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return flattenStringList(v)
+}
+
+func flattenSystemFortisandboxCertificateVerification(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
 }
 
 func flattenSystemFortisandboxCn(v interface{}, d *schema.ResourceData, pre string) interface{} {
@@ -252,6 +281,14 @@ func flattenSystemFortisandboxVrfSelect(v interface{}, d *schema.ResourceData, p
 	return v
 }
 
+func flattenSystemFortisandboxAltServer(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemFortisandboxHealthCheckInterval(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func refreshObjectSystemFortisandbox(d *schema.ResourceData, o map[string]interface{}) error {
 	var err error
 
@@ -262,6 +299,16 @@ func refreshObjectSystemFortisandbox(d *schema.ResourceData, o map[string]interf
 			}
 		} else {
 			return fmt.Errorf("Error reading ca: %v", err)
+		}
+	}
+
+	if err = d.Set("certificate_verification", flattenSystemFortisandboxCertificateVerification(o["certificate-verification"], d, "certificate_verification")); err != nil {
+		if vv, ok := fortiAPIPatch(o["certificate-verification"], "SystemFortisandbox-CertificateVerification"); ok {
+			if err = d.Set("certificate_verification", vv); err != nil {
+				return fmt.Errorf("Error reading certificate_verification: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading certificate_verification: %v", err)
 		}
 	}
 
@@ -385,6 +432,26 @@ func refreshObjectSystemFortisandbox(d *schema.ResourceData, o map[string]interf
 		}
 	}
 
+	if err = d.Set("alt_server", flattenSystemFortisandboxAltServer(o["alt-server"], d, "alt_server")); err != nil {
+		if vv, ok := fortiAPIPatch(o["alt-server"], "SystemFortisandbox-AltServer"); ok {
+			if err = d.Set("alt_server", vv); err != nil {
+				return fmt.Errorf("Error reading alt_server: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading alt_server: %v", err)
+		}
+	}
+
+	if err = d.Set("health_check_interval", flattenSystemFortisandboxHealthCheckInterval(o["health-check-interval"], d, "health_check_interval")); err != nil {
+		if vv, ok := fortiAPIPatch(o["health-check-interval"], "SystemFortisandbox-HealthCheckInterval"); ok {
+			if err = d.Set("health_check_interval", vv); err != nil {
+				return fmt.Errorf("Error reading health_check_interval: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading health_check_interval: %v", err)
+		}
+	}
+
 	return nil
 }
 
@@ -396,6 +463,10 @@ func flattenSystemFortisandboxFortiTestDebug(d *schema.ResourceData, fosdebugsn 
 
 func expandSystemFortisandboxCa(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandSystemFortisandboxCertificateVerification(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
 }
 
 func expandSystemFortisandboxCn(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
@@ -446,6 +517,14 @@ func expandSystemFortisandboxVrfSelect(d *schema.ResourceData, v interface{}, pr
 	return v, nil
 }
 
+func expandSystemFortisandboxAltServer(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemFortisandboxHealthCheckInterval(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func getObjectSystemFortisandbox(d *schema.ResourceData) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
@@ -455,6 +534,15 @@ func getObjectSystemFortisandbox(d *schema.ResourceData) (*map[string]interface{
 			return &obj, err
 		} else if t != nil {
 			obj["ca"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("certificate_verification"); ok || d.HasChange("certificate_verification") {
+		t, err := expandSystemFortisandboxCertificateVerification(d, v, "certificate_verification")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["certificate-verification"] = t
 		}
 	}
 
@@ -563,6 +651,24 @@ func getObjectSystemFortisandbox(d *schema.ResourceData) (*map[string]interface{
 			return &obj, err
 		} else if t != nil {
 			obj["vrf-select"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("alt_server"); ok || d.HasChange("alt_server") {
+		t, err := expandSystemFortisandboxAltServer(d, v, "alt_server")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["alt-server"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("health_check_interval"); ok || d.HasChange("health_check_interval") {
+		t, err := expandSystemFortisandboxHealthCheckInterval(d, v, "health_check_interval")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["health-check-interval"] = t
 		}
 	}
 

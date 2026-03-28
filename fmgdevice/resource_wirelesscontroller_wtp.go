@@ -28,6 +28,17 @@ func resourceWirelessControllerWtp() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
+			"update_if_exist": &schema.Schema{
+				Type:     schema.TypeBool,
+				Optional: true,
+				Computed: true,
+			},
+
+			"adom": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"device_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -82,6 +93,11 @@ func resourceWirelessControllerWtp() *schema.Resource {
 			"coordinate_longitude": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+			},
+			"default_mesh_root": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
 			},
 			"firmware_provision": &schema.Schema{
 				Type:     schema.TypeString,
@@ -257,6 +273,11 @@ func resourceWirelessControllerWtp() *schema.Resource {
 				Optional: true,
 			},
 			"override_allowaccess": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+			"override_default_mesh_root": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
@@ -913,8 +934,12 @@ func resourceWirelessControllerWtpCreate(d *schema.ResourceData, m interface{}) 
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -926,17 +951,37 @@ func resourceWirelessControllerWtpCreate(d *schema.ResourceData, m interface{}) 
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectWirelessControllerWtp(d)
 	if err != nil {
 		return fmt.Errorf("Error creating WirelessControllerWtp resource while getting object: %v", err)
 	}
+	wsParams["adom"] = adomv
 
-	_, err = c.CreateWirelessControllerWtp(obj, paradict, wsParams)
-	if err != nil {
-		return fmt.Errorf("Error creating WirelessControllerWtp resource: %v", err)
+	update_if_exist := getUpdateIfExist(c, d)
+	mkey_tf, mkey_ok := d.GetOk("wtp_id")
+	mkey := fmt.Sprint(mkey_tf)
+	o := make(map[string]interface{})
+	existing := false
+
+	if update_if_exist && mkey_ok {
+		// check existing
+		o, err = c.ReadWirelessControllerWtp(mkey, paradict)
+		if err == nil && o != nil {
+			existing = true
+			// update if existing
+			o, err = c.UpdateWirelessControllerWtp(obj, mkey, paradict, wsParams)
+			if err != nil {
+				return fmt.Errorf("Error updating WirelessControllerWtp resource: %v", err)
+			}
+		}
+	}
+
+	if !existing {
+		_, err = c.CreateWirelessControllerWtp(obj, paradict, wsParams)
+		if err != nil {
+			return fmt.Errorf("Error creating WirelessControllerWtp resource: %v", err)
+		}
+
 	}
 
 	d.SetId(getStringKey(d, "wtp_id"))
@@ -951,8 +996,12 @@ func resourceWirelessControllerWtpUpdate(d *schema.ResourceData, m interface{}) 
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -964,13 +1013,12 @@ func resourceWirelessControllerWtpUpdate(d *schema.ResourceData, m interface{}) 
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectWirelessControllerWtp(d)
 	if err != nil {
 		return fmt.Errorf("Error updating WirelessControllerWtp resource while getting object: %v", err)
 	}
+
+	wsParams["adom"] = adomv
 
 	_, err = c.UpdateWirelessControllerWtp(obj, mkey, paradict, wsParams)
 	if err != nil {
@@ -992,8 +1040,12 @@ func resourceWirelessControllerWtpDelete(d *schema.ResourceData, m interface{}) 
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -1005,9 +1057,7 @@ func resourceWirelessControllerWtpDelete(d *schema.ResourceData, m interface{}) 
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
+	wsParams["adom"] = adomv
 
 	err = c.DeleteWirelessControllerWtp(mkey, paradict, wsParams)
 	if err != nil {
@@ -1026,8 +1076,8 @@ func resourceWirelessControllerWtpRead(d *schema.ResourceData, m interface{}) er
 	c.Retries = 1
 
 	paradict := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	device_vdom, err := getVariable(cfg, d, "device_vdom")
 	if device_name == "" {
@@ -1053,6 +1103,7 @@ func resourceWirelessControllerWtpRead(d *schema.ResourceData, m interface{}) er
 
 	o, err := c.ReadWirelessControllerWtp(mkey, paradict)
 	if err != nil {
+		d.SetId("")
 		return fmt.Errorf("Error reading WirelessControllerWtp resource: %v", err)
 	}
 
@@ -1102,6 +1153,10 @@ func flattenWirelessControllerWtpCoordinateLatitude(v interface{}, d *schema.Res
 }
 
 func flattenWirelessControllerWtpCoordinateLongitude(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWirelessControllerWtpDefaultMeshRoot(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -1339,6 +1394,10 @@ func flattenWirelessControllerWtpName(v interface{}, d *schema.ResourceData, pre
 }
 
 func flattenWirelessControllerWtpOverrideAllowaccess(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWirelessControllerWtpOverrideDefaultMeshRoot(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -2588,6 +2647,16 @@ func refreshObjectWirelessControllerWtp(d *schema.ResourceData, o map[string]int
 		}
 	}
 
+	if err = d.Set("default_mesh_root", flattenWirelessControllerWtpDefaultMeshRoot(o["default-mesh-root"], d, "default_mesh_root")); err != nil {
+		if vv, ok := fortiAPIPatch(o["default-mesh-root"], "WirelessControllerWtp-DefaultMeshRoot"); ok {
+			if err = d.Set("default_mesh_root", vv); err != nil {
+				return fmt.Errorf("Error reading default_mesh_root: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading default_mesh_root: %v", err)
+		}
+	}
+
 	if err = d.Set("firmware_provision", flattenWirelessControllerWtpFirmwareProvision(o["firmware-provision"], d, "firmware_provision")); err != nil {
 		if vv, ok := fortiAPIPatch(o["firmware-provision"], "WirelessControllerWtp-FirmwareProvision"); ok {
 			if err = d.Set("firmware_provision", vv); err != nil {
@@ -2719,6 +2788,16 @@ func refreshObjectWirelessControllerWtp(d *schema.ResourceData, o map[string]int
 			}
 		} else {
 			return fmt.Errorf("Error reading override_allowaccess: %v", err)
+		}
+	}
+
+	if err = d.Set("override_default_mesh_root", flattenWirelessControllerWtpOverrideDefaultMeshRoot(o["override-default-mesh-root"], d, "override_default_mesh_root")); err != nil {
+		if vv, ok := fortiAPIPatch(o["override-default-mesh-root"], "WirelessControllerWtp-OverrideDefaultMeshRoot"); ok {
+			if err = d.Set("override_default_mesh_root", vv); err != nil {
+				return fmt.Errorf("Error reading override_default_mesh_root: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading override_default_mesh_root: %v", err)
 		}
 	}
 
@@ -3077,6 +3156,10 @@ func expandWirelessControllerWtpCoordinateLongitude(d *schema.ResourceData, v in
 	return v, nil
 }
 
+func expandWirelessControllerWtpDefaultMeshRoot(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandWirelessControllerWtpFirmwareProvision(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -3296,6 +3379,10 @@ func expandWirelessControllerWtpName(d *schema.ResourceData, v interface{}, pre 
 }
 
 func expandWirelessControllerWtpOverrideAllowaccess(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWirelessControllerWtpOverrideDefaultMeshRoot(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -4421,6 +4508,15 @@ func getObjectWirelessControllerWtp(d *schema.ResourceData) (*map[string]interfa
 		}
 	}
 
+	if v, ok := d.GetOk("default_mesh_root"); ok || d.HasChange("default_mesh_root") {
+		t, err := expandWirelessControllerWtpDefaultMeshRoot(d, v, "default_mesh_root")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["default-mesh-root"] = t
+		}
+	}
+
 	if v, ok := d.GetOk("firmware_provision"); ok || d.HasChange("firmware_provision") {
 		t, err := expandWirelessControllerWtpFirmwareProvision(d, v, "firmware_provision")
 		if err != nil {
@@ -4535,6 +4631,15 @@ func getObjectWirelessControllerWtp(d *schema.ResourceData) (*map[string]interfa
 			return &obj, err
 		} else if t != nil {
 			obj["override-allowaccess"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("override_default_mesh_root"); ok || d.HasChange("override_default_mesh_root") {
+		t, err := expandWirelessControllerWtpOverrideDefaultMeshRoot(d, v, "override_default_mesh_root")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["override-default-mesh-root"] = t
 		}
 	}
 

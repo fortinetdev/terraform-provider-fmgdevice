@@ -33,6 +33,12 @@ func resourceWirelessControllerAccessControlListLayer3Ipv6RulesMove() *schema.Re
 				Optional: true,
 				Computed: true,
 			},
+
+			"adom": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"device_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -74,8 +80,12 @@ func resourceWirelessControllerAccessControlListLayer3Ipv6RulesMoveUpdate(d *sch
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -91,14 +101,13 @@ func resourceWirelessControllerAccessControlListLayer3Ipv6RulesMoveUpdate(d *sch
 	paradict["access_control_list"] = access_control_list
 	paradict["layer3_ipv6_rules"] = layer3_ipv6_rules
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	target := d.Get("target").(string)
 	obj, err := getObjectWirelessControllerAccessControlListLayer3Ipv6RulesMove(d)
 	if err != nil {
 		return fmt.Errorf("Error updating WirelessControllerAccessControlListLayer3Ipv6RulesMove resource while getting object: %v", err)
 	}
+
+	wsParams["adom"] = adomv
 
 	_, err = c.UpdateWirelessControllerAccessControlListLayer3Ipv6RulesMove(obj, mkey, paradict, wsParams)
 	if err != nil {
@@ -125,12 +134,12 @@ func resourceWirelessControllerAccessControlListLayer3Ipv6RulesMoveRead(d *schem
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	cfg := m.(*FortiClient).Cfg
 
 	sid := d.Get("layer3_ipv6_rules").(string)
 	did := d.Get("target").(string)
 	action := d.Get("option").(string)
 
-	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
 	device_vdom, err := getVariable(cfg, d, "device_vdom")
 	access_control_list := d.Get("access_control_list").(string)

@@ -28,6 +28,17 @@ func resourceSystemGreTunnel() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
+			"update_if_exist": &schema.Schema{
+				Type:     schema.TypeBool,
+				Optional: true,
+				Computed: true,
+			},
+
+			"adom": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"device_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -101,6 +112,10 @@ func resourceSystemGreTunnel() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"loopback_ecmp_offload": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 			"name": &schema.Schema{
 				Type:     schema.TypeString,
 				ForceNew: true,
@@ -140,8 +155,12 @@ func resourceSystemGreTunnelCreate(d *schema.ResourceData, m interface{}) error 
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -153,17 +172,37 @@ func resourceSystemGreTunnelCreate(d *schema.ResourceData, m interface{}) error 
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectSystemGreTunnel(d)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemGreTunnel resource while getting object: %v", err)
 	}
+	wsParams["adom"] = adomv
 
-	_, err = c.CreateSystemGreTunnel(obj, paradict, wsParams)
-	if err != nil {
-		return fmt.Errorf("Error creating SystemGreTunnel resource: %v", err)
+	update_if_exist := getUpdateIfExist(c, d)
+	mkey_tf, mkey_ok := d.GetOk("name")
+	mkey := fmt.Sprint(mkey_tf)
+	o := make(map[string]interface{})
+	existing := false
+
+	if update_if_exist && mkey_ok {
+		// check existing
+		o, err = c.ReadSystemGreTunnel(mkey, paradict)
+		if err == nil && o != nil {
+			existing = true
+			// update if existing
+			o, err = c.UpdateSystemGreTunnel(obj, mkey, paradict, wsParams)
+			if err != nil {
+				return fmt.Errorf("Error updating SystemGreTunnel resource: %v", err)
+			}
+		}
+	}
+
+	if !existing {
+		_, err = c.CreateSystemGreTunnel(obj, paradict, wsParams)
+		if err != nil {
+			return fmt.Errorf("Error creating SystemGreTunnel resource: %v", err)
+		}
+
 	}
 
 	d.SetId(getStringKey(d, "name"))
@@ -178,8 +217,12 @@ func resourceSystemGreTunnelUpdate(d *schema.ResourceData, m interface{}) error 
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -191,13 +234,12 @@ func resourceSystemGreTunnelUpdate(d *schema.ResourceData, m interface{}) error 
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectSystemGreTunnel(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemGreTunnel resource while getting object: %v", err)
 	}
+
+	wsParams["adom"] = adomv
 
 	_, err = c.UpdateSystemGreTunnel(obj, mkey, paradict, wsParams)
 	if err != nil {
@@ -219,8 +261,12 @@ func resourceSystemGreTunnelDelete(d *schema.ResourceData, m interface{}) error 
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -232,9 +278,7 @@ func resourceSystemGreTunnelDelete(d *schema.ResourceData, m interface{}) error 
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
+	wsParams["adom"] = adomv
 
 	err = c.DeleteSystemGreTunnel(mkey, paradict, wsParams)
 	if err != nil {
@@ -253,8 +297,8 @@ func resourceSystemGreTunnelRead(d *schema.ResourceData, m interface{}) error {
 	c.Retries = 1
 
 	paradict := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	device_vdom, err := getVariable(cfg, d, "device_vdom")
 	if device_name == "" {
@@ -280,6 +324,7 @@ func resourceSystemGreTunnelRead(d *schema.ResourceData, m interface{}) error {
 
 	o, err := c.ReadSystemGreTunnel(mkey, paradict)
 	if err != nil {
+		d.SetId("")
 		return fmt.Errorf("Error reading SystemGreTunnel resource: %v", err)
 	}
 
@@ -345,6 +390,10 @@ func flattenSystemGreTunnelLocalGw(v interface{}, d *schema.ResourceData, pre st
 }
 
 func flattenSystemGreTunnelLocalGw6(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemGreTunnelLoopbackEcmpOffload(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -505,6 +554,16 @@ func refreshObjectSystemGreTunnel(d *schema.ResourceData, o map[string]interface
 		}
 	}
 
+	if err = d.Set("loopback_ecmp_offload", flattenSystemGreTunnelLoopbackEcmpOffload(o["loopback-ecmp-offload"], d, "loopback_ecmp_offload")); err != nil {
+		if vv, ok := fortiAPIPatch(o["loopback-ecmp-offload"], "SystemGreTunnel-LoopbackEcmpOffload"); ok {
+			if err = d.Set("loopback_ecmp_offload", vv); err != nil {
+				return fmt.Errorf("Error reading loopback_ecmp_offload: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading loopback_ecmp_offload: %v", err)
+		}
+	}
+
 	if err = d.Set("name", flattenSystemGreTunnelName(o["name"], d, "name")); err != nil {
 		if vv, ok := fortiAPIPatch(o["name"], "SystemGreTunnel-Name"); ok {
 			if err = d.Set("name", vv); err != nil {
@@ -623,6 +682,10 @@ func expandSystemGreTunnelLocalGw(d *schema.ResourceData, v interface{}, pre str
 }
 
 func expandSystemGreTunnelLocalGw6(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemGreTunnelLoopbackEcmpOffload(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -767,6 +830,15 @@ func getObjectSystemGreTunnel(d *schema.ResourceData) (*map[string]interface{}, 
 			return &obj, err
 		} else if t != nil {
 			obj["local-gw6"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("loopback_ecmp_offload"); ok || d.HasChange("loopback_ecmp_offload") {
+		t, err := expandSystemGreTunnelLoopbackEcmpOffload(d, v, "loopback_ecmp_offload")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["loopback-ecmp-offload"] = t
 		}
 	}
 

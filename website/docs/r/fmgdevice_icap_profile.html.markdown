@@ -1,0 +1,126 @@
+---
+subcategory: "No Category"
+layout: "fmgdevice"
+page_title: "FortiManager Device: fmgdevice_icap_profile"
+description: |-
+  <i>This object will be purged after policy copy and install.</i> Configure ICAP profiles.
+---
+
+# fmgdevice_icap_profile
+<i>This object will be purged after policy copy and install.</i> Configure ICAP profiles.
+
+~> The following variables have sub resource. Avoid using them together, otherwise conflicts and overwrites may occur.
+>- `icap_headers`: `fmgdevice_icap_profile_icapheaders`
+>- `respmod_forward_rules`: `fmgdevice_icap_profile_respmodforwardrules`
+
+
+
+## Argument Reference
+
+
+The following arguments are supported:
+
+* `device_name` - FortiManager managed device name. This variable is used in the request URL. If not specified, it will inherit the variable `device_name` of the provider.
+* `device_vdom` - FortiManager managed device vdom. This variable is used in the request URL. If not specified, it will inherit the variable `device_vdom` of the provider.
+
+* `n204_response` - Enable/disable allowance of 204 response from ICAP server. Valid values: `disable`, `enable`.
+
+* `n204_size_limit` - 204 response size limit to be saved by ICAP client in megabytes (1 - 10, default = 1 MB).
+* `chunk_encap` - Enable/disable chunked encapsulation (default = disable). Valid values: `disable`, `enable`.
+
+* `comment` - Comment.
+* `extension_feature` - Enable/disable ICAP extension features. Valid values: `scan-progress`.
+
+* `file_transfer` - Configure the file transfer protocols to pass transferred files to an ICAP server as REQMOD. Valid values: `ssh`, `ftp`.
+
+* `file_transfer_failure` - Action to take if the ICAP server cannot be contacted when processing a file transfer. Valid values: `error`, `bypass`.
+
+* `file_transfer_path` - Path component of the ICAP URI that identifies the file transfer processing service.
+* `file_transfer_server` - ICAP server to use for a file transfer.
+* `icap_block_log` - Enable/disable UTM log when infection found (default = disable). Valid values: `disable`, `enable`.
+
+* `icap_headers` - Icap-Headers. The structure of `icap_headers` block is documented below.
+* `methods` - The allowed HTTP methods that will be sent to ICAP server for further processing. Valid values: `delete`, `get`, `head`, `options`, `post`, `put`, `trace`, `other`, `connect`.
+
+* `name` - ICAP profile name.
+* `ocr_only` - Enable/disable this FortiGate unit to submit only OCR interested content to the ICAP server. Valid values: `disable`, `enable`.
+
+* `preview` - Enable/disable preview of data to ICAP server. Valid values: `disable`, `enable`.
+
+* `preview_data_length` - Preview data length to be sent to ICAP server.
+* `replacemsg_group` - Replacement message group.
+* `request` - Enable/disable whether an HTTP request is passed to an ICAP server. Valid values: `disable`, `enable`.
+
+* `request_failure` - Action to take if the ICAP server cannot be contacted when processing an HTTP request. Valid values: `error`, `bypass`.
+
+* `request_path` - Path component of the ICAP URI that identifies the HTTP request processing service.
+* `request_server` - ICAP server to use for an HTTP request.
+* `respmod_default_action` - Default action to ICAP response modification (respmod) processing. Valid values: `bypass`, `forward`.
+
+* `respmod_forward_rules` - Respmod-Forward-Rules. The structure of `respmod_forward_rules` block is documented below.
+* `response` - Enable/disable whether an HTTP response is passed to an ICAP server. Valid values: `disable`, `enable`.
+
+* `response_failure` - Action to take if the ICAP server cannot be contacted when processing an HTTP response. Valid values: `error`, `bypass`.
+
+* `response_path` - Path component of the ICAP URI that identifies the HTTP response processing service.
+* `response_req_hdr` - Enable/disable addition of req-hdr for ICAP response modification (respmod) processing. Valid values: `disable`, `enable`.
+
+* `response_server` - ICAP server to use for an HTTP response.
+* `scan_progress_interval` - Scan progress interval value.
+* `streaming_content_bypass` - Enable/disable bypassing of ICAP server for streaming content. Valid values: `disable`, `enable`.
+
+* `timeout` - Time (in seconds) that ICAP client waits for the response from ICAP server.
+* `allow_204_response` - Allow-204-Response. Valid values: `disable`, `enable`.
+
+* `scan_oversize_log` - Scan-Oversize-Log. Valid values: `disable`, `enable`.
+
+* `scan_size_limit` - Scan-Size-Limit.
+* `dynamic_sort_subtable` - true or false, set this parameter to true when using dynamic for_each + toset to configure and sort sub-tables, please do not set this parameter when configuring static sub-tables.
+
+The `icap_headers` block supports:
+
+* `base64_encoding` - Enable/disable use of base64 encoding of HTTP content. Valid values: `disable`, `enable`.
+
+* `content` - HTTP header content.
+* `id` - HTTP forwarded header ID.
+* `name` - HTTP forwarded header name.
+* `http_header` - Http-Header.
+* `sesson_info_type` - Sesson-Info-Type. Valid values: `client-ip`, `user`, `upn`, `domain`, `local-grp`, `remote-grp`, `proxy-name`, `auth-user-uri`, `auth-group-uri`.
+
+* `source` - Source. Valid values: `content`, `http-header`, `session`.
+
+
+The `respmod_forward_rules` block supports:
+
+* `action` - Action to be taken for ICAP server. Valid values: `bypass`, `forward`.
+
+* `header_group` - Header-Group. The structure of `header_group` block is documented below.
+* `host` - Address object for the host.
+* `http_resp_status_code` - HTTP response status code.
+* `name` - Address name.
+
+The `header_group` block supports:
+
+* `case_sensitivity` - Enable/disable case sensitivity when matching header. Valid values: `disable`, `enable`.
+
+* `header` - HTTP header regular expression.
+* `header_name` - HTTP header.
+* `id` - ID.
+
+
+## Attribute Reference
+
+In addition to all the above arguments, the following attributes are exported:
+* `id` - an identifier for the resource with format {{name}}.
+
+## Import
+
+Icap Profile can be imported using any of these accepted formats:
+```
+Set import_options = ["device_name=YOUR_VALUE", "device_vdom=YOUR_VALUE"] in the provider section.
+
+$ export "FORTIMANAGER_IMPORT_TABLE"="true"
+$ terraform import fmgdevice_icap_profile.labelname {{name}}
+$ unset "FORTIMANAGER_IMPORT_TABLE"
+```
+

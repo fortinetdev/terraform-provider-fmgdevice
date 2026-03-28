@@ -28,6 +28,17 @@ func resourceFirewallInternetServiceDefinitionEntry() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
+			"update_if_exist": &schema.Schema{
+				Type:     schema.TypeBool,
+				Optional: true,
+				Computed: true,
+			},
+
+			"adom": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"device_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -92,8 +103,12 @@ func resourceFirewallInternetServiceDefinitionEntryCreate(d *schema.ResourceData
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -102,17 +117,37 @@ func resourceFirewallInternetServiceDefinitionEntryCreate(d *schema.ResourceData
 	paradict["device"] = device_name
 	paradict["internet_service_definition"] = internet_service_definition
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectFirewallInternetServiceDefinitionEntry(d)
 	if err != nil {
 		return fmt.Errorf("Error creating FirewallInternetServiceDefinitionEntry resource while getting object: %v", err)
 	}
+	wsParams["adom"] = adomv
 
-	_, err = c.CreateFirewallInternetServiceDefinitionEntry(obj, paradict, wsParams)
-	if err != nil {
-		return fmt.Errorf("Error creating FirewallInternetServiceDefinitionEntry resource: %v", err)
+	update_if_exist := getUpdateIfExist(c, d)
+	mkey_tf, mkey_ok := d.GetOk("seq_num")
+	mkey := fmt.Sprint(mkey_tf)
+	o := make(map[string]interface{})
+	existing := false
+
+	if update_if_exist && mkey_ok {
+		// check existing
+		o, err = c.ReadFirewallInternetServiceDefinitionEntry(mkey, paradict)
+		if err == nil && o != nil {
+			existing = true
+			// update if existing
+			o, err = c.UpdateFirewallInternetServiceDefinitionEntry(obj, mkey, paradict, wsParams)
+			if err != nil {
+				return fmt.Errorf("Error updating FirewallInternetServiceDefinitionEntry resource: %v", err)
+			}
+		}
+	}
+
+	if !existing {
+		_, err = c.CreateFirewallInternetServiceDefinitionEntry(obj, paradict, wsParams)
+		if err != nil {
+			return fmt.Errorf("Error creating FirewallInternetServiceDefinitionEntry resource: %v", err)
+		}
+
 	}
 
 	d.SetId(strconv.Itoa(getIntKey(d, "seq_num")))
@@ -127,8 +162,12 @@ func resourceFirewallInternetServiceDefinitionEntryUpdate(d *schema.ResourceData
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -137,13 +176,12 @@ func resourceFirewallInternetServiceDefinitionEntryUpdate(d *schema.ResourceData
 	paradict["device"] = device_name
 	paradict["internet_service_definition"] = internet_service_definition
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectFirewallInternetServiceDefinitionEntry(d)
 	if err != nil {
 		return fmt.Errorf("Error updating FirewallInternetServiceDefinitionEntry resource while getting object: %v", err)
 	}
+
+	wsParams["adom"] = adomv
 
 	_, err = c.UpdateFirewallInternetServiceDefinitionEntry(obj, mkey, paradict, wsParams)
 	if err != nil {
@@ -165,8 +203,12 @@ func resourceFirewallInternetServiceDefinitionEntryDelete(d *schema.ResourceData
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -175,9 +217,7 @@ func resourceFirewallInternetServiceDefinitionEntryDelete(d *schema.ResourceData
 	paradict["device"] = device_name
 	paradict["internet_service_definition"] = internet_service_definition
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
+	wsParams["adom"] = adomv
 
 	err = c.DeleteFirewallInternetServiceDefinitionEntry(mkey, paradict, wsParams)
 	if err != nil {
@@ -196,8 +236,8 @@ func resourceFirewallInternetServiceDefinitionEntryRead(d *schema.ResourceData, 
 	c.Retries = 1
 
 	paradict := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	internet_service_definition := d.Get("internet_service_definition").(string)
 	if device_name == "" {
@@ -223,6 +263,7 @@ func resourceFirewallInternetServiceDefinitionEntryRead(d *schema.ResourceData, 
 
 	o, err := c.ReadFirewallInternetServiceDefinitionEntry(mkey, paradict)
 	if err != nil {
+		d.SetId("")
 		return fmt.Errorf("Error reading FirewallInternetServiceDefinitionEntry resource: %v", err)
 	}
 

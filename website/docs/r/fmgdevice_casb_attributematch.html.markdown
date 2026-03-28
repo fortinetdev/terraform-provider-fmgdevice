@@ -11,6 +11,7 @@ Configure CASB SaaS application.
 
 ~> The following variables have sub resource. Avoid using them together, otherwise conflicts and overwrites may occur.
 >- `attribute`: `fmgdevice_casb_attributematch_attribute`
+>- `match`: `fmgdevice_casb_attributematch_match`
 
 
 
@@ -24,6 +25,7 @@ The following arguments are supported:
 
 * `application` - CASB tenant application name.
 * `attribute` - Attribute. The structure of `attribute` block is documented below.
+* `match` - Match. The structure of `match` block is documented below.
 * `match_strategy` - CASB tenant match strategy. Valid values: `or`, `and`.
 
 * `name` - CASB tenant match name.
@@ -37,6 +39,25 @@ The `attribute` block supports:
 
 * `match_value` - CASB attribute match value.
 * `name` - CASB attribute match name.
+* `negate` - Enable/disable what the matching strategy must not be. Valid values: `disable`, `enable`.
+
+
+The `match` block supports:
+
+* `id` - CASB attribute match rule ID.
+* `rule` - Rule. The structure of `rule` block is documented below.
+* `rule_strategy` - CASB attribute match rule strategy. Valid values: `or`, `and`.
+
+
+The `rule` block supports:
+
+* `attribute` - CASB attribute match name.
+* `case_sensitive` - CASB attribute match case sensitive. Valid values: `disable`, `enable`.
+
+* `id` - CASB attribute rule ID.
+* `match_pattern` - CASB attribute match pattern. Valid values: `simple`, `substr`, `regexp`.
+
+* `match_value` - CASB attribute match value.
 * `negate` - Enable/disable what the matching strategy must not be. Valid values: `disable`, `enable`.
 
 

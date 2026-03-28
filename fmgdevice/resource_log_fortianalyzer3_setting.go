@@ -28,6 +28,12 @@ func resourceLogFortianalyzer3Setting() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
+
+			"adom": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"device_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -175,21 +181,24 @@ func resourceLogFortianalyzer3SettingUpdate(d *schema.ResourceData, m interface{
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
 	}
 	paradict["device"] = device_name
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectLogFortianalyzer3Setting(d)
 	if err != nil {
 		return fmt.Errorf("Error updating LogFortianalyzer3Setting resource while getting object: %v", err)
 	}
+
+	wsParams["adom"] = adomv
 
 	_, err = c.UpdateLogFortianalyzer3Setting(obj, mkey, paradict, wsParams)
 	if err != nil {
@@ -211,17 +220,19 @@ func resourceLogFortianalyzer3SettingDelete(d *schema.ResourceData, m interface{
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
 	}
 	paradict["device"] = device_name
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
+	wsParams["adom"] = adomv
 
 	err = c.DeleteLogFortianalyzer3Setting(mkey, paradict, wsParams)
 	if err != nil {
@@ -240,8 +251,8 @@ func resourceLogFortianalyzer3SettingRead(d *schema.ResourceData, m interface{})
 	c.Retries = 1
 
 	paradict := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if device_name == "" {
 		device_name = importOptionChecking(m.(*FortiClient).Cfg, "device_name")
@@ -256,6 +267,7 @@ func resourceLogFortianalyzer3SettingRead(d *schema.ResourceData, m interface{})
 
 	o, err := c.ReadLogFortianalyzer3Setting(mkey, paradict)
 	if err != nil {
+		d.SetId("")
 		return fmt.Errorf("Error reading LogFortianalyzer3Setting resource: %v", err)
 	}
 

@@ -28,6 +28,17 @@ func resourceSystemInterfaceIpv6Ip6RouteList() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
+			"update_if_exist": &schema.Schema{
+				Type:     schema.TypeBool,
+				Optional: true,
+				Computed: true,
+			},
+
+			"adom": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"device_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -47,10 +58,12 @@ func resourceSystemInterfaceIpv6Ip6RouteList() *schema.Resource {
 			"route_life_time": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"route_pref": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 		},
 	}
@@ -62,8 +75,12 @@ func resourceSystemInterfaceIpv6Ip6RouteListCreate(d *schema.ResourceData, m int
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -72,17 +89,37 @@ func resourceSystemInterfaceIpv6Ip6RouteListCreate(d *schema.ResourceData, m int
 	paradict["device"] = device_name
 	paradict["interface"] = var_interface
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectSystemInterfaceIpv6Ip6RouteList(d)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemInterfaceIpv6Ip6RouteList resource while getting object: %v", err)
 	}
+	wsParams["adom"] = adomv
 
-	_, err = c.CreateSystemInterfaceIpv6Ip6RouteList(obj, paradict, wsParams)
-	if err != nil {
-		return fmt.Errorf("Error creating SystemInterfaceIpv6Ip6RouteList resource: %v", err)
+	update_if_exist := getUpdateIfExist(c, d)
+	mkey_tf, mkey_ok := d.GetOk("route")
+	mkey := fmt.Sprint(mkey_tf)
+	o := make(map[string]interface{})
+	existing := false
+
+	if update_if_exist && mkey_ok {
+		// check existing
+		o, err = c.ReadSystemInterfaceIpv6Ip6RouteList(mkey, paradict)
+		if err == nil && o != nil {
+			existing = true
+			// update if existing
+			o, err = c.UpdateSystemInterfaceIpv6Ip6RouteList(obj, mkey, paradict, wsParams)
+			if err != nil {
+				return fmt.Errorf("Error updating SystemInterfaceIpv6Ip6RouteList resource: %v", err)
+			}
+		}
+	}
+
+	if !existing {
+		_, err = c.CreateSystemInterfaceIpv6Ip6RouteList(obj, paradict, wsParams)
+		if err != nil {
+			return fmt.Errorf("Error creating SystemInterfaceIpv6Ip6RouteList resource: %v", err)
+		}
+
 	}
 
 	d.SetId(getStringKey(d, "route"))
@@ -97,8 +134,12 @@ func resourceSystemInterfaceIpv6Ip6RouteListUpdate(d *schema.ResourceData, m int
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -107,13 +148,12 @@ func resourceSystemInterfaceIpv6Ip6RouteListUpdate(d *schema.ResourceData, m int
 	paradict["device"] = device_name
 	paradict["interface"] = var_interface
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectSystemInterfaceIpv6Ip6RouteList(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemInterfaceIpv6Ip6RouteList resource while getting object: %v", err)
 	}
+
+	wsParams["adom"] = adomv
 
 	_, err = c.UpdateSystemInterfaceIpv6Ip6RouteList(obj, mkey, paradict, wsParams)
 	if err != nil {
@@ -135,8 +175,12 @@ func resourceSystemInterfaceIpv6Ip6RouteListDelete(d *schema.ResourceData, m int
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -145,9 +189,7 @@ func resourceSystemInterfaceIpv6Ip6RouteListDelete(d *schema.ResourceData, m int
 	paradict["device"] = device_name
 	paradict["interface"] = var_interface
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
+	wsParams["adom"] = adomv
 
 	err = c.DeleteSystemInterfaceIpv6Ip6RouteList(mkey, paradict, wsParams)
 	if err != nil {
@@ -166,8 +208,8 @@ func resourceSystemInterfaceIpv6Ip6RouteListRead(d *schema.ResourceData, m inter
 	c.Retries = 1
 
 	paradict := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	var_interface := d.Get("interface").(string)
 	if device_name == "" {
@@ -193,6 +235,7 @@ func resourceSystemInterfaceIpv6Ip6RouteListRead(d *schema.ResourceData, m inter
 
 	o, err := c.ReadSystemInterfaceIpv6Ip6RouteList(mkey, paradict)
 	if err != nil {
+		d.SetId("")
 		return fmt.Errorf("Error reading SystemInterfaceIpv6Ip6RouteList resource: %v", err)
 	}
 

@@ -28,6 +28,12 @@ func resourceSystemCsf() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
+
+			"adom": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"device_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -237,6 +243,14 @@ func resourceSystemCsf() *schema.Resource {
 							Type:     schema.TypeString,
 							Optional: true,
 						},
+						"guaranteed_seats": &schema.Schema{
+							Type:     schema.TypeInt,
+							Optional: true,
+						},
+						"preferred_seats": &schema.Schema{
+							Type:     schema.TypeInt,
+							Optional: true,
+						},
 					},
 				},
 			},
@@ -266,6 +280,14 @@ func resourceSystemCsf() *schema.Resource {
 				Type:     schema.TypeInt,
 				Optional: true,
 			},
+			"license_sharing": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"preferred_seats": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+			},
 			"dynamic_sort_subtable": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -282,21 +304,24 @@ func resourceSystemCsfUpdate(d *schema.ResourceData, m interface{}) error {
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
 	}
 	paradict["device"] = device_name
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectSystemCsf(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemCsf resource while getting object: %v", err)
 	}
+
+	wsParams["adom"] = adomv
 
 	_, err = c.UpdateSystemCsf(obj, mkey, paradict, wsParams)
 	if err != nil {
@@ -318,17 +343,19 @@ func resourceSystemCsfDelete(d *schema.ResourceData, m interface{}) error {
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
 	}
 	paradict["device"] = device_name
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
+	wsParams["adom"] = adomv
 
 	err = c.DeleteSystemCsf(mkey, paradict, wsParams)
 	if err != nil {
@@ -347,8 +374,8 @@ func resourceSystemCsfRead(d *schema.ResourceData, m interface{}) error {
 	c.Retries = 1
 
 	paradict := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if device_name == "" {
 		device_name = importOptionChecking(m.(*FortiClient).Cfg, "device_name")
@@ -363,6 +390,7 @@ func resourceSystemCsfRead(d *schema.ResourceData, m interface{}) error {
 
 	o, err := c.ReadSystemCsf(mkey, paradict)
 	if err != nil {
+		d.SetId("")
 		return fmt.Errorf("Error reading SystemCsf resource: %v", err)
 	}
 
@@ -654,6 +682,18 @@ func flattenSystemCsfTrustedList(v interface{}, d *schema.ResourceData, pre stri
 			tmp["serial"] = fortiAPISubPartPatch(v, "SystemCsf-TrustedList-Serial")
 		}
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "guaranteed_seats"
+		if _, ok := i["guaranteed-seats"]; ok {
+			v := flattenSystemCsfTrustedListGuaranteedSeats(i["guaranteed-seats"], d, pre_append)
+			tmp["guaranteed_seats"] = fortiAPISubPartPatch(v, "SystemCsf-TrustedList-GuaranteedSeats")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "preferred_seats"
+		if _, ok := i["preferred-seats"]; ok {
+			v := flattenSystemCsfTrustedListPreferredSeats(i["preferred-seats"], d, pre_append)
+			tmp["preferred_seats"] = fortiAPISubPartPatch(v, "SystemCsf-TrustedList-PreferredSeats")
+		}
+
 		if len(tmp) > 0 {
 			result = append(result, tmp)
 		}
@@ -696,6 +736,14 @@ func flattenSystemCsfTrustedListSerial(v interface{}, d *schema.ResourceData, pr
 	return v
 }
 
+func flattenSystemCsfTrustedListGuaranteedSeats(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemCsfTrustedListPreferredSeats(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenSystemCsfUid(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -717,6 +765,14 @@ func flattenSystemCsfUpstreamInterfaceSelectMethod(v interface{}, d *schema.Reso
 }
 
 func flattenSystemCsfUpstreamPort(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemCsfLicenseSharing(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemCsfPreferredSeats(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -1059,6 +1115,26 @@ func refreshObjectSystemCsf(d *schema.ResourceData, o map[string]interface{}) er
 		}
 	}
 
+	if err = d.Set("license_sharing", flattenSystemCsfLicenseSharing(o["license-sharing"], d, "license_sharing")); err != nil {
+		if vv, ok := fortiAPIPatch(o["license-sharing"], "SystemCsf-LicenseSharing"); ok {
+			if err = d.Set("license_sharing", vv); err != nil {
+				return fmt.Errorf("Error reading license_sharing: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading license_sharing: %v", err)
+		}
+	}
+
+	if err = d.Set("preferred_seats", flattenSystemCsfPreferredSeats(o["preferred-seats"], d, "preferred_seats")); err != nil {
+		if vv, ok := fortiAPIPatch(o["preferred-seats"], "SystemCsf-PreferredSeats"); ok {
+			if err = d.Set("preferred_seats", vv); err != nil {
+				return fmt.Errorf("Error reading preferred_seats: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading preferred_seats: %v", err)
+		}
+	}
+
 	return nil
 }
 
@@ -1330,6 +1406,16 @@ func expandSystemCsfTrustedList(d *schema.ResourceData, v interface{}, pre strin
 			tmp["serial"], _ = expandSystemCsfTrustedListSerial(d, i["serial"], pre_append)
 		}
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "guaranteed_seats"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["guaranteed-seats"], _ = expandSystemCsfTrustedListGuaranteedSeats(d, i["guaranteed_seats"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "preferred_seats"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["preferred-seats"], _ = expandSystemCsfTrustedListPreferredSeats(d, i["preferred_seats"], pre_append)
+		}
+
 		if len(tmp) > 0 {
 			result = append(result, tmp)
 		}
@@ -1372,6 +1458,14 @@ func expandSystemCsfTrustedListSerial(d *schema.ResourceData, v interface{}, pre
 	return v, nil
 }
 
+func expandSystemCsfTrustedListGuaranteedSeats(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemCsfTrustedListPreferredSeats(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandSystemCsfUid(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -1393,6 +1487,14 @@ func expandSystemCsfUpstreamInterfaceSelectMethod(d *schema.ResourceData, v inte
 }
 
 func expandSystemCsfUpstreamPort(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemCsfLicenseSharing(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemCsfPreferredSeats(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -1675,6 +1777,24 @@ func getObjectSystemCsf(d *schema.ResourceData) (*map[string]interface{}, error)
 			return &obj, err
 		} else if t != nil {
 			obj["upstream-port"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("license_sharing"); ok || d.HasChange("license_sharing") {
+		t, err := expandSystemCsfLicenseSharing(d, v, "license_sharing")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["license-sharing"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("preferred_seats"); ok || d.HasChange("preferred_seats") {
+		t, err := expandSystemCsfPreferredSeats(d, v, "preferred_seats")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["preferred-seats"] = t
 		}
 	}
 

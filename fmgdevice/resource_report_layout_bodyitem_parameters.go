@@ -28,6 +28,17 @@ func resourceReportLayoutBodyItemParameters() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
+			"update_if_exist": &schema.Schema{
+				Type:     schema.TypeBool,
+				Optional: true,
+				Computed: true,
+			},
+
+			"adom": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"device_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -73,8 +84,12 @@ func resourceReportLayoutBodyItemParametersCreate(d *schema.ResourceData, m inte
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -90,17 +105,37 @@ func resourceReportLayoutBodyItemParametersCreate(d *schema.ResourceData, m inte
 	paradict["layout"] = layout
 	paradict["body_item"] = body_item
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectReportLayoutBodyItemParameters(d)
 	if err != nil {
 		return fmt.Errorf("Error creating ReportLayoutBodyItemParameters resource while getting object: %v", err)
 	}
+	wsParams["adom"] = adomv
 
-	_, err = c.CreateReportLayoutBodyItemParameters(obj, paradict, wsParams)
-	if err != nil {
-		return fmt.Errorf("Error creating ReportLayoutBodyItemParameters resource: %v", err)
+	update_if_exist := getUpdateIfExist(c, d)
+	mkey_tf, mkey_ok := d.GetOk("fosid")
+	mkey := fmt.Sprint(mkey_tf)
+	o := make(map[string]interface{})
+	existing := false
+
+	if update_if_exist && mkey_ok {
+		// check existing
+		o, err = c.ReadReportLayoutBodyItemParameters(mkey, paradict)
+		if err == nil && o != nil {
+			existing = true
+			// update if existing
+			o, err = c.UpdateReportLayoutBodyItemParameters(obj, mkey, paradict, wsParams)
+			if err != nil {
+				return fmt.Errorf("Error updating ReportLayoutBodyItemParameters resource: %v", err)
+			}
+		}
+	}
+
+	if !existing {
+		_, err = c.CreateReportLayoutBodyItemParameters(obj, paradict, wsParams)
+		if err != nil {
+			return fmt.Errorf("Error creating ReportLayoutBodyItemParameters resource: %v", err)
+		}
+
 	}
 
 	d.SetId(strconv.Itoa(getIntKey(d, "fosid")))
@@ -115,8 +150,12 @@ func resourceReportLayoutBodyItemParametersUpdate(d *schema.ResourceData, m inte
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -132,13 +171,12 @@ func resourceReportLayoutBodyItemParametersUpdate(d *schema.ResourceData, m inte
 	paradict["layout"] = layout
 	paradict["body_item"] = body_item
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectReportLayoutBodyItemParameters(d)
 	if err != nil {
 		return fmt.Errorf("Error updating ReportLayoutBodyItemParameters resource while getting object: %v", err)
 	}
+
+	wsParams["adom"] = adomv
 
 	_, err = c.UpdateReportLayoutBodyItemParameters(obj, mkey, paradict, wsParams)
 	if err != nil {
@@ -160,8 +198,12 @@ func resourceReportLayoutBodyItemParametersDelete(d *schema.ResourceData, m inte
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -177,9 +219,7 @@ func resourceReportLayoutBodyItemParametersDelete(d *schema.ResourceData, m inte
 	paradict["layout"] = layout
 	paradict["body_item"] = body_item
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
+	wsParams["adom"] = adomv
 
 	err = c.DeleteReportLayoutBodyItemParameters(mkey, paradict, wsParams)
 	if err != nil {
@@ -198,8 +238,8 @@ func resourceReportLayoutBodyItemParametersRead(d *schema.ResourceData, m interf
 	c.Retries = 1
 
 	paradict := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	device_vdom, err := getVariable(cfg, d, "device_vdom")
 	layout := d.Get("layout").(string)
@@ -247,6 +287,7 @@ func resourceReportLayoutBodyItemParametersRead(d *schema.ResourceData, m interf
 
 	o, err := c.ReadReportLayoutBodyItemParameters(mkey, paradict)
 	if err != nil {
+		d.SetId("")
 		return fmt.Errorf("Error reading ReportLayoutBodyItemParameters resource: %v", err)
 	}
 

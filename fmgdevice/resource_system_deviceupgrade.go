@@ -28,11 +28,27 @@ func resourceSystemDeviceUpgrade() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
+			"update_if_exist": &schema.Schema{
+				Type:     schema.TypeBool,
+				Optional: true,
+				Computed: true,
+			},
+
+			"adom": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"device_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
 				ForceNew: true,
+			},
+			"allow_download": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
 			},
 			"device_type": &schema.Schema{
 				Type:     schema.TypeString,
@@ -56,6 +72,7 @@ func resourceSystemDeviceUpgrade() *schema.Resource {
 			"initial_version": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"known_ha_members": &schema.Schema{
 				Type:     schema.TypeList,
@@ -134,25 +151,49 @@ func resourceSystemDeviceUpgradeCreate(d *schema.ResourceData, m interface{}) er
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
 	}
 	paradict["device"] = device_name
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectSystemDeviceUpgrade(d)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemDeviceUpgrade resource while getting object: %v", err)
 	}
+	wsParams["adom"] = adomv
 
-	_, err = c.CreateSystemDeviceUpgrade(obj, paradict, wsParams)
-	if err != nil {
-		return fmt.Errorf("Error creating SystemDeviceUpgrade resource: %v", err)
+	update_if_exist := getUpdateIfExist(c, d)
+	mkey_tf, mkey_ok := d.GetOk("serial")
+	mkey := fmt.Sprint(mkey_tf)
+	o := make(map[string]interface{})
+	existing := false
+
+	if update_if_exist && mkey_ok {
+		// check existing
+		o, err = c.ReadSystemDeviceUpgrade(mkey, paradict)
+		if err == nil && o != nil {
+			existing = true
+			// update if existing
+			o, err = c.UpdateSystemDeviceUpgrade(obj, mkey, paradict, wsParams)
+			if err != nil {
+				return fmt.Errorf("Error updating SystemDeviceUpgrade resource: %v", err)
+			}
+		}
+	}
+
+	if !existing {
+		_, err = c.CreateSystemDeviceUpgrade(obj, paradict, wsParams)
+		if err != nil {
+			return fmt.Errorf("Error creating SystemDeviceUpgrade resource: %v", err)
+		}
+
 	}
 
 	d.SetId(getStringKey(d, "serial"))
@@ -167,21 +208,24 @@ func resourceSystemDeviceUpgradeUpdate(d *schema.ResourceData, m interface{}) er
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
 	}
 	paradict["device"] = device_name
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectSystemDeviceUpgrade(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemDeviceUpgrade resource while getting object: %v", err)
 	}
+
+	wsParams["adom"] = adomv
 
 	_, err = c.UpdateSystemDeviceUpgrade(obj, mkey, paradict, wsParams)
 	if err != nil {
@@ -203,17 +247,19 @@ func resourceSystemDeviceUpgradeDelete(d *schema.ResourceData, m interface{}) er
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
 	}
 	paradict["device"] = device_name
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
+	wsParams["adom"] = adomv
 
 	err = c.DeleteSystemDeviceUpgrade(mkey, paradict, wsParams)
 	if err != nil {
@@ -232,8 +278,8 @@ func resourceSystemDeviceUpgradeRead(d *schema.ResourceData, m interface{}) erro
 	c.Retries = 1
 
 	paradict := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if device_name == "" {
 		device_name = importOptionChecking(m.(*FortiClient).Cfg, "device_name")
@@ -248,6 +294,7 @@ func resourceSystemDeviceUpgradeRead(d *schema.ResourceData, m interface{}) erro
 
 	o, err := c.ReadSystemDeviceUpgrade(mkey, paradict)
 	if err != nil {
+		d.SetId("")
 		return fmt.Errorf("Error reading SystemDeviceUpgrade resource: %v", err)
 	}
 
@@ -262,6 +309,10 @@ func resourceSystemDeviceUpgradeRead(d *schema.ResourceData, m interface{}) erro
 		return fmt.Errorf("Error reading SystemDeviceUpgrade resource from API: %v", err)
 	}
 	return nil
+}
+
+func flattenSystemDeviceUpgradeAllowDownload(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
 }
 
 func flattenSystemDeviceUpgradeDeviceType(v interface{}, d *schema.ResourceData, pre string) interface{} {
@@ -368,6 +419,16 @@ func refreshObjectSystemDeviceUpgrade(d *schema.ResourceData, o map[string]inter
 
 	if dssValue := d.Get("dynamic_sort_subtable"); dssValue == "" {
 		d.Set("dynamic_sort_subtable", "false")
+	}
+
+	if err = d.Set("allow_download", flattenSystemDeviceUpgradeAllowDownload(o["allow-download"], d, "allow_download")); err != nil {
+		if vv, ok := fortiAPIPatch(o["allow-download"], "SystemDeviceUpgrade-AllowDownload"); ok {
+			if err = d.Set("allow_download", vv); err != nil {
+				return fmt.Errorf("Error reading allow_download: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading allow_download: %v", err)
+		}
 	}
 
 	if err = d.Set("device_type", flattenSystemDeviceUpgradeDeviceType(o["device-type"], d, "device_type")); err != nil {
@@ -553,6 +614,10 @@ func flattenSystemDeviceUpgradeFortiTestDebug(d *schema.ResourceData, fosdebugsn
 	log.Printf("ER List: %v", e)
 }
 
+func expandSystemDeviceUpgradeAllowDownload(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandSystemDeviceUpgradeDeviceType(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -648,6 +713,15 @@ func expandSystemDeviceUpgradeVdom(d *schema.ResourceData, v interface{}, pre st
 
 func getObjectSystemDeviceUpgrade(d *schema.ResourceData) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
+
+	if v, ok := d.GetOk("allow_download"); ok || d.HasChange("allow_download") {
+		t, err := expandSystemDeviceUpgradeAllowDownload(d, v, "allow_download")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["allow-download"] = t
+		}
+	}
 
 	if v, ok := d.GetOk("device_type"); ok || d.HasChange("device_type") {
 		t, err := expandSystemDeviceUpgradeDeviceType(d, v, "device_type")

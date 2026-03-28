@@ -28,6 +28,12 @@ func resourceAutomationSetting() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
+
+			"adom": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"device_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -44,6 +50,11 @@ func resourceAutomationSetting() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"secure_mode": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
 		},
 	}
 }
@@ -55,21 +66,24 @@ func resourceAutomationSettingUpdate(d *schema.ResourceData, m interface{}) erro
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
 	}
 	paradict["device"] = device_name
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectAutomationSetting(d)
 	if err != nil {
 		return fmt.Errorf("Error updating AutomationSetting resource while getting object: %v", err)
 	}
+
+	wsParams["adom"] = adomv
 
 	_, err = c.UpdateAutomationSetting(obj, mkey, paradict, wsParams)
 	if err != nil {
@@ -91,17 +105,19 @@ func resourceAutomationSettingDelete(d *schema.ResourceData, m interface{}) erro
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
 	}
 	paradict["device"] = device_name
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
+	wsParams["adom"] = adomv
 
 	err = c.DeleteAutomationSetting(mkey, paradict, wsParams)
 	if err != nil {
@@ -120,8 +136,8 @@ func resourceAutomationSettingRead(d *schema.ResourceData, m interface{}) error 
 	c.Retries = 1
 
 	paradict := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if device_name == "" {
 		device_name = importOptionChecking(m.(*FortiClient).Cfg, "device_name")
@@ -136,6 +152,7 @@ func resourceAutomationSettingRead(d *schema.ResourceData, m interface{}) error 
 
 	o, err := c.ReadAutomationSetting(mkey, paradict)
 	if err != nil {
+		d.SetId("")
 		return fmt.Errorf("Error reading AutomationSetting resource: %v", err)
 	}
 
@@ -157,6 +174,10 @@ func flattenAutomationSettingFabricSync(v interface{}, d *schema.ResourceData, p
 }
 
 func flattenAutomationSettingMaxConcurrentStitches(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenAutomationSettingSecureMode(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -183,6 +204,16 @@ func refreshObjectAutomationSetting(d *schema.ResourceData, o map[string]interfa
 		}
 	}
 
+	if err = d.Set("secure_mode", flattenAutomationSettingSecureMode(o["secure-mode"], d, "secure_mode")); err != nil {
+		if vv, ok := fortiAPIPatch(o["secure-mode"], "AutomationSetting-SecureMode"); ok {
+			if err = d.Set("secure_mode", vv); err != nil {
+				return fmt.Errorf("Error reading secure_mode: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading secure_mode: %v", err)
+		}
+	}
+
 	return nil
 }
 
@@ -197,6 +228,10 @@ func expandAutomationSettingFabricSync(d *schema.ResourceData, v interface{}, pr
 }
 
 func expandAutomationSettingMaxConcurrentStitches(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandAutomationSettingSecureMode(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -218,6 +253,15 @@ func getObjectAutomationSetting(d *schema.ResourceData) (*map[string]interface{}
 			return &obj, err
 		} else if t != nil {
 			obj["max-concurrent-stitches"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("secure_mode"); ok || d.HasChange("secure_mode") {
+		t, err := expandAutomationSettingSecureMode(d, v, "secure_mode")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["secure-mode"] = t
 		}
 	}
 

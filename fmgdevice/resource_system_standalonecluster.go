@@ -28,6 +28,12 @@ func resourceSystemStandaloneCluster() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
+
+			"adom": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"device_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -194,6 +200,11 @@ func resourceSystemStandaloneCluster() *schema.Resource {
 				Type:     schema.TypeInt,
 				Optional: true,
 			},
+			"helper_traffic_bounce": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
 			"layer2_connection": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -256,6 +267,11 @@ func resourceSystemStandaloneCluster() *schema.Resource {
 				Type:     schema.TypeInt,
 				Optional: true,
 			},
+			"utm_traffic_bounce": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
 			"dynamic_sort_subtable": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -272,21 +288,24 @@ func resourceSystemStandaloneClusterUpdate(d *schema.ResourceData, m interface{}
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
 	}
 	paradict["device"] = device_name
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectSystemStandaloneCluster(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemStandaloneCluster resource while getting object: %v", err)
 	}
+
+	wsParams["adom"] = adomv
 
 	_, err = c.UpdateSystemStandaloneCluster(obj, mkey, paradict, wsParams)
 	if err != nil {
@@ -308,17 +327,19 @@ func resourceSystemStandaloneClusterDelete(d *schema.ResourceData, m interface{}
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
 	}
 	paradict["device"] = device_name
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
+	wsParams["adom"] = adomv
 
 	err = c.DeleteSystemStandaloneCluster(mkey, paradict, wsParams)
 	if err != nil {
@@ -337,8 +358,8 @@ func resourceSystemStandaloneClusterRead(d *schema.ResourceData, m interface{}) 
 	c.Retries = 1
 
 	paradict := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if device_name == "" {
 		device_name = importOptionChecking(m.(*FortiClient).Cfg, "device_name")
@@ -353,6 +374,7 @@ func resourceSystemStandaloneClusterRead(d *schema.ResourceData, m interface{}) 
 
 	o, err := c.ReadSystemStandaloneCluster(mkey, paradict)
 	if err != nil {
+		d.SetId("")
 		return fmt.Errorf("Error reading SystemStandaloneCluster resource: %v", err)
 	}
 
@@ -681,6 +703,10 @@ func flattenSystemStandaloneClusterGroupMemberId(v interface{}, d *schema.Resour
 	return v
 }
 
+func flattenSystemStandaloneClusterHelperTrafficBounce(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenSystemStandaloneClusterLayer2Connection(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -770,6 +796,10 @@ func flattenSystemStandaloneClusterStandaloneGroupId(v interface{}, d *schema.Re
 	return v
 }
 
+func flattenSystemStandaloneClusterUtmTrafficBounce(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func refreshObjectSystemStandaloneCluster(d *schema.ResourceData, o map[string]interface{}) error {
 	var err error
 
@@ -838,6 +868,16 @@ func refreshObjectSystemStandaloneCluster(d *schema.ResourceData, o map[string]i
 			}
 		} else {
 			return fmt.Errorf("Error reading group_member_id: %v", err)
+		}
+	}
+
+	if err = d.Set("helper_traffic_bounce", flattenSystemStandaloneClusterHelperTrafficBounce(o["helper-traffic-bounce"], d, "helper_traffic_bounce")); err != nil {
+		if vv, ok := fortiAPIPatch(o["helper-traffic-bounce"], "SystemStandaloneCluster-HelperTrafficBounce"); ok {
+			if err = d.Set("helper_traffic_bounce", vv); err != nil {
+				return fmt.Errorf("Error reading helper_traffic_bounce: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading helper_traffic_bounce: %v", err)
 		}
 	}
 
@@ -912,6 +952,16 @@ func refreshObjectSystemStandaloneCluster(d *schema.ResourceData, o map[string]i
 			}
 		} else {
 			return fmt.Errorf("Error reading standalone_group_id: %v", err)
+		}
+	}
+
+	if err = d.Set("utm_traffic_bounce", flattenSystemStandaloneClusterUtmTrafficBounce(o["utm-traffic-bounce"], d, "utm_traffic_bounce")); err != nil {
+		if vv, ok := fortiAPIPatch(o["utm-traffic-bounce"], "SystemStandaloneCluster-UtmTrafficBounce"); ok {
+			if err = d.Set("utm_traffic_bounce", vv); err != nil {
+				return fmt.Errorf("Error reading utm_traffic_bounce: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading utm_traffic_bounce: %v", err)
 		}
 	}
 
@@ -1213,6 +1263,10 @@ func expandSystemStandaloneClusterGroupMemberId(d *schema.ResourceData, v interf
 	return v, nil
 }
 
+func expandSystemStandaloneClusterHelperTrafficBounce(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandSystemStandaloneClusterLayer2Connection(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -1297,6 +1351,10 @@ func expandSystemStandaloneClusterStandaloneGroupId(d *schema.ResourceData, v in
 	return v, nil
 }
 
+func expandSystemStandaloneClusterUtmTrafficBounce(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func getObjectSystemStandaloneCluster(d *schema.ResourceData) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
@@ -1342,6 +1400,15 @@ func getObjectSystemStandaloneCluster(d *schema.ResourceData) (*map[string]inter
 			return &obj, err
 		} else if t != nil {
 			obj["group-member-id"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("helper_traffic_bounce"); ok || d.HasChange("helper_traffic_bounce") {
+		t, err := expandSystemStandaloneClusterHelperTrafficBounce(d, v, "helper_traffic_bounce")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["helper-traffic-bounce"] = t
 		}
 	}
 
@@ -1405,6 +1472,15 @@ func getObjectSystemStandaloneCluster(d *schema.ResourceData) (*map[string]inter
 			return &obj, err
 		} else if t != nil {
 			obj["standalone-group-id"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("utm_traffic_bounce"); ok || d.HasChange("utm_traffic_bounce") {
+		t, err := expandSystemStandaloneClusterUtmTrafficBounce(d, v, "utm_traffic_bounce")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["utm-traffic-bounce"] = t
 		}
 	}
 

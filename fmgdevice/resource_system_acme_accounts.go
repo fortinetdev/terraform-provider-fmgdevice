@@ -28,6 +28,17 @@ func resourceSystemAcmeAccounts() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
+			"update_if_exist": &schema.Schema{
+				Type:     schema.TypeBool,
+				Optional: true,
+				Computed: true,
+			},
+
+			"adom": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"device_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -35,6 +46,17 @@ func resourceSystemAcmeAccounts() *schema.Resource {
 				ForceNew: true,
 			},
 			"ca_url": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"eab_key_hmac": &schema.Schema{
+				Type:      schema.TypeSet,
+				Elem:      &schema.Schema{Type: schema.TypeString},
+				Optional:  true,
+				Sensitive: true,
+				Computed:  true,
+			},
+			"eab_key_id": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 			},
@@ -69,25 +91,49 @@ func resourceSystemAcmeAccountsCreate(d *schema.ResourceData, m interface{}) err
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
 	}
 	paradict["device"] = device_name
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectSystemAcmeAccounts(d)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemAcmeAccounts resource while getting object: %v", err)
 	}
+	wsParams["adom"] = adomv
 
-	_, err = c.CreateSystemAcmeAccounts(obj, paradict, wsParams)
-	if err != nil {
-		return fmt.Errorf("Error creating SystemAcmeAccounts resource: %v", err)
+	update_if_exist := getUpdateIfExist(c, d)
+	mkey_tf, mkey_ok := d.GetOk("fosid")
+	mkey := fmt.Sprint(mkey_tf)
+	o := make(map[string]interface{})
+	existing := false
+
+	if update_if_exist && mkey_ok {
+		// check existing
+		o, err = c.ReadSystemAcmeAccounts(mkey, paradict)
+		if err == nil && o != nil {
+			existing = true
+			// update if existing
+			o, err = c.UpdateSystemAcmeAccounts(obj, mkey, paradict, wsParams)
+			if err != nil {
+				return fmt.Errorf("Error updating SystemAcmeAccounts resource: %v", err)
+			}
+		}
+	}
+
+	if !existing {
+		_, err = c.CreateSystemAcmeAccounts(obj, paradict, wsParams)
+		if err != nil {
+			return fmt.Errorf("Error creating SystemAcmeAccounts resource: %v", err)
+		}
+
 	}
 
 	d.SetId(getStringKey(d, "fosid"))
@@ -102,21 +148,24 @@ func resourceSystemAcmeAccountsUpdate(d *schema.ResourceData, m interface{}) err
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
 	}
 	paradict["device"] = device_name
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectSystemAcmeAccounts(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemAcmeAccounts resource while getting object: %v", err)
 	}
+
+	wsParams["adom"] = adomv
 
 	_, err = c.UpdateSystemAcmeAccounts(obj, mkey, paradict, wsParams)
 	if err != nil {
@@ -138,17 +187,19 @@ func resourceSystemAcmeAccountsDelete(d *schema.ResourceData, m interface{}) err
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
 	}
 	paradict["device"] = device_name
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
+	wsParams["adom"] = adomv
 
 	err = c.DeleteSystemAcmeAccounts(mkey, paradict, wsParams)
 	if err != nil {
@@ -167,8 +218,8 @@ func resourceSystemAcmeAccountsRead(d *schema.ResourceData, m interface{}) error
 	c.Retries = 1
 
 	paradict := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if device_name == "" {
 		device_name = importOptionChecking(m.(*FortiClient).Cfg, "device_name")
@@ -183,6 +234,7 @@ func resourceSystemAcmeAccountsRead(d *schema.ResourceData, m interface{}) error
 
 	o, err := c.ReadSystemAcmeAccounts(mkey, paradict)
 	if err != nil {
+		d.SetId("")
 		return fmt.Errorf("Error reading SystemAcmeAccounts resource: %v", err)
 	}
 
@@ -200,6 +252,10 @@ func resourceSystemAcmeAccountsRead(d *schema.ResourceData, m interface{}) error
 }
 
 func flattenSystemAcmeAccountsCaUrl2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemAcmeAccountsEabKeyId2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -233,6 +289,16 @@ func refreshObjectSystemAcmeAccounts(d *schema.ResourceData, o map[string]interf
 			}
 		} else {
 			return fmt.Errorf("Error reading ca_url: %v", err)
+		}
+	}
+
+	if err = d.Set("eab_key_id", flattenSystemAcmeAccountsEabKeyId2edl(o["eab-key-id"], d, "eab_key_id")); err != nil {
+		if vv, ok := fortiAPIPatch(o["eab-key-id"], "SystemAcmeAccounts-EabKeyId"); ok {
+			if err = d.Set("eab_key_id", vv); err != nil {
+				return fmt.Errorf("Error reading eab_key_id: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading eab_key_id: %v", err)
 		}
 	}
 
@@ -299,6 +365,14 @@ func expandSystemAcmeAccountsCaUrl2edl(d *schema.ResourceData, v interface{}, pr
 	return v, nil
 }
 
+func expandSystemAcmeAccountsEabKeyHmac2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandSystemAcmeAccountsEabKeyId2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandSystemAcmeAccountsEmail2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -328,6 +402,24 @@ func getObjectSystemAcmeAccounts(d *schema.ResourceData) (*map[string]interface{
 			return &obj, err
 		} else if t != nil {
 			obj["ca_url"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("eab_key_hmac"); ok || d.HasChange("eab_key_hmac") {
+		t, err := expandSystemAcmeAccountsEabKeyHmac2edl(d, v, "eab_key_hmac")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["eab-key-hmac"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("eab_key_id"); ok || d.HasChange("eab_key_id") {
+		t, err := expandSystemAcmeAccountsEabKeyId2edl(d, v, "eab_key_id")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["eab-key-id"] = t
 		}
 	}
 

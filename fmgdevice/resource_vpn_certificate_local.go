@@ -28,6 +28,17 @@ func resourceVpnCertificateLocal() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
+			"update_if_exist": &schema.Schema{
+				Type:     schema.TypeBool,
+				Optional: true,
+				Computed: true,
+			},
+
+			"adom": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"device_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -46,6 +57,17 @@ func resourceVpnCertificateLocal() *schema.Resource {
 				Computed: true,
 			},
 			"acme_domain": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"acme_eab_key_hmac": &schema.Schema{
+				Type:      schema.TypeSet,
+				Elem:      &schema.Schema{Type: schema.TypeString},
+				Optional:  true,
+				Sensitive: true,
+				Computed:  true,
+			},
+			"acme_eab_key_id": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 			},
@@ -227,6 +249,26 @@ func resourceVpnCertificateLocal() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
+			"hsm_keytype": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"hsm_slot": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"hsm_vendor": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"nethsm_slot": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"type": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 		},
 	}
 }
@@ -237,8 +279,12 @@ func resourceVpnCertificateLocalCreate(d *schema.ResourceData, m interface{}) er
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -250,17 +296,37 @@ func resourceVpnCertificateLocalCreate(d *schema.ResourceData, m interface{}) er
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectVpnCertificateLocal(d)
 	if err != nil {
 		return fmt.Errorf("Error creating VpnCertificateLocal resource while getting object: %v", err)
 	}
+	wsParams["adom"] = adomv
 
-	_, err = c.CreateVpnCertificateLocal(obj, paradict, wsParams)
-	if err != nil {
-		return fmt.Errorf("Error creating VpnCertificateLocal resource: %v", err)
+	update_if_exist := getUpdateIfExist(c, d)
+	mkey_tf, mkey_ok := d.GetOk("name")
+	mkey := fmt.Sprint(mkey_tf)
+	o := make(map[string]interface{})
+	existing := false
+
+	if update_if_exist && mkey_ok {
+		// check existing
+		o, err = c.ReadVpnCertificateLocal(mkey, paradict)
+		if err == nil && o != nil {
+			existing = true
+			// update if existing
+			o, err = c.UpdateVpnCertificateLocal(obj, mkey, paradict, wsParams)
+			if err != nil {
+				return fmt.Errorf("Error updating VpnCertificateLocal resource: %v", err)
+			}
+		}
+	}
+
+	if !existing {
+		_, err = c.CreateVpnCertificateLocal(obj, paradict, wsParams)
+		if err != nil {
+			return fmt.Errorf("Error creating VpnCertificateLocal resource: %v", err)
+		}
+
 	}
 
 	d.SetId(getStringKey(d, "name"))
@@ -275,8 +341,12 @@ func resourceVpnCertificateLocalUpdate(d *schema.ResourceData, m interface{}) er
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -288,13 +358,12 @@ func resourceVpnCertificateLocalUpdate(d *schema.ResourceData, m interface{}) er
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectVpnCertificateLocal(d)
 	if err != nil {
 		return fmt.Errorf("Error updating VpnCertificateLocal resource while getting object: %v", err)
 	}
+
+	wsParams["adom"] = adomv
 
 	_, err = c.UpdateVpnCertificateLocal(obj, mkey, paradict, wsParams)
 	if err != nil {
@@ -316,8 +385,12 @@ func resourceVpnCertificateLocalDelete(d *schema.ResourceData, m interface{}) er
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -329,9 +402,7 @@ func resourceVpnCertificateLocalDelete(d *schema.ResourceData, m interface{}) er
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
+	wsParams["adom"] = adomv
 
 	err = c.DeleteVpnCertificateLocal(mkey, paradict, wsParams)
 	if err != nil {
@@ -350,8 +421,8 @@ func resourceVpnCertificateLocalRead(d *schema.ResourceData, m interface{}) erro
 	c.Retries = 1
 
 	paradict := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	device_vdom, err := getVariable(cfg, d, "device_vdom")
 	if device_name == "" {
@@ -377,6 +448,7 @@ func resourceVpnCertificateLocalRead(d *schema.ResourceData, m interface{}) erro
 
 	o, err := c.ReadVpnCertificateLocal(mkey, paradict)
 	if err != nil {
+		d.SetId("")
 		return fmt.Errorf("Error reading VpnCertificateLocal resource: %v", err)
 	}
 
@@ -398,6 +470,10 @@ func flattenVpnCertificateLocalAcmeCaUrl(v interface{}, d *schema.ResourceData, 
 }
 
 func flattenVpnCertificateLocalAcmeDomain(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenVpnCertificateLocalAcmeEabKeyId(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -545,6 +621,26 @@ func flattenVpnCertificateLocalTmpCertFile(v interface{}, d *schema.ResourceData
 	return v
 }
 
+func flattenVpnCertificateLocalHsmKeytype(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenVpnCertificateLocalHsmSlot(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenVpnCertificateLocalHsmVendor(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenVpnCertificateLocalNethsmSlot(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenVpnCertificateLocalType(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func refreshObjectVpnCertificateLocal(d *schema.ResourceData, o map[string]interface{}) error {
 	var err error
 
@@ -565,6 +661,16 @@ func refreshObjectVpnCertificateLocal(d *schema.ResourceData, o map[string]inter
 			}
 		} else {
 			return fmt.Errorf("Error reading acme_domain: %v", err)
+		}
+	}
+
+	if err = d.Set("acme_eab_key_id", flattenVpnCertificateLocalAcmeEabKeyId(o["acme-eab-key-id"], d, "acme_eab_key_id")); err != nil {
+		if vv, ok := fortiAPIPatch(o["acme-eab-key-id"], "VpnCertificateLocal-AcmeEabKeyId"); ok {
+			if err = d.Set("acme_eab_key_id", vv); err != nil {
+				return fmt.Errorf("Error reading acme_eab_key_id: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading acme_eab_key_id: %v", err)
 		}
 	}
 
@@ -928,6 +1034,56 @@ func refreshObjectVpnCertificateLocal(d *schema.ResourceData, o map[string]inter
 		}
 	}
 
+	if err = d.Set("hsm_keytype", flattenVpnCertificateLocalHsmKeytype(o["hsm-keytype"], d, "hsm_keytype")); err != nil {
+		if vv, ok := fortiAPIPatch(o["hsm-keytype"], "VpnCertificateLocal-HsmKeytype"); ok {
+			if err = d.Set("hsm_keytype", vv); err != nil {
+				return fmt.Errorf("Error reading hsm_keytype: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading hsm_keytype: %v", err)
+		}
+	}
+
+	if err = d.Set("hsm_slot", flattenVpnCertificateLocalHsmSlot(o["hsm-slot"], d, "hsm_slot")); err != nil {
+		if vv, ok := fortiAPIPatch(o["hsm-slot"], "VpnCertificateLocal-HsmSlot"); ok {
+			if err = d.Set("hsm_slot", vv); err != nil {
+				return fmt.Errorf("Error reading hsm_slot: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading hsm_slot: %v", err)
+		}
+	}
+
+	if err = d.Set("hsm_vendor", flattenVpnCertificateLocalHsmVendor(o["hsm-vendor"], d, "hsm_vendor")); err != nil {
+		if vv, ok := fortiAPIPatch(o["hsm-vendor"], "VpnCertificateLocal-HsmVendor"); ok {
+			if err = d.Set("hsm_vendor", vv); err != nil {
+				return fmt.Errorf("Error reading hsm_vendor: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading hsm_vendor: %v", err)
+		}
+	}
+
+	if err = d.Set("nethsm_slot", flattenVpnCertificateLocalNethsmSlot(o["nethsm-slot"], d, "nethsm_slot")); err != nil {
+		if vv, ok := fortiAPIPatch(o["nethsm-slot"], "VpnCertificateLocal-NethsmSlot"); ok {
+			if err = d.Set("nethsm_slot", vv); err != nil {
+				return fmt.Errorf("Error reading nethsm_slot: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading nethsm_slot: %v", err)
+		}
+	}
+
+	if err = d.Set("type", flattenVpnCertificateLocalType(o["type"], d, "type")); err != nil {
+		if vv, ok := fortiAPIPatch(o["type"], "VpnCertificateLocal-Type"); ok {
+			if err = d.Set("type", vv); err != nil {
+				return fmt.Errorf("Error reading type: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading type: %v", err)
+		}
+	}
+
 	return nil
 }
 
@@ -942,6 +1098,14 @@ func expandVpnCertificateLocalAcmeCaUrl(d *schema.ResourceData, v interface{}, p
 }
 
 func expandVpnCertificateLocalAcmeDomain(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandVpnCertificateLocalAcmeEabKeyHmac(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandVpnCertificateLocalAcmeEabKeyId(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -1097,6 +1261,26 @@ func expandVpnCertificateLocalTmpCertFile(d *schema.ResourceData, v interface{},
 	return v, nil
 }
 
+func expandVpnCertificateLocalHsmKeytype(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandVpnCertificateLocalHsmSlot(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandVpnCertificateLocalHsmVendor(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandVpnCertificateLocalNethsmSlot(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandVpnCertificateLocalType(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func getObjectVpnCertificateLocal(d *schema.ResourceData) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
@@ -1115,6 +1299,24 @@ func getObjectVpnCertificateLocal(d *schema.ResourceData) (*map[string]interface
 			return &obj, err
 		} else if t != nil {
 			obj["acme-domain"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("acme_eab_key_hmac"); ok || d.HasChange("acme_eab_key_hmac") {
+		t, err := expandVpnCertificateLocalAcmeEabKeyHmac(d, v, "acme_eab_key_hmac")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["acme-eab-key-hmac"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("acme_eab_key_id"); ok || d.HasChange("acme_eab_key_id") {
+		t, err := expandVpnCertificateLocalAcmeEabKeyId(d, v, "acme_eab_key_id")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["acme-eab-key-id"] = t
 		}
 	}
 
@@ -1457,6 +1659,51 @@ func getObjectVpnCertificateLocal(d *schema.ResourceData) (*map[string]interface
 			return &obj, err
 		} else if t != nil {
 			obj["tmp-cert-file"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("hsm_keytype"); ok || d.HasChange("hsm_keytype") {
+		t, err := expandVpnCertificateLocalHsmKeytype(d, v, "hsm_keytype")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["hsm-keytype"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("hsm_slot"); ok || d.HasChange("hsm_slot") {
+		t, err := expandVpnCertificateLocalHsmSlot(d, v, "hsm_slot")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["hsm-slot"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("hsm_vendor"); ok || d.HasChange("hsm_vendor") {
+		t, err := expandVpnCertificateLocalHsmVendor(d, v, "hsm_vendor")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["hsm-vendor"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("nethsm_slot"); ok || d.HasChange("nethsm_slot") {
+		t, err := expandVpnCertificateLocalNethsmSlot(d, v, "nethsm_slot")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["nethsm-slot"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("type"); ok || d.HasChange("type") {
+		t, err := expandVpnCertificateLocalType(d, v, "type")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["type"] = t
 		}
 	}
 

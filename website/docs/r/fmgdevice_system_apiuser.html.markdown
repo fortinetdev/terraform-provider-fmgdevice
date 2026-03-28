@@ -38,7 +38,9 @@ The following arguments are supported:
 * `api_key` - Admin user password.
 * `comments` - Comment.
 * `cors_allow_origin` - Value for Access-Control-Allow-Origin on API responses. Avoid using '*' if possible.
+* `expire_at` - Expiry of this API key in Unix Epoch time. If this is 0, API key will never expire. This attribute should not be modified directly, and should be set from exec command or REST API.
 * `name` - User name.
+* `old_password` - Old-Password.
 * `peer_auth` - Enable/disable peer authentication. Valid values: `disable`, `enable`.
 
 * `peer_group` - Peer group name.

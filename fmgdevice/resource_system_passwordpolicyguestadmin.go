@@ -28,6 +28,12 @@ func resourceSystemPasswordPolicyGuestAdmin() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
+
+			"adom": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"device_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -93,6 +99,10 @@ func resourceSystemPasswordPolicyGuestAdmin() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"password_history": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+			},
 		},
 	}
 }
@@ -104,21 +114,24 @@ func resourceSystemPasswordPolicyGuestAdminUpdate(d *schema.ResourceData, m inte
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
 	}
 	paradict["device"] = device_name
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectSystemPasswordPolicyGuestAdmin(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemPasswordPolicyGuestAdmin resource while getting object: %v", err)
 	}
+
+	wsParams["adom"] = adomv
 
 	_, err = c.UpdateSystemPasswordPolicyGuestAdmin(obj, mkey, paradict, wsParams)
 	if err != nil {
@@ -140,17 +153,19 @@ func resourceSystemPasswordPolicyGuestAdminDelete(d *schema.ResourceData, m inte
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
 	}
 	paradict["device"] = device_name
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
+	wsParams["adom"] = adomv
 
 	err = c.DeleteSystemPasswordPolicyGuestAdmin(mkey, paradict, wsParams)
 	if err != nil {
@@ -169,8 +184,8 @@ func resourceSystemPasswordPolicyGuestAdminRead(d *schema.ResourceData, m interf
 	c.Retries = 1
 
 	paradict := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if device_name == "" {
 		device_name = importOptionChecking(m.(*FortiClient).Cfg, "device_name")
@@ -185,6 +200,7 @@ func resourceSystemPasswordPolicyGuestAdminRead(d *schema.ResourceData, m interf
 
 	o, err := c.ReadSystemPasswordPolicyGuestAdmin(mkey, paradict)
 	if err != nil {
+		d.SetId("")
 		return fmt.Errorf("Error reading SystemPasswordPolicyGuestAdmin resource: %v", err)
 	}
 
@@ -250,6 +266,10 @@ func flattenSystemPasswordPolicyGuestAdminReusePasswordLimit(v interface{}, d *s
 }
 
 func flattenSystemPasswordPolicyGuestAdminStatus(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemPasswordPolicyGuestAdminPasswordHistory(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -386,6 +406,16 @@ func refreshObjectSystemPasswordPolicyGuestAdmin(d *schema.ResourceData, o map[s
 		}
 	}
 
+	if err = d.Set("password_history", flattenSystemPasswordPolicyGuestAdminPasswordHistory(o["password-history"], d, "password_history")); err != nil {
+		if vv, ok := fortiAPIPatch(o["password-history"], "SystemPasswordPolicyGuestAdmin-PasswordHistory"); ok {
+			if err = d.Set("password_history", vv); err != nil {
+				return fmt.Errorf("Error reading password_history: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading password_history: %v", err)
+		}
+	}
+
 	return nil
 }
 
@@ -444,6 +474,10 @@ func expandSystemPasswordPolicyGuestAdminReusePasswordLimit(d *schema.ResourceDa
 }
 
 func expandSystemPasswordPolicyGuestAdminStatus(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemPasswordPolicyGuestAdminPasswordHistory(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -564,6 +598,15 @@ func getObjectSystemPasswordPolicyGuestAdmin(d *schema.ResourceData) (*map[strin
 			return &obj, err
 		} else if t != nil {
 			obj["status"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("password_history"); ok || d.HasChange("password_history") {
+		t, err := expandSystemPasswordPolicyGuestAdminPasswordHistory(d, v, "password_history")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["password-history"] = t
 		}
 	}
 

@@ -28,6 +28,17 @@ func resourceFirewallOnDemandSniffer() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
+			"update_if_exist": &schema.Schema{
+				Type:     schema.TypeBool,
+				Optional: true,
+				Computed: true,
+			},
+
+			"adom": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"device_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -81,6 +92,16 @@ func resourceFirewallOnDemandSniffer() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"hostnames": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Computed: true,
+			},
+			"snapshot_length": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+			},
 		},
 	}
 }
@@ -91,8 +112,12 @@ func resourceFirewallOnDemandSnifferCreate(d *schema.ResourceData, m interface{}
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -104,17 +129,37 @@ func resourceFirewallOnDemandSnifferCreate(d *schema.ResourceData, m interface{}
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectFirewallOnDemandSniffer(d)
 	if err != nil {
 		return fmt.Errorf("Error creating FirewallOnDemandSniffer resource while getting object: %v", err)
 	}
+	wsParams["adom"] = adomv
 
-	_, err = c.CreateFirewallOnDemandSniffer(obj, paradict, wsParams)
-	if err != nil {
-		return fmt.Errorf("Error creating FirewallOnDemandSniffer resource: %v", err)
+	update_if_exist := getUpdateIfExist(c, d)
+	mkey_tf, mkey_ok := d.GetOk("name")
+	mkey := fmt.Sprint(mkey_tf)
+	o := make(map[string]interface{})
+	existing := false
+
+	if update_if_exist && mkey_ok {
+		// check existing
+		o, err = c.ReadFirewallOnDemandSniffer(mkey, paradict)
+		if err == nil && o != nil {
+			existing = true
+			// update if existing
+			o, err = c.UpdateFirewallOnDemandSniffer(obj, mkey, paradict, wsParams)
+			if err != nil {
+				return fmt.Errorf("Error updating FirewallOnDemandSniffer resource: %v", err)
+			}
+		}
+	}
+
+	if !existing {
+		_, err = c.CreateFirewallOnDemandSniffer(obj, paradict, wsParams)
+		if err != nil {
+			return fmt.Errorf("Error creating FirewallOnDemandSniffer resource: %v", err)
+		}
+
 	}
 
 	d.SetId(getStringKey(d, "name"))
@@ -129,8 +174,12 @@ func resourceFirewallOnDemandSnifferUpdate(d *schema.ResourceData, m interface{}
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -142,13 +191,12 @@ func resourceFirewallOnDemandSnifferUpdate(d *schema.ResourceData, m interface{}
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectFirewallOnDemandSniffer(d)
 	if err != nil {
 		return fmt.Errorf("Error updating FirewallOnDemandSniffer resource while getting object: %v", err)
 	}
+
+	wsParams["adom"] = adomv
 
 	_, err = c.UpdateFirewallOnDemandSniffer(obj, mkey, paradict, wsParams)
 	if err != nil {
@@ -170,8 +218,12 @@ func resourceFirewallOnDemandSnifferDelete(d *schema.ResourceData, m interface{}
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -183,9 +235,7 @@ func resourceFirewallOnDemandSnifferDelete(d *schema.ResourceData, m interface{}
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
+	wsParams["adom"] = adomv
 
 	err = c.DeleteFirewallOnDemandSniffer(mkey, paradict, wsParams)
 	if err != nil {
@@ -204,8 +254,8 @@ func resourceFirewallOnDemandSnifferRead(d *schema.ResourceData, m interface{}) 
 	c.Retries = 1
 
 	paradict := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	device_vdom, err := getVariable(cfg, d, "device_vdom")
 	if device_name == "" {
@@ -231,6 +281,7 @@ func resourceFirewallOnDemandSnifferRead(d *schema.ResourceData, m interface{}) 
 
 	o, err := c.ReadFirewallOnDemandSniffer(mkey, paradict)
 	if err != nil {
+		d.SetId("")
 		return fmt.Errorf("Error reading FirewallOnDemandSniffer resource: %v", err)
 	}
 
@@ -277,6 +328,14 @@ func flattenFirewallOnDemandSnifferPorts(v interface{}, d *schema.ResourceData, 
 
 func flattenFirewallOnDemandSnifferProtocols(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return flattenIntegerList(v)
+}
+
+func flattenFirewallOnDemandSnifferHostnames(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
+func flattenFirewallOnDemandSnifferSnapshotLength(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
 }
 
 func refreshObjectFirewallOnDemandSniffer(d *schema.ResourceData, o map[string]interface{}) error {
@@ -362,6 +421,26 @@ func refreshObjectFirewallOnDemandSniffer(d *schema.ResourceData, o map[string]i
 		}
 	}
 
+	if err = d.Set("hostnames", flattenFirewallOnDemandSnifferHostnames(o["hostnames"], d, "hostnames")); err != nil {
+		if vv, ok := fortiAPIPatch(o["hostnames"], "FirewallOnDemandSniffer-Hostnames"); ok {
+			if err = d.Set("hostnames", vv); err != nil {
+				return fmt.Errorf("Error reading hostnames: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading hostnames: %v", err)
+		}
+	}
+
+	if err = d.Set("snapshot_length", flattenFirewallOnDemandSnifferSnapshotLength(o["snapshot-length"], d, "snapshot_length")); err != nil {
+		if vv, ok := fortiAPIPatch(o["snapshot-length"], "FirewallOnDemandSniffer-SnapshotLength"); ok {
+			if err = d.Set("snapshot_length", vv); err != nil {
+				return fmt.Errorf("Error reading snapshot_length: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading snapshot_length: %v", err)
+		}
+	}
+
 	return nil
 }
 
@@ -401,6 +480,14 @@ func expandFirewallOnDemandSnifferPorts(d *schema.ResourceData, v interface{}, p
 
 func expandFirewallOnDemandSnifferProtocols(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return expandIntegerList(v.(*schema.Set).List()), nil
+}
+
+func expandFirewallOnDemandSnifferHostnames(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandFirewallOnDemandSnifferSnapshotLength(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
 }
 
 func getObjectFirewallOnDemandSniffer(d *schema.ResourceData) (*map[string]interface{}, error) {
@@ -475,6 +562,24 @@ func getObjectFirewallOnDemandSniffer(d *schema.ResourceData) (*map[string]inter
 			return &obj, err
 		} else if t != nil {
 			obj["protocols"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("hostnames"); ok || d.HasChange("hostnames") {
+		t, err := expandFirewallOnDemandSnifferHostnames(d, v, "hostnames")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["hostnames"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("snapshot_length"); ok || d.HasChange("snapshot_length") {
+		t, err := expandFirewallOnDemandSnifferSnapshotLength(d, v, "snapshot_length")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["snapshot-length"] = t
 		}
 	}
 

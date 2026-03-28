@@ -28,6 +28,12 @@ func resourceFirewallSslSetting() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
+
+			"adom": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"device_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -49,6 +55,11 @@ func resourceFirewallSslSetting() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"cert_manager_cache_timeout": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+				Computed: true,
+			},
 			"kxp_queue_threshold": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
@@ -60,6 +71,11 @@ func resourceFirewallSslSetting() *schema.Resource {
 			},
 			"proxy_connect_timeout": &schema.Schema{
 				Type:     schema.TypeInt,
+				Optional: true,
+				Computed: true,
+			},
+			"resigned_short_lived_certificate": &schema.Schema{
+				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
 			},
@@ -98,21 +114,24 @@ func resourceFirewallSslSettingUpdate(d *schema.ResourceData, m interface{}) err
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
 	}
 	paradict["device"] = device_name
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectFirewallSslSetting(d)
 	if err != nil {
 		return fmt.Errorf("Error updating FirewallSslSetting resource while getting object: %v", err)
 	}
+
+	wsParams["adom"] = adomv
 
 	_, err = c.UpdateFirewallSslSetting(obj, mkey, paradict, wsParams)
 	if err != nil {
@@ -134,17 +153,19 @@ func resourceFirewallSslSettingDelete(d *schema.ResourceData, m interface{}) err
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
 	}
 	paradict["device"] = device_name
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
+	wsParams["adom"] = adomv
 
 	err = c.DeleteFirewallSslSetting(mkey, paradict, wsParams)
 	if err != nil {
@@ -163,8 +184,8 @@ func resourceFirewallSslSettingRead(d *schema.ResourceData, m interface{}) error
 	c.Retries = 1
 
 	paradict := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if device_name == "" {
 		device_name = importOptionChecking(m.(*FortiClient).Cfg, "device_name")
@@ -179,6 +200,7 @@ func resourceFirewallSslSettingRead(d *schema.ResourceData, m interface{}) error
 
 	o, err := c.ReadFirewallSslSetting(mkey, paradict)
 	if err != nil {
+		d.SetId("")
 		return fmt.Errorf("Error reading FirewallSslSetting resource: %v", err)
 	}
 
@@ -207,6 +229,10 @@ func flattenFirewallSslSettingCertCacheTimeout(v interface{}, d *schema.Resource
 	return v
 }
 
+func flattenFirewallSslSettingCertManagerCacheTimeout(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenFirewallSslSettingKxpQueueThreshold(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -216,6 +242,10 @@ func flattenFirewallSslSettingNoMatchingCipherAction(v interface{}, d *schema.Re
 }
 
 func flattenFirewallSslSettingProxyConnectTimeout(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenFirewallSslSettingResignedShortLivedCertificate(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -272,6 +302,16 @@ func refreshObjectFirewallSslSetting(d *schema.ResourceData, o map[string]interf
 		}
 	}
 
+	if err = d.Set("cert_manager_cache_timeout", flattenFirewallSslSettingCertManagerCacheTimeout(o["cert-manager-cache-timeout"], d, "cert_manager_cache_timeout")); err != nil {
+		if vv, ok := fortiAPIPatch(o["cert-manager-cache-timeout"], "FirewallSslSetting-CertManagerCacheTimeout"); ok {
+			if err = d.Set("cert_manager_cache_timeout", vv); err != nil {
+				return fmt.Errorf("Error reading cert_manager_cache_timeout: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading cert_manager_cache_timeout: %v", err)
+		}
+	}
+
 	if err = d.Set("kxp_queue_threshold", flattenFirewallSslSettingKxpQueueThreshold(o["kxp-queue-threshold"], d, "kxp_queue_threshold")); err != nil {
 		if vv, ok := fortiAPIPatch(o["kxp-queue-threshold"], "FirewallSslSetting-KxpQueueThreshold"); ok {
 			if err = d.Set("kxp_queue_threshold", vv); err != nil {
@@ -299,6 +339,16 @@ func refreshObjectFirewallSslSetting(d *schema.ResourceData, o map[string]interf
 			}
 		} else {
 			return fmt.Errorf("Error reading proxy_connect_timeout: %v", err)
+		}
+	}
+
+	if err = d.Set("resigned_short_lived_certificate", flattenFirewallSslSettingResignedShortLivedCertificate(o["resigned-short-lived-certificate"], d, "resigned_short_lived_certificate")); err != nil {
+		if vv, ok := fortiAPIPatch(o["resigned-short-lived-certificate"], "FirewallSslSetting-ResignedShortLivedCertificate"); ok {
+			if err = d.Set("resigned_short_lived_certificate", vv); err != nil {
+				return fmt.Errorf("Error reading resigned_short_lived_certificate: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading resigned_short_lived_certificate: %v", err)
 		}
 	}
 
@@ -373,6 +423,10 @@ func expandFirewallSslSettingCertCacheTimeout(d *schema.ResourceData, v interfac
 	return v, nil
 }
 
+func expandFirewallSslSettingCertManagerCacheTimeout(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandFirewallSslSettingKxpQueueThreshold(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -382,6 +436,10 @@ func expandFirewallSslSettingNoMatchingCipherAction(d *schema.ResourceData, v in
 }
 
 func expandFirewallSslSettingProxyConnectTimeout(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandFirewallSslSettingResignedShortLivedCertificate(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -435,6 +493,15 @@ func getObjectFirewallSslSetting(d *schema.ResourceData) (*map[string]interface{
 		}
 	}
 
+	if v, ok := d.GetOk("cert_manager_cache_timeout"); ok || d.HasChange("cert_manager_cache_timeout") {
+		t, err := expandFirewallSslSettingCertManagerCacheTimeout(d, v, "cert_manager_cache_timeout")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["cert-manager-cache-timeout"] = t
+		}
+	}
+
 	if v, ok := d.GetOk("kxp_queue_threshold"); ok || d.HasChange("kxp_queue_threshold") {
 		t, err := expandFirewallSslSettingKxpQueueThreshold(d, v, "kxp_queue_threshold")
 		if err != nil {
@@ -459,6 +526,15 @@ func getObjectFirewallSslSetting(d *schema.ResourceData) (*map[string]interface{
 			return &obj, err
 		} else if t != nil {
 			obj["proxy-connect-timeout"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("resigned_short_lived_certificate"); ok || d.HasChange("resigned_short_lived_certificate") {
+		t, err := expandFirewallSslSettingResignedShortLivedCertificate(d, v, "resigned_short_lived_certificate")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["resigned-short-lived-certificate"] = t
 		}
 	}
 

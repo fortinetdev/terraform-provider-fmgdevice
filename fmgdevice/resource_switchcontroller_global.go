@@ -28,6 +28,12 @@ func resourceSwitchControllerGlobal() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
+
+			"adom": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"device_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -121,6 +127,11 @@ func resourceSwitchControllerGlobal() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"firewall_auth_user_hold_period": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+				Computed: true,
+			},
 			"firmware_provision_on_authorization": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -207,8 +218,12 @@ func resourceSwitchControllerGlobalUpdate(d *schema.ResourceData, m interface{})
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -220,13 +235,12 @@ func resourceSwitchControllerGlobalUpdate(d *schema.ResourceData, m interface{})
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectSwitchControllerGlobal(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SwitchControllerGlobal resource while getting object: %v", err)
 	}
+
+	wsParams["adom"] = adomv
 
 	_, err = c.UpdateSwitchControllerGlobal(obj, mkey, paradict, wsParams)
 	if err != nil {
@@ -248,8 +262,12 @@ func resourceSwitchControllerGlobalDelete(d *schema.ResourceData, m interface{})
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -261,9 +279,7 @@ func resourceSwitchControllerGlobalDelete(d *schema.ResourceData, m interface{})
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
+	wsParams["adom"] = adomv
 
 	err = c.DeleteSwitchControllerGlobal(mkey, paradict, wsParams)
 	if err != nil {
@@ -282,8 +298,8 @@ func resourceSwitchControllerGlobalRead(d *schema.ResourceData, m interface{}) e
 	c.Retries = 1
 
 	paradict := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	device_vdom, err := getVariable(cfg, d, "device_vdom")
 	if device_name == "" {
@@ -309,6 +325,7 @@ func resourceSwitchControllerGlobalRead(d *schema.ResourceData, m interface{}) e
 
 	o, err := c.ReadSwitchControllerGlobal(mkey, paradict)
 	if err != nil {
+		d.SetId("")
 		return fmt.Errorf("Error reading SwitchControllerGlobal resource: %v", err)
 	}
 
@@ -419,6 +436,10 @@ func flattenSwitchControllerGlobalDisableDiscovery(v interface{}, d *schema.Reso
 }
 
 func flattenSwitchControllerGlobalFipsEnforce(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSwitchControllerGlobalFirewallAuthUserHoldPeriod(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -626,6 +647,16 @@ func refreshObjectSwitchControllerGlobal(d *schema.ResourceData, o map[string]in
 			}
 		} else {
 			return fmt.Errorf("Error reading fips_enforce: %v", err)
+		}
+	}
+
+	if err = d.Set("firewall_auth_user_hold_period", flattenSwitchControllerGlobalFirewallAuthUserHoldPeriod(o["firewall-auth-user-hold-period"], d, "firewall_auth_user_hold_period")); err != nil {
+		if vv, ok := fortiAPIPatch(o["firewall-auth-user-hold-period"], "SwitchControllerGlobal-FirewallAuthUserHoldPeriod"); ok {
+			if err = d.Set("firewall_auth_user_hold_period", vv); err != nil {
+				return fmt.Errorf("Error reading firewall_auth_user_hold_period: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading firewall_auth_user_hold_period: %v", err)
 		}
 	}
 
@@ -868,6 +899,10 @@ func expandSwitchControllerGlobalFipsEnforce(d *schema.ResourceData, v interface
 	return v, nil
 }
 
+func expandSwitchControllerGlobalFirewallAuthUserHoldPeriod(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandSwitchControllerGlobalFirmwareProvisionOnAuthorization(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -1041,6 +1076,15 @@ func getObjectSwitchControllerGlobal(d *schema.ResourceData) (*map[string]interf
 			return &obj, err
 		} else if t != nil {
 			obj["fips-enforce"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("firewall_auth_user_hold_period"); ok || d.HasChange("firewall_auth_user_hold_period") {
+		t, err := expandSwitchControllerGlobalFirewallAuthUserHoldPeriod(d, v, "firewall_auth_user_hold_period")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["firewall-auth-user-hold-period"] = t
 		}
 	}
 

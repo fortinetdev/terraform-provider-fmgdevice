@@ -45,6 +45,7 @@ The following arguments are supported:
 * `failtime` - Number of retry attempts before the server is considered down (1 - 3600, default = 5).
 * `gateway_ip` - Gateway IP address used to probe the server.
 * `gateway_ip6` - Gateway IPv6 address used to probe the server.
+* `ha_priority` - HA election priority (1 - 50).
 * `http_agent` - String in the http-agent field in the HTTP header.
 * `http_get` - If you are monitoring an HTML server you can send an HTTP-GET request with a custom string. Use this option to define the string.
 * `http_match` - String that you expect to see in the HTTP-GET requests of the traffic to be monitored.

@@ -28,6 +28,12 @@ func resourceSystemNetflow() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
+
+			"adom": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"device_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -133,6 +139,11 @@ func resourceSystemNetflow() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"session_cache_size": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
 			"interface": &schema.Schema{
 				Type:     schema.TypeSet,
 				Elem:     &schema.Schema{Type: schema.TypeString},
@@ -175,21 +186,24 @@ func resourceSystemNetflowUpdate(d *schema.ResourceData, m interface{}) error {
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
 	}
 	paradict["device"] = device_name
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectSystemNetflow(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemNetflow resource while getting object: %v", err)
 	}
+
+	wsParams["adom"] = adomv
 
 	_, err = c.UpdateSystemNetflow(obj, mkey, paradict, wsParams)
 	if err != nil {
@@ -211,17 +225,19 @@ func resourceSystemNetflowDelete(d *schema.ResourceData, m interface{}) error {
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
 	}
 	paradict["device"] = device_name
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
+	wsParams["adom"] = adomv
 
 	err = c.DeleteSystemNetflow(mkey, paradict, wsParams)
 	if err != nil {
@@ -240,8 +256,8 @@ func resourceSystemNetflowRead(d *schema.ResourceData, m interface{}) error {
 	c.Retries = 1
 
 	paradict := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if device_name == "" {
 		device_name = importOptionChecking(m.(*FortiClient).Cfg, "device_name")
@@ -256,6 +272,7 @@ func resourceSystemNetflowRead(d *schema.ResourceData, m interface{}) error {
 
 	o, err := c.ReadSystemNetflow(mkey, paradict)
 	if err != nil {
+		d.SetId("")
 		return fmt.Errorf("Error reading SystemNetflow resource: %v", err)
 	}
 
@@ -486,6 +503,10 @@ func flattenSystemNetflowInactiveFlowTimeout(v interface{}, d *schema.ResourceDa
 	return v
 }
 
+func flattenSystemNetflowSessionCacheSize(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenSystemNetflowInterface(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return flattenStringList(v)
 }
@@ -598,6 +619,16 @@ func refreshObjectSystemNetflow(d *schema.ResourceData, o map[string]interface{}
 			}
 		} else {
 			return fmt.Errorf("Error reading inactive_flow_timeout: %v", err)
+		}
+	}
+
+	if err = d.Set("session_cache_size", flattenSystemNetflowSessionCacheSize(o["session-cache-size"], d, "session_cache_size")); err != nil {
+		if vv, ok := fortiAPIPatch(o["session-cache-size"], "SystemNetflow-SessionCacheSize"); ok {
+			if err = d.Set("session_cache_size", vv); err != nil {
+				return fmt.Errorf("Error reading session_cache_size: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading session_cache_size: %v", err)
 		}
 	}
 
@@ -850,6 +881,10 @@ func expandSystemNetflowInactiveFlowTimeout(d *schema.ResourceData, v interface{
 	return v, nil
 }
 
+func expandSystemNetflowSessionCacheSize(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandSystemNetflowInterface(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return expandStringList(v.(*schema.Set).List()), nil
 }
@@ -924,6 +959,15 @@ func getObjectSystemNetflow(d *schema.ResourceData) (*map[string]interface{}, er
 			return &obj, err
 		} else if t != nil {
 			obj["inactive-flow-timeout"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("session_cache_size"); ok || d.HasChange("session_cache_size") {
+		t, err := expandSystemNetflowSessionCacheSize(d, v, "session_cache_size")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["session-cache-size"] = t
 		}
 	}
 

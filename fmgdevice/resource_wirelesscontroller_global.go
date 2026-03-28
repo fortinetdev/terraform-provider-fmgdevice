@@ -28,6 +28,12 @@ func resourceWirelessControllerGlobal() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
+
+			"adom": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"device_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -138,6 +144,14 @@ func resourceWirelessControllerGlobal() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"max_sta_offline": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+			},
+			"max_sta_offline_ip2mac": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+			},
 			"max_wids_entry": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
@@ -196,21 +210,24 @@ func resourceWirelessControllerGlobalUpdate(d *schema.ResourceData, m interface{
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
 	}
 	paradict["device"] = device_name
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectWirelessControllerGlobal(d)
 	if err != nil {
 		return fmt.Errorf("Error updating WirelessControllerGlobal resource while getting object: %v", err)
 	}
+
+	wsParams["adom"] = adomv
 
 	_, err = c.UpdateWirelessControllerGlobal(obj, mkey, paradict, wsParams)
 	if err != nil {
@@ -232,17 +249,19 @@ func resourceWirelessControllerGlobalDelete(d *schema.ResourceData, m interface{
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
 	}
 	paradict["device"] = device_name
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
+	wsParams["adom"] = adomv
 
 	err = c.DeleteWirelessControllerGlobal(mkey, paradict, wsParams)
 	if err != nil {
@@ -261,8 +280,8 @@ func resourceWirelessControllerGlobalRead(d *schema.ResourceData, m interface{})
 	c.Retries = 1
 
 	paradict := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if device_name == "" {
 		device_name = importOptionChecking(m.(*FortiClient).Cfg, "device_name")
@@ -277,6 +296,7 @@ func resourceWirelessControllerGlobalRead(d *schema.ResourceData, m interface{})
 
 	o, err := c.ReadWirelessControllerGlobal(mkey, paradict)
 	if err != nil {
+		d.SetId("")
 		return fmt.Errorf("Error reading WirelessControllerGlobal resource: %v", err)
 	}
 
@@ -378,6 +398,14 @@ func flattenWirelessControllerGlobalMaxStaCap(v interface{}, d *schema.ResourceD
 }
 
 func flattenWirelessControllerGlobalMaxStaCapWtp(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWirelessControllerGlobalMaxStaOffline(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWirelessControllerGlobalMaxStaOfflineIp2Mac(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -644,6 +672,26 @@ func refreshObjectWirelessControllerGlobal(d *schema.ResourceData, o map[string]
 		}
 	}
 
+	if err = d.Set("max_sta_offline", flattenWirelessControllerGlobalMaxStaOffline(o["max-sta-offline"], d, "max_sta_offline")); err != nil {
+		if vv, ok := fortiAPIPatch(o["max-sta-offline"], "WirelessControllerGlobal-MaxStaOffline"); ok {
+			if err = d.Set("max_sta_offline", vv); err != nil {
+				return fmt.Errorf("Error reading max_sta_offline: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading max_sta_offline: %v", err)
+		}
+	}
+
+	if err = d.Set("max_sta_offline_ip2mac", flattenWirelessControllerGlobalMaxStaOfflineIp2Mac(o["max-sta-offline-ip2mac"], d, "max_sta_offline_ip2mac")); err != nil {
+		if vv, ok := fortiAPIPatch(o["max-sta-offline-ip2mac"], "WirelessControllerGlobal-MaxStaOfflineIp2Mac"); ok {
+			if err = d.Set("max_sta_offline_ip2mac", vv); err != nil {
+				return fmt.Errorf("Error reading max_sta_offline_ip2mac: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading max_sta_offline_ip2mac: %v", err)
+		}
+	}
+
 	if err = d.Set("max_wids_entry", flattenWirelessControllerGlobalMaxWidsEntry(o["max-wids-entry"], d, "max_wids_entry")); err != nil {
 		if vv, ok := fortiAPIPatch(o["max-wids-entry"], "WirelessControllerGlobal-MaxWidsEntry"); ok {
 			if err = d.Set("max_wids_entry", vv); err != nil {
@@ -838,6 +886,14 @@ func expandWirelessControllerGlobalMaxStaCap(d *schema.ResourceData, v interface
 }
 
 func expandWirelessControllerGlobalMaxStaCapWtp(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWirelessControllerGlobalMaxStaOffline(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWirelessControllerGlobalMaxStaOfflineIp2Mac(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -1079,6 +1135,24 @@ func getObjectWirelessControllerGlobal(d *schema.ResourceData) (*map[string]inte
 			return &obj, err
 		} else if t != nil {
 			obj["max-sta-cap-wtp"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("max_sta_offline"); ok || d.HasChange("max_sta_offline") {
+		t, err := expandWirelessControllerGlobalMaxStaOffline(d, v, "max_sta_offline")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["max-sta-offline"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("max_sta_offline_ip2mac"); ok || d.HasChange("max_sta_offline_ip2mac") {
+		t, err := expandWirelessControllerGlobalMaxStaOfflineIp2Mac(d, v, "max_sta_offline_ip2mac")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["max-sta-offline-ip2mac"] = t
 		}
 	}
 

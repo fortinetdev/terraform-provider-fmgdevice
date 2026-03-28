@@ -28,6 +28,12 @@ func resourceWirelessControllerTimers() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
+
+			"adom": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"device_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -131,6 +137,14 @@ func resourceWirelessControllerTimers() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"sta_offline_cleanup": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+			},
+			"sta_offline_ip2mac_cleanup": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+			},
 			"sta_stats_interval": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
@@ -156,21 +170,24 @@ func resourceWirelessControllerTimersUpdate(d *schema.ResourceData, m interface{
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
 	}
 	paradict["device"] = device_name
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectWirelessControllerTimers(d)
 	if err != nil {
 		return fmt.Errorf("Error updating WirelessControllerTimers resource while getting object: %v", err)
 	}
+
+	wsParams["adom"] = adomv
 
 	_, err = c.UpdateWirelessControllerTimers(obj, mkey, paradict, wsParams)
 	if err != nil {
@@ -192,17 +209,19 @@ func resourceWirelessControllerTimersDelete(d *schema.ResourceData, m interface{
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
 	}
 	paradict["device"] = device_name
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
+	wsParams["adom"] = adomv
 
 	err = c.DeleteWirelessControllerTimers(mkey, paradict, wsParams)
 	if err != nil {
@@ -221,8 +240,8 @@ func resourceWirelessControllerTimersRead(d *schema.ResourceData, m interface{})
 	c.Retries = 1
 
 	paradict := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if device_name == "" {
 		device_name = importOptionChecking(m.(*FortiClient).Cfg, "device_name")
@@ -237,6 +256,7 @@ func resourceWirelessControllerTimersRead(d *schema.ResourceData, m interface{})
 
 	o, err := c.ReadWirelessControllerTimers(mkey, paradict)
 	if err != nil {
+		d.SetId("")
 		return fmt.Errorf("Error reading WirelessControllerTimers resource: %v", err)
 	}
 
@@ -334,6 +354,14 @@ func flattenWirelessControllerTimersStaCapabilityInterval(v interface{}, d *sche
 }
 
 func flattenWirelessControllerTimersStaLocateTimer(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWirelessControllerTimersStaOfflineCleanup(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWirelessControllerTimersStaOfflineIp2MacCleanup(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -562,6 +590,26 @@ func refreshObjectWirelessControllerTimers(d *schema.ResourceData, o map[string]
 		}
 	}
 
+	if err = d.Set("sta_offline_cleanup", flattenWirelessControllerTimersStaOfflineCleanup(o["sta-offline-cleanup"], d, "sta_offline_cleanup")); err != nil {
+		if vv, ok := fortiAPIPatch(o["sta-offline-cleanup"], "WirelessControllerTimers-StaOfflineCleanup"); ok {
+			if err = d.Set("sta_offline_cleanup", vv); err != nil {
+				return fmt.Errorf("Error reading sta_offline_cleanup: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading sta_offline_cleanup: %v", err)
+		}
+	}
+
+	if err = d.Set("sta_offline_ip2mac_cleanup", flattenWirelessControllerTimersStaOfflineIp2MacCleanup(o["sta-offline-ip2mac-cleanup"], d, "sta_offline_ip2mac_cleanup")); err != nil {
+		if vv, ok := fortiAPIPatch(o["sta-offline-ip2mac-cleanup"], "WirelessControllerTimers-StaOfflineIp2MacCleanup"); ok {
+			if err = d.Set("sta_offline_ip2mac_cleanup", vv); err != nil {
+				return fmt.Errorf("Error reading sta_offline_ip2mac_cleanup: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading sta_offline_ip2mac_cleanup: %v", err)
+		}
+	}
+
 	if err = d.Set("sta_stats_interval", flattenWirelessControllerTimersStaStatsInterval(o["sta-stats-interval"], d, "sta_stats_interval")); err != nil {
 		if vv, ok := fortiAPIPatch(o["sta-stats-interval"], "WirelessControllerTimers-StaStatsInterval"); ok {
 			if err = d.Set("sta_stats_interval", vv); err != nil {
@@ -682,6 +730,14 @@ func expandWirelessControllerTimersStaCapabilityInterval(d *schema.ResourceData,
 }
 
 func expandWirelessControllerTimersStaLocateTimer(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWirelessControllerTimersStaOfflineCleanup(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWirelessControllerTimersStaOfflineIp2MacCleanup(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -886,6 +942,24 @@ func getObjectWirelessControllerTimers(d *schema.ResourceData) (*map[string]inte
 			return &obj, err
 		} else if t != nil {
 			obj["sta-locate-timer"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("sta_offline_cleanup"); ok || d.HasChange("sta_offline_cleanup") {
+		t, err := expandWirelessControllerTimersStaOfflineCleanup(d, v, "sta_offline_cleanup")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["sta-offline-cleanup"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("sta_offline_ip2mac_cleanup"); ok || d.HasChange("sta_offline_ip2mac_cleanup") {
+		t, err := expandWirelessControllerTimersStaOfflineIp2MacCleanup(d, v, "sta_offline_ip2mac_cleanup")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["sta-offline-ip2mac-cleanup"] = t
 		}
 	}
 

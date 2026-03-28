@@ -28,6 +28,12 @@ func resourceSwitchControllerLocationCoordinates() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
+
+			"adom": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"device_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -82,8 +88,12 @@ func resourceSwitchControllerLocationCoordinatesUpdate(d *schema.ResourceData, m
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -97,13 +107,12 @@ func resourceSwitchControllerLocationCoordinatesUpdate(d *schema.ResourceData, m
 	paradict["vdom"] = device_vdom
 	paradict["location"] = location
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectSwitchControllerLocationCoordinates(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SwitchControllerLocationCoordinates resource while getting object: %v", err)
 	}
+
+	wsParams["adom"] = adomv
 
 	_, err = c.UpdateSwitchControllerLocationCoordinates(obj, mkey, paradict, wsParams)
 	if err != nil {
@@ -125,8 +134,12 @@ func resourceSwitchControllerLocationCoordinatesDelete(d *schema.ResourceData, m
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -140,9 +153,7 @@ func resourceSwitchControllerLocationCoordinatesDelete(d *schema.ResourceData, m
 	paradict["vdom"] = device_vdom
 	paradict["location"] = location
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
+	wsParams["adom"] = adomv
 
 	err = c.DeleteSwitchControllerLocationCoordinates(mkey, paradict, wsParams)
 	if err != nil {
@@ -161,8 +172,8 @@ func resourceSwitchControllerLocationCoordinatesRead(d *schema.ResourceData, m i
 	c.Retries = 1
 
 	paradict := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	device_vdom, err := getVariable(cfg, d, "device_vdom")
 	location := d.Get("location").(string)
@@ -199,6 +210,7 @@ func resourceSwitchControllerLocationCoordinatesRead(d *schema.ResourceData, m i
 
 	o, err := c.ReadSwitchControllerLocationCoordinates(mkey, paradict)
 	if err != nil {
+		d.SetId("")
 		return fmt.Errorf("Error reading SwitchControllerLocationCoordinates resource: %v", err)
 	}
 

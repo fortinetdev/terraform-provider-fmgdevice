@@ -28,6 +28,12 @@ func resourceSystemFabricVpn() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
+
+			"adom": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"device_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -142,6 +148,10 @@ func resourceSystemFabricVpn() *schema.Resource {
 							Optional: true,
 							Computed: true,
 						},
+						"ipsec_network_id": &schema.Schema{
+							Type:     schema.TypeInt,
+							Optional: true,
+						},
 						"ipsec_phase1": &schema.Schema{
 							Type:     schema.TypeSet,
 							Elem:     &schema.Schema{Type: schema.TypeString},
@@ -237,21 +247,24 @@ func resourceSystemFabricVpnUpdate(d *schema.ResourceData, m interface{}) error 
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
 	}
 	paradict["device"] = device_name
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectSystemFabricVpn(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemFabricVpn resource while getting object: %v", err)
 	}
+
+	wsParams["adom"] = adomv
 
 	_, err = c.UpdateSystemFabricVpn(obj, mkey, paradict, wsParams)
 	if err != nil {
@@ -273,17 +286,19 @@ func resourceSystemFabricVpnDelete(d *schema.ResourceData, m interface{}) error 
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
 	}
 	paradict["device"] = device_name
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
+	wsParams["adom"] = adomv
 
 	err = c.DeleteSystemFabricVpn(mkey, paradict, wsParams)
 	if err != nil {
@@ -302,8 +317,8 @@ func resourceSystemFabricVpnRead(d *schema.ResourceData, m interface{}) error {
 	c.Retries = 1
 
 	paradict := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if device_name == "" {
 		device_name = importOptionChecking(m.(*FortiClient).Cfg, "device_name")
@@ -318,6 +333,7 @@ func resourceSystemFabricVpnRead(d *schema.ResourceData, m interface{}) error {
 
 	o, err := c.ReadSystemFabricVpn(mkey, paradict)
 	if err != nil {
+		d.SetId("")
 		return fmt.Errorf("Error reading SystemFabricVpn resource: %v", err)
 	}
 
@@ -496,6 +512,12 @@ func flattenSystemFabricVpnOverlays(v interface{}, d *schema.ResourceData, pre s
 			tmp["interface"] = fortiAPISubPartPatch(v, "SystemFabricVpn-Overlays-Interface")
 		}
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "ipsec_network_id"
+		if _, ok := i["ipsec-network-id"]; ok {
+			v := flattenSystemFabricVpnOverlaysIpsecNetworkId(i["ipsec-network-id"], d, pre_append)
+			tmp["ipsec_network_id"] = fortiAPISubPartPatch(v, "SystemFabricVpn-Overlays-IpsecNetworkId")
+		}
+
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "ipsec_phase1"
 		if _, ok := i["ipsec-phase1"]; ok {
 			v := flattenSystemFabricVpnOverlaysIpsecPhase1(i["ipsec-phase1"], d, pre_append)
@@ -566,6 +588,10 @@ func flattenSystemFabricVpnOverlaysBgpNetwork(v interface{}, d *schema.ResourceD
 
 func flattenSystemFabricVpnOverlaysInterface(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return flattenStringList(v)
+}
+
+func flattenSystemFabricVpnOverlaysIpsecNetworkId(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
 }
 
 func flattenSystemFabricVpnOverlaysIpsecPhase1(v interface{}, d *schema.ResourceData, pre string) interface{} {
@@ -945,6 +971,11 @@ func expandSystemFabricVpnOverlays(d *schema.ResourceData, v interface{}, pre st
 			tmp["interface"], _ = expandSystemFabricVpnOverlaysInterface(d, i["interface"], pre_append)
 		}
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "ipsec_network_id"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["ipsec-network-id"], _ = expandSystemFabricVpnOverlaysIpsecNetworkId(d, i["ipsec_network_id"], pre_append)
+		}
+
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "ipsec_phase1"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
 			tmp["ipsec-phase1"], _ = expandSystemFabricVpnOverlaysIpsecPhase1(d, i["ipsec_phase1"], pre_append)
@@ -1008,6 +1039,10 @@ func expandSystemFabricVpnOverlaysBgpNetwork(d *schema.ResourceData, v interface
 
 func expandSystemFabricVpnOverlaysInterface(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandSystemFabricVpnOverlaysIpsecNetworkId(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
 }
 
 func expandSystemFabricVpnOverlaysIpsecPhase1(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {

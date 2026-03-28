@@ -28,6 +28,17 @@ func resourceSystemLinkMonitor() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
+			"update_if_exist": &schema.Schema{
+				Type:     schema.TypeBool,
+				Optional: true,
+				Computed: true,
+			},
+
+			"adom": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"device_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -72,6 +83,11 @@ func resourceSystemLinkMonitor() *schema.Resource {
 			},
 			"gateway_ip6": &schema.Schema{
 				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+			"ha_priority": &schema.Schema{
+				Type:     schema.TypeInt,
 				Optional: true,
 				Computed: true,
 			},
@@ -247,8 +263,12 @@ func resourceSystemLinkMonitorCreate(d *schema.ResourceData, m interface{}) erro
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -260,17 +280,37 @@ func resourceSystemLinkMonitorCreate(d *schema.ResourceData, m interface{}) erro
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectSystemLinkMonitor(d)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemLinkMonitor resource while getting object: %v", err)
 	}
+	wsParams["adom"] = adomv
 
-	_, err = c.CreateSystemLinkMonitor(obj, paradict, wsParams)
-	if err != nil {
-		return fmt.Errorf("Error creating SystemLinkMonitor resource: %v", err)
+	update_if_exist := getUpdateIfExist(c, d)
+	mkey_tf, mkey_ok := d.GetOk("name")
+	mkey := fmt.Sprint(mkey_tf)
+	o := make(map[string]interface{})
+	existing := false
+
+	if update_if_exist && mkey_ok {
+		// check existing
+		o, err = c.ReadSystemLinkMonitor(mkey, paradict)
+		if err == nil && o != nil {
+			existing = true
+			// update if existing
+			o, err = c.UpdateSystemLinkMonitor(obj, mkey, paradict, wsParams)
+			if err != nil {
+				return fmt.Errorf("Error updating SystemLinkMonitor resource: %v", err)
+			}
+		}
+	}
+
+	if !existing {
+		_, err = c.CreateSystemLinkMonitor(obj, paradict, wsParams)
+		if err != nil {
+			return fmt.Errorf("Error creating SystemLinkMonitor resource: %v", err)
+		}
+
 	}
 
 	d.SetId(getStringKey(d, "name"))
@@ -285,8 +325,12 @@ func resourceSystemLinkMonitorUpdate(d *schema.ResourceData, m interface{}) erro
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -298,13 +342,12 @@ func resourceSystemLinkMonitorUpdate(d *schema.ResourceData, m interface{}) erro
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectSystemLinkMonitor(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemLinkMonitor resource while getting object: %v", err)
 	}
+
+	wsParams["adom"] = adomv
 
 	_, err = c.UpdateSystemLinkMonitor(obj, mkey, paradict, wsParams)
 	if err != nil {
@@ -326,8 +369,12 @@ func resourceSystemLinkMonitorDelete(d *schema.ResourceData, m interface{}) erro
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -339,9 +386,7 @@ func resourceSystemLinkMonitorDelete(d *schema.ResourceData, m interface{}) erro
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
+	wsParams["adom"] = adomv
 
 	err = c.DeleteSystemLinkMonitor(mkey, paradict, wsParams)
 	if err != nil {
@@ -360,8 +405,8 @@ func resourceSystemLinkMonitorRead(d *schema.ResourceData, m interface{}) error 
 	c.Retries = 1
 
 	paradict := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	device_vdom, err := getVariable(cfg, d, "device_vdom")
 	if device_name == "" {
@@ -387,6 +432,7 @@ func resourceSystemLinkMonitorRead(d *schema.ResourceData, m interface{}) error 
 
 	o, err := c.ReadSystemLinkMonitor(mkey, paradict)
 	if err != nil {
+		d.SetId("")
 		return fmt.Errorf("Error reading SystemLinkMonitor resource: %v", err)
 	}
 
@@ -428,6 +474,10 @@ func flattenSystemLinkMonitorGatewayIp(v interface{}, d *schema.ResourceData, pr
 }
 
 func flattenSystemLinkMonitorGatewayIp6(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemLinkMonitorHaPriority(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -680,6 +730,16 @@ func refreshObjectSystemLinkMonitor(d *schema.ResourceData, o map[string]interfa
 			}
 		} else {
 			return fmt.Errorf("Error reading gateway_ip6: %v", err)
+		}
+	}
+
+	if err = d.Set("ha_priority", flattenSystemLinkMonitorHaPriority(o["ha-priority"], d, "ha_priority")); err != nil {
+		if vv, ok := fortiAPIPatch(o["ha-priority"], "SystemLinkMonitor-HaPriority"); ok {
+			if err = d.Set("ha_priority", vv); err != nil {
+				return fmt.Errorf("Error reading ha_priority: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading ha_priority: %v", err)
 		}
 	}
 
@@ -984,6 +1044,10 @@ func expandSystemLinkMonitorGatewayIp6(d *schema.ResourceData, v interface{}, pr
 	return v, nil
 }
 
+func expandSystemLinkMonitorHaPriority(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandSystemLinkMonitorHttpAgent(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -1216,6 +1280,15 @@ func getObjectSystemLinkMonitor(d *schema.ResourceData) (*map[string]interface{}
 			return &obj, err
 		} else if t != nil {
 			obj["gateway-ip6"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("ha_priority"); ok || d.HasChange("ha_priority") {
+		t, err := expandSystemLinkMonitorHaPriority(d, v, "ha_priority")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["ha-priority"] = t
 		}
 	}
 

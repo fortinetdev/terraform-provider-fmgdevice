@@ -28,6 +28,17 @@ func resourceSystemDhcp6Server() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
+			"update_if_exist": &schema.Schema{
+				Type:     schema.TypeBool,
+				Optional: true,
+				Computed: true,
+			},
+
+			"adom": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"device_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -43,6 +54,11 @@ func resourceSystemDhcp6Server() *schema.Resource {
 			"delegated_prefix_iaid": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+			},
+			"delegated_prefix_route": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
 			},
 			"dns_search_list": &schema.Schema{
 				Type:     schema.TypeString,
@@ -255,8 +271,12 @@ func resourceSystemDhcp6ServerCreate(d *schema.ResourceData, m interface{}) erro
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -268,17 +288,37 @@ func resourceSystemDhcp6ServerCreate(d *schema.ResourceData, m interface{}) erro
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectSystemDhcp6Server(d)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemDhcp6Server resource while getting object: %v", err)
 	}
+	wsParams["adom"] = adomv
 
-	_, err = c.CreateSystemDhcp6Server(obj, paradict, wsParams)
-	if err != nil {
-		return fmt.Errorf("Error creating SystemDhcp6Server resource: %v", err)
+	update_if_exist := getUpdateIfExist(c, d)
+	mkey_tf, mkey_ok := d.GetOk("fosid")
+	mkey := fmt.Sprint(mkey_tf)
+	o := make(map[string]interface{})
+	existing := false
+
+	if update_if_exist && mkey_ok {
+		// check existing
+		o, err = c.ReadSystemDhcp6Server(mkey, paradict)
+		if err == nil && o != nil {
+			existing = true
+			// update if existing
+			o, err = c.UpdateSystemDhcp6Server(obj, mkey, paradict, wsParams)
+			if err != nil {
+				return fmt.Errorf("Error updating SystemDhcp6Server resource: %v", err)
+			}
+		}
+	}
+
+	if !existing {
+		_, err = c.CreateSystemDhcp6Server(obj, paradict, wsParams)
+		if err != nil {
+			return fmt.Errorf("Error creating SystemDhcp6Server resource: %v", err)
+		}
+
 	}
 
 	d.SetId(strconv.Itoa(getIntKey(d, "fosid")))
@@ -293,8 +333,12 @@ func resourceSystemDhcp6ServerUpdate(d *schema.ResourceData, m interface{}) erro
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -306,13 +350,12 @@ func resourceSystemDhcp6ServerUpdate(d *schema.ResourceData, m interface{}) erro
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectSystemDhcp6Server(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemDhcp6Server resource while getting object: %v", err)
 	}
+
+	wsParams["adom"] = adomv
 
 	_, err = c.UpdateSystemDhcp6Server(obj, mkey, paradict, wsParams)
 	if err != nil {
@@ -334,8 +377,12 @@ func resourceSystemDhcp6ServerDelete(d *schema.ResourceData, m interface{}) erro
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -347,9 +394,7 @@ func resourceSystemDhcp6ServerDelete(d *schema.ResourceData, m interface{}) erro
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
+	wsParams["adom"] = adomv
 
 	err = c.DeleteSystemDhcp6Server(mkey, paradict, wsParams)
 	if err != nil {
@@ -368,8 +413,8 @@ func resourceSystemDhcp6ServerRead(d *schema.ResourceData, m interface{}) error 
 	c.Retries = 1
 
 	paradict := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	device_vdom, err := getVariable(cfg, d, "device_vdom")
 	if device_name == "" {
@@ -395,6 +440,7 @@ func resourceSystemDhcp6ServerRead(d *schema.ResourceData, m interface{}) error 
 
 	o, err := c.ReadSystemDhcp6Server(mkey, paradict)
 	if err != nil {
+		d.SetId("")
 		return fmt.Errorf("Error reading SystemDhcp6Server resource: %v", err)
 	}
 
@@ -412,6 +458,10 @@ func resourceSystemDhcp6ServerRead(d *schema.ResourceData, m interface{}) error 
 }
 
 func flattenSystemDhcp6ServerDelegatedPrefixIaid(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemDhcp6ServerDelegatedPrefixRoute(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -755,6 +805,16 @@ func refreshObjectSystemDhcp6Server(d *schema.ResourceData, o map[string]interfa
 		}
 	}
 
+	if err = d.Set("delegated_prefix_route", flattenSystemDhcp6ServerDelegatedPrefixRoute(o["delegated-prefix-route"], d, "delegated_prefix_route")); err != nil {
+		if vv, ok := fortiAPIPatch(o["delegated-prefix-route"], "SystemDhcp6Server-DelegatedPrefixRoute"); ok {
+			if err = d.Set("delegated_prefix_route", vv); err != nil {
+				return fmt.Errorf("Error reading delegated_prefix_route: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading delegated_prefix_route: %v", err)
+		}
+	}
+
 	if err = d.Set("dns_search_list", flattenSystemDhcp6ServerDnsSearchList(o["dns-search-list"], d, "dns_search_list")); err != nil {
 		if vv, ok := fortiAPIPatch(o["dns-search-list"], "SystemDhcp6Server-DnsSearchList"); ok {
 			if err = d.Set("dns_search_list", vv); err != nil {
@@ -1027,6 +1087,10 @@ func flattenSystemDhcp6ServerFortiTestDebug(d *schema.ResourceData, fosdebugsn i
 }
 
 func expandSystemDhcp6ServerDelegatedPrefixIaid(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemDhcp6ServerDelegatedPrefixRoute(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -1331,6 +1395,15 @@ func getObjectSystemDhcp6Server(d *schema.ResourceData) (*map[string]interface{}
 			return &obj, err
 		} else if t != nil {
 			obj["delegated-prefix-iaid"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("delegated_prefix_route"); ok || d.HasChange("delegated_prefix_route") {
+		t, err := expandSystemDhcp6ServerDelegatedPrefixRoute(d, v, "delegated_prefix_route")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["delegated-prefix-route"] = t
 		}
 	}
 

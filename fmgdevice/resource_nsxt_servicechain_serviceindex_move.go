@@ -33,6 +33,12 @@ func resourceNsxtServiceChainServiceIndexMove() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+
+			"adom": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"device_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -68,8 +74,12 @@ func resourceNsxtServiceChainServiceIndexMoveUpdate(d *schema.ResourceData, m in
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -80,14 +90,13 @@ func resourceNsxtServiceChainServiceIndexMoveUpdate(d *schema.ResourceData, m in
 	paradict["service_chain"] = service_chain
 	paradict["service_index"] = service_index
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	target := d.Get("target").(string)
 	obj, err := getObjectNsxtServiceChainServiceIndexMove(d)
 	if err != nil {
 		return fmt.Errorf("Error updating NsxtServiceChainServiceIndexMove resource while getting object: %v", err)
 	}
+
+	wsParams["adom"] = adomv
 
 	_, err = c.UpdateNsxtServiceChainServiceIndexMove(obj, mkey, paradict, wsParams)
 	if err != nil {
@@ -114,12 +123,12 @@ func resourceNsxtServiceChainServiceIndexMoveRead(d *schema.ResourceData, m inte
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	cfg := m.(*FortiClient).Cfg
 
 	sid := d.Get("service_index").(string)
 	did := d.Get("target").(string)
 	action := d.Get("option").(string)
 
-	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
 	service_chain := d.Get("service_chain").(string)
 	if device_name == "" {

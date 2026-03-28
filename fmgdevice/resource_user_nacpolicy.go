@@ -28,6 +28,17 @@ func resourceUserNacPolicy() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
+			"update_if_exist": &schema.Schema{
+				Type:     schema.TypeBool,
+				Optional: true,
+				Computed: true,
+			},
+
+			"adom": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"device_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -59,6 +70,18 @@ func resourceUserNacPolicy() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
+			"firewall_address": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Computed: true,
+			},
+			"fortivoice_tag": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Computed: true,
+			},
 			"host": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -75,6 +98,20 @@ func resourceUserNacPolicy() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
+			"match_period": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+			},
+			"match_remove": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+			"match_type": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
 			"name": &schema.Schema{
 				Type:     schema.TypeString,
 				ForceNew: true,
@@ -84,9 +121,21 @@ func resourceUserNacPolicy() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
+			"severity": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeInt},
+				Optional: true,
+				Computed: true,
+			},
 			"src": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+			},
+			"ssid_policy": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Computed: true,
 			},
 			"status": &schema.Schema{
 				Type:     schema.TypeString,
@@ -102,6 +151,12 @@ func resourceUserNacPolicy() *schema.Resource {
 				Optional: true,
 			},
 			"switch_fortilink": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Computed: true,
+			},
+			"switch_group": &schema.Schema{
 				Type:     schema.TypeSet,
 				Elem:     &schema.Schema{Type: schema.TypeString},
 				Optional: true,
@@ -149,8 +204,12 @@ func resourceUserNacPolicyCreate(d *schema.ResourceData, m interface{}) error {
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -162,17 +221,37 @@ func resourceUserNacPolicyCreate(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectUserNacPolicy(d)
 	if err != nil {
 		return fmt.Errorf("Error creating UserNacPolicy resource while getting object: %v", err)
 	}
+	wsParams["adom"] = adomv
 
-	_, err = c.CreateUserNacPolicy(obj, paradict, wsParams)
-	if err != nil {
-		return fmt.Errorf("Error creating UserNacPolicy resource: %v", err)
+	update_if_exist := getUpdateIfExist(c, d)
+	mkey_tf, mkey_ok := d.GetOk("name")
+	mkey := fmt.Sprint(mkey_tf)
+	o := make(map[string]interface{})
+	existing := false
+
+	if update_if_exist && mkey_ok {
+		// check existing
+		o, err = c.ReadUserNacPolicy(mkey, paradict)
+		if err == nil && o != nil {
+			existing = true
+			// update if existing
+			o, err = c.UpdateUserNacPolicy(obj, mkey, paradict, wsParams)
+			if err != nil {
+				return fmt.Errorf("Error updating UserNacPolicy resource: %v", err)
+			}
+		}
+	}
+
+	if !existing {
+		_, err = c.CreateUserNacPolicy(obj, paradict, wsParams)
+		if err != nil {
+			return fmt.Errorf("Error creating UserNacPolicy resource: %v", err)
+		}
+
 	}
 
 	d.SetId(getStringKey(d, "name"))
@@ -187,8 +266,12 @@ func resourceUserNacPolicyUpdate(d *schema.ResourceData, m interface{}) error {
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -200,13 +283,12 @@ func resourceUserNacPolicyUpdate(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectUserNacPolicy(d)
 	if err != nil {
 		return fmt.Errorf("Error updating UserNacPolicy resource while getting object: %v", err)
 	}
+
+	wsParams["adom"] = adomv
 
 	_, err = c.UpdateUserNacPolicy(obj, mkey, paradict, wsParams)
 	if err != nil {
@@ -228,8 +310,12 @@ func resourceUserNacPolicyDelete(d *schema.ResourceData, m interface{}) error {
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -241,9 +327,7 @@ func resourceUserNacPolicyDelete(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
+	wsParams["adom"] = adomv
 
 	err = c.DeleteUserNacPolicy(mkey, paradict, wsParams)
 	if err != nil {
@@ -262,8 +346,8 @@ func resourceUserNacPolicyRead(d *schema.ResourceData, m interface{}) error {
 	c.Retries = 1
 
 	paradict := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	device_vdom, err := getVariable(cfg, d, "device_vdom")
 	if device_name == "" {
@@ -289,6 +373,7 @@ func resourceUserNacPolicyRead(d *schema.ResourceData, m interface{}) error {
 
 	o, err := c.ReadUserNacPolicy(mkey, paradict)
 	if err != nil {
+		d.SetId("")
 		return fmt.Errorf("Error reading UserNacPolicy resource: %v", err)
 	}
 
@@ -321,6 +406,14 @@ func flattenUserNacPolicyFamily(v interface{}, d *schema.ResourceData, pre strin
 	return v
 }
 
+func flattenUserNacPolicyFirewallAddress(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
+func flattenUserNacPolicyFortivoiceTag(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
 func flattenUserNacPolicyHost(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -337,6 +430,18 @@ func flattenUserNacPolicyMac(v interface{}, d *schema.ResourceData, pre string) 
 	return v
 }
 
+func flattenUserNacPolicyMatchPeriod(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenUserNacPolicyMatchRemove(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenUserNacPolicyMatchType(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenUserNacPolicyName(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -345,8 +450,16 @@ func flattenUserNacPolicyOs(v interface{}, d *schema.ResourceData, pre string) i
 	return v
 }
 
+func flattenUserNacPolicySeverity(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenIntegerList(v)
+}
+
 func flattenUserNacPolicySrc(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
+}
+
+func flattenUserNacPolicySsidPolicy(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
 }
 
 func flattenUserNacPolicyStatus(v interface{}, d *schema.ResourceData, pre string) interface{} {
@@ -362,6 +475,10 @@ func flattenUserNacPolicySwitchAutoAuth(v interface{}, d *schema.ResourceData, p
 }
 
 func flattenUserNacPolicySwitchFortilink(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
+func flattenUserNacPolicySwitchGroup(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return flattenStringList(v)
 }
 
@@ -432,6 +549,26 @@ func refreshObjectUserNacPolicy(d *schema.ResourceData, o map[string]interface{}
 		}
 	}
 
+	if err = d.Set("firewall_address", flattenUserNacPolicyFirewallAddress(o["firewall-address"], d, "firewall_address")); err != nil {
+		if vv, ok := fortiAPIPatch(o["firewall-address"], "UserNacPolicy-FirewallAddress"); ok {
+			if err = d.Set("firewall_address", vv); err != nil {
+				return fmt.Errorf("Error reading firewall_address: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading firewall_address: %v", err)
+		}
+	}
+
+	if err = d.Set("fortivoice_tag", flattenUserNacPolicyFortivoiceTag(o["fortivoice-tag"], d, "fortivoice_tag")); err != nil {
+		if vv, ok := fortiAPIPatch(o["fortivoice-tag"], "UserNacPolicy-FortivoiceTag"); ok {
+			if err = d.Set("fortivoice_tag", vv); err != nil {
+				return fmt.Errorf("Error reading fortivoice_tag: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading fortivoice_tag: %v", err)
+		}
+	}
+
 	if err = d.Set("host", flattenUserNacPolicyHost(o["host"], d, "host")); err != nil {
 		if vv, ok := fortiAPIPatch(o["host"], "UserNacPolicy-Host"); ok {
 			if err = d.Set("host", vv); err != nil {
@@ -472,6 +609,36 @@ func refreshObjectUserNacPolicy(d *schema.ResourceData, o map[string]interface{}
 		}
 	}
 
+	if err = d.Set("match_period", flattenUserNacPolicyMatchPeriod(o["match-period"], d, "match_period")); err != nil {
+		if vv, ok := fortiAPIPatch(o["match-period"], "UserNacPolicy-MatchPeriod"); ok {
+			if err = d.Set("match_period", vv); err != nil {
+				return fmt.Errorf("Error reading match_period: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading match_period: %v", err)
+		}
+	}
+
+	if err = d.Set("match_remove", flattenUserNacPolicyMatchRemove(o["match-remove"], d, "match_remove")); err != nil {
+		if vv, ok := fortiAPIPatch(o["match-remove"], "UserNacPolicy-MatchRemove"); ok {
+			if err = d.Set("match_remove", vv); err != nil {
+				return fmt.Errorf("Error reading match_remove: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading match_remove: %v", err)
+		}
+	}
+
+	if err = d.Set("match_type", flattenUserNacPolicyMatchType(o["match-type"], d, "match_type")); err != nil {
+		if vv, ok := fortiAPIPatch(o["match-type"], "UserNacPolicy-MatchType"); ok {
+			if err = d.Set("match_type", vv); err != nil {
+				return fmt.Errorf("Error reading match_type: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading match_type: %v", err)
+		}
+	}
+
 	if err = d.Set("name", flattenUserNacPolicyName(o["name"], d, "name")); err != nil {
 		if vv, ok := fortiAPIPatch(o["name"], "UserNacPolicy-Name"); ok {
 			if err = d.Set("name", vv); err != nil {
@@ -492,6 +659,16 @@ func refreshObjectUserNacPolicy(d *schema.ResourceData, o map[string]interface{}
 		}
 	}
 
+	if err = d.Set("severity", flattenUserNacPolicySeverity(o["severity"], d, "severity")); err != nil {
+		if vv, ok := fortiAPIPatch(o["severity"], "UserNacPolicy-Severity"); ok {
+			if err = d.Set("severity", vv); err != nil {
+				return fmt.Errorf("Error reading severity: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading severity: %v", err)
+		}
+	}
+
 	if err = d.Set("src", flattenUserNacPolicySrc(o["src"], d, "src")); err != nil {
 		if vv, ok := fortiAPIPatch(o["src"], "UserNacPolicy-Src"); ok {
 			if err = d.Set("src", vv); err != nil {
@@ -499,6 +676,16 @@ func refreshObjectUserNacPolicy(d *schema.ResourceData, o map[string]interface{}
 			}
 		} else {
 			return fmt.Errorf("Error reading src: %v", err)
+		}
+	}
+
+	if err = d.Set("ssid_policy", flattenUserNacPolicySsidPolicy(o["ssid-policy"], d, "ssid_policy")); err != nil {
+		if vv, ok := fortiAPIPatch(o["ssid-policy"], "UserNacPolicy-SsidPolicy"); ok {
+			if err = d.Set("ssid_policy", vv); err != nil {
+				return fmt.Errorf("Error reading ssid_policy: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading ssid_policy: %v", err)
 		}
 	}
 
@@ -539,6 +726,16 @@ func refreshObjectUserNacPolicy(d *schema.ResourceData, o map[string]interface{}
 			}
 		} else {
 			return fmt.Errorf("Error reading switch_fortilink: %v", err)
+		}
+	}
+
+	if err = d.Set("switch_group", flattenUserNacPolicySwitchGroup(o["switch-group"], d, "switch_group")); err != nil {
+		if vv, ok := fortiAPIPatch(o["switch-group"], "UserNacPolicy-SwitchGroup"); ok {
+			if err = d.Set("switch_group", vv); err != nil {
+				return fmt.Errorf("Error reading switch_group: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading switch_group: %v", err)
 		}
 	}
 
@@ -627,6 +824,14 @@ func expandUserNacPolicyFamily(d *schema.ResourceData, v interface{}, pre string
 	return v, nil
 }
 
+func expandUserNacPolicyFirewallAddress(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandUserNacPolicyFortivoiceTag(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
 func expandUserNacPolicyHost(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -643,6 +848,18 @@ func expandUserNacPolicyMac(d *schema.ResourceData, v interface{}, pre string) (
 	return v, nil
 }
 
+func expandUserNacPolicyMatchPeriod(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandUserNacPolicyMatchRemove(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandUserNacPolicyMatchType(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandUserNacPolicyName(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -651,8 +868,16 @@ func expandUserNacPolicyOs(d *schema.ResourceData, v interface{}, pre string) (i
 	return v, nil
 }
 
+func expandUserNacPolicySeverity(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandIntegerList(v.(*schema.Set).List()), nil
+}
+
 func expandUserNacPolicySrc(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
+}
+
+func expandUserNacPolicySsidPolicy(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
 }
 
 func expandUserNacPolicyStatus(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
@@ -668,6 +893,10 @@ func expandUserNacPolicySwitchAutoAuth(d *schema.ResourceData, v interface{}, pr
 }
 
 func expandUserNacPolicySwitchFortilink(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandUserNacPolicySwitchGroup(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return expandStringList(v.(*schema.Set).List()), nil
 }
 
@@ -734,6 +963,24 @@ func getObjectUserNacPolicy(d *schema.ResourceData) (*map[string]interface{}, er
 		}
 	}
 
+	if v, ok := d.GetOk("firewall_address"); ok || d.HasChange("firewall_address") {
+		t, err := expandUserNacPolicyFirewallAddress(d, v, "firewall_address")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["firewall-address"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("fortivoice_tag"); ok || d.HasChange("fortivoice_tag") {
+		t, err := expandUserNacPolicyFortivoiceTag(d, v, "fortivoice_tag")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["fortivoice-tag"] = t
+		}
+	}
+
 	if v, ok := d.GetOk("host"); ok || d.HasChange("host") {
 		t, err := expandUserNacPolicyHost(d, v, "host")
 		if err != nil {
@@ -770,6 +1017,33 @@ func getObjectUserNacPolicy(d *schema.ResourceData) (*map[string]interface{}, er
 		}
 	}
 
+	if v, ok := d.GetOk("match_period"); ok || d.HasChange("match_period") {
+		t, err := expandUserNacPolicyMatchPeriod(d, v, "match_period")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["match-period"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("match_remove"); ok || d.HasChange("match_remove") {
+		t, err := expandUserNacPolicyMatchRemove(d, v, "match_remove")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["match-remove"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("match_type"); ok || d.HasChange("match_type") {
+		t, err := expandUserNacPolicyMatchType(d, v, "match_type")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["match-type"] = t
+		}
+	}
+
 	if v, ok := d.GetOk("name"); ok || d.HasChange("name") {
 		t, err := expandUserNacPolicyName(d, v, "name")
 		if err != nil {
@@ -788,12 +1062,30 @@ func getObjectUserNacPolicy(d *schema.ResourceData) (*map[string]interface{}, er
 		}
 	}
 
+	if v, ok := d.GetOk("severity"); ok || d.HasChange("severity") {
+		t, err := expandUserNacPolicySeverity(d, v, "severity")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["severity"] = t
+		}
+	}
+
 	if v, ok := d.GetOk("src"); ok || d.HasChange("src") {
 		t, err := expandUserNacPolicySrc(d, v, "src")
 		if err != nil {
 			return &obj, err
 		} else if t != nil {
 			obj["src"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("ssid_policy"); ok || d.HasChange("ssid_policy") {
+		t, err := expandUserNacPolicySsidPolicy(d, v, "ssid_policy")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["ssid-policy"] = t
 		}
 	}
 
@@ -830,6 +1122,15 @@ func getObjectUserNacPolicy(d *schema.ResourceData) (*map[string]interface{}, er
 			return &obj, err
 		} else if t != nil {
 			obj["switch-fortilink"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("switch_group"); ok || d.HasChange("switch_group") {
+		t, err := expandUserNacPolicySwitchGroup(d, v, "switch_group")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["switch-group"] = t
 		}
 	}
 

@@ -33,8 +33,12 @@ The following arguments are supported:
 
 * `device_name` - FortiManager managed device name. This variable is used in the request URL. If not specified, it will inherit the variable `device_name` of the provider.
 
+* `allow_download` - Enable/disable download firmware images. Valid values: `disable`, `enable`.
+
 * `coordinating_fortigate` - Serial number of the FortiGate unit that controls this device.
 * `device_type` - Fortinet device type. Valid values: `fortigate`, `fortiswitch`, `fortiap`, `fortiproxy`, `fortiextender`.
+
+* `failure_reason` - Upgrade failure reason. Valid values: `timeout`, `none`, `internal`, `device-type-unsupported`, `download-failed`, `device-missing`, `version-unavailable`, `staging-failed`, `reboot-failed`, `device-not-reconnected`, `node-not-ready`, `no-final-confirmation`, `no-confirmation-query`, `config-error-log-nonempty`, `csf-tree-not-supported`, `firmware-changed`, `node-failed`.
 
 * `maximum_minutes` - Maximum number of minutes to allow for immediate upgrade preparation.
 * `serial` - Serial number of the node to include.
@@ -43,6 +47,7 @@ The following arguments are supported:
 * `timing` - Run immediately or at a scheduled time. Valid values: `immediate`, `scheduled`.
 
 * `upgrade_path` - Fortinet OS image versions to upgrade through in major-minor-patch format, such as 7-0-4.
+* `coordinating_fortiproxy` - Coordinating-Fortiproxy.
 
 
 ## Attribute Reference

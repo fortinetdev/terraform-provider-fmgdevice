@@ -42,10 +42,12 @@ The following arguments are supported:
 * `end_port` - End destination port number (1 - 65535).
 * `end_source_port` - End source port number (1 - 65535).
 * `gateway` - IPv6 address of the gateway.
+* `groups` - List of user groups.
 * `input_device` - Incoming interface name.
 * `input_device_negate` - Enable/disable negation of input device match. Valid values: `disable`, `enable`.
 
 * `internet_service_custom` - Custom Destination Internet Service name.
+* `internet_service_fortiguard` - FortiGuard Destination Internet Service name.
 * `internet_service_id` - Destination Internet Service ID.
 * `output_device` - Outgoing interface name.
 * `protocol` - Protocol number (0 - 255).
@@ -60,6 +62,7 @@ The following arguments are supported:
 
 * `tos` - Type of service bit pattern.
 * `tos_mask` - Type of service evaluated bits.
+* `users` - List of users.
 
 
 ## Attribute Reference

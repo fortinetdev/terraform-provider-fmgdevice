@@ -1,0 +1,70 @@
+---
+subcategory: "No Category"
+layout: "fmgdevice"
+page_title: "FortiManager Device: fmgdevice_firewall_localinpolicy"
+description: |-
+  <i>This object will be purged after policy copy and install.</i> Configure user defined IPv4 local-in policies.
+---
+
+# fmgdevice_firewall_localinpolicy
+<i>This object will be purged after policy copy and install.</i> Configure user defined IPv4 local-in policies.
+
+## Argument Reference
+
+
+The following arguments are supported:
+
+* `device_name` - FortiManager managed device name. This variable is used in the request URL. If not specified, it will inherit the variable `device_name` of the provider.
+* `device_vdom` - FortiManager managed device vdom. This variable is used in the request URL. If not specified, it will inherit the variable `device_vdom` of the provider.
+
+* `action` - Action performed on traffic matching the policy (default = deny). Valid values: `deny`, `accept`.
+
+* `comments` - Comment.
+* `dstaddr` - Destination address object from available options.
+* `dstaddr_negate` - When enabled dstaddr specifies what the destination address must NOT be. Valid values: `disable`, `enable`.
+
+* `ha_mgmt_intf_only` - Enable/disable dedicating the HA management interface only for local-in policy. Valid values: `disable`, `enable`.
+
+* `internet_service_src` - Enable/disable use of Internet Services in source for this local-in policy. If enabled, source address is not used. Valid values: `disable`, `enable`.
+
+* `internet_service_src_custom` - Custom Internet Service source name.
+* `internet_service_src_custom_group` - Custom Internet Service source group name.
+* `internet_service_src_fortiguard` - FortiGuard Internet Service source name.
+* `internet_service_src_group` - Internet Service source group name.
+* `internet_service_src_name` - Internet Service source name.
+* `internet_service_src_negate` - When enabled internet-service-src specifies what the service must NOT be. Valid values: `disable`, `enable`.
+
+* `intf` - Incoming interface name from available options.
+* `logtraffic` - Enable/disable local-in traffic logging. Valid values: `disable`, `enable`.
+
+* `policyid` - User defined local in policy ID.
+* `schedule` - Schedule object from available options.
+* `service` - Service object from available options.
+* `service_negate` - When enabled service specifies what the service must NOT be. Valid values: `disable`, `enable`.
+
+* `srcaddr` - Source address object from available options.
+* `srcaddr_negate` - When enabled srcaddr specifies what the source address must NOT be. Valid values: `disable`, `enable`.
+
+* `status` - Enable/disable this local-in policy. Valid values: `disable`, `enable`.
+
+* `uuid` - Universally Unique Identifier (UUID; automatically assigned but can be manually reset).
+* `virtual_patch` - Enable/disable virtual patching. Valid values: `disable`, `enable`.
+
+
+
+## Attribute Reference
+
+In addition to all the above arguments, the following attributes are exported:
+* `id` - an identifier for the resource with format {{policyid}}.
+
+## Import
+
+Firewall LocalInPolicy can be imported using any of these accepted formats:
+```
+Set import_options = ["device_name=YOUR_VALUE", "device_vdom=YOUR_VALUE"] in the provider section.
+
+$ export "FORTIMANAGER_IMPORT_TABLE"="true"
+$ terraform import fmgdevice_firewall_localinpolicy.labelname {{policyid}}
+$ unset "FORTIMANAGER_IMPORT_TABLE"
+```
+

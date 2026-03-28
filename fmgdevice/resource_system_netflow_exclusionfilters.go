@@ -28,6 +28,17 @@ func resourceSystemNetflowExclusionFilters() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
+			"update_if_exist": &schema.Schema{
+				Type:     schema.TypeBool,
+				Optional: true,
+				Computed: true,
+			},
+
+			"adom": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"device_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -70,33 +81,56 @@ func resourceSystemNetflowExclusionFiltersCreate(d *schema.ResourceData, m inter
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
 	}
 	paradict["device"] = device_name
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectSystemNetflowExclusionFilters(d)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemNetflowExclusionFilters resource while getting object: %v", err)
 	}
+	wsParams["adom"] = adomv
 
-	v, err := c.CreateSystemNetflowExclusionFilters(obj, paradict, wsParams)
-	if err != nil {
-		return fmt.Errorf("Error creating SystemNetflowExclusionFilters resource: %v", err)
+	update_if_exist := getUpdateIfExist(c, d)
+	mkey_tf, mkey_ok := d.GetOk("fosid")
+	mkey := fmt.Sprint(mkey_tf)
+	o := make(map[string]interface{})
+	existing := false
+
+	if update_if_exist && mkey_ok {
+		// check existing
+		o, err = c.ReadSystemNetflowExclusionFilters(mkey, paradict)
+		if err == nil && o != nil {
+			existing = true
+			// update if existing
+			o, err = c.UpdateSystemNetflowExclusionFilters(obj, mkey, paradict, wsParams)
+			if err != nil {
+				return fmt.Errorf("Error updating SystemNetflowExclusionFilters resource: %v", err)
+			}
+		}
 	}
 
-	if v != nil && v["id"] != nil {
-		if vidn, ok := v["id"].(float64); ok {
-			d.SetId(strconv.Itoa(int(vidn)))
-			return resourceSystemNetflowExclusionFiltersRead(d, m)
-		} else {
+	if !existing {
+		v, err := c.CreateSystemNetflowExclusionFilters(obj, paradict, wsParams)
+		if err != nil {
 			return fmt.Errorf("Error creating SystemNetflowExclusionFilters resource: %v", err)
+		}
+
+		if v != nil && v["id"] != nil {
+			if vidn, ok := v["id"].(float64); ok {
+				d.SetId(strconv.Itoa(int(vidn)))
+				return resourceSystemNetflowExclusionFiltersRead(d, m)
+			} else {
+				return fmt.Errorf("Error creating SystemNetflowExclusionFilters resource: %v", err)
+			}
 		}
 	}
 
@@ -112,21 +146,24 @@ func resourceSystemNetflowExclusionFiltersUpdate(d *schema.ResourceData, m inter
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
 	}
 	paradict["device"] = device_name
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectSystemNetflowExclusionFilters(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemNetflowExclusionFilters resource while getting object: %v", err)
 	}
+
+	wsParams["adom"] = adomv
 
 	_, err = c.UpdateSystemNetflowExclusionFilters(obj, mkey, paradict, wsParams)
 	if err != nil {
@@ -148,17 +185,19 @@ func resourceSystemNetflowExclusionFiltersDelete(d *schema.ResourceData, m inter
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
 	}
 	paradict["device"] = device_name
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
+	wsParams["adom"] = adomv
 
 	err = c.DeleteSystemNetflowExclusionFilters(mkey, paradict, wsParams)
 	if err != nil {
@@ -177,8 +216,8 @@ func resourceSystemNetflowExclusionFiltersRead(d *schema.ResourceData, m interfa
 	c.Retries = 1
 
 	paradict := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if device_name == "" {
 		device_name = importOptionChecking(m.(*FortiClient).Cfg, "device_name")
@@ -193,6 +232,7 @@ func resourceSystemNetflowExclusionFiltersRead(d *schema.ResourceData, m interfa
 
 	o, err := c.ReadSystemNetflowExclusionFilters(mkey, paradict)
 	if err != nil {
+		d.SetId("")
 		return fmt.Errorf("Error reading SystemNetflowExclusionFilters resource: %v", err)
 	}
 

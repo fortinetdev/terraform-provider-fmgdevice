@@ -28,6 +28,17 @@ func resourceSystemInterfaceVrrpProxyArp() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
+			"update_if_exist": &schema.Schema{
+				Type:     schema.TypeBool,
+				Optional: true,
+				Computed: true,
+			},
+
+			"adom": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"device_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -64,8 +75,12 @@ func resourceSystemInterfaceVrrpProxyArpCreate(d *schema.ResourceData, m interfa
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -76,17 +91,37 @@ func resourceSystemInterfaceVrrpProxyArpCreate(d *schema.ResourceData, m interfa
 	paradict["interface"] = var_interface
 	paradict["vrrp"] = vrrp
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectSystemInterfaceVrrpProxyArp(d)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemInterfaceVrrpProxyArp resource while getting object: %v", err)
 	}
+	wsParams["adom"] = adomv
 
-	_, err = c.CreateSystemInterfaceVrrpProxyArp(obj, paradict, wsParams)
-	if err != nil {
-		return fmt.Errorf("Error creating SystemInterfaceVrrpProxyArp resource: %v", err)
+	update_if_exist := getUpdateIfExist(c, d)
+	mkey_tf, mkey_ok := d.GetOk("fosid")
+	mkey := fmt.Sprint(mkey_tf)
+	o := make(map[string]interface{})
+	existing := false
+
+	if update_if_exist && mkey_ok {
+		// check existing
+		o, err = c.ReadSystemInterfaceVrrpProxyArp(mkey, paradict)
+		if err == nil && o != nil {
+			existing = true
+			// update if existing
+			o, err = c.UpdateSystemInterfaceVrrpProxyArp(obj, mkey, paradict, wsParams)
+			if err != nil {
+				return fmt.Errorf("Error updating SystemInterfaceVrrpProxyArp resource: %v", err)
+			}
+		}
+	}
+
+	if !existing {
+		_, err = c.CreateSystemInterfaceVrrpProxyArp(obj, paradict, wsParams)
+		if err != nil {
+			return fmt.Errorf("Error creating SystemInterfaceVrrpProxyArp resource: %v", err)
+		}
+
 	}
 
 	d.SetId(strconv.Itoa(getIntKey(d, "fosid")))
@@ -101,8 +136,12 @@ func resourceSystemInterfaceVrrpProxyArpUpdate(d *schema.ResourceData, m interfa
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -113,13 +152,12 @@ func resourceSystemInterfaceVrrpProxyArpUpdate(d *schema.ResourceData, m interfa
 	paradict["interface"] = var_interface
 	paradict["vrrp"] = vrrp
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectSystemInterfaceVrrpProxyArp(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemInterfaceVrrpProxyArp resource while getting object: %v", err)
 	}
+
+	wsParams["adom"] = adomv
 
 	_, err = c.UpdateSystemInterfaceVrrpProxyArp(obj, mkey, paradict, wsParams)
 	if err != nil {
@@ -141,8 +179,12 @@ func resourceSystemInterfaceVrrpProxyArpDelete(d *schema.ResourceData, m interfa
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -153,9 +195,7 @@ func resourceSystemInterfaceVrrpProxyArpDelete(d *schema.ResourceData, m interfa
 	paradict["interface"] = var_interface
 	paradict["vrrp"] = vrrp
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
+	wsParams["adom"] = adomv
 
 	err = c.DeleteSystemInterfaceVrrpProxyArp(mkey, paradict, wsParams)
 	if err != nil {
@@ -174,8 +214,8 @@ func resourceSystemInterfaceVrrpProxyArpRead(d *schema.ResourceData, m interface
 	c.Retries = 1
 
 	paradict := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	var_interface := d.Get("interface").(string)
 	vrrp := d.Get("vrrp").(string)
@@ -212,6 +252,7 @@ func resourceSystemInterfaceVrrpProxyArpRead(d *schema.ResourceData, m interface
 
 	o, err := c.ReadSystemInterfaceVrrpProxyArp(mkey, paradict)
 	if err != nil {
+		d.SetId("")
 		return fmt.Errorf("Error reading SystemInterfaceVrrpProxyArp resource: %v", err)
 	}
 

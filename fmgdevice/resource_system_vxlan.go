@@ -28,6 +28,17 @@ func resourceSystemVxlan() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
+			"update_if_exist": &schema.Schema{
+				Type:     schema.TypeBool,
+				Optional: true,
+				Computed: true,
+			},
+
+			"adom": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"device_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -67,6 +78,16 @@ func resourceSystemVxlan() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"local_ip": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+			"local_ip6": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
 			"multicast_ttl": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
@@ -102,8 +123,12 @@ func resourceSystemVxlanCreate(d *schema.ResourceData, m interface{}) error {
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -115,17 +140,37 @@ func resourceSystemVxlanCreate(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectSystemVxlan(d)
 	if err != nil {
 		return fmt.Errorf("Error creating SystemVxlan resource while getting object: %v", err)
 	}
+	wsParams["adom"] = adomv
 
-	_, err = c.CreateSystemVxlan(obj, paradict, wsParams)
-	if err != nil {
-		return fmt.Errorf("Error creating SystemVxlan resource: %v", err)
+	update_if_exist := getUpdateIfExist(c, d)
+	mkey_tf, mkey_ok := d.GetOk("name")
+	mkey := fmt.Sprint(mkey_tf)
+	o := make(map[string]interface{})
+	existing := false
+
+	if update_if_exist && mkey_ok {
+		// check existing
+		o, err = c.ReadSystemVxlan(mkey, paradict)
+		if err == nil && o != nil {
+			existing = true
+			// update if existing
+			o, err = c.UpdateSystemVxlan(obj, mkey, paradict, wsParams)
+			if err != nil {
+				return fmt.Errorf("Error updating SystemVxlan resource: %v", err)
+			}
+		}
+	}
+
+	if !existing {
+		_, err = c.CreateSystemVxlan(obj, paradict, wsParams)
+		if err != nil {
+			return fmt.Errorf("Error creating SystemVxlan resource: %v", err)
+		}
+
 	}
 
 	d.SetId(getStringKey(d, "name"))
@@ -140,8 +185,12 @@ func resourceSystemVxlanUpdate(d *schema.ResourceData, m interface{}) error {
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -153,13 +202,12 @@ func resourceSystemVxlanUpdate(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectSystemVxlan(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemVxlan resource while getting object: %v", err)
 	}
+
+	wsParams["adom"] = adomv
 
 	_, err = c.UpdateSystemVxlan(obj, mkey, paradict, wsParams)
 	if err != nil {
@@ -181,8 +229,12 @@ func resourceSystemVxlanDelete(d *schema.ResourceData, m interface{}) error {
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -194,9 +246,7 @@ func resourceSystemVxlanDelete(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
+	wsParams["adom"] = adomv
 
 	err = c.DeleteSystemVxlan(mkey, paradict, wsParams)
 	if err != nil {
@@ -215,8 +265,8 @@ func resourceSystemVxlanRead(d *schema.ResourceData, m interface{}) error {
 	c.Retries = 1
 
 	paradict := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	device_vdom, err := getVariable(cfg, d, "device_vdom")
 	if device_name == "" {
@@ -242,6 +292,7 @@ func resourceSystemVxlanRead(d *schema.ResourceData, m interface{}) error {
 
 	o, err := c.ReadSystemVxlan(mkey, paradict)
 	if err != nil {
+		d.SetId("")
 		return fmt.Errorf("Error reading SystemVxlan resource: %v", err)
 	}
 
@@ -275,6 +326,14 @@ func flattenSystemVxlanIpVersion(v interface{}, d *schema.ResourceData, pre stri
 }
 
 func flattenSystemVxlanLearnFromTraffic(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemVxlanLocalIp(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemVxlanLocalIp6(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -348,6 +407,26 @@ func refreshObjectSystemVxlan(d *schema.ResourceData, o map[string]interface{}) 
 			}
 		} else {
 			return fmt.Errorf("Error reading learn_from_traffic: %v", err)
+		}
+	}
+
+	if err = d.Set("local_ip", flattenSystemVxlanLocalIp(o["local-ip"], d, "local_ip")); err != nil {
+		if vv, ok := fortiAPIPatch(o["local-ip"], "SystemVxlan-LocalIp"); ok {
+			if err = d.Set("local_ip", vv); err != nil {
+				return fmt.Errorf("Error reading local_ip: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading local_ip: %v", err)
+		}
+	}
+
+	if err = d.Set("local_ip6", flattenSystemVxlanLocalIp6(o["local-ip6"], d, "local_ip6")); err != nil {
+		if vv, ok := fortiAPIPatch(o["local-ip6"], "SystemVxlan-LocalIp6"); ok {
+			if err = d.Set("local_ip6", vv); err != nil {
+				return fmt.Errorf("Error reading local_ip6: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading local_ip6: %v", err)
 		}
 	}
 
@@ -430,6 +509,14 @@ func expandSystemVxlanLearnFromTraffic(d *schema.ResourceData, v interface{}, pr
 	return v, nil
 }
 
+func expandSystemVxlanLocalIp(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemVxlanLocalIp6(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandSystemVxlanMulticastTtl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -495,6 +582,24 @@ func getObjectSystemVxlan(d *schema.ResourceData) (*map[string]interface{}, erro
 			return &obj, err
 		} else if t != nil {
 			obj["learn-from-traffic"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("local_ip"); ok || d.HasChange("local_ip") {
+		t, err := expandSystemVxlanLocalIp(d, v, "local_ip")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["local-ip"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("local_ip6"); ok || d.HasChange("local_ip6") {
+		t, err := expandSystemVxlanLocalIp6(d, v, "local_ip6")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["local-ip6"] = t
 		}
 	}
 

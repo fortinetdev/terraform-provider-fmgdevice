@@ -52,6 +52,8 @@ The following arguments are supported:
 * `fmg` - IP address or FQDN of the FortiManager.
 * `fmg_source_ip` - IPv4 source address that this FortiGate uses when communicating with FortiManager.
 * `fmg_source_ip6` - IPv6 source address that this FortiGate uses when communicating with FortiManager.
+* `fmg_update_http_header` - Enable/disable inclusion of HTTP header in update request. Valid values: `disable`, `enable`.
+
 * `fmg_update_port` - Port used to communicate with FortiManager that is acting as a FortiGuard update server. Valid values: `443`, `8890`.
 
 * `fortigate_cloud_sso_default_profile` - Override access profile.

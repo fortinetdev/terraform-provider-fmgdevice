@@ -28,6 +28,17 @@ func resourceVpnOcvpnForticlientAccessAuthGroups() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
+			"update_if_exist": &schema.Schema{
+				Type:     schema.TypeBool,
+				Optional: true,
+				Computed: true,
+			},
+
+			"adom": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"device_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -67,8 +78,12 @@ func resourceVpnOcvpnForticlientAccessAuthGroupsCreate(d *schema.ResourceData, m
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -80,17 +95,37 @@ func resourceVpnOcvpnForticlientAccessAuthGroupsCreate(d *schema.ResourceData, m
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectVpnOcvpnForticlientAccessAuthGroups(d)
 	if err != nil {
 		return fmt.Errorf("Error creating VpnOcvpnForticlientAccessAuthGroups resource while getting object: %v", err)
 	}
+	wsParams["adom"] = adomv
 
-	_, err = c.CreateVpnOcvpnForticlientAccessAuthGroups(obj, paradict, wsParams)
-	if err != nil {
-		return fmt.Errorf("Error creating VpnOcvpnForticlientAccessAuthGroups resource: %v", err)
+	update_if_exist := getUpdateIfExist(c, d)
+	mkey_tf, mkey_ok := d.GetOk("name")
+	mkey := fmt.Sprint(mkey_tf)
+	o := make(map[string]interface{})
+	existing := false
+
+	if update_if_exist && mkey_ok {
+		// check existing
+		o, err = c.ReadVpnOcvpnForticlientAccessAuthGroups(mkey, paradict)
+		if err == nil && o != nil {
+			existing = true
+			// update if existing
+			o, err = c.UpdateVpnOcvpnForticlientAccessAuthGroups(obj, mkey, paradict, wsParams)
+			if err != nil {
+				return fmt.Errorf("Error updating VpnOcvpnForticlientAccessAuthGroups resource: %v", err)
+			}
+		}
+	}
+
+	if !existing {
+		_, err = c.CreateVpnOcvpnForticlientAccessAuthGroups(obj, paradict, wsParams)
+		if err != nil {
+			return fmt.Errorf("Error creating VpnOcvpnForticlientAccessAuthGroups resource: %v", err)
+		}
+
 	}
 
 	d.SetId(getStringKey(d, "name"))
@@ -105,8 +140,12 @@ func resourceVpnOcvpnForticlientAccessAuthGroupsUpdate(d *schema.ResourceData, m
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -118,13 +157,12 @@ func resourceVpnOcvpnForticlientAccessAuthGroupsUpdate(d *schema.ResourceData, m
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectVpnOcvpnForticlientAccessAuthGroups(d)
 	if err != nil {
 		return fmt.Errorf("Error updating VpnOcvpnForticlientAccessAuthGroups resource while getting object: %v", err)
 	}
+
+	wsParams["adom"] = adomv
 
 	_, err = c.UpdateVpnOcvpnForticlientAccessAuthGroups(obj, mkey, paradict, wsParams)
 	if err != nil {
@@ -146,8 +184,12 @@ func resourceVpnOcvpnForticlientAccessAuthGroupsDelete(d *schema.ResourceData, m
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -159,9 +201,7 @@ func resourceVpnOcvpnForticlientAccessAuthGroupsDelete(d *schema.ResourceData, m
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
+	wsParams["adom"] = adomv
 
 	err = c.DeleteVpnOcvpnForticlientAccessAuthGroups(mkey, paradict, wsParams)
 	if err != nil {
@@ -180,8 +220,8 @@ func resourceVpnOcvpnForticlientAccessAuthGroupsRead(d *schema.ResourceData, m i
 	c.Retries = 1
 
 	paradict := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	device_vdom, err := getVariable(cfg, d, "device_vdom")
 	if device_name == "" {
@@ -207,6 +247,7 @@ func resourceVpnOcvpnForticlientAccessAuthGroupsRead(d *schema.ResourceData, m i
 
 	o, err := c.ReadVpnOcvpnForticlientAccessAuthGroups(mkey, paradict)
 	if err != nil {
+		d.SetId("")
 		return fmt.Errorf("Error reading VpnOcvpnForticlientAccessAuthGroups resource: %v", err)
 	}
 

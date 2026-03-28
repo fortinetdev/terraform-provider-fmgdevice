@@ -50,6 +50,8 @@ The following arguments are supported:
 * `sta_cap_cleanup` - Time period in minutes to keep station capability data after it is gone (default = 0).
 * `sta_capability_interval` - Time between running station capability reports (1 - 255 sec, default = 30).
 * `sta_locate_timer` - Time between running client presence flushes to remove clients that are listed but no longer present (0 - 86400 sec, default = 1800).
+* `sta_offline_cleanup` - Time period in seconds to keep station offline data after it is gone (default = 300).
+* `sta_offline_ip2mac_cleanup` - Time period in seconds to keep station offline Ip2mac data after it is gone (default = 300).
 * `sta_stats_interval` - Time between running client (station) reports (1 - 255 sec, default = 10).
 * `vap_stats_interval` - Time between running Virtual Access Point (VAP) reports (1 - 255 sec, default = 15).
 * `wids_entry_cleanup` - Time period in minutes to keep wids entry after it is gone (default = 0).

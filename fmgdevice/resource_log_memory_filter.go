@@ -28,6 +28,12 @@ func resourceLogMemoryFilter() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
+
+			"adom": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"device_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -43,6 +49,11 @@ func resourceLogMemoryFilter() *schema.Resource {
 			"anomaly": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+			},
+			"debug": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
 			},
 			"filter": &schema.Schema{
 				Type:     schema.TypeString,
@@ -144,8 +155,12 @@ func resourceLogMemoryFilterUpdate(d *schema.ResourceData, m interface{}) error 
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -157,13 +172,12 @@ func resourceLogMemoryFilterUpdate(d *schema.ResourceData, m interface{}) error 
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectLogMemoryFilter(d)
 	if err != nil {
 		return fmt.Errorf("Error updating LogMemoryFilter resource while getting object: %v", err)
 	}
+
+	wsParams["adom"] = adomv
 
 	_, err = c.UpdateLogMemoryFilter(obj, mkey, paradict, wsParams)
 	if err != nil {
@@ -185,8 +199,12 @@ func resourceLogMemoryFilterDelete(d *schema.ResourceData, m interface{}) error 
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -198,9 +216,7 @@ func resourceLogMemoryFilterDelete(d *schema.ResourceData, m interface{}) error 
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
+	wsParams["adom"] = adomv
 
 	err = c.DeleteLogMemoryFilter(mkey, paradict, wsParams)
 	if err != nil {
@@ -219,8 +235,8 @@ func resourceLogMemoryFilterRead(d *schema.ResourceData, m interface{}) error {
 	c.Retries = 1
 
 	paradict := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	device_vdom, err := getVariable(cfg, d, "device_vdom")
 	if device_name == "" {
@@ -246,6 +262,7 @@ func resourceLogMemoryFilterRead(d *schema.ResourceData, m interface{}) error {
 
 	o, err := c.ReadLogMemoryFilter(mkey, paradict)
 	if err != nil {
+		d.SetId("")
 		return fmt.Errorf("Error reading LogMemoryFilter resource: %v", err)
 	}
 
@@ -263,6 +280,10 @@ func resourceLogMemoryFilterRead(d *schema.ResourceData, m interface{}) error {
 }
 
 func flattenLogMemoryFilterAnomaly(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenLogMemoryFilterDebug(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -397,6 +418,16 @@ func refreshObjectLogMemoryFilter(d *schema.ResourceData, o map[string]interface
 			}
 		} else {
 			return fmt.Errorf("Error reading anomaly: %v", err)
+		}
+	}
+
+	if err = d.Set("debug", flattenLogMemoryFilterDebug(o["debug"], d, "debug")); err != nil {
+		if vv, ok := fortiAPIPatch(o["debug"], "LogMemoryFilter-Debug"); ok {
+			if err = d.Set("debug", vv); err != nil {
+				return fmt.Errorf("Error reading debug: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading debug: %v", err)
 		}
 	}
 
@@ -557,6 +588,10 @@ func expandLogMemoryFilterAnomaly(d *schema.ResourceData, v interface{}, pre str
 	return v, nil
 }
 
+func expandLogMemoryFilterDebug(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandLogMemoryFilterFilter(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -674,6 +709,15 @@ func getObjectLogMemoryFilter(d *schema.ResourceData) (*map[string]interface{}, 
 			return &obj, err
 		} else if t != nil {
 			obj["anomaly"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("debug"); ok || d.HasChange("debug") {
+		t, err := expandLogMemoryFilterDebug(d, v, "debug")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["debug"] = t
 		}
 	}
 

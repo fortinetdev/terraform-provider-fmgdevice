@@ -11,6 +11,7 @@ Override settings for remote syslog server.
 
 ~> The following variables have sub resource. Avoid using them together, otherwise conflicts and overwrites may occur.
 >- `custom_field_name`: `fmgdevice_log_syslogd2_overridesetting_customfieldname`
+>- `log_templates`: `fmgdevice_log_syslogd2_overridesetting_logtemplates`
 
 
 
@@ -70,6 +71,7 @@ The following arguments are supported:
 * `use_management_vdom` - Enable/disable use of management VDOM as source VDOM for logs sent to syslog server. Valid values: `disable`, `enable`.
 
 * `vrf_select` - VRF ID used for connection to server.
+* `log_templates` - Log-Templates. The structure of `log_templates` block is documented below.
 * `dynamic_sort_subtable` - true or false, set this parameter to true when using dynamic for_each + toset to configure and sort sub-tables, please do not set this parameter when configuring static sub-tables.
 
 The `custom_field_name` block supports:
@@ -77,6 +79,14 @@ The `custom_field_name` block supports:
 * `custom` - Field custom name [A-Za-z0-9_].
 * `id` - Entry ID.
 * `name` - Field name [A-Za-z0-9_].
+
+The `log_templates` block supports:
+
+* `category` - Category. Valid values: `app-ctrl`, `attack`, `dlp`, `event`, `traffic`, `virus`, `voip`, `webfilter`, `spam`, `anomaly`, `waf`, `dns`, `ssh`, `ssl`, `file-filter`, `icap`, `virtual-patch`.
+
+* `empty_value_indicator` - Empty-Value-Indicator.
+* `id` - Id.
+* `template` - Template.
 
 
 ## Attribute Reference

@@ -28,6 +28,12 @@ func resourceSystemPasswordPolicy() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
+
+			"adom": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"device_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -54,6 +60,11 @@ func resourceSystemPasswordPolicy() *schema.Resource {
 				Optional: true,
 			},
 			"login_lockout_upon_downgrade": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+			"login_lockout_upon_weaker_encryption": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
@@ -96,6 +107,10 @@ func resourceSystemPasswordPolicy() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"password_history": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+			},
 		},
 	}
 }
@@ -107,21 +122,24 @@ func resourceSystemPasswordPolicyUpdate(d *schema.ResourceData, m interface{}) e
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
 	}
 	paradict["device"] = device_name
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectSystemPasswordPolicy(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemPasswordPolicy resource while getting object: %v", err)
 	}
+
+	wsParams["adom"] = adomv
 
 	_, err = c.UpdateSystemPasswordPolicy(obj, mkey, paradict, wsParams)
 	if err != nil {
@@ -143,17 +161,19 @@ func resourceSystemPasswordPolicyDelete(d *schema.ResourceData, m interface{}) e
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
 	}
 	paradict["device"] = device_name
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
+	wsParams["adom"] = adomv
 
 	err = c.DeleteSystemPasswordPolicy(mkey, paradict, wsParams)
 	if err != nil {
@@ -172,8 +192,8 @@ func resourceSystemPasswordPolicyRead(d *schema.ResourceData, m interface{}) err
 	c.Retries = 1
 
 	paradict := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if device_name == "" {
 		device_name = importOptionChecking(m.(*FortiClient).Cfg, "device_name")
@@ -188,6 +208,7 @@ func resourceSystemPasswordPolicyRead(d *schema.ResourceData, m interface{}) err
 
 	o, err := c.ReadSystemPasswordPolicy(mkey, paradict)
 	if err != nil {
+		d.SetId("")
 		return fmt.Errorf("Error reading SystemPasswordPolicy resource: %v", err)
 	}
 
@@ -224,6 +245,10 @@ func flattenSystemPasswordPolicyLoginLockoutUponDowngrade(v interface{}, d *sche
 	return v
 }
 
+func flattenSystemPasswordPolicyLoginLockoutUponWeakerEncryption(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenSystemPasswordPolicyMinChangeCharacters(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -257,6 +282,10 @@ func flattenSystemPasswordPolicyReusePasswordLimit(v interface{}, d *schema.Reso
 }
 
 func flattenSystemPasswordPolicyStatus(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemPasswordPolicyPasswordHistory(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -310,6 +339,16 @@ func refreshObjectSystemPasswordPolicy(d *schema.ResourceData, o map[string]inte
 			}
 		} else {
 			return fmt.Errorf("Error reading login_lockout_upon_downgrade: %v", err)
+		}
+	}
+
+	if err = d.Set("login_lockout_upon_weaker_encryption", flattenSystemPasswordPolicyLoginLockoutUponWeakerEncryption(o["login-lockout-upon-weaker-encryption"], d, "login_lockout_upon_weaker_encryption")); err != nil {
+		if vv, ok := fortiAPIPatch(o["login-lockout-upon-weaker-encryption"], "SystemPasswordPolicy-LoginLockoutUponWeakerEncryption"); ok {
+			if err = d.Set("login_lockout_upon_weaker_encryption", vv); err != nil {
+				return fmt.Errorf("Error reading login_lockout_upon_weaker_encryption: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading login_lockout_upon_weaker_encryption: %v", err)
 		}
 	}
 
@@ -403,6 +442,16 @@ func refreshObjectSystemPasswordPolicy(d *schema.ResourceData, o map[string]inte
 		}
 	}
 
+	if err = d.Set("password_history", flattenSystemPasswordPolicyPasswordHistory(o["password-history"], d, "password_history")); err != nil {
+		if vv, ok := fortiAPIPatch(o["password-history"], "SystemPasswordPolicy-PasswordHistory"); ok {
+			if err = d.Set("password_history", vv); err != nil {
+				return fmt.Errorf("Error reading password_history: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading password_history: %v", err)
+		}
+	}
+
 	return nil
 }
 
@@ -429,6 +478,10 @@ func expandSystemPasswordPolicyExpireStatus(d *schema.ResourceData, v interface{
 }
 
 func expandSystemPasswordPolicyLoginLockoutUponDowngrade(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemPasswordPolicyLoginLockoutUponWeakerEncryption(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -465,6 +518,10 @@ func expandSystemPasswordPolicyReusePasswordLimit(d *schema.ResourceData, v inte
 }
 
 func expandSystemPasswordPolicyStatus(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemPasswordPolicyPasswordHistory(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -513,6 +570,15 @@ func getObjectSystemPasswordPolicy(d *schema.ResourceData) (*map[string]interfac
 			return &obj, err
 		} else if t != nil {
 			obj["login-lockout-upon-downgrade"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("login_lockout_upon_weaker_encryption"); ok || d.HasChange("login_lockout_upon_weaker_encryption") {
+		t, err := expandSystemPasswordPolicyLoginLockoutUponWeakerEncryption(d, v, "login_lockout_upon_weaker_encryption")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["login-lockout-upon-weaker-encryption"] = t
 		}
 	}
 
@@ -594,6 +660,15 @@ func getObjectSystemPasswordPolicy(d *schema.ResourceData) (*map[string]interfac
 			return &obj, err
 		} else if t != nil {
 			obj["status"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("password_history"); ok || d.HasChange("password_history") {
+		t, err := expandSystemPasswordPolicyPasswordHistory(d, v, "password_history")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["password-history"] = t
 		}
 	}
 

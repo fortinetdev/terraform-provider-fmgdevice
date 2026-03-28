@@ -33,6 +33,12 @@ func resourceZtnaWebPortalBookmarkBookmarksMove() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+
+			"adom": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"device_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -74,8 +80,12 @@ func resourceZtnaWebPortalBookmarkBookmarksMoveUpdate(d *schema.ResourceData, m 
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -91,14 +101,13 @@ func resourceZtnaWebPortalBookmarkBookmarksMoveUpdate(d *schema.ResourceData, m 
 	paradict["web_portal_bookmark"] = web_portal_bookmark
 	paradict["bookmarks"] = bookmarks
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	target := d.Get("target").(string)
 	obj, err := getObjectZtnaWebPortalBookmarkBookmarksMove(d)
 	if err != nil {
 		return fmt.Errorf("Error updating ZtnaWebPortalBookmarkBookmarksMove resource while getting object: %v", err)
 	}
+
+	wsParams["adom"] = adomv
 
 	_, err = c.UpdateZtnaWebPortalBookmarkBookmarksMove(obj, mkey, paradict, wsParams)
 	if err != nil {
@@ -125,12 +134,12 @@ func resourceZtnaWebPortalBookmarkBookmarksMoveRead(d *schema.ResourceData, m in
 	c.Retries = 1
 
 	paradict := make(map[string]string)
+	cfg := m.(*FortiClient).Cfg
 
 	sid := d.Get("bookmarks").(string)
 	did := d.Get("target").(string)
 	action := d.Get("option").(string)
 
-	cfg := m.(*FortiClient).Cfg
 	device_name, err := getVariable(cfg, d, "device_name")
 	device_vdom, err := getVariable(cfg, d, "device_vdom")
 	web_portal_bookmark := d.Get("web_portal_bookmark").(string)

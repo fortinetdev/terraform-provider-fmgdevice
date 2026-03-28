@@ -40,6 +40,8 @@ The following arguments are supported:
 
 * `ports` - Ports to filter for in this traffic sniffer.
 * `protocols` - Protocols to filter in this traffic sniffer.
+* `hostnames` - Hostnames.
+* `snapshot_length` - Snapshot-Length.
 
 
 ## Attribute Reference

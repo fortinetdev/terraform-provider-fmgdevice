@@ -127,6 +127,7 @@ The following arguments are supported:
 * `distance` - Distance for routes added by IKE (1 - 255).
 * `dns_mode` - DNS server mode. Valid values: `auto`, `manual`.
 
+* `dns_suffix_search` - One or more DNS domain name suffixes in quotes separated by spaces.
 * `domain` - Instruct unity clients about the single default DNS domain.
 * `dpd` - Dead Peer Detection mode. Valid values: `disable`, `enable`, `on-idle`, `on-demand`.
 
@@ -271,6 +272,9 @@ The following arguments are supported:
 * `passive_mode` - Enable/disable IPsec passive mode for static tunnels. Valid values: `disable`, `enable`.
 
 * `peer` - Accept this peer certificate.
+* `peer_egress_shaping` - Enable/disable peer egress shaping. Valid values: `disable`, `enable`.
+
+* `peer_egress_shaping_value` - Configure outbound bandwidth to use for peer egress shaping in kbps (0 - 100000000, default = 0).
 * `peergrp` - Accept this peer certificate group.
 * `peerid` - Accept this peer identity.
 * `peertype` - Accept this peer type. Valid values: `any`, `one`, `dialup`, `peer`, `peergrp`.
@@ -285,6 +289,8 @@ The following arguments are supported:
 * `psksecret` - Pre-shared secret for PSK authentication (ASCII string or hexadecimal encoded with a leading 0x).
 * `psksecret_remote` - Pre-shared secret for remote side PSK authentication (ASCII string or hexadecimal encoded with a leading 0x).
 * `qkd` - Enable/disable use of Quantum Key Distribution (QKD) server. Valid values: `disable`, `allow`, `require`.
+
+* `qkd_hybrid` - Enable/disable use of Quantum Key Distribution (QKD) hybrid keys. Valid values: `disable`, `require`, `allow`.
 
 * `qkd_profile` - Quantum Key Distribution (QKD) server profile.
 * `reauth` - Enable/disable re-authentication upon IKE SA lifetime expiration. Valid values: `disable`, `enable`.
@@ -337,6 +343,8 @@ The following arguments are supported:
 * `wizard_type` - GUI VPN Wizard Type. Valid values: `custom`, `dialup-forticlient`, `dialup-ios`, `dialup-android`, `dialup-cisco`, `static-fortigate`, `static-cisco`, `dialup-windows`, `dialup-fortigate`, `dialup-cisco-fw`, `simplified-static-fortigate`, `hub-fortigate-auto-discovery`, `spoke-fortigate-auto-discovery`, `static-fortiproxy`, `dialup-fortiproxy`, `simplified-static-fortiproxy`, `hub-fortiproxy-auto-discovery`, `spoke-fortiproxy-auto-discovery`.
 
 * `xauthtype` - XAuth type. Valid values: `disable`, `client`, `pap`, `chap`, `auto`.
+
+* `mobike` - Mobike. Valid values: `disable`, `enable`.
 
 * `dynamic_sort_subtable` - true or false, set this parameter to true when using dynamic for_each + toset to configure and sort sub-tables, please do not set this parameter when configuring static sub-tables.
 

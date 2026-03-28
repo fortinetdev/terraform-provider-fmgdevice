@@ -50,6 +50,8 @@ The following arguments are supported:
 * `key_outbound` - Include this key in transmitted GRE packets (0 - 4294967295).
 * `local_gw` - IP address of the local gateway.
 * `local_gw6` - IPv6 address of the local gateway.
+* `loopback_ecmp_offload` - Enable/disable tunnel over loopback ecmp offloading support. Valid values: `disable`, `enable`.
+
 * `name` - Tunnel name.
 * `remote_gw` - IP address of the remote gateway.
 * `remote_gw6` - IPv6 address of the remote gateway.

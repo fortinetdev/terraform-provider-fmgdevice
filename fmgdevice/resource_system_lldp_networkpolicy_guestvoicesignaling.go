@@ -28,6 +28,12 @@ func resourceSystemLldpNetworkPolicyGuestVoiceSignaling() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
+
+			"adom": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"device_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -79,8 +85,12 @@ func resourceSystemLldpNetworkPolicyGuestVoiceSignalingUpdate(d *schema.Resource
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -94,13 +104,12 @@ func resourceSystemLldpNetworkPolicyGuestVoiceSignalingUpdate(d *schema.Resource
 	paradict["vdom"] = device_vdom
 	paradict["network_policy"] = network_policy
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
 	obj, err := getObjectSystemLldpNetworkPolicyGuestVoiceSignaling(d)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemLldpNetworkPolicyGuestVoiceSignaling resource while getting object: %v", err)
 	}
+
+	wsParams["adom"] = adomv
 
 	_, err = c.UpdateSystemLldpNetworkPolicyGuestVoiceSignaling(obj, mkey, paradict, wsParams)
 	if err != nil {
@@ -122,8 +131,12 @@ func resourceSystemLldpNetworkPolicyGuestVoiceSignalingDelete(d *schema.Resource
 
 	paradict := make(map[string]string)
 	wsParams := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+	adomv, err := adomChecking(cfg, d)
+	if err != nil {
+		return fmt.Errorf("Error adom configuration: %v", err)
+	}
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	if err != nil {
 		return err
@@ -137,9 +150,7 @@ func resourceSystemLldpNetworkPolicyGuestVoiceSignalingDelete(d *schema.Resource
 	paradict["vdom"] = device_vdom
 	paradict["network_policy"] = network_policy
 
-	if cfg.Adom != "" {
-		wsParams["adom"] = fmt.Sprintf("adom/%s", cfg.Adom)
-	}
+	wsParams["adom"] = adomv
 
 	err = c.DeleteSystemLldpNetworkPolicyGuestVoiceSignaling(mkey, paradict, wsParams)
 	if err != nil {
@@ -158,8 +169,8 @@ func resourceSystemLldpNetworkPolicyGuestVoiceSignalingRead(d *schema.ResourceDa
 	c.Retries = 1
 
 	paradict := make(map[string]string)
-
 	cfg := m.(*FortiClient).Cfg
+
 	device_name, err := getVariable(cfg, d, "device_name")
 	device_vdom, err := getVariable(cfg, d, "device_vdom")
 	network_policy := d.Get("network_policy").(string)
@@ -196,6 +207,7 @@ func resourceSystemLldpNetworkPolicyGuestVoiceSignalingRead(d *schema.ResourceDa
 
 	o, err := c.ReadSystemLldpNetworkPolicyGuestVoiceSignaling(mkey, paradict)
 	if err != nil {
+		d.SetId("")
 		return fmt.Errorf("Error reading SystemLldpNetworkPolicyGuestVoiceSignaling resource: %v", err)
 	}
 

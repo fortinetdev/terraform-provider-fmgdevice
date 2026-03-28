@@ -52,6 +52,8 @@ The following arguments are supported:
 
 * `ips_reserve_cpu` - Enable/disable IPS daemon's use of CPUs other than CPU 0. Valid values: `disable`, `enable`.
 
+* `machine_learning_detection` - Enable/disable machine learning detection. Valid values: `disable`, `enable`.
+
 * `ngfw_max_scan_range` - NGFW policy-mode app detection threshold.
 * `np_accel_mode` - Acceleration mode for IPS processing by NPx processors. Valid values: `none`, `basic`.
 
