@@ -104,7 +104,7 @@ func resourceEmailfilterProfileImapUpdate(d *schema.ResourceData, m interface{})
 	paradict["vdom"] = device_vdom
 	paradict["profile"] = profile
 
-	obj, err := getObjectEmailfilterProfileImap(d)
+	obj, err := getObjectEmailfilterProfileImap(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating EmailfilterProfileImap resource while getting object: %v", err)
 	}
@@ -125,7 +125,6 @@ func resourceEmailfilterProfileImapUpdate(d *schema.ResourceData, m interface{})
 
 func resourceEmailfilterProfileImapDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -150,11 +149,17 @@ func resourceEmailfilterProfileImapDelete(d *schema.ResourceData, m interface{})
 	paradict["vdom"] = device_vdom
 	paradict["profile"] = profile
 
+	obj, err := getObjectEmailfilterProfileImap(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating EmailfilterProfileImap resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteEmailfilterProfileImap(mkey, paradict, wsParams)
+	_, err = c.UpdateEmailfilterProfileImap(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting EmailfilterProfileImap resource: %v", err)
+		return fmt.Errorf("Error clearing EmailfilterProfileImap resource: %v", err)
 	}
 
 	d.SetId("")
@@ -326,7 +331,7 @@ func expandEmailfilterProfileImapTagType2edl(d *schema.ResourceData, v interface
 	return expandStringList(v.(*schema.Set).List()), nil
 }
 
-func getObjectEmailfilterProfileImap(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectEmailfilterProfileImap(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("action"); ok || d.HasChange("action") {

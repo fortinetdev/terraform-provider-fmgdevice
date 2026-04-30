@@ -95,7 +95,7 @@ func resourceSwitchControllerManagedSwitchSwitchLogUpdate(d *schema.ResourceData
 	paradict["vdom"] = device_vdom
 	paradict["managed_switch"] = managed_switch
 
-	obj, err := getObjectSwitchControllerManagedSwitchSwitchLog(d)
+	obj, err := getObjectSwitchControllerManagedSwitchSwitchLog(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating SwitchControllerManagedSwitchSwitchLog resource while getting object: %v", err)
 	}
@@ -116,7 +116,6 @@ func resourceSwitchControllerManagedSwitchSwitchLogUpdate(d *schema.ResourceData
 
 func resourceSwitchControllerManagedSwitchSwitchLogDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -141,11 +140,17 @@ func resourceSwitchControllerManagedSwitchSwitchLogDelete(d *schema.ResourceData
 	paradict["vdom"] = device_vdom
 	paradict["managed_switch"] = managed_switch
 
+	obj, err := getObjectSwitchControllerManagedSwitchSwitchLog(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating SwitchControllerManagedSwitchSwitchLog resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteSwitchControllerManagedSwitchSwitchLog(mkey, paradict, wsParams)
+	_, err = c.UpdateSwitchControllerManagedSwitchSwitchLog(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting SwitchControllerManagedSwitchSwitchLog resource: %v", err)
+		return fmt.Errorf("Error clearing SwitchControllerManagedSwitchSwitchLog resource: %v", err)
 	}
 
 	d.SetId("")
@@ -281,7 +286,7 @@ func expandSwitchControllerManagedSwitchSwitchLogStatus2edl(d *schema.ResourceDa
 	return v, nil
 }
 
-func getObjectSwitchControllerManagedSwitchSwitchLog(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectSwitchControllerManagedSwitchSwitchLog(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("local_override"); ok || d.HasChange("local_override") {

@@ -68,6 +68,10 @@ func resourceFirewallWildcardFqdnCustom() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"visibility": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 			"wildcard_fqdn": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -284,6 +288,10 @@ func flattenFirewallWildcardFqdnCustomUuid(v interface{}, d *schema.ResourceData
 	return v
 }
 
+func flattenFirewallWildcardFqdnCustomVisibility(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenFirewallWildcardFqdnCustomWildcardFqdn(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -331,6 +339,16 @@ func refreshObjectFirewallWildcardFqdnCustom(d *schema.ResourceData, o map[strin
 		}
 	}
 
+	if err = d.Set("visibility", flattenFirewallWildcardFqdnCustomVisibility(o["visibility"], d, "visibility")); err != nil {
+		if vv, ok := fortiAPIPatch(o["visibility"], "FirewallWildcardFqdnCustom-Visibility"); ok {
+			if err = d.Set("visibility", vv); err != nil {
+				return fmt.Errorf("Error reading visibility: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading visibility: %v", err)
+		}
+	}
+
 	if err = d.Set("wildcard_fqdn", flattenFirewallWildcardFqdnCustomWildcardFqdn(o["wildcard-fqdn"], d, "wildcard_fqdn")); err != nil {
 		if vv, ok := fortiAPIPatch(o["wildcard-fqdn"], "FirewallWildcardFqdnCustom-WildcardFqdn"); ok {
 			if err = d.Set("wildcard_fqdn", vv); err != nil {
@@ -363,6 +381,10 @@ func expandFirewallWildcardFqdnCustomName(d *schema.ResourceData, v interface{},
 }
 
 func expandFirewallWildcardFqdnCustomUuid(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandFirewallWildcardFqdnCustomVisibility(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -406,6 +428,15 @@ func getObjectFirewallWildcardFqdnCustom(d *schema.ResourceData) (*map[string]in
 			return &obj, err
 		} else if t != nil {
 			obj["uuid"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("visibility"); ok || d.HasChange("visibility") {
+		t, err := expandFirewallWildcardFqdnCustomVisibility(d, v, "visibility")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["visibility"] = t
 		}
 	}
 

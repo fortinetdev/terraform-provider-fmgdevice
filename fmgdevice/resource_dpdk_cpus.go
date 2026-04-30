@@ -43,6 +43,7 @@ func resourceDpdkCpus() *schema.Resource {
 			"ips_cpus": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"isolated_cpus": &schema.Schema{
 				Type:     schema.TypeString,
@@ -92,7 +93,7 @@ func resourceDpdkCpusUpdate(d *schema.ResourceData, m interface{}) error {
 	}
 	paradict["device"] = device_name
 
-	obj, err := getObjectDpdkCpus(d)
+	obj, err := getObjectDpdkCpus(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating DpdkCpus resource while getting object: %v", err)
 	}
@@ -113,7 +114,6 @@ func resourceDpdkCpusUpdate(d *schema.ResourceData, m interface{}) error {
 
 func resourceDpdkCpusDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -131,11 +131,17 @@ func resourceDpdkCpusDelete(d *schema.ResourceData, m interface{}) error {
 	}
 	paradict["device"] = device_name
 
+	obj, err := getObjectDpdkCpus(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating DpdkCpus resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteDpdkCpus(mkey, paradict, wsParams)
+	_, err = c.UpdateDpdkCpus(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting DpdkCpus resource: %v", err)
+		return fmt.Errorf("Error clearing DpdkCpus resource: %v", err)
 	}
 
 	d.SetId("")
@@ -303,7 +309,7 @@ func expandDpdkCpusVnpspCpus(d *schema.ResourceData, v interface{}, pre string) 
 	return v, nil
 }
 
-func getObjectDpdkCpus(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectDpdkCpus(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("ips_cpus"); ok || d.HasChange("ips_cpus") {

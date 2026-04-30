@@ -49,6 +49,7 @@ func resourceLogGuiDisplay() *schema.Resource {
 			"fortiview_unscanned_apps": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"resolve_apps": &schema.Schema{
 				Type:     schema.TypeString,
@@ -88,7 +89,7 @@ func resourceLogGuiDisplayUpdate(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	obj, err := getObjectLogGuiDisplay(d)
+	obj, err := getObjectLogGuiDisplay(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating LogGuiDisplay resource while getting object: %v", err)
 	}
@@ -109,7 +110,6 @@ func resourceLogGuiDisplayUpdate(d *schema.ResourceData, m interface{}) error {
 
 func resourceLogGuiDisplayDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -132,11 +132,17 @@ func resourceLogGuiDisplayDelete(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	obj, err := getObjectLogGuiDisplay(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating LogGuiDisplay resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteLogGuiDisplay(mkey, paradict, wsParams)
+	_, err = c.UpdateLogGuiDisplay(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting LogGuiDisplay resource: %v", err)
+		return fmt.Errorf("Error clearing LogGuiDisplay resource: %v", err)
 	}
 
 	d.SetId("")
@@ -261,7 +267,7 @@ func expandLogGuiDisplayResolveHosts(d *schema.ResourceData, v interface{}, pre 
 	return v, nil
 }
 
-func getObjectLogGuiDisplay(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectLogGuiDisplay(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("fortiview_unscanned_apps"); ok || d.HasChange("fortiview_unscanned_apps") {

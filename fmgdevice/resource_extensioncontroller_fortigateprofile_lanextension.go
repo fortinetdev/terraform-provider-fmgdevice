@@ -95,7 +95,7 @@ func resourceExtensionControllerFortigateProfileLanExtensionUpdate(d *schema.Res
 	paradict["vdom"] = device_vdom
 	paradict["fortigate_profile"] = fortigate_profile
 
-	obj, err := getObjectExtensionControllerFortigateProfileLanExtension(d)
+	obj, err := getObjectExtensionControllerFortigateProfileLanExtension(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating ExtensionControllerFortigateProfileLanExtension resource while getting object: %v", err)
 	}
@@ -116,7 +116,6 @@ func resourceExtensionControllerFortigateProfileLanExtensionUpdate(d *schema.Res
 
 func resourceExtensionControllerFortigateProfileLanExtensionDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -141,11 +140,17 @@ func resourceExtensionControllerFortigateProfileLanExtensionDelete(d *schema.Res
 	paradict["vdom"] = device_vdom
 	paradict["fortigate_profile"] = fortigate_profile
 
+	obj, err := getObjectExtensionControllerFortigateProfileLanExtension(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating ExtensionControllerFortigateProfileLanExtension resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteExtensionControllerFortigateProfileLanExtension(mkey, paradict, wsParams)
+	_, err = c.UpdateExtensionControllerFortigateProfileLanExtension(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting ExtensionControllerFortigateProfileLanExtension resource: %v", err)
+		return fmt.Errorf("Error clearing ExtensionControllerFortigateProfileLanExtension resource: %v", err)
 	}
 
 	d.SetId("")
@@ -281,7 +286,7 @@ func expandExtensionControllerFortigateProfileLanExtensionIpsecTunnel2edl(d *sch
 	return v, nil
 }
 
-func getObjectExtensionControllerFortigateProfileLanExtension(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectExtensionControllerFortigateProfileLanExtension(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("backhaul_interface"); ok || d.HasChange("backhaul_interface") {

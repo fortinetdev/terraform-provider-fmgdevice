@@ -71,6 +71,11 @@ func resourceFirewallScheduleRecurring() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"label_day": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
 			"global_object": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
@@ -301,6 +306,10 @@ func flattenFirewallScheduleRecurringFabricObject(v interface{}, d *schema.Resou
 	return v
 }
 
+func flattenFirewallScheduleRecurringLabelDay(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenFirewallScheduleRecurringGlobalObject(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -357,6 +366,16 @@ func refreshObjectFirewallScheduleRecurring(d *schema.ResourceData, o map[string
 			}
 		} else {
 			return fmt.Errorf("Error reading fabric_object: %v", err)
+		}
+	}
+
+	if err = d.Set("label_day", flattenFirewallScheduleRecurringLabelDay(o["label-day"], d, "label_day")); err != nil {
+		if vv, ok := fortiAPIPatch(o["label-day"], "FirewallScheduleRecurring-LabelDay"); ok {
+			if err = d.Set("label_day", vv); err != nil {
+				return fmt.Errorf("Error reading label_day: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading label_day: %v", err)
 		}
 	}
 
@@ -425,6 +444,10 @@ func expandFirewallScheduleRecurringFabricObject(d *schema.ResourceData, v inter
 	return v, nil
 }
 
+func expandFirewallScheduleRecurringLabelDay(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandFirewallScheduleRecurringGlobalObject(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -477,6 +500,15 @@ func getObjectFirewallScheduleRecurring(d *schema.ResourceData) (*map[string]int
 			return &obj, err
 		} else if t != nil {
 			obj["fabric-object"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("label_day"); ok || d.HasChange("label_day") {
+		t, err := expandFirewallScheduleRecurringLabelDay(d, v, "label_day")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["label-day"] = t
 		}
 	}
 

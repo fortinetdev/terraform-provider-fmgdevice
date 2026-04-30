@@ -111,6 +111,7 @@ func resourceFirewallShapingProfile() *schema.Resource {
 						"maximum_bandwidth_percentage": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"min": &schema.Schema{
 							Type:     schema.TypeInt,

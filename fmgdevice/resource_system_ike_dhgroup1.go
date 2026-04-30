@@ -81,7 +81,7 @@ func resourceSystemIkeDhGroup1Update(d *schema.ResourceData, m interface{}) erro
 	}
 	paradict["device"] = device_name
 
-	obj, err := getObjectSystemIkeDhGroup1(d)
+	obj, err := getObjectSystemIkeDhGroup1(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemIkeDhGroup1 resource while getting object: %v", err)
 	}
@@ -102,7 +102,6 @@ func resourceSystemIkeDhGroup1Update(d *schema.ResourceData, m interface{}) erro
 
 func resourceSystemIkeDhGroup1Delete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -120,11 +119,17 @@ func resourceSystemIkeDhGroup1Delete(d *schema.ResourceData, m interface{}) erro
 	}
 	paradict["device"] = device_name
 
+	obj, err := getObjectSystemIkeDhGroup1(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating SystemIkeDhGroup1 resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteSystemIkeDhGroup1(mkey, paradict, wsParams)
+	_, err = c.UpdateSystemIkeDhGroup1(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting SystemIkeDhGroup1 resource: %v", err)
+		return fmt.Errorf("Error clearing SystemIkeDhGroup1 resource: %v", err)
 	}
 
 	d.SetId("")
@@ -256,7 +261,7 @@ func expandSystemIkeDhGroup1Mode2edl(d *schema.ResourceData, v interface{}, pre 
 	return v, nil
 }
 
-func getObjectSystemIkeDhGroup1(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectSystemIkeDhGroup1(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("fosid"); ok || d.HasChange("fosid") {

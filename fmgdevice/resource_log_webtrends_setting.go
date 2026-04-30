@@ -72,7 +72,7 @@ func resourceLogWebtrendsSettingUpdate(d *schema.ResourceData, m interface{}) er
 	}
 	paradict["device"] = device_name
 
-	obj, err := getObjectLogWebtrendsSetting(d)
+	obj, err := getObjectLogWebtrendsSetting(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating LogWebtrendsSetting resource while getting object: %v", err)
 	}
@@ -93,7 +93,6 @@ func resourceLogWebtrendsSettingUpdate(d *schema.ResourceData, m interface{}) er
 
 func resourceLogWebtrendsSettingDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -111,11 +110,17 @@ func resourceLogWebtrendsSettingDelete(d *schema.ResourceData, m interface{}) er
 	}
 	paradict["device"] = device_name
 
+	obj, err := getObjectLogWebtrendsSetting(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating LogWebtrendsSetting resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteLogWebtrendsSetting(mkey, paradict, wsParams)
+	_, err = c.UpdateLogWebtrendsSetting(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting LogWebtrendsSetting resource: %v", err)
+		return fmt.Errorf("Error clearing LogWebtrendsSetting resource: %v", err)
 	}
 
 	d.SetId("")
@@ -211,7 +216,7 @@ func expandLogWebtrendsSettingStatus(d *schema.ResourceData, v interface{}, pre 
 	return v, nil
 }
 
-func getObjectLogWebtrendsSetting(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectLogWebtrendsSetting(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("server"); ok || d.HasChange("server") {

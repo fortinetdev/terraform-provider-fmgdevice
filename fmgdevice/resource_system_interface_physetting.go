@@ -45,6 +45,10 @@ func resourceSystemInterfacePhySetting() *schema.Resource {
 				Required: true,
 				ForceNew: true,
 			},
+			"signal_ok_threshold": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+			},
 			"signal_ok_threshold_value": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
@@ -74,7 +78,7 @@ func resourceSystemInterfacePhySettingUpdate(d *schema.ResourceData, m interface
 	paradict["device"] = device_name
 	paradict["interface"] = var_interface
 
-	obj, err := getObjectSystemInterfacePhySetting(d)
+	obj, err := getObjectSystemInterfacePhySetting(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemInterfacePhySetting resource while getting object: %v", err)
 	}
@@ -95,7 +99,6 @@ func resourceSystemInterfacePhySettingUpdate(d *schema.ResourceData, m interface
 
 func resourceSystemInterfacePhySettingDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -115,11 +118,17 @@ func resourceSystemInterfacePhySettingDelete(d *schema.ResourceData, m interface
 	paradict["device"] = device_name
 	paradict["interface"] = var_interface
 
+	obj, err := getObjectSystemInterfacePhySetting(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating SystemInterfacePhySetting resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteSystemInterfacePhySetting(mkey, paradict, wsParams)
+	_, err = c.UpdateSystemInterfacePhySetting(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting SystemInterfacePhySetting resource: %v", err)
+		return fmt.Errorf("Error clearing SystemInterfacePhySetting resource: %v", err)
 	}
 
 	d.SetId("")
@@ -178,12 +187,26 @@ func resourceSystemInterfacePhySettingRead(d *schema.ResourceData, m interface{}
 	return nil
 }
 
+func flattenSystemInterfacePhySettingSignalOkThreshold2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenSystemInterfacePhySettingSignalOkThresholdValue2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
 func refreshObjectSystemInterfacePhySetting(d *schema.ResourceData, o map[string]interface{}) error {
 	var err error
+
+	if err = d.Set("signal_ok_threshold", flattenSystemInterfacePhySettingSignalOkThreshold2edl(o["signal-ok-threshold"], d, "signal_ok_threshold")); err != nil {
+		if vv, ok := fortiAPIPatch(o["signal-ok-threshold"], "SystemInterfacePhySetting-SignalOkThreshold"); ok {
+			if err = d.Set("signal_ok_threshold", vv); err != nil {
+				return fmt.Errorf("Error reading signal_ok_threshold: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading signal_ok_threshold: %v", err)
+		}
+	}
 
 	if err = d.Set("signal_ok_threshold_value", flattenSystemInterfacePhySettingSignalOkThresholdValue2edl(o["signal-ok-threshold-value"], d, "signal_ok_threshold_value")); err != nil {
 		if vv, ok := fortiAPIPatch(o["signal-ok-threshold-value"], "SystemInterfacePhySetting-SignalOkThresholdValue"); ok {
@@ -204,12 +227,25 @@ func flattenSystemInterfacePhySettingFortiTestDebug(d *schema.ResourceData, fosd
 	log.Printf("ER List: %v", e)
 }
 
+func expandSystemInterfacePhySettingSignalOkThreshold2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandSystemInterfacePhySettingSignalOkThresholdValue2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
-func getObjectSystemInterfacePhySetting(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectSystemInterfacePhySetting(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
+
+	if v, ok := d.GetOk("signal_ok_threshold"); ok || d.HasChange("signal_ok_threshold") {
+		t, err := expandSystemInterfacePhySettingSignalOkThreshold2edl(d, v, "signal_ok_threshold")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["signal-ok-threshold"] = t
+		}
+	}
 
 	if v, ok := d.GetOk("signal_ok_threshold_value"); ok || d.HasChange("signal_ok_threshold_value") {
 		t, err := expandSystemInterfacePhySettingSignalOkThresholdValue2edl(d, v, "signal_ok_threshold_value")

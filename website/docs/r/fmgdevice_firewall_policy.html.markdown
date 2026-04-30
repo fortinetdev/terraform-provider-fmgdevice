@@ -1,5 +1,5 @@
 ---
-subcategory: "No Category"
+subcategory: "Firewall"
 layout: "fmgdevice"
 page_title: "FortiManager Device: fmgdevice_firewall_policy"
 description: |-
@@ -32,6 +32,8 @@ The following arguments are supported:
 * `auto_asic_offload` - Enable/disable policy traffic ASIC offloading. Valid values: `disable`, `enable`.
 
 * `av_profile` - Name of an existing Antivirus profile.
+* `best_route` - Best-Route. Valid values: `disable`, `enable`.
+
 * `block_notification` - Enable/disable block notification. Valid values: `disable`, `enable`.
 
 * `captive_portal_exempt` - Enable to exempt some users from the captive portal. Valid values: `disable`, `enable`.
@@ -92,6 +94,8 @@ The following arguments are supported:
 
 * `fixedport` - Enable to prevent source NAT from changing a session's source port. Valid values: `disable`, `enable`.
 
+* `fsso` - Enable/disable Fortinet Single Sign-On. Valid values: `disable`, `enable`.
+
 * `fsso_agent_for_ntlm` - FSSO agent to use for NTLM authentication.
 * `fsso_groups` - Names of FSSO groups.
 * `geoip_anycast` - Enable/disable recognition of anycast IP addresses using the geography IP database. Valid values: `disable`, `enable`.
@@ -115,6 +119,7 @@ The following arguments are supported:
 * `internet_service_custom_group` - Custom Internet Service group name.
 * `internet_service_fortiguard` - FortiGuard Internet Service name.
 * `internet_service_group` - Internet Service group name.
+* `internet_service_id` - Internet Service ID.
 * `internet_service_name` - Internet Service name.
 * `internet_service_negate` - When enabled internet-service specifies what the service must NOT be. Valid values: `disable`, `enable`.
 
@@ -124,6 +129,7 @@ The following arguments are supported:
 * `internet_service_src_custom_group` - Custom Internet Service source group name.
 * `internet_service_src_fortiguard` - FortiGuard Internet Service source name.
 * `internet_service_src_group` - Internet Service source group name.
+* `internet_service_src_id` - Internet Service source ID.
 * `internet_service_src_name` - Internet Service source name.
 * `internet_service_src_negate` - When enabled internet-service-src specifies what the service must NOT be. Valid values: `disable`, `enable`.
 
@@ -161,6 +167,7 @@ The following arguments are supported:
 
 * `match_vip_only` - Enable/disable matching of only those packets that have had their destination addresses changed by a VIP. Valid values: `disable`, `enable`.
 
+* `mms_profile` - Name of an existing MMS profile.
 * `name` - Policy name.
 * `nat` - Enable/disable source NAT. Valid values: `disable`, `enable`.
 
@@ -226,6 +233,8 @@ The following arguments are supported:
 * `reputation_direction6` - Direction of the initial traffic for IPv6 reputation to take effect. Valid values: `source`, `destination`.
 
 * `reputation_minimum` - Minimum Reputation to take action.
+* `rsso` - Enable/disable RADIUS single sign-on (RSSO). Valid values: `disable`, `enable`.
+
 * `reputation_minimum6` - IPv6 Minimum Reputation to take action.
 * `rtp_addr` - Address names if this is an RTP NAT policy.
 * `rtp_nat` - Enable Real Time Protocol (RTP) NAT. Valid values: `disable`, `enable`.
@@ -259,6 +268,9 @@ The following arguments are supported:
 * `ssh_filter_profile` - Name of an existing SSH filter profile.
 * `ssh_policy_redirect` - Redirect SSH traffic to matching transparent proxy policy. Valid values: `disable`, `enable`.
 
+* `ssl_mirror` - Enable to copy decrypted SSL traffic to a FortiGate interface (called SSL mirroring). Valid values: `disable`, `enable`.
+
+* `ssl_mirror_intf` - SSL mirror interface name.
 * `ssl_ssh_profile` - Name of an existing SSL SSH profile.
 * `status` - Enable or disable this policy. Valid values: `disable`, `enable`.
 
@@ -306,6 +318,8 @@ The following arguments are supported:
 * `webfilter_profile` - Name of an existing Web filter profile.
 * `webproxy_forward_server` - Webproxy forward server name.
 * `webproxy_profile` - Webproxy profile name.
+* `wsso` - Enable/disable WiFi Single Sign On (WSSO). Valid values: `disable`, `enable`.
+
 * `ztna_device_ownership` - Enable/disable zero trust device ownership. Valid values: `disable`, `enable`.
 
 * `ztna_ems_tag` - Source ztna-ems-tag names.
@@ -344,6 +358,7 @@ The following arguments are supported:
 
 * `isolator_profile` - Isolator-Profile.
 * `isolator_server` - Isolator-Server.
+* `llm_profile` - Llm-Profile.
 * `max_session_per_user` - Max-Session-Per-User.
 * `pass_through` - Pass-Through. Valid values: `disable`, `enable`.
 

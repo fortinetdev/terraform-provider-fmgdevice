@@ -79,7 +79,7 @@ func resourceSwitchControllerPtpSettingsUpdate(d *schema.ResourceData, m interfa
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	obj, err := getObjectSwitchControllerPtpSettings(d)
+	obj, err := getObjectSwitchControllerPtpSettings(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating SwitchControllerPtpSettings resource while getting object: %v", err)
 	}
@@ -100,7 +100,6 @@ func resourceSwitchControllerPtpSettingsUpdate(d *schema.ResourceData, m interfa
 
 func resourceSwitchControllerPtpSettingsDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -123,11 +122,17 @@ func resourceSwitchControllerPtpSettingsDelete(d *schema.ResourceData, m interfa
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	obj, err := getObjectSwitchControllerPtpSettings(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating SwitchControllerPtpSettings resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteSwitchControllerPtpSettings(mkey, paradict, wsParams)
+	_, err = c.UpdateSwitchControllerPtpSettings(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting SwitchControllerPtpSettings resource: %v", err)
+		return fmt.Errorf("Error clearing SwitchControllerPtpSettings resource: %v", err)
 	}
 
 	d.SetId("")
@@ -216,7 +221,7 @@ func expandSwitchControllerPtpSettingsMode(d *schema.ResourceData, v interface{}
 	return v, nil
 }
 
-func getObjectSwitchControllerPtpSettings(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectSwitchControllerPtpSettings(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("mode"); ok || d.HasChange("mode") {

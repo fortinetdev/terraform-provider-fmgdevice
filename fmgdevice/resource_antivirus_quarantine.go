@@ -88,6 +88,7 @@ func resourceAntivirusQuarantine() *schema.Resource {
 			"lowspace": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"maxfilesize": &schema.Schema{
 				Type:     schema.TypeInt,
@@ -155,7 +156,7 @@ func resourceAntivirusQuarantineUpdate(d *schema.ResourceData, m interface{}) er
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	obj, err := getObjectAntivirusQuarantine(d)
+	obj, err := getObjectAntivirusQuarantine(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating AntivirusQuarantine resource while getting object: %v", err)
 	}
@@ -176,7 +177,6 @@ func resourceAntivirusQuarantineUpdate(d *schema.ResourceData, m interface{}) er
 
 func resourceAntivirusQuarantineDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -199,11 +199,17 @@ func resourceAntivirusQuarantineDelete(d *schema.ResourceData, m interface{}) er
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	obj, err := getObjectAntivirusQuarantine(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating AntivirusQuarantine resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteAntivirusQuarantine(mkey, paradict, wsParams)
+	_, err = c.UpdateAntivirusQuarantine(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting AntivirusQuarantine resource: %v", err)
+		return fmt.Errorf("Error clearing AntivirusQuarantine resource: %v", err)
 	}
 
 	d.SetId("")
@@ -544,7 +550,7 @@ func expandAntivirusQuarantineStoreMachineLearning(d *schema.ResourceData, v int
 	return expandStringList(v.(*schema.Set).List()), nil
 }
 
-func getObjectAntivirusQuarantine(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectAntivirusQuarantine(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("agelimit"); ok || d.HasChange("agelimit") {

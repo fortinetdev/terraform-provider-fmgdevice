@@ -80,6 +80,7 @@ func resourceFirewallAccessProxy() *schema.Resource {
 						"http_cookie_age": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"http_cookie_domain": &schema.Schema{
 							Type:     schema.TypeString,
@@ -196,6 +197,7 @@ func resourceFirewallAccessProxy() *schema.Resource {
 									"external_auth": &schema.Schema{
 										Type:     schema.TypeString,
 										Optional: true,
+										Computed: true,
 									},
 									"health_check": &schema.Schema{
 										Type:     schema.TypeString,
@@ -251,6 +253,7 @@ func resourceFirewallAccessProxy() *schema.Resource {
 									"ssh_host_key_validation": &schema.Schema{
 										Type:     schema.TypeString,
 										Optional: true,
+										Computed: true,
 									},
 									"status": &schema.Schema{
 										Type:     schema.TypeString,
@@ -265,10 +268,12 @@ func resourceFirewallAccessProxy() *schema.Resource {
 									"tunnel_encryption": &schema.Schema{
 										Type:     schema.TypeString,
 										Optional: true,
+										Computed: true,
 									},
 									"type": &schema.Schema{
 										Type:     schema.TypeString,
 										Optional: true,
+										Computed: true,
 									},
 									"verify_cert": &schema.Schema{
 										Type:     schema.TypeString,
@@ -286,6 +291,7 @@ func resourceFirewallAccessProxy() *schema.Resource {
 						"saml_redirect": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"saml_server": &schema.Schema{
 							Type:     schema.TypeSet,
@@ -512,6 +518,7 @@ func resourceFirewallAccessProxy() *schema.Resource {
 									"external_auth": &schema.Schema{
 										Type:     schema.TypeString,
 										Optional: true,
+										Computed: true,
 									},
 									"health_check": &schema.Schema{
 										Type:     schema.TypeString,
@@ -568,6 +575,7 @@ func resourceFirewallAccessProxy() *schema.Resource {
 									"ssh_host_key_validation": &schema.Schema{
 										Type:     schema.TypeString,
 										Optional: true,
+										Computed: true,
 									},
 									"status": &schema.Schema{
 										Type:     schema.TypeString,
@@ -582,10 +590,12 @@ func resourceFirewallAccessProxy() *schema.Resource {
 									"tunnel_encryption": &schema.Schema{
 										Type:     schema.TypeString,
 										Optional: true,
+										Computed: true,
 									},
 									"type": &schema.Schema{
 										Type:     schema.TypeString,
 										Optional: true,
+										Computed: true,
 									},
 									"verify_cert": &schema.Schema{
 										Type:     schema.TypeString,
@@ -857,6 +867,7 @@ func resourceFirewallAccessProxy() *schema.Resource {
 			"http_supported_max_version": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"dynamic_sort_subtable": &schema.Schema{
 				Type:     schema.TypeString,

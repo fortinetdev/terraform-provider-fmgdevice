@@ -1,5 +1,5 @@
 ---
-subcategory: "No Category"
+subcategory: "Firewall"
 layout: "fmgdevice"
 page_title: "FortiManager Device: fmgdevice_firewall_multicastaddress6"
 description: |-
@@ -27,6 +27,8 @@ The following arguments are supported:
 * `ip6` - IPv6 address prefix (format: xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx/xxx).
 * `name` - IPv6 multicast address name.
 * `tagging` - Tagging. The structure of `tagging` block is documented below.
+* `visibility` - Enable/disable visibility of the IPv6 multicast address on the GUI. Valid values: `disable`, `enable`.
+
 * `dynamic_sort_subtable` - true or false, set this parameter to true when using dynamic for_each + toset to configure and sort sub-tables, please do not set this parameter when configuring static sub-tables.
 
 The `tagging` block supports:

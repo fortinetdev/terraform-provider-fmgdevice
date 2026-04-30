@@ -91,7 +91,7 @@ func resourceSwitchControllerAclIngressActionUpdate(d *schema.ResourceData, m in
 	paradict["vdom"] = device_vdom
 	paradict["ingress"] = ingress
 
-	obj, err := getObjectSwitchControllerAclIngressAction(d)
+	obj, err := getObjectSwitchControllerAclIngressAction(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating SwitchControllerAclIngressAction resource while getting object: %v", err)
 	}
@@ -112,7 +112,6 @@ func resourceSwitchControllerAclIngressActionUpdate(d *schema.ResourceData, m in
 
 func resourceSwitchControllerAclIngressActionDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -137,11 +136,17 @@ func resourceSwitchControllerAclIngressActionDelete(d *schema.ResourceData, m in
 	paradict["vdom"] = device_vdom
 	paradict["ingress"] = ingress
 
+	obj, err := getObjectSwitchControllerAclIngressAction(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating SwitchControllerAclIngressAction resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteSwitchControllerAclIngressAction(mkey, paradict, wsParams)
+	_, err = c.UpdateSwitchControllerAclIngressAction(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting SwitchControllerAclIngressAction resource: %v", err)
+		return fmt.Errorf("Error clearing SwitchControllerAclIngressAction resource: %v", err)
 	}
 
 	d.SetId("")
@@ -259,7 +264,7 @@ func expandSwitchControllerAclIngressActionDrop2edl(d *schema.ResourceData, v in
 	return v, nil
 }
 
-func getObjectSwitchControllerAclIngressAction(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectSwitchControllerAclIngressAction(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("fmgcount"); ok || d.HasChange("fmgcount") {

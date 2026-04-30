@@ -176,7 +176,7 @@ func resourceLogDiskFilterUpdate(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	obj, err := getObjectLogDiskFilter(d)
+	obj, err := getObjectLogDiskFilter(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating LogDiskFilter resource while getting object: %v", err)
 	}
@@ -197,7 +197,6 @@ func resourceLogDiskFilterUpdate(d *schema.ResourceData, m interface{}) error {
 
 func resourceLogDiskFilterDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -220,11 +219,17 @@ func resourceLogDiskFilterDelete(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	obj, err := getObjectLogDiskFilter(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating LogDiskFilter resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteLogDiskFilter(mkey, paradict, wsParams)
+	_, err = c.UpdateLogDiskFilter(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting LogDiskFilter resource: %v", err)
+		return fmt.Errorf("Error clearing LogDiskFilter resource: %v", err)
 	}
 
 	d.SetId("")
@@ -722,7 +727,7 @@ func expandLogDiskFilterZtnaTraffic(d *schema.ResourceData, v interface{}, pre s
 	return v, nil
 }
 
-func getObjectLogDiskFilter(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectLogDiskFilter(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("anomaly"); ok || d.HasChange("anomaly") {
@@ -788,12 +793,16 @@ func getObjectLogDiskFilter(d *schema.ResourceData) (*map[string]interface{}, er
 		}
 	}
 
-	if v, ok := d.GetOk("free_style"); ok || d.HasChange("free_style") {
-		t, err := expandLogDiskFilterFreeStyle(d, v, "free_style")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["free-style"] = t
+	if bemptysontable {
+		obj["free-style"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("free_style"); ok || d.HasChange("free_style") {
+			t, err := expandLogDiskFilterFreeStyle(d, v, "free_style")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["free-style"] = t
+			}
 		}
 	}
 

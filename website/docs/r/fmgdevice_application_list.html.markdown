@@ -1,5 +1,5 @@
 ---
-subcategory: "No Category"
+subcategory: "Application"
 layout: "fmgdevice"
 page_title: "FortiManager Device: fmgdevice_application_list"
 description: |-
@@ -105,6 +105,7 @@ The `entries` block supports:
 The `parameters` block supports:
 
 * `id` - Parameter tuple ID.
+* `value` - Parameter value.
 * `members` - Members. The structure of `members` block is documented below.
 
 The `members` block supports:

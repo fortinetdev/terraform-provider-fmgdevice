@@ -1,5 +1,5 @@
 ---
-subcategory: "No Category"
+subcategory: "ZTNA"
 layout: "fmgdevice"
 page_title: "FortiManager Device: fmgdevice_ztna_trafficforwardproxyreverseservice_remoteservers"
 description: |-

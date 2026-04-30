@@ -104,7 +104,7 @@ func resourceSystemLldpNetworkPolicyGuestVoiceSignalingUpdate(d *schema.Resource
 	paradict["vdom"] = device_vdom
 	paradict["network_policy"] = network_policy
 
-	obj, err := getObjectSystemLldpNetworkPolicyGuestVoiceSignaling(d)
+	obj, err := getObjectSystemLldpNetworkPolicyGuestVoiceSignaling(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemLldpNetworkPolicyGuestVoiceSignaling resource while getting object: %v", err)
 	}
@@ -125,7 +125,6 @@ func resourceSystemLldpNetworkPolicyGuestVoiceSignalingUpdate(d *schema.Resource
 
 func resourceSystemLldpNetworkPolicyGuestVoiceSignalingDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -150,11 +149,17 @@ func resourceSystemLldpNetworkPolicyGuestVoiceSignalingDelete(d *schema.Resource
 	paradict["vdom"] = device_vdom
 	paradict["network_policy"] = network_policy
 
+	obj, err := getObjectSystemLldpNetworkPolicyGuestVoiceSignaling(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating SystemLldpNetworkPolicyGuestVoiceSignaling resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteSystemLldpNetworkPolicyGuestVoiceSignaling(mkey, paradict, wsParams)
+	_, err = c.UpdateSystemLldpNetworkPolicyGuestVoiceSignaling(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting SystemLldpNetworkPolicyGuestVoiceSignaling resource: %v", err)
+		return fmt.Errorf("Error clearing SystemLldpNetworkPolicyGuestVoiceSignaling resource: %v", err)
 	}
 
 	d.SetId("")
@@ -326,7 +331,7 @@ func expandSystemLldpNetworkPolicyGuestVoiceSignalingVlan2edl(d *schema.Resource
 	return v, nil
 }
 
-func getObjectSystemLldpNetworkPolicyGuestVoiceSignaling(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectSystemLldpNetworkPolicyGuestVoiceSignaling(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("dscp"); ok || d.HasChange("dscp") {

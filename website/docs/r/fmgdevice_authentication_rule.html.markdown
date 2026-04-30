@@ -1,5 +1,5 @@
 ---
-subcategory: "No Category"
+subcategory: "Authentication"
 layout: "fmgdevice"
 page_title: "FortiManager Device: fmgdevice_authentication_rule"
 description: |-
@@ -30,6 +30,8 @@ The following arguments are supported:
 
 * `name` - Authentication rule name.
 * `protocol` - Authentication is required for the selected protocol (default = HTTP). Valid values: `http`, `ftp`, `socks`, `ssh`, `ztna-portal`.
+
+* `session_logout` - Enable/disable logout of a user from the current session. Valid values: `disable`, `enable`.
 
 * `srcaddr` - Authentication is required for the selected IPv4 source address.
 * `srcaddr6` - Authentication is required for the selected IPv6 source address.

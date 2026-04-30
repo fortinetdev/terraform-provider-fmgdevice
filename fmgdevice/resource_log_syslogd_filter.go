@@ -161,7 +161,7 @@ func resourceLogSyslogdFilterUpdate(d *schema.ResourceData, m interface{}) error
 	}
 	paradict["device"] = device_name
 
-	obj, err := getObjectLogSyslogdFilter(d)
+	obj, err := getObjectLogSyslogdFilter(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating LogSyslogdFilter resource while getting object: %v", err)
 	}
@@ -182,7 +182,6 @@ func resourceLogSyslogdFilterUpdate(d *schema.ResourceData, m interface{}) error
 
 func resourceLogSyslogdFilterDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -200,11 +199,17 @@ func resourceLogSyslogdFilterDelete(d *schema.ResourceData, m interface{}) error
 	}
 	paradict["device"] = device_name
 
+	obj, err := getObjectLogSyslogdFilter(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating LogSyslogdFilter resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteLogSyslogdFilter(mkey, paradict, wsParams)
+	_, err = c.UpdateLogSyslogdFilter(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting LogSyslogdFilter resource: %v", err)
+		return fmt.Errorf("Error clearing LogSyslogdFilter resource: %v", err)
 	}
 
 	d.SetId("")
@@ -673,7 +678,7 @@ func expandLogSyslogdFilterZtnaTraffic(d *schema.ResourceData, v interface{}, pr
 	return v, nil
 }
 
-func getObjectLogSyslogdFilter(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectLogSyslogdFilter(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("anomaly"); ok || d.HasChange("anomaly") {
@@ -730,12 +735,16 @@ func getObjectLogSyslogdFilter(d *schema.ResourceData) (*map[string]interface{},
 		}
 	}
 
-	if v, ok := d.GetOk("free_style"); ok || d.HasChange("free_style") {
-		t, err := expandLogSyslogdFilterFreeStyle(d, v, "free_style")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["free-style"] = t
+	if bemptysontable {
+		obj["free-style"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("free_style"); ok || d.HasChange("free_style") {
+			t, err := expandLogSyslogdFilterFreeStyle(d, v, "free_style")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["free-style"] = t
+			}
 		}
 	}
 

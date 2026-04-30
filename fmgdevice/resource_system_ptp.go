@@ -43,6 +43,7 @@ func resourceSystemPtp() *schema.Resource {
 			"delay_mechanism": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"interface": &schema.Schema{
 				Type:     schema.TypeSet,
@@ -121,7 +122,7 @@ func resourceSystemPtpUpdate(d *schema.ResourceData, m interface{}) error {
 	}
 	paradict["device"] = device_name
 
-	obj, err := getObjectSystemPtp(d)
+	obj, err := getObjectSystemPtp(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemPtp resource while getting object: %v", err)
 	}
@@ -142,7 +143,6 @@ func resourceSystemPtpUpdate(d *schema.ResourceData, m interface{}) error {
 
 func resourceSystemPtpDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -160,11 +160,17 @@ func resourceSystemPtpDelete(d *schema.ResourceData, m interface{}) error {
 	}
 	paradict["device"] = device_name
 
+	obj, err := getObjectSystemPtp(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating SystemPtp resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteSystemPtp(mkey, paradict, wsParams)
+	_, err = c.UpdateSystemPtp(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting SystemPtp resource: %v", err)
+		return fmt.Errorf("Error clearing SystemPtp resource: %v", err)
 	}
 
 	d.SetId("")
@@ -470,7 +476,7 @@ func expandSystemPtpStatus(d *schema.ResourceData, v interface{}, pre string) (i
 	return v, nil
 }
 
-func getObjectSystemPtp(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectSystemPtp(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("delay_mechanism"); ok || d.HasChange("delay_mechanism") {
@@ -509,12 +515,16 @@ func getObjectSystemPtp(d *schema.ResourceData) (*map[string]interface{}, error)
 		}
 	}
 
-	if v, ok := d.GetOk("server_interface"); ok || d.HasChange("server_interface") {
-		t, err := expandSystemPtpServerInterface(d, v, "server_interface")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["server-interface"] = t
+	if bemptysontable {
+		obj["server-interface"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("server_interface"); ok || d.HasChange("server_interface") {
+			t, err := expandSystemPtpServerInterface(d, v, "server_interface")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["server-interface"] = t
+			}
 		}
 	}
 

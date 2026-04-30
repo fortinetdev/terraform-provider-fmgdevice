@@ -1,5 +1,5 @@
 ---
-subcategory: "No Category"
+subcategory: "Application"
 layout: "fmgdevice"
 page_title: "FortiManager Device: fmgdevice_application_categories"
 description: |-

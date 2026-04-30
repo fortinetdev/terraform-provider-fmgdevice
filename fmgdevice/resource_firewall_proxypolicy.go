@@ -70,6 +70,7 @@ func resourceFirewallProxyPolicy() *schema.Resource {
 			"action": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"application_list": &schema.Schema{
 				Type:     schema.TypeSet,
@@ -239,6 +240,12 @@ func resourceFirewallProxyPolicy() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"internet_service_id": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Computed: true,
+			},
 			"internet_service_name": &schema.Schema{
 				Type:     schema.TypeSet,
 				Elem:     &schema.Schema{Type: schema.TypeString},
@@ -248,6 +255,7 @@ func resourceFirewallProxyPolicy() *schema.Resource {
 			"internet_service_negate": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"internet_service6": &schema.Schema{
 				Type:     schema.TypeString,
@@ -326,6 +334,12 @@ func resourceFirewallProxyPolicy() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"mms_profile": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Computed: true,
+			},
 			"name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -337,6 +351,12 @@ func resourceFirewallProxyPolicy() *schema.Resource {
 				Computed: true,
 			},
 			"poolname": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Computed: true,
+			},
+			"poolname6": &schema.Schema{
 				Type:     schema.TypeSet,
 				Elem:     &schema.Schema{Type: schema.TypeString},
 				Optional: true,
@@ -455,6 +475,7 @@ func resourceFirewallProxyPolicy() *schema.Resource {
 			"transparent": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"url_risk": &schema.Schema{
 				Type:     schema.TypeSet,
@@ -892,6 +913,10 @@ func flattenFirewallProxyPolicyInternetServiceGroup(v interface{}, d *schema.Res
 	return flattenStringList(v)
 }
 
+func flattenFirewallProxyPolicyInternetServiceId(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
 func flattenFirewallProxyPolicyInternetServiceName(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return flattenStringList(v)
 }
@@ -956,6 +981,10 @@ func flattenFirewallProxyPolicyLogtrafficStart(v interface{}, d *schema.Resource
 	return v
 }
 
+func flattenFirewallProxyPolicyMmsProfile(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
 func flattenFirewallProxyPolicyName(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -965,6 +994,10 @@ func flattenFirewallProxyPolicyPolicyid(v interface{}, d *schema.ResourceData, p
 }
 
 func flattenFirewallProxyPolicyPoolname(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
+func flattenFirewallProxyPolicyPoolname6(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return flattenStringList(v)
 }
 
@@ -1463,6 +1496,16 @@ func refreshObjectFirewallProxyPolicy(d *schema.ResourceData, o map[string]inter
 		}
 	}
 
+	if err = d.Set("internet_service_id", flattenFirewallProxyPolicyInternetServiceId(o["internet-service-id"], d, "internet_service_id")); err != nil {
+		if vv, ok := fortiAPIPatch(o["internet-service-id"], "FirewallProxyPolicy-InternetServiceId"); ok {
+			if err = d.Set("internet_service_id", vv); err != nil {
+				return fmt.Errorf("Error reading internet_service_id: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading internet_service_id: %v", err)
+		}
+	}
+
 	if err = d.Set("internet_service_name", flattenFirewallProxyPolicyInternetServiceName(o["internet-service-name"], d, "internet_service_name")); err != nil {
 		if vv, ok := fortiAPIPatch(o["internet-service-name"], "FirewallProxyPolicy-InternetServiceName"); ok {
 			if err = d.Set("internet_service_name", vv); err != nil {
@@ -1623,6 +1666,16 @@ func refreshObjectFirewallProxyPolicy(d *schema.ResourceData, o map[string]inter
 		}
 	}
 
+	if err = d.Set("mms_profile", flattenFirewallProxyPolicyMmsProfile(o["mms-profile"], d, "mms_profile")); err != nil {
+		if vv, ok := fortiAPIPatch(o["mms-profile"], "FirewallProxyPolicy-MmsProfile"); ok {
+			if err = d.Set("mms_profile", vv); err != nil {
+				return fmt.Errorf("Error reading mms_profile: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading mms_profile: %v", err)
+		}
+	}
+
 	if err = d.Set("name", flattenFirewallProxyPolicyName(o["name"], d, "name")); err != nil {
 		if vv, ok := fortiAPIPatch(o["name"], "FirewallProxyPolicy-Name"); ok {
 			if err = d.Set("name", vv); err != nil {
@@ -1650,6 +1703,16 @@ func refreshObjectFirewallProxyPolicy(d *schema.ResourceData, o map[string]inter
 			}
 		} else {
 			return fmt.Errorf("Error reading poolname: %v", err)
+		}
+	}
+
+	if err = d.Set("poolname6", flattenFirewallProxyPolicyPoolname6(o["poolname6"], d, "poolname6")); err != nil {
+		if vv, ok := fortiAPIPatch(o["poolname6"], "FirewallProxyPolicy-Poolname6"); ok {
+			if err = d.Set("poolname6", vv); err != nil {
+				return fmt.Errorf("Error reading poolname6: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading poolname6: %v", err)
 		}
 	}
 
@@ -2178,6 +2241,10 @@ func expandFirewallProxyPolicyInternetServiceGroup(d *schema.ResourceData, v int
 	return expandStringList(v.(*schema.Set).List()), nil
 }
 
+func expandFirewallProxyPolicyInternetServiceId(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
 func expandFirewallProxyPolicyInternetServiceName(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return expandStringList(v.(*schema.Set).List()), nil
 }
@@ -2242,6 +2309,10 @@ func expandFirewallProxyPolicyLogtrafficStart(d *schema.ResourceData, v interfac
 	return v, nil
 }
 
+func expandFirewallProxyPolicyMmsProfile(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
 func expandFirewallProxyPolicyName(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -2251,6 +2322,10 @@ func expandFirewallProxyPolicyPolicyid(d *schema.ResourceData, v interface{}, pr
 }
 
 func expandFirewallProxyPolicyPoolname(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandFirewallProxyPolicyPoolname6(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return expandStringList(v.(*schema.Set).List()), nil
 }
 
@@ -2715,6 +2790,15 @@ func getObjectFirewallProxyPolicy(d *schema.ResourceData) (*map[string]interface
 		}
 	}
 
+	if v, ok := d.GetOk("internet_service_id"); ok || d.HasChange("internet_service_id") {
+		t, err := expandFirewallProxyPolicyInternetServiceId(d, v, "internet_service_id")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["internet-service-id"] = t
+		}
+	}
+
 	if v, ok := d.GetOk("internet_service_name"); ok || d.HasChange("internet_service_name") {
 		t, err := expandFirewallProxyPolicyInternetServiceName(d, v, "internet_service_name")
 		if err != nil {
@@ -2859,6 +2943,15 @@ func getObjectFirewallProxyPolicy(d *schema.ResourceData) (*map[string]interface
 		}
 	}
 
+	if v, ok := d.GetOk("mms_profile"); ok || d.HasChange("mms_profile") {
+		t, err := expandFirewallProxyPolicyMmsProfile(d, v, "mms_profile")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["mms-profile"] = t
+		}
+	}
+
 	if v, ok := d.GetOk("name"); ok || d.HasChange("name") {
 		t, err := expandFirewallProxyPolicyName(d, v, "name")
 		if err != nil {
@@ -2883,6 +2976,15 @@ func getObjectFirewallProxyPolicy(d *schema.ResourceData) (*map[string]interface
 			return &obj, err
 		} else if t != nil {
 			obj["poolname"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("poolname6"); ok || d.HasChange("poolname6") {
+		t, err := expandFirewallProxyPolicyPoolname6(d, v, "poolname6")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["poolname6"] = t
 		}
 	}
 

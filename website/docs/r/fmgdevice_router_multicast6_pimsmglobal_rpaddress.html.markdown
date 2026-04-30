@@ -1,5 +1,5 @@
 ---
-subcategory: "No Category"
+subcategory: "Router"
 layout: "fmgdevice"
 page_title: "FortiManager Device: fmgdevice_router_multicast6_pimsmglobal_rpaddress"
 description: |-

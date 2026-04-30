@@ -127,7 +127,7 @@ func resourceVpnSslWebPortalLandingPageUpdate(d *schema.ResourceData, m interfac
 	paradict["vdom"] = device_vdom
 	paradict["portal"] = portal
 
-	obj, err := getObjectVpnSslWebPortalLandingPage(d)
+	obj, err := getObjectVpnSslWebPortalLandingPage(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating VpnSslWebPortalLandingPage resource while getting object: %v", err)
 	}
@@ -148,7 +148,6 @@ func resourceVpnSslWebPortalLandingPageUpdate(d *schema.ResourceData, m interfac
 
 func resourceVpnSslWebPortalLandingPageDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -173,11 +172,17 @@ func resourceVpnSslWebPortalLandingPageDelete(d *schema.ResourceData, m interfac
 	paradict["vdom"] = device_vdom
 	paradict["portal"] = portal
 
+	obj, err := getObjectVpnSslWebPortalLandingPage(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating VpnSslWebPortalLandingPage resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteVpnSslWebPortalLandingPage(mkey, paradict, wsParams)
+	_, err = c.UpdateVpnSslWebPortalLandingPage(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting VpnSslWebPortalLandingPage resource: %v", err)
+		return fmt.Errorf("Error clearing VpnSslWebPortalLandingPage resource: %v", err)
 	}
 
 	d.SetId("")
@@ -454,15 +459,19 @@ func expandVpnSslWebPortalLandingPageUrl2edl(d *schema.ResourceData, v interface
 	return v, nil
 }
 
-func getObjectVpnSslWebPortalLandingPage(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectVpnSslWebPortalLandingPage(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
-	if v, ok := d.GetOk("form_data"); ok || d.HasChange("form_data") {
-		t, err := expandVpnSslWebPortalLandingPageFormData2edl(d, v, "form_data")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["form-data"] = t
+	if bemptysontable {
+		obj["form-data"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("form_data"); ok || d.HasChange("form_data") {
+			t, err := expandVpnSslWebPortalLandingPageFormData2edl(d, v, "form_data")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["form-data"] = t
+			}
 		}
 	}
 

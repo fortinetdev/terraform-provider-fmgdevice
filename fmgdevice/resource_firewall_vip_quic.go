@@ -121,7 +121,7 @@ func resourceFirewallVipQuicUpdate(d *schema.ResourceData, m interface{}) error 
 	paradict["vdom"] = device_vdom
 	paradict["vip"] = vip
 
-	obj, err := getObjectFirewallVipQuic(d)
+	obj, err := getObjectFirewallVipQuic(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating FirewallVipQuic resource while getting object: %v", err)
 	}
@@ -142,7 +142,6 @@ func resourceFirewallVipQuicUpdate(d *schema.ResourceData, m interface{}) error 
 
 func resourceFirewallVipQuicDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -167,11 +166,17 @@ func resourceFirewallVipQuicDelete(d *schema.ResourceData, m interface{}) error 
 	paradict["vdom"] = device_vdom
 	paradict["vip"] = vip
 
+	obj, err := getObjectFirewallVipQuic(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating FirewallVipQuic resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteFirewallVipQuic(mkey, paradict, wsParams)
+	_, err = c.UpdateFirewallVipQuic(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting FirewallVipQuic resource: %v", err)
+		return fmt.Errorf("Error clearing FirewallVipQuic resource: %v", err)
 	}
 
 	d.SetId("")
@@ -397,7 +402,7 @@ func expandFirewallVipQuicMaxUdpPayloadSize2edl(d *schema.ResourceData, v interf
 	return v, nil
 }
 
-func getObjectFirewallVipQuic(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectFirewallVipQuic(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("ack_delay_exponent"); ok || d.HasChange("ack_delay_exponent") {

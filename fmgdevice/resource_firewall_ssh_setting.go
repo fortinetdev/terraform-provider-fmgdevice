@@ -126,7 +126,7 @@ func resourceFirewallSshSettingUpdate(d *schema.ResourceData, m interface{}) err
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	obj, err := getObjectFirewallSshSetting(d)
+	obj, err := getObjectFirewallSshSetting(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating FirewallSshSetting resource while getting object: %v", err)
 	}
@@ -147,7 +147,6 @@ func resourceFirewallSshSettingUpdate(d *schema.ResourceData, m interface{}) err
 
 func resourceFirewallSshSettingDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -170,11 +169,17 @@ func resourceFirewallSshSettingDelete(d *schema.ResourceData, m interface{}) err
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	obj, err := getObjectFirewallSshSetting(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating FirewallSshSetting resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteFirewallSshSetting(mkey, paradict, wsParams)
+	_, err = c.UpdateFirewallSshSetting(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting FirewallSshSetting resource: %v", err)
+		return fmt.Errorf("Error clearing FirewallSshSetting resource: %v", err)
 	}
 
 	d.SetId("")
@@ -407,7 +412,7 @@ func expandFirewallSshSettingUntrustedCaname(d *schema.ResourceData, v interface
 	return expandStringList(v.(*schema.Set).List()), nil
 }
 
-func getObjectFirewallSshSetting(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectFirewallSshSetting(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("caname"); ok || d.HasChange("caname") {

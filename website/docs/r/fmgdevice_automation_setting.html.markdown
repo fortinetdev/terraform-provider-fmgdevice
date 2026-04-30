@@ -1,5 +1,5 @@
 ---
-subcategory: "No Category"
+subcategory: "Automation"
 layout: "fmgdevice"
 page_title: "FortiManager Device: fmgdevice_automation_setting"
 description: |-

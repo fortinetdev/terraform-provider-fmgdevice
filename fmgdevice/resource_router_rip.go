@@ -93,6 +93,7 @@ func resourceRouterRip() *schema.Resource {
 						"direction": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"id": &schema.Schema{
 							Type:     schema.TypeInt,
@@ -113,6 +114,7 @@ func resourceRouterRip() *schema.Resource {
 						"status": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 					},
 				},
@@ -169,6 +171,7 @@ func resourceRouterRip() *schema.Resource {
 						"send_version2_broadcast": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"split_horizon": &schema.Schema{
 							Type:     schema.TypeString,
@@ -269,6 +272,7 @@ func resourceRouterRip() *schema.Resource {
 			"recv_buffer_size": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"redistribute": &schema.Schema{
 				Type:     schema.TypeList,
@@ -347,7 +351,7 @@ func resourceRouterRipUpdate(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	obj, err := getObjectRouterRip(d)
+	obj, err := getObjectRouterRip(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating RouterRip resource while getting object: %v", err)
 	}
@@ -368,7 +372,6 @@ func resourceRouterRipUpdate(d *schema.ResourceData, m interface{}) error {
 
 func resourceRouterRipDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -391,11 +394,17 @@ func resourceRouterRipDelete(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	obj, err := getObjectRouterRip(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating RouterRip resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteRouterRip(mkey, paradict, wsParams)
+	_, err = c.UpdateRouterRip(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting RouterRip resource: %v", err)
+		return fmt.Errorf("Error clearing RouterRip resource: %v", err)
 	}
 
 	d.SetId("")
@@ -1754,7 +1763,7 @@ func expandRouterRipVersion(d *schema.ResourceData, v interface{}, pre string) (
 	return v, nil
 }
 
-func getObjectRouterRip(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectRouterRip(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("default_information_originate"); ok || d.HasChange("default_information_originate") {
@@ -1775,21 +1784,29 @@ func getObjectRouterRip(d *schema.ResourceData) (*map[string]interface{}, error)
 		}
 	}
 
-	if v, ok := d.GetOk("distance"); ok || d.HasChange("distance") {
-		t, err := expandRouterRipDistance(d, v, "distance")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["distance"] = t
+	if bemptysontable {
+		obj["distance"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("distance"); ok || d.HasChange("distance") {
+			t, err := expandRouterRipDistance(d, v, "distance")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["distance"] = t
+			}
 		}
 	}
 
-	if v, ok := d.GetOk("distribute_list"); ok || d.HasChange("distribute_list") {
-		t, err := expandRouterRipDistributeList(d, v, "distribute_list")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["distribute-list"] = t
+	if bemptysontable {
+		obj["distribute-list"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("distribute_list"); ok || d.HasChange("distribute_list") {
+			t, err := expandRouterRipDistributeList(d, v, "distribute_list")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["distribute-list"] = t
+			}
 		}
 	}
 
@@ -1802,12 +1819,16 @@ func getObjectRouterRip(d *schema.ResourceData) (*map[string]interface{}, error)
 		}
 	}
 
-	if v, ok := d.GetOk("interface"); ok || d.HasChange("interface") {
-		t, err := expandRouterRipInterface(d, v, "interface")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["interface"] = t
+	if bemptysontable {
+		obj["interface"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("interface"); ok || d.HasChange("interface") {
+			t, err := expandRouterRipInterface(d, v, "interface")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["interface"] = t
+			}
 		}
 	}
 
@@ -1820,30 +1841,42 @@ func getObjectRouterRip(d *schema.ResourceData) (*map[string]interface{}, error)
 		}
 	}
 
-	if v, ok := d.GetOk("neighbor"); ok || d.HasChange("neighbor") {
-		t, err := expandRouterRipNeighbor(d, v, "neighbor")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["neighbor"] = t
+	if bemptysontable {
+		obj["neighbor"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("neighbor"); ok || d.HasChange("neighbor") {
+			t, err := expandRouterRipNeighbor(d, v, "neighbor")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["neighbor"] = t
+			}
 		}
 	}
 
-	if v, ok := d.GetOk("network"); ok || d.HasChange("network") {
-		t, err := expandRouterRipNetwork(d, v, "network")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["network"] = t
+	if bemptysontable {
+		obj["network"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("network"); ok || d.HasChange("network") {
+			t, err := expandRouterRipNetwork(d, v, "network")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["network"] = t
+			}
 		}
 	}
 
-	if v, ok := d.GetOk("offset_list"); ok || d.HasChange("offset_list") {
-		t, err := expandRouterRipOffsetList(d, v, "offset_list")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["offset-list"] = t
+	if bemptysontable {
+		obj["offset-list"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("offset_list"); ok || d.HasChange("offset_list") {
+			t, err := expandRouterRipOffsetList(d, v, "offset_list")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["offset-list"] = t
+			}
 		}
 	}
 

@@ -68,6 +68,7 @@ func resourceFirewallMulticastAddress() *schema.Resource {
 			"end_ip": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"name": &schema.Schema{
 				Type:     schema.TypeString,
@@ -76,6 +77,7 @@ func resourceFirewallMulticastAddress() *schema.Resource {
 			"start_ip": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"subnet": &schema.Schema{
 				Type:     schema.TypeList,
@@ -111,6 +113,10 @@ func resourceFirewallMulticastAddress() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+			},
+			"visibility": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
 			},
 			"dynamic_sort_subtable": &schema.Schema{
 				Type:     schema.TypeString,
@@ -404,6 +410,10 @@ func flattenFirewallMulticastAddressType(v interface{}, d *schema.ResourceData, 
 	return v
 }
 
+func flattenFirewallMulticastAddressVisibility(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func refreshObjectFirewallMulticastAddress(d *schema.ResourceData, o map[string]interface{}) error {
 	var err error
 
@@ -515,6 +525,16 @@ func refreshObjectFirewallMulticastAddress(d *schema.ResourceData, o map[string]
 		}
 	}
 
+	if err = d.Set("visibility", flattenFirewallMulticastAddressVisibility(o["visibility"], d, "visibility")); err != nil {
+		if vv, ok := fortiAPIPatch(o["visibility"], "FirewallMulticastAddress-Visibility"); ok {
+			if err = d.Set("visibility", vv); err != nil {
+				return fmt.Errorf("Error reading visibility: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading visibility: %v", err)
+		}
+	}
+
 	return nil
 }
 
@@ -607,6 +627,10 @@ func expandFirewallMulticastAddressType(d *schema.ResourceData, v interface{}, p
 	return v, nil
 }
 
+func expandFirewallMulticastAddressVisibility(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func getObjectFirewallMulticastAddress(d *schema.ResourceData) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
@@ -688,6 +712,15 @@ func getObjectFirewallMulticastAddress(d *schema.ResourceData) (*map[string]inte
 			return &obj, err
 		} else if t != nil {
 			obj["type"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("visibility"); ok || d.HasChange("visibility") {
+		t, err := expandFirewallMulticastAddressVisibility(d, v, "visibility")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["visibility"] = t
 		}
 	}
 

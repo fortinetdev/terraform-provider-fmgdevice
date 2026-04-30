@@ -60,6 +60,12 @@ func resourceWanoptProfileCifs() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
+			"port": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeInt},
+				Optional: true,
+				Computed: true,
+			},
 			"prefer_chunking": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -114,7 +120,7 @@ func resourceWanoptProfileCifsUpdate(d *schema.ResourceData, m interface{}) erro
 	paradict["vdom"] = device_vdom
 	paradict["profile"] = profile
 
-	obj, err := getObjectWanoptProfileCifs(d)
+	obj, err := getObjectWanoptProfileCifs(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating WanoptProfileCifs resource while getting object: %v", err)
 	}
@@ -135,7 +141,6 @@ func resourceWanoptProfileCifsUpdate(d *schema.ResourceData, m interface{}) erro
 
 func resourceWanoptProfileCifsDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -160,11 +165,17 @@ func resourceWanoptProfileCifsDelete(d *schema.ResourceData, m interface{}) erro
 	paradict["vdom"] = device_vdom
 	paradict["profile"] = profile
 
+	obj, err := getObjectWanoptProfileCifs(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating WanoptProfileCifs resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteWanoptProfileCifs(mkey, paradict, wsParams)
+	_, err = c.UpdateWanoptProfileCifs(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting WanoptProfileCifs resource: %v", err)
+		return fmt.Errorf("Error clearing WanoptProfileCifs resource: %v", err)
 	}
 
 	d.SetId("")
@@ -242,6 +253,10 @@ func flattenWanoptProfileCifsLogTraffic2edl(v interface{}, d *schema.ResourceDat
 	return v
 }
 
+func flattenWanoptProfileCifsPort2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenIntegerList(v)
+}
+
 func flattenWanoptProfileCifsPreferChunking2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -282,6 +297,16 @@ func refreshObjectWanoptProfileCifs(d *schema.ResourceData, o map[string]interfa
 			}
 		} else {
 			return fmt.Errorf("Error reading log_traffic: %v", err)
+		}
+	}
+
+	if err = d.Set("port", flattenWanoptProfileCifsPort2edl(o["port"], d, "port")); err != nil {
+		if vv, ok := fortiAPIPatch(o["port"], "WanoptProfileCifs-Port"); ok {
+			if err = d.Set("port", vv); err != nil {
+				return fmt.Errorf("Error reading port: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading port: %v", err)
 		}
 	}
 
@@ -352,6 +377,10 @@ func expandWanoptProfileCifsLogTraffic2edl(d *schema.ResourceData, v interface{}
 	return v, nil
 }
 
+func expandWanoptProfileCifsPort2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandIntegerList(v.(*schema.Set).List()), nil
+}
+
 func expandWanoptProfileCifsPreferChunking2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -372,7 +401,7 @@ func expandWanoptProfileCifsTunnelSharing2edl(d *schema.ResourceData, v interfac
 	return v, nil
 }
 
-func getObjectWanoptProfileCifs(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectWanoptProfileCifs(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("byte_caching"); ok || d.HasChange("byte_caching") {
@@ -390,6 +419,15 @@ func getObjectWanoptProfileCifs(d *schema.ResourceData) (*map[string]interface{}
 			return &obj, err
 		} else if t != nil {
 			obj["log-traffic"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("port"); ok || d.HasChange("port") {
+		t, err := expandWanoptProfileCifsPort2edl(d, v, "port")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["port"] = t
 		}
 	}
 

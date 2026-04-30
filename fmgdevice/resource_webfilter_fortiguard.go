@@ -127,7 +127,7 @@ func resourceWebfilterFortiguardUpdate(d *schema.ResourceData, m interface{}) er
 	}
 	paradict["device"] = device_name
 
-	obj, err := getObjectWebfilterFortiguard(d)
+	obj, err := getObjectWebfilterFortiguard(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating WebfilterFortiguard resource while getting object: %v", err)
 	}
@@ -148,7 +148,6 @@ func resourceWebfilterFortiguardUpdate(d *schema.ResourceData, m interface{}) er
 
 func resourceWebfilterFortiguardDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -166,11 +165,17 @@ func resourceWebfilterFortiguardDelete(d *schema.ResourceData, m interface{}) er
 	}
 	paradict["device"] = device_name
 
+	obj, err := getObjectWebfilterFortiguard(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating WebfilterFortiguard resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteWebfilterFortiguard(mkey, paradict, wsParams)
+	_, err = c.UpdateWebfilterFortiguard(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting WebfilterFortiguard resource: %v", err)
+		return fmt.Errorf("Error clearing WebfilterFortiguard resource: %v", err)
 	}
 
 	d.SetId("")
@@ -464,7 +469,7 @@ func expandWebfilterFortiguardWarnAuthHttps(d *schema.ResourceData, v interface{
 	return v, nil
 }
 
-func getObjectWebfilterFortiguard(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectWebfilterFortiguard(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("cache_mem_percent"); ok || d.HasChange("cache_mem_percent") {

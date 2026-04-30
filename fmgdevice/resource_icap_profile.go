@@ -179,6 +179,7 @@ func resourceIcapProfile() *schema.Resource {
 			"request_failure": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"request_path": &schema.Schema{
 				Type:     schema.TypeString,
@@ -193,6 +194,7 @@ func resourceIcapProfile() *schema.Resource {
 			"respmod_default_action": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"respmod_forward_rules": &schema.Schema{
 				Type:     schema.TypeList,
@@ -202,6 +204,7 @@ func resourceIcapProfile() *schema.Resource {
 						"action": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"header_group": &schema.Schema{
 							Type:     schema.TypeList,
@@ -211,6 +214,7 @@ func resourceIcapProfile() *schema.Resource {
 									"case_sensitivity": &schema.Schema{
 										Type:     schema.TypeString,
 										Optional: true,
+										Computed: true,
 									},
 									"header": &schema.Schema{
 										Type:     schema.TypeString,
@@ -254,6 +258,7 @@ func resourceIcapProfile() *schema.Resource {
 			"response_failure": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"response_path": &schema.Schema{
 				Type:     schema.TypeString,
@@ -262,6 +267,7 @@ func resourceIcapProfile() *schema.Resource {
 			"response_req_hdr": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"response_server": &schema.Schema{
 				Type:     schema.TypeSet,

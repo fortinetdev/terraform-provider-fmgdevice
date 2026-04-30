@@ -73,6 +73,7 @@ func resourceCasbSaasApplication() *schema.Resource {
 						"attr_type": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"default": &schema.Schema{
 							Type:     schema.TypeString,
@@ -118,6 +119,7 @@ func resourceCasbSaasApplication() *schema.Resource {
 						"attr_type": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"description": &schema.Schema{
 							Type:     schema.TypeString,
@@ -135,6 +137,7 @@ func resourceCasbSaasApplication() *schema.Resource {
 						"required": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"type": &schema.Schema{
 							Type:     schema.TypeString,

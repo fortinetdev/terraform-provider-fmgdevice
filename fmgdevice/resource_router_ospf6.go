@@ -49,6 +49,7 @@ func resourceRouterOspf6() *schema.Resource {
 			"abr_type": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"area": &schema.Schema{
 				Type:     schema.TypeList,
@@ -68,14 +69,17 @@ func resourceRouterOspf6() *schema.Resource {
 						"id": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"ipsec_auth_alg": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"ipsec_enc_alg": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"ipsec_keys": &schema.Schema{
 							Type:     schema.TypeList,
@@ -188,10 +192,12 @@ func resourceRouterOspf6() *schema.Resource {
 									"ipsec_auth_alg": &schema.Schema{
 										Type:     schema.TypeString,
 										Optional: true,
+										Computed: true,
 									},
 									"ipsec_enc_alg": &schema.Schema{
 										Type:     schema.TypeString,
 										Optional: true,
+										Computed: true,
 									},
 									"ipsec_keys": &schema.Schema{
 										Type:     schema.TypeList,
@@ -331,10 +337,12 @@ func resourceRouterOspf6() *schema.Resource {
 						"ipsec_auth_alg": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"ipsec_enc_alg": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"ipsec_keys": &schema.Schema{
 							Type:     schema.TypeList,
@@ -392,6 +400,7 @@ func resourceRouterOspf6() *schema.Resource {
 									"ip6": &schema.Schema{
 										Type:     schema.TypeString,
 										Optional: true,
+										Computed: true,
 									},
 									"poll_interval": &schema.Schema{
 										Type:     schema.TypeInt,
@@ -559,7 +568,7 @@ func resourceRouterOspf6Update(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	obj, err := getObjectRouterOspf6(d)
+	obj, err := getObjectRouterOspf6(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating RouterOspf6 resource while getting object: %v", err)
 	}
@@ -580,7 +589,6 @@ func resourceRouterOspf6Update(d *schema.ResourceData, m interface{}) error {
 
 func resourceRouterOspf6Delete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -603,11 +611,17 @@ func resourceRouterOspf6Delete(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	obj, err := getObjectRouterOspf6(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating RouterOspf6 resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteRouterOspf6(mkey, paradict, wsParams)
+	_, err = c.UpdateRouterOspf6(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting RouterOspf6 resource: %v", err)
+		return fmt.Errorf("Error clearing RouterOspf6 resource: %v", err)
 	}
 
 	d.SetId("")
@@ -2832,7 +2846,7 @@ func expandRouterOspf6SummaryAddressTag(d *schema.ResourceData, v interface{}, p
 	return v, nil
 }
 
-func getObjectRouterOspf6(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectRouterOspf6(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("abr_type"); ok || d.HasChange("abr_type") {
@@ -2844,12 +2858,16 @@ func getObjectRouterOspf6(d *schema.ResourceData) (*map[string]interface{}, erro
 		}
 	}
 
-	if v, ok := d.GetOk("area"); ok || d.HasChange("area") {
-		t, err := expandRouterOspf6Area(d, v, "area")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["area"] = t
+	if bemptysontable {
+		obj["area"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("area"); ok || d.HasChange("area") {
+			t, err := expandRouterOspf6Area(d, v, "area")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["area"] = t
+			}
 		}
 	}
 
@@ -2925,12 +2943,16 @@ func getObjectRouterOspf6(d *schema.ResourceData) (*map[string]interface{}, erro
 		}
 	}
 
-	if v, ok := d.GetOk("ospf6_interface"); ok || d.HasChange("ospf6_interface") {
-		t, err := expandRouterOspf6Ospf6Interface(d, v, "ospf6_interface")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["ospf6-interface"] = t
+	if bemptysontable {
+		obj["ospf6-interface"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("ospf6_interface"); ok || d.HasChange("ospf6_interface") {
+			t, err := expandRouterOspf6Ospf6Interface(d, v, "ospf6_interface")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["ospf6-interface"] = t
+			}
 		}
 	}
 
@@ -2997,12 +3019,16 @@ func getObjectRouterOspf6(d *schema.ResourceData) (*map[string]interface{}, erro
 		}
 	}
 
-	if v, ok := d.GetOk("summary_address"); ok || d.HasChange("summary_address") {
-		t, err := expandRouterOspf6SummaryAddress(d, v, "summary_address")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["summary-address"] = t
+	if bemptysontable {
+		obj["summary-address"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("summary_address"); ok || d.HasChange("summary_address") {
+			t, err := expandRouterOspf6SummaryAddress(d, v, "summary_address")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["summary-address"] = t
+			}
 		}
 	}
 

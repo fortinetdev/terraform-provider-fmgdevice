@@ -1,5 +1,5 @@
 ---
-subcategory: "No Category"
+subcategory: "Switch Controller"
 layout: "fmgdevice"
 page_title: "FortiManager Device: fmgdevice_switchcontroller_managedswitch"
 description: |-
@@ -104,6 +104,7 @@ The following arguments are supported:
 * `ip_source_guard` - Ip-Source-Guard. The structure of `ip_source_guard` block is documented below.
 * `l3_discovered` - L3-Discovered.
 * `max_allowed_trunk_members` - FortiSwitch maximum allowed trunk members.
+* `max_poe_budget` - Max-Poe-Budget.
 * `mclag_igmp_snooping_aware` - Enable/disable MCLAG IGMP-snooping awareness. Valid values: `disable`, `enable`.
 
 * `mgmt_mode` - FortiLink management mode.

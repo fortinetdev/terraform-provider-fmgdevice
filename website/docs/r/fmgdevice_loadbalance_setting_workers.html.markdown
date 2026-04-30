@@ -1,5 +1,5 @@
 ---
-subcategory: "No Category"
+subcategory: "Load Balance"
 layout: "fmgdevice"
 page_title: "FortiManager Device: fmgdevice_loadbalance_setting_workers"
 description: |-

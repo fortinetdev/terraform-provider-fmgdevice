@@ -67,6 +67,7 @@ func resourceUserGroup() *schema.Resource {
 			"company": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"dynamic_mapping": &schema.Schema{
 				Type:     schema.TypeList,
@@ -236,6 +237,10 @@ func resourceUserGroup() *schema.Resource {
 							Type:     schema.TypeString,
 							Optional: true,
 						},
+						"negate": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
 						"password": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
@@ -388,14 +393,17 @@ func resourceUserGroup() *schema.Resource {
 			"email": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"expire": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"expire_type": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"group_type": &schema.Schema{
 				Type:     schema.TypeString,
@@ -500,10 +508,12 @@ func resourceUserGroup() *schema.Resource {
 			"mobile_phone": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"multiple_guest_add": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"name": &schema.Schema{
 				Type:     schema.TypeString,
@@ -513,6 +523,7 @@ func resourceUserGroup() *schema.Resource {
 			"password": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"sms_custom_server": &schema.Schema{
 				Type:     schema.TypeSet,
@@ -528,6 +539,7 @@ func resourceUserGroup() *schema.Resource {
 			"sponsor": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"sso_attribute_value": &schema.Schema{
 				Type:     schema.TypeString,
@@ -536,12 +548,18 @@ func resourceUserGroup() *schema.Resource {
 			"user_id": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"user_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"logic_type": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"negate": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 			},
@@ -893,6 +911,12 @@ func flattenUserGroupDynamicMapping(v interface{}, d *schema.ResourceData, pre s
 		if _, ok := i["multiple-guest-add"]; ok {
 			v := flattenUserGroupDynamicMappingMultipleGuestAdd(i["multiple-guest-add"], d, pre_append)
 			tmp["multiple_guest_add"] = fortiAPISubPartPatch(v, "UserGroup-DynamicMapping-MultipleGuestAdd")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "negate"
+		if _, ok := i["negate"]; ok {
+			v := flattenUserGroupDynamicMappingNegate(i["negate"], d, pre_append)
+			tmp["negate"] = fortiAPISubPartPatch(v, "UserGroup-DynamicMapping-Negate")
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "password"
@@ -1390,6 +1414,10 @@ func flattenUserGroupDynamicMappingMultipleGuestAdd(v interface{}, d *schema.Res
 	return v
 }
 
+func flattenUserGroupDynamicMappingNegate(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenUserGroupDynamicMappingPassword(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -1815,6 +1843,10 @@ func flattenUserGroupLogicType(v interface{}, d *schema.ResourceData, pre string
 	return v
 }
 
+func flattenUserGroupNegate(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func refreshObjectUserGroup(d *schema.ResourceData, o map[string]interface{}) error {
 	var err error
 
@@ -2124,6 +2156,16 @@ func refreshObjectUserGroup(d *schema.ResourceData, o map[string]interface{}) er
 		}
 	}
 
+	if err = d.Set("negate", flattenUserGroupNegate(o["negate"], d, "negate")); err != nil {
+		if vv, ok := fortiAPIPatch(o["negate"], "UserGroup-Negate"); ok {
+			if err = d.Set("negate", vv); err != nil {
+				return fmt.Errorf("Error reading negate: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading negate: %v", err)
+		}
+	}
+
 	return nil
 }
 
@@ -2271,6 +2313,11 @@ func expandUserGroupDynamicMapping(d *schema.ResourceData, v interface{}, pre st
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "multiple_guest_add"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
 			tmp["multiple-guest-add"], _ = expandUserGroupDynamicMappingMultipleGuestAdd(d, i["multiple_guest_add"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "negate"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["negate"], _ = expandUserGroupDynamicMappingNegate(d, i["negate"], pre_append)
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "password"
@@ -2722,6 +2769,10 @@ func expandUserGroupDynamicMappingMultipleGuestAdd(d *schema.ResourceData, v int
 	return v, nil
 }
 
+func expandUserGroupDynamicMappingNegate(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandUserGroupDynamicMappingPassword(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -3130,6 +3181,10 @@ func expandUserGroupLogicType(d *schema.ResourceData, v interface{}, pre string)
 	return v, nil
 }
 
+func expandUserGroupNegate(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func getObjectUserGroup(d *schema.ResourceData) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
@@ -3364,6 +3419,15 @@ func getObjectUserGroup(d *schema.ResourceData) (*map[string]interface{}, error)
 			return &obj, err
 		} else if t != nil {
 			obj["logic-type"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("negate"); ok || d.HasChange("negate") {
+		t, err := expandUserGroupNegate(d, v, "negate")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["negate"] = t
 		}
 	}
 

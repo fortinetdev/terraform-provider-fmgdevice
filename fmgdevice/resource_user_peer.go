@@ -123,6 +123,7 @@ func resourceUserPeer() *schema.Resource {
 			"ldap_mode": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"ldap_password": &schema.Schema{
 				Type:      schema.TypeSet,

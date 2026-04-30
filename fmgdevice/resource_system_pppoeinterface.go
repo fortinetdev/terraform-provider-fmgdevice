@@ -100,6 +100,16 @@ func resourceSystemPppoeInterface() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"mrru": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+				Computed: true,
+			},
+			"multilink": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
 			"name": &schema.Schema{
 				Type:     schema.TypeString,
 				ForceNew: true,
@@ -371,6 +381,14 @@ func flattenSystemPppoeInterfaceLcpMaxEchoFails(v interface{}, d *schema.Resourc
 	return v
 }
 
+func flattenSystemPppoeInterfaceMrru(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemPppoeInterfaceMultilink(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenSystemPppoeInterfaceName(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -498,6 +516,26 @@ func refreshObjectSystemPppoeInterface(d *schema.ResourceData, o map[string]inte
 		}
 	}
 
+	if err = d.Set("mrru", flattenSystemPppoeInterfaceMrru(o["mrru"], d, "mrru")); err != nil {
+		if vv, ok := fortiAPIPatch(o["mrru"], "SystemPppoeInterface-Mrru"); ok {
+			if err = d.Set("mrru", vv); err != nil {
+				return fmt.Errorf("Error reading mrru: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading mrru: %v", err)
+		}
+	}
+
+	if err = d.Set("multilink", flattenSystemPppoeInterfaceMultilink(o["multilink"], d, "multilink")); err != nil {
+		if vv, ok := fortiAPIPatch(o["multilink"], "SystemPppoeInterface-Multilink"); ok {
+			if err = d.Set("multilink", vv); err != nil {
+				return fmt.Errorf("Error reading multilink: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading multilink: %v", err)
+		}
+	}
+
 	if err = d.Set("name", flattenSystemPppoeInterfaceName(o["name"], d, "name")); err != nil {
 		if vv, ok := fortiAPIPatch(o["name"], "SystemPppoeInterface-Name"); ok {
 			if err = d.Set("name", vv); err != nil {
@@ -604,6 +642,14 @@ func expandSystemPppoeInterfaceLcpEchoInterval(d *schema.ResourceData, v interfa
 }
 
 func expandSystemPppoeInterfaceLcpMaxEchoFails(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemPppoeInterfaceMrru(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemPppoeInterfaceMultilink(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -725,6 +771,24 @@ func getObjectSystemPppoeInterface(d *schema.ResourceData) (*map[string]interfac
 			return &obj, err
 		} else if t != nil {
 			obj["lcp-max-echo-fails"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("mrru"); ok || d.HasChange("mrru") {
+		t, err := expandSystemPppoeInterfaceMrru(d, v, "mrru")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["mrru"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("multilink"); ok || d.HasChange("multilink") {
+		t, err := expandSystemPppoeInterfaceMultilink(d, v, "multilink")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["multilink"] = t
 		}
 	}
 

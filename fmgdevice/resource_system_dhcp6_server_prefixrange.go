@@ -65,6 +65,7 @@ func resourceSystemDhcp6ServerPrefixRange() *schema.Resource {
 				Type:     schema.TypeInt,
 				ForceNew: true,
 				Optional: true,
+				Computed: true,
 			},
 			"prefix_length": &schema.Schema{
 				Type:     schema.TypeInt,
@@ -130,11 +131,19 @@ func resourceSystemDhcp6ServerPrefixRangeCreate(d *schema.ResourceData, m interf
 	}
 
 	if !existing {
-		_, err = c.CreateSystemDhcp6ServerPrefixRange(obj, paradict, wsParams)
+		v, err := c.CreateSystemDhcp6ServerPrefixRange(obj, paradict, wsParams)
 		if err != nil {
 			return fmt.Errorf("Error creating SystemDhcp6ServerPrefixRange resource: %v", err)
 		}
 
+		if v != nil && v["id"] != nil {
+			if vidn, ok := v["id"].(float64); ok {
+				d.SetId(strconv.Itoa(int(vidn)))
+				return resourceSystemDhcp6ServerPrefixRangeRead(d, m)
+			} else {
+				return fmt.Errorf("Error creating SystemDhcp6ServerPrefixRange resource: %v", err)
+			}
+		}
 	}
 
 	d.SetId(strconv.Itoa(getIntKey(d, "fosid")))

@@ -125,7 +125,7 @@ func resourceWanoptProfileTcpUpdate(d *schema.ResourceData, m interface{}) error
 	paradict["vdom"] = device_vdom
 	paradict["profile"] = profile
 
-	obj, err := getObjectWanoptProfileTcp(d)
+	obj, err := getObjectWanoptProfileTcp(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating WanoptProfileTcp resource while getting object: %v", err)
 	}
@@ -146,7 +146,6 @@ func resourceWanoptProfileTcpUpdate(d *schema.ResourceData, m interface{}) error
 
 func resourceWanoptProfileTcpDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -171,11 +170,17 @@ func resourceWanoptProfileTcpDelete(d *schema.ResourceData, m interface{}) error
 	paradict["vdom"] = device_vdom
 	paradict["profile"] = profile
 
+	obj, err := getObjectWanoptProfileTcp(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating WanoptProfileTcp resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteWanoptProfileTcp(mkey, paradict, wsParams)
+	_, err = c.UpdateWanoptProfileTcp(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting WanoptProfileTcp resource: %v", err)
+		return fmt.Errorf("Error clearing WanoptProfileTcp resource: %v", err)
 	}
 
 	d.SetId("")
@@ -419,7 +424,7 @@ func expandWanoptProfileTcpTunnelSharing2edl(d *schema.ResourceData, v interface
 	return v, nil
 }
 
-func getObjectWanoptProfileTcp(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectWanoptProfileTcp(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("byte_caching"); ok || d.HasChange("byte_caching") {

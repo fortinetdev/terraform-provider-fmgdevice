@@ -92,7 +92,7 @@ func resourceFirewallProfileProtocolOptionsProxyRedirectUpdate(d *schema.Resourc
 	paradict["vdom"] = device_vdom
 	paradict["profile_protocol_options"] = profile_protocol_options
 
-	obj, err := getObjectFirewallProfileProtocolOptionsProxyRedirect(d)
+	obj, err := getObjectFirewallProfileProtocolOptionsProxyRedirect(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating FirewallProfileProtocolOptionsProxyRedirect resource while getting object: %v", err)
 	}
@@ -113,7 +113,6 @@ func resourceFirewallProfileProtocolOptionsProxyRedirectUpdate(d *schema.Resourc
 
 func resourceFirewallProfileProtocolOptionsProxyRedirectDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -138,11 +137,17 @@ func resourceFirewallProfileProtocolOptionsProxyRedirectDelete(d *schema.Resourc
 	paradict["vdom"] = device_vdom
 	paradict["profile_protocol_options"] = profile_protocol_options
 
+	obj, err := getObjectFirewallProfileProtocolOptionsProxyRedirect(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating FirewallProfileProtocolOptionsProxyRedirect resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteFirewallProfileProtocolOptionsProxyRedirect(mkey, paradict, wsParams)
+	_, err = c.UpdateFirewallProfileProtocolOptionsProxyRedirect(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting FirewallProfileProtocolOptionsProxyRedirect resource: %v", err)
+		return fmt.Errorf("Error clearing FirewallProfileProtocolOptionsProxyRedirect resource: %v", err)
 	}
 
 	d.SetId("")
@@ -260,7 +265,7 @@ func expandFirewallProfileProtocolOptionsProxyRedirectStatus2edl(d *schema.Resou
 	return v, nil
 }
 
-func getObjectFirewallProfileProtocolOptionsProxyRedirect(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectFirewallProfileProtocolOptionsProxyRedirect(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("ports"); ok || d.HasChange("ports") {

@@ -89,7 +89,7 @@ func resourceSwitchControllerIgmpSnoopingUpdate(d *schema.ResourceData, m interf
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	obj, err := getObjectSwitchControllerIgmpSnooping(d)
+	obj, err := getObjectSwitchControllerIgmpSnooping(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating SwitchControllerIgmpSnooping resource while getting object: %v", err)
 	}
@@ -110,7 +110,6 @@ func resourceSwitchControllerIgmpSnoopingUpdate(d *schema.ResourceData, m interf
 
 func resourceSwitchControllerIgmpSnoopingDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -133,11 +132,17 @@ func resourceSwitchControllerIgmpSnoopingDelete(d *schema.ResourceData, m interf
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	obj, err := getObjectSwitchControllerIgmpSnooping(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating SwitchControllerIgmpSnooping resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteSwitchControllerIgmpSnooping(mkey, paradict, wsParams)
+	_, err = c.UpdateSwitchControllerIgmpSnooping(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting SwitchControllerIgmpSnooping resource: %v", err)
+		return fmt.Errorf("Error clearing SwitchControllerIgmpSnooping resource: %v", err)
 	}
 
 	d.SetId("")
@@ -262,7 +267,7 @@ func expandSwitchControllerIgmpSnoopingQueryInterval(d *schema.ResourceData, v i
 	return v, nil
 }
 
-func getObjectSwitchControllerIgmpSnooping(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectSwitchControllerIgmpSnooping(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("aging_time"); ok || d.HasChange("aging_time") {

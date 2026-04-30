@@ -136,7 +136,7 @@ func resourceSwitchControllerManagedSwitch8021XSettingsUpdate(d *schema.Resource
 	paradict["vdom"] = device_vdom
 	paradict["managed_switch"] = managed_switch
 
-	obj, err := getObjectSwitchControllerManagedSwitch8021XSettings(d)
+	obj, err := getObjectSwitchControllerManagedSwitch8021XSettings(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating SwitchControllerManagedSwitch8021XSettings resource while getting object: %v", err)
 	}
@@ -157,7 +157,6 @@ func resourceSwitchControllerManagedSwitch8021XSettingsUpdate(d *schema.Resource
 
 func resourceSwitchControllerManagedSwitch8021XSettingsDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -182,11 +181,17 @@ func resourceSwitchControllerManagedSwitch8021XSettingsDelete(d *schema.Resource
 	paradict["vdom"] = device_vdom
 	paradict["managed_switch"] = managed_switch
 
+	obj, err := getObjectSwitchControllerManagedSwitch8021XSettings(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating SwitchControllerManagedSwitch8021XSettings resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteSwitchControllerManagedSwitch8021XSettings(mkey, paradict, wsParams)
+	_, err = c.UpdateSwitchControllerManagedSwitch8021XSettings(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting SwitchControllerManagedSwitch8021XSettings resource: %v", err)
+		return fmt.Errorf("Error clearing SwitchControllerManagedSwitch8021XSettings resource: %v", err)
 	}
 
 	d.SetId("")
@@ -466,7 +471,7 @@ func expandSwitchControllerManagedSwitch8021XSettingsTxPeriod2edl(d *schema.Reso
 	return v, nil
 }
 
-func getObjectSwitchControllerManagedSwitch8021XSettings(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectSwitchControllerManagedSwitch8021XSettings(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("link_down_auth"); ok || d.HasChange("link_down_auth") {

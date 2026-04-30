@@ -173,14 +173,17 @@ func resourceFirewallProfileProtocolOptionsHttp() *schema.Resource {
 			"tcp_window_maximum": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"tcp_window_minimum": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"tcp_window_size": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"tcp_window_type": &schema.Schema{
 				Type:     schema.TypeString,
@@ -259,7 +262,7 @@ func resourceFirewallProfileProtocolOptionsHttpUpdate(d *schema.ResourceData, m 
 	paradict["vdom"] = device_vdom
 	paradict["profile_protocol_options"] = profile_protocol_options
 
-	obj, err := getObjectFirewallProfileProtocolOptionsHttp(d)
+	obj, err := getObjectFirewallProfileProtocolOptionsHttp(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating FirewallProfileProtocolOptionsHttp resource while getting object: %v", err)
 	}
@@ -280,7 +283,6 @@ func resourceFirewallProfileProtocolOptionsHttpUpdate(d *schema.ResourceData, m 
 
 func resourceFirewallProfileProtocolOptionsHttpDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -305,11 +307,17 @@ func resourceFirewallProfileProtocolOptionsHttpDelete(d *schema.ResourceData, m 
 	paradict["vdom"] = device_vdom
 	paradict["profile_protocol_options"] = profile_protocol_options
 
+	obj, err := getObjectFirewallProfileProtocolOptionsHttp(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating FirewallProfileProtocolOptionsHttp resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteFirewallProfileProtocolOptionsHttp(mkey, paradict, wsParams)
+	_, err = c.UpdateFirewallProfileProtocolOptionsHttp(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting FirewallProfileProtocolOptionsHttp resource: %v", err)
+		return fmt.Errorf("Error clearing FirewallProfileProtocolOptionsHttp resource: %v", err)
 	}
 
 	d.SetId("")
@@ -1057,7 +1065,7 @@ func expandFirewallProfileProtocolOptionsHttpEncryptedFileLog2edl(d *schema.Reso
 	return v, nil
 }
 
-func getObjectFirewallProfileProtocolOptionsHttp(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectFirewallProfileProtocolOptionsHttp(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("address_ip_rating"); ok || d.HasChange("address_ip_rating") {

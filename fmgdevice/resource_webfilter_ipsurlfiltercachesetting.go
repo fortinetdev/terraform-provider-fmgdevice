@@ -71,7 +71,7 @@ func resourceWebfilterIpsUrlfilterCacheSettingUpdate(d *schema.ResourceData, m i
 	}
 	paradict["device"] = device_name
 
-	obj, err := getObjectWebfilterIpsUrlfilterCacheSetting(d)
+	obj, err := getObjectWebfilterIpsUrlfilterCacheSetting(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating WebfilterIpsUrlfilterCacheSetting resource while getting object: %v", err)
 	}
@@ -92,7 +92,6 @@ func resourceWebfilterIpsUrlfilterCacheSettingUpdate(d *schema.ResourceData, m i
 
 func resourceWebfilterIpsUrlfilterCacheSettingDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -110,11 +109,17 @@ func resourceWebfilterIpsUrlfilterCacheSettingDelete(d *schema.ResourceData, m i
 	}
 	paradict["device"] = device_name
 
+	obj, err := getObjectWebfilterIpsUrlfilterCacheSetting(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating WebfilterIpsUrlfilterCacheSetting resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteWebfilterIpsUrlfilterCacheSetting(mkey, paradict, wsParams)
+	_, err = c.UpdateWebfilterIpsUrlfilterCacheSetting(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting WebfilterIpsUrlfilterCacheSetting resource: %v", err)
+		return fmt.Errorf("Error clearing WebfilterIpsUrlfilterCacheSetting resource: %v", err)
 	}
 
 	d.SetId("")
@@ -210,7 +215,7 @@ func expandWebfilterIpsUrlfilterCacheSettingExtendedTtl(d *schema.ResourceData, 
 	return v, nil
 }
 
-func getObjectWebfilterIpsUrlfilterCacheSetting(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectWebfilterIpsUrlfilterCacheSetting(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("dns_retry_interval"); ok || d.HasChange("dns_retry_interval") {

@@ -346,6 +346,7 @@ func resourceUserLdap() *schema.Resource {
 			"group_object_filter": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"group_search_base": &schema.Schema{
 				Type:     schema.TypeString,
@@ -387,6 +388,7 @@ func resourceUserLdap() *schema.Resource {
 			"password_attr": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"password_expiry_warning": &schema.Schema{
 				Type:     schema.TypeString,
@@ -425,10 +427,12 @@ func resourceUserLdap() *schema.Resource {
 			"server_identity_check": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"source_ip": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"source_ip_interface": &schema.Schema{
 				Type:     schema.TypeSet,
@@ -489,6 +493,7 @@ func resourceUserLdap() *schema.Resource {
 			"account_key_upn_san": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"vrf_select": &schema.Schema{
 				Type:     schema.TypeInt,

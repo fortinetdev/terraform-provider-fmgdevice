@@ -77,10 +77,12 @@ func resourceIcapServer() *schema.Resource {
 			"ip_version": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"ip6_address": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"max_connections": &schema.Schema{
 				Type:     schema.TypeInt,

@@ -118,6 +118,72 @@ func (c *FortiSDKClient) ReadAntivirusExemptList(mkey string, paradict map[strin
 	return
 }
 
+// CreateAntivirusMmsChecksum API operation for FortiManager Device creates a new Mms Checksum.
+// Returns the index value of the Mms Checksum and execution result when the request executes successfully.
+// Returns error for service API and SDK errors.
+// See the device - antivirus mms-checksum chapter in the FortiManager Handbook - CLI Reference.
+func (c *FortiSDKClient) CreateAntivirusMmsChecksum(params *map[string]interface{}, paradict, wsParams map[string]string) (output map[string]interface{}, err error) {
+	path := "/pm/config/device/{device}/vdom/{vdom}/antivirus/mms-checksum"
+	path, err = replaceParaWithValue(path, paradict)
+	if err != nil {
+		return nil, fmt.Errorf("%v", err)
+	}
+
+	output, err = createUpdate(c, path, "add", params, false, wsParams)
+	return
+}
+
+// UpdateAntivirusMmsChecksum API operation for FortiManager Device updates the specified Mms Checksum.
+// Returns the index value of the Mms Checksum and execution result when the request executes successfully.
+// Returns error for service API and SDK errors.
+// See the device - antivirus mms-checksum chapter in the FortiManager Handbook - CLI Reference.
+func (c *FortiSDKClient) UpdateAntivirusMmsChecksum(params *map[string]interface{}, mkey string, paradict, wsParams map[string]string) (output map[string]interface{}, err error) {
+	path := "/pm/config/device/{device}/vdom/{vdom}/antivirus/mms-checksum"
+	path, err = replaceParaWithValue(path, paradict)
+	if err != nil {
+		return nil, fmt.Errorf("%v", err)
+	}
+
+	path += "/" + escapeURLString(mkey)
+
+	output, err = createUpdate(c, path, "set", params, false, wsParams)
+	return
+}
+
+// DeleteAntivirusMmsChecksum API operation for FortiManager Device deletes the specified Mms Checksum.
+// Returns error for service API and SDK errors.
+// See the device - antivirus mms-checksum chapter in the FortiManager Handbook - CLI Reference.
+func (c *FortiSDKClient) DeleteAntivirusMmsChecksum(mkey string, paradict, wsParams map[string]string) (err error) {
+	path := "/pm/config/device/{device}/vdom/{vdom}/antivirus/mms-checksum"
+	path, err = replaceParaWithValue(path, paradict)
+	if err != nil {
+		return fmt.Errorf("%v", err)
+	}
+
+	path += "/" + escapeURLString(mkey)
+
+	err = delete(c, path, "delete", false, wsParams)
+	return
+}
+
+// ReadAntivirusMmsChecksum API operation for FortiManager Device gets the Mms Checksum
+// with the specified index value.
+// Returns the requested Mms Checksum value when the request executes successfully.
+// Returns error for service API and SDK errors.
+// See the device - antivirus mms-checksum chapter in the FortiManager Handbook - CLI Reference.
+func (c *FortiSDKClient) ReadAntivirusMmsChecksum(mkey string, paradict map[string]string) (mapTmp map[string]interface{}, err error) {
+	path := "/pm/config/device/{device}/vdom/{vdom}/antivirus/mms-checksum"
+	path, err = replaceParaWithValue(path, paradict)
+	if err != nil {
+		return nil, fmt.Errorf("%v", err)
+	}
+
+	path += "/" + escapeURLString(mkey)
+
+	mapTmp, err = read(c, path, "get", false)
+	return
+}
+
 // CreateAntivirusProfile API operation for FortiManager Device creates a new Profile.
 // Returns the index value of the Profile and execution result when the request executes successfully.
 // Returns error for service API and SDK errors.
@@ -19770,6 +19836,372 @@ func (c *FortiSDKClient) ReadIsolatorSetting(mkey string, paradict map[string]st
 	return
 }
 
+// CreateLlmProfile API operation for FortiManager Device creates a new Profile.
+// Returns the index value of the Profile and execution result when the request executes successfully.
+// Returns error for service API and SDK errors.
+// See the device - llm profile chapter in the FortiManager Handbook - CLI Reference.
+func (c *FortiSDKClient) CreateLlmProfile(params *map[string]interface{}, paradict, wsParams map[string]string) (output map[string]interface{}, err error) {
+	path := "/pm/config/device/{device}/vdom/{vdom}/llm/profile"
+	path, err = replaceParaWithValue(path, paradict)
+	if err != nil {
+		return nil, fmt.Errorf("%v", err)
+	}
+
+	output, err = createUpdate(c, path, "add", params, false, wsParams)
+	return
+}
+
+// UpdateLlmProfile API operation for FortiManager Device updates the specified Profile.
+// Returns the index value of the Profile and execution result when the request executes successfully.
+// Returns error for service API and SDK errors.
+// See the device - llm profile chapter in the FortiManager Handbook - CLI Reference.
+func (c *FortiSDKClient) UpdateLlmProfile(params *map[string]interface{}, mkey string, paradict, wsParams map[string]string) (output map[string]interface{}, err error) {
+	path := "/pm/config/device/{device}/vdom/{vdom}/llm/profile"
+	path, err = replaceParaWithValue(path, paradict)
+	if err != nil {
+		return nil, fmt.Errorf("%v", err)
+	}
+
+	path += "/" + escapeURLString(mkey)
+
+	output, err = createUpdate(c, path, "set", params, false, wsParams)
+	return
+}
+
+// DeleteLlmProfile API operation for FortiManager Device deletes the specified Profile.
+// Returns error for service API and SDK errors.
+// See the device - llm profile chapter in the FortiManager Handbook - CLI Reference.
+func (c *FortiSDKClient) DeleteLlmProfile(mkey string, paradict, wsParams map[string]string) (err error) {
+	path := "/pm/config/device/{device}/vdom/{vdom}/llm/profile"
+	path, err = replaceParaWithValue(path, paradict)
+	if err != nil {
+		return fmt.Errorf("%v", err)
+	}
+
+	path += "/" + escapeURLString(mkey)
+
+	err = delete(c, path, "delete", false, wsParams)
+	return
+}
+
+// ReadLlmProfile API operation for FortiManager Device gets the Profile
+// with the specified index value.
+// Returns the requested Profile value when the request executes successfully.
+// Returns error for service API and SDK errors.
+// See the device - llm profile chapter in the FortiManager Handbook - CLI Reference.
+func (c *FortiSDKClient) ReadLlmProfile(mkey string, paradict map[string]string) (mapTmp map[string]interface{}, err error) {
+	path := "/pm/config/device/{device}/vdom/{vdom}/llm/profile"
+	path, err = replaceParaWithValue(path, paradict)
+	if err != nil {
+		return nil, fmt.Errorf("%v", err)
+	}
+
+	path += "/" + escapeURLString(mkey)
+
+	mapTmp, err = read(c, path, "get", false)
+	return
+}
+
+// UpdateLlmProfileChat API operation for FortiManager Device updates the specified ProfileChat.
+// Returns the index value of the ProfileChat and execution result when the request executes successfully.
+// Returns error for service API and SDK errors.
+// See the device - llm profile chat chapter in the FortiManager Handbook - CLI Reference.
+func (c *FortiSDKClient) UpdateLlmProfileChat(params *map[string]interface{}, mkey string, paradict, wsParams map[string]string) (output map[string]interface{}, err error) {
+	path := "/pm/config/device/{device}/vdom/{vdom}/llm/profile/{profile}/chat"
+	path, err = replaceParaWithValue(path, paradict)
+	if err != nil {
+		return nil, fmt.Errorf("%v", err)
+	}
+
+	output, err = createUpdate(c, path, "set", params, false, wsParams)
+	return
+}
+
+// DeleteLlmProfileChat API operation for FortiManager Device deletes the specified ProfileChat.
+// Returns error for service API and SDK errors.
+// See the device - llm profile chat chapter in the FortiManager Handbook - CLI Reference.
+func (c *FortiSDKClient) DeleteLlmProfileChat(mkey string, paradict, wsParams map[string]string) (err error) {
+
+	//No unset API for llm - profile chat
+	return
+}
+
+// ReadLlmProfileChat API operation for FortiManager Device gets the ProfileChat
+// with the specified index value.
+// Returns the requested ProfileChat value when the request executes successfully.
+// Returns error for service API and SDK errors.
+// See the device - llm profile chat chapter in the FortiManager Handbook - CLI Reference.
+func (c *FortiSDKClient) ReadLlmProfileChat(mkey string, paradict map[string]string) (mapTmp map[string]interface{}, err error) {
+	path := "/pm/config/device/{device}/vdom/{vdom}/llm/profile/{profile}/chat"
+	path, err = replaceParaWithValue(path, paradict)
+	if err != nil {
+		return nil, fmt.Errorf("%v", err)
+	}
+
+	mapTmp, err = read(c, path, "get", false)
+	return
+}
+
+// UpdateLlmProfileImageGen API operation for FortiManager Device updates the specified ProfileImage Gen.
+// Returns the index value of the ProfileImage Gen and execution result when the request executes successfully.
+// Returns error for service API and SDK errors.
+// See the device - llm profile image-gen chapter in the FortiManager Handbook - CLI Reference.
+func (c *FortiSDKClient) UpdateLlmProfileImageGen(params *map[string]interface{}, mkey string, paradict, wsParams map[string]string) (output map[string]interface{}, err error) {
+	path := "/pm/config/device/{device}/vdom/{vdom}/llm/profile/{profile}/image-gen"
+	path, err = replaceParaWithValue(path, paradict)
+	if err != nil {
+		return nil, fmt.Errorf("%v", err)
+	}
+
+	output, err = createUpdate(c, path, "set", params, false, wsParams)
+	return
+}
+
+// DeleteLlmProfileImageGen API operation for FortiManager Device deletes the specified ProfileImage Gen.
+// Returns error for service API and SDK errors.
+// See the device - llm profile image-gen chapter in the FortiManager Handbook - CLI Reference.
+func (c *FortiSDKClient) DeleteLlmProfileImageGen(mkey string, paradict, wsParams map[string]string) (err error) {
+
+	//No unset API for llm - profile image-gen
+	return
+}
+
+// ReadLlmProfileImageGen API operation for FortiManager Device gets the ProfileImage Gen
+// with the specified index value.
+// Returns the requested ProfileImage Gen value when the request executes successfully.
+// Returns error for service API and SDK errors.
+// See the device - llm profile image-gen chapter in the FortiManager Handbook - CLI Reference.
+func (c *FortiSDKClient) ReadLlmProfileImageGen(mkey string, paradict map[string]string) (mapTmp map[string]interface{}, err error) {
+	path := "/pm/config/device/{device}/vdom/{vdom}/llm/profile/{profile}/image-gen"
+	path, err = replaceParaWithValue(path, paradict)
+	if err != nil {
+		return nil, fmt.Errorf("%v", err)
+	}
+
+	mapTmp, err = read(c, path, "get", false)
+	return
+}
+
+// UpdateLlmProfileListModels API operation for FortiManager Device updates the specified ProfileList Models.
+// Returns the index value of the ProfileList Models and execution result when the request executes successfully.
+// Returns error for service API and SDK errors.
+// See the device - llm profile list-models chapter in the FortiManager Handbook - CLI Reference.
+func (c *FortiSDKClient) UpdateLlmProfileListModels(params *map[string]interface{}, mkey string, paradict, wsParams map[string]string) (output map[string]interface{}, err error) {
+	path := "/pm/config/device/{device}/vdom/{vdom}/llm/profile/{profile}/list-models"
+	path, err = replaceParaWithValue(path, paradict)
+	if err != nil {
+		return nil, fmt.Errorf("%v", err)
+	}
+
+	output, err = createUpdate(c, path, "set", params, false, wsParams)
+	return
+}
+
+// DeleteLlmProfileListModels API operation for FortiManager Device deletes the specified ProfileList Models.
+// Returns error for service API and SDK errors.
+// See the device - llm profile list-models chapter in the FortiManager Handbook - CLI Reference.
+func (c *FortiSDKClient) DeleteLlmProfileListModels(mkey string, paradict, wsParams map[string]string) (err error) {
+
+	//No unset API for llm - profile list-models
+	return
+}
+
+// ReadLlmProfileListModels API operation for FortiManager Device gets the ProfileList Models
+// with the specified index value.
+// Returns the requested ProfileList Models value when the request executes successfully.
+// Returns error for service API and SDK errors.
+// See the device - llm profile list-models chapter in the FortiManager Handbook - CLI Reference.
+func (c *FortiSDKClient) ReadLlmProfileListModels(mkey string, paradict map[string]string) (mapTmp map[string]interface{}, err error) {
+	path := "/pm/config/device/{device}/vdom/{vdom}/llm/profile/{profile}/list-models"
+	path, err = replaceParaWithValue(path, paradict)
+	if err != nil {
+		return nil, fmt.Errorf("%v", err)
+	}
+
+	mapTmp, err = read(c, path, "get", false)
+	return
+}
+
+// UpdateLlmProfileResponse API operation for FortiManager Device updates the specified ProfileResponse.
+// Returns the index value of the ProfileResponse and execution result when the request executes successfully.
+// Returns error for service API and SDK errors.
+// See the device - llm profile response chapter in the FortiManager Handbook - CLI Reference.
+func (c *FortiSDKClient) UpdateLlmProfileResponse(params *map[string]interface{}, mkey string, paradict, wsParams map[string]string) (output map[string]interface{}, err error) {
+	path := "/pm/config/device/{device}/vdom/{vdom}/llm/profile/{profile}/response"
+	path, err = replaceParaWithValue(path, paradict)
+	if err != nil {
+		return nil, fmt.Errorf("%v", err)
+	}
+
+	output, err = createUpdate(c, path, "set", params, false, wsParams)
+	return
+}
+
+// DeleteLlmProfileResponse API operation for FortiManager Device deletes the specified ProfileResponse.
+// Returns error for service API and SDK errors.
+// See the device - llm profile response chapter in the FortiManager Handbook - CLI Reference.
+func (c *FortiSDKClient) DeleteLlmProfileResponse(mkey string, paradict, wsParams map[string]string) (err error) {
+
+	//No unset API for llm - profile response
+	return
+}
+
+// ReadLlmProfileResponse API operation for FortiManager Device gets the ProfileResponse
+// with the specified index value.
+// Returns the requested ProfileResponse value when the request executes successfully.
+// Returns error for service API and SDK errors.
+// See the device - llm profile response chapter in the FortiManager Handbook - CLI Reference.
+func (c *FortiSDKClient) ReadLlmProfileResponse(mkey string, paradict map[string]string) (mapTmp map[string]interface{}, err error) {
+	path := "/pm/config/device/{device}/vdom/{vdom}/llm/profile/{profile}/response"
+	path, err = replaceParaWithValue(path, paradict)
+	if err != nil {
+		return nil, fmt.Errorf("%v", err)
+	}
+
+	mapTmp, err = read(c, path, "get", false)
+	return
+}
+
+// UpdateLlmProxy API operation for FortiManager Device updates the specified Proxy.
+// Returns the index value of the Proxy and execution result when the request executes successfully.
+// Returns error for service API and SDK errors.
+// See the device - llm proxy chapter in the FortiManager Handbook - CLI Reference.
+func (c *FortiSDKClient) UpdateLlmProxy(params *map[string]interface{}, mkey string, paradict, wsParams map[string]string) (output map[string]interface{}, err error) {
+	path := "/pm/config/device/{device}/vdom/{vdom}/llm/proxy"
+	path, err = replaceParaWithValue(path, paradict)
+	if err != nil {
+		return nil, fmt.Errorf("%v", err)
+	}
+
+	output, err = createUpdate(c, path, "set", params, false, wsParams)
+	return
+}
+
+// DeleteLlmProxy API operation for FortiManager Device deletes the specified Proxy.
+// Returns error for service API and SDK errors.
+// See the device - llm proxy chapter in the FortiManager Handbook - CLI Reference.
+func (c *FortiSDKClient) DeleteLlmProxy(mkey string, paradict, wsParams map[string]string) (err error) {
+
+	//No unset API for llm - proxy
+	return
+}
+
+// ReadLlmProxy API operation for FortiManager Device gets the Proxy
+// with the specified index value.
+// Returns the requested Proxy value when the request executes successfully.
+// Returns error for service API and SDK errors.
+// See the device - llm proxy chapter in the FortiManager Handbook - CLI Reference.
+func (c *FortiSDKClient) ReadLlmProxy(mkey string, paradict map[string]string) (mapTmp map[string]interface{}, err error) {
+	path := "/pm/config/device/{device}/vdom/{vdom}/llm/proxy"
+	path, err = replaceParaWithValue(path, paradict)
+	if err != nil {
+		return nil, fmt.Errorf("%v", err)
+	}
+
+	mapTmp, err = read(c, path, "get", false)
+	return
+}
+
+// CreateLlmServer API operation for FortiManager Device creates a new Server.
+// Returns the index value of the Server and execution result when the request executes successfully.
+// Returns error for service API and SDK errors.
+// See the device - llm server chapter in the FortiManager Handbook - CLI Reference.
+func (c *FortiSDKClient) CreateLlmServer(params *map[string]interface{}, paradict, wsParams map[string]string) (output map[string]interface{}, err error) {
+	path := "/pm/config/device/{device}/vdom/{vdom}/llm/server"
+	path, err = replaceParaWithValue(path, paradict)
+	if err != nil {
+		return nil, fmt.Errorf("%v", err)
+	}
+
+	output, err = createUpdate(c, path, "add", params, false, wsParams)
+	return
+}
+
+// UpdateLlmServer API operation for FortiManager Device updates the specified Server.
+// Returns the index value of the Server and execution result when the request executes successfully.
+// Returns error for service API and SDK errors.
+// See the device - llm server chapter in the FortiManager Handbook - CLI Reference.
+func (c *FortiSDKClient) UpdateLlmServer(params *map[string]interface{}, mkey string, paradict, wsParams map[string]string) (output map[string]interface{}, err error) {
+	path := "/pm/config/device/{device}/vdom/{vdom}/llm/server"
+	path, err = replaceParaWithValue(path, paradict)
+	if err != nil {
+		return nil, fmt.Errorf("%v", err)
+	}
+
+	path += "/" + escapeURLString(mkey)
+
+	output, err = createUpdate(c, path, "set", params, false, wsParams)
+	return
+}
+
+// DeleteLlmServer API operation for FortiManager Device deletes the specified Server.
+// Returns error for service API and SDK errors.
+// See the device - llm server chapter in the FortiManager Handbook - CLI Reference.
+func (c *FortiSDKClient) DeleteLlmServer(mkey string, paradict, wsParams map[string]string) (err error) {
+	path := "/pm/config/device/{device}/vdom/{vdom}/llm/server"
+	path, err = replaceParaWithValue(path, paradict)
+	if err != nil {
+		return fmt.Errorf("%v", err)
+	}
+
+	path += "/" + escapeURLString(mkey)
+
+	err = delete(c, path, "delete", false, wsParams)
+	return
+}
+
+// ReadLlmServer API operation for FortiManager Device gets the Server
+// with the specified index value.
+// Returns the requested Server value when the request executes successfully.
+// Returns error for service API and SDK errors.
+// See the device - llm server chapter in the FortiManager Handbook - CLI Reference.
+func (c *FortiSDKClient) ReadLlmServer(mkey string, paradict map[string]string) (mapTmp map[string]interface{}, err error) {
+	path := "/pm/config/device/{device}/vdom/{vdom}/llm/server"
+	path, err = replaceParaWithValue(path, paradict)
+	if err != nil {
+		return nil, fmt.Errorf("%v", err)
+	}
+
+	path += "/" + escapeURLString(mkey)
+
+	mapTmp, err = read(c, path, "get", false)
+	return
+}
+
+// UpdateLlmServerMove API operation for FortiManager Device updates the specified ServerMove.
+// Returns the index value of the ServerMove and execution result when the request executes successfully.
+// Returns error for service API and SDK errors.
+// See the device - llm server move chapter in the FortiManager Handbook - CLI Reference.
+func (c *FortiSDKClient) UpdateLlmServerMove(params *map[string]interface{}, mkey string, paradict, wsParams map[string]string) (output map[string]interface{}, err error) {
+	path := "/pm/config/device/{device}/vdom/{vdom}/llm/server/{server}"
+	path, err = replaceParaWithValue(path, paradict)
+	if err != nil {
+		return nil, fmt.Errorf("%v", err)
+	}
+
+	output, err = createUpdate(c, path, "move", params, true, wsParams)
+	return
+}
+
+// ReadLlmServerMove API operation for FortiManager Device gets the ServerMove
+// with the specified index value.
+// Returns the requested ServerMove value when the request executes successfully.
+// Returns error for service API and SDK errors.
+// See the device - llm server move chapter in the FortiManager Handbook - CLI Reference.
+func (c *FortiSDKClient) ReadLlmServerMove(mkey string, paradict map[string]string) (listTmp []interface{}, err error) {
+	path := "/pm/config/device/{device}/vdom/{vdom}/llm/server"
+	path, err = replaceParaWithValue(path, paradict)
+	if err != nil {
+		return nil, fmt.Errorf("%v", err)
+	}
+
+	params := map[string]interface{}{
+		"fields": []string{"name"},
+	}
+	listTmp, err = readMove(c, path, "get", &params, true)
+	return
+}
+
 // CreateLoadBalanceSettingWorkers API operation for FortiManager Device creates a new SettingWorkers.
 // Returns the index value of the SettingWorkers and execution result when the request executes successfully.
 // Returns error for service API and SDK errors.
@@ -37961,6 +38393,46 @@ func (c *FortiSDKClient) ReadSystemAccprofile(mkey string, paradict map[string]s
 	}
 
 	path += "/" + escapeURLString(mkey)
+
+	mapTmp, err = read(c, path, "get", false)
+	return
+}
+
+// UpdateSystemAccprofileSecfabgrpPermission API operation for FortiManager Device updates the specified AccprofileSecfabgrp Permission.
+// Returns the index value of the AccprofileSecfabgrp Permission and execution result when the request executes successfully.
+// Returns error for service API and SDK errors.
+// See the device - system accprofile secfabgrp-permission chapter in the FortiManager Handbook - CLI Reference.
+func (c *FortiSDKClient) UpdateSystemAccprofileSecfabgrpPermission(params *map[string]interface{}, mkey string, paradict, wsParams map[string]string) (output map[string]interface{}, err error) {
+	path := "/pm/config/device/{device}/global/system/accprofile/{accprofile}/secfabgrp-permission"
+	path, err = replaceParaWithValue(path, paradict)
+	if err != nil {
+		return nil, fmt.Errorf("%v", err)
+	}
+
+	output, err = createUpdate(c, path, "set", params, false, wsParams)
+	return
+}
+
+// DeleteSystemAccprofileSecfabgrpPermission API operation for FortiManager Device deletes the specified AccprofileSecfabgrp Permission.
+// Returns error for service API and SDK errors.
+// See the device - system accprofile secfabgrp-permission chapter in the FortiManager Handbook - CLI Reference.
+func (c *FortiSDKClient) DeleteSystemAccprofileSecfabgrpPermission(mkey string, paradict, wsParams map[string]string) (err error) {
+
+	//No unset API for system - accprofile secfabgrp-permission
+	return
+}
+
+// ReadSystemAccprofileSecfabgrpPermission API operation for FortiManager Device gets the AccprofileSecfabgrp Permission
+// with the specified index value.
+// Returns the requested AccprofileSecfabgrp Permission value when the request executes successfully.
+// Returns error for service API and SDK errors.
+// See the device - system accprofile secfabgrp-permission chapter in the FortiManager Handbook - CLI Reference.
+func (c *FortiSDKClient) ReadSystemAccprofileSecfabgrpPermission(mkey string, paradict map[string]string) (mapTmp map[string]interface{}, err error) {
+	path := "/pm/config/device/{device}/global/system/accprofile/{accprofile}/secfabgrp-permission"
+	path, err = replaceParaWithValue(path, paradict)
+	if err != nil {
+		return nil, fmt.Errorf("%v", err)
+	}
 
 	mapTmp, err = read(c, path, "get", false)
 	return
@@ -68402,6 +68874,72 @@ func (c *FortiSDKClient) ReadWirelessControllerLog(mkey string, paradict map[str
 	return
 }
 
+// CreateWirelessControllerLwProfile API operation for FortiManager Device creates a new Lw Profile.
+// Returns the index value of the Lw Profile and execution result when the request executes successfully.
+// Returns error for service API and SDK errors.
+// See the device - wireless-controller lw-profile chapter in the FortiManager Handbook - CLI Reference.
+func (c *FortiSDKClient) CreateWirelessControllerLwProfile(params *map[string]interface{}, paradict, wsParams map[string]string) (output map[string]interface{}, err error) {
+	path := "/pm/config/device/{device}/vdom/{vdom}/wireless-controller/lw-profile"
+	path, err = replaceParaWithValue(path, paradict)
+	if err != nil {
+		return nil, fmt.Errorf("%v", err)
+	}
+
+	output, err = createUpdate(c, path, "add", params, false, wsParams)
+	return
+}
+
+// UpdateWirelessControllerLwProfile API operation for FortiManager Device updates the specified Lw Profile.
+// Returns the index value of the Lw Profile and execution result when the request executes successfully.
+// Returns error for service API and SDK errors.
+// See the device - wireless-controller lw-profile chapter in the FortiManager Handbook - CLI Reference.
+func (c *FortiSDKClient) UpdateWirelessControllerLwProfile(params *map[string]interface{}, mkey string, paradict, wsParams map[string]string) (output map[string]interface{}, err error) {
+	path := "/pm/config/device/{device}/vdom/{vdom}/wireless-controller/lw-profile"
+	path, err = replaceParaWithValue(path, paradict)
+	if err != nil {
+		return nil, fmt.Errorf("%v", err)
+	}
+
+	path += "/" + escapeURLString(mkey)
+
+	output, err = createUpdate(c, path, "set", params, false, wsParams)
+	return
+}
+
+// DeleteWirelessControllerLwProfile API operation for FortiManager Device deletes the specified Lw Profile.
+// Returns error for service API and SDK errors.
+// See the device - wireless-controller lw-profile chapter in the FortiManager Handbook - CLI Reference.
+func (c *FortiSDKClient) DeleteWirelessControllerLwProfile(mkey string, paradict, wsParams map[string]string) (err error) {
+	path := "/pm/config/device/{device}/vdom/{vdom}/wireless-controller/lw-profile"
+	path, err = replaceParaWithValue(path, paradict)
+	if err != nil {
+		return fmt.Errorf("%v", err)
+	}
+
+	path += "/" + escapeURLString(mkey)
+
+	err = delete(c, path, "delete", false, wsParams)
+	return
+}
+
+// ReadWirelessControllerLwProfile API operation for FortiManager Device gets the Lw Profile
+// with the specified index value.
+// Returns the requested Lw Profile value when the request executes successfully.
+// Returns error for service API and SDK errors.
+// See the device - wireless-controller lw-profile chapter in the FortiManager Handbook - CLI Reference.
+func (c *FortiSDKClient) ReadWirelessControllerLwProfile(mkey string, paradict map[string]string) (mapTmp map[string]interface{}, err error) {
+	path := "/pm/config/device/{device}/vdom/{vdom}/wireless-controller/lw-profile"
+	path, err = replaceParaWithValue(path, paradict)
+	if err != nil {
+		return nil, fmt.Errorf("%v", err)
+	}
+
+	path += "/" + escapeURLString(mkey)
+
+	mapTmp, err = read(c, path, "get", false)
+	return
+}
+
 // CreateWirelessControllerMpskProfile API operation for FortiManager Device creates a new Mpsk Profile.
 // Returns the index value of the Mpsk Profile and execution result when the request executes successfully.
 // Returns error for service API and SDK errors.
@@ -69065,6 +69603,72 @@ func (c *FortiSDKClient) DeleteWirelessControllerSnmpCommunityHosts(mkey string,
 // See the device - wireless-controller snmp community hosts chapter in the FortiManager Handbook - CLI Reference.
 func (c *FortiSDKClient) ReadWirelessControllerSnmpCommunityHosts(mkey string, paradict map[string]string) (mapTmp map[string]interface{}, err error) {
 	path := "/pm/config/device/{device}/vdom/{vdom}/wireless-controller/snmp/community/{community}/hosts"
+	path, err = replaceParaWithValue(path, paradict)
+	if err != nil {
+		return nil, fmt.Errorf("%v", err)
+	}
+
+	path += "/" + escapeURLString(mkey)
+
+	mapTmp, err = read(c, path, "get", false)
+	return
+}
+
+// CreateWirelessControllerSnmpCommunityHosts6 API operation for FortiManager Device creates a new SnmpCommunityHosts6.
+// Returns the index value of the SnmpCommunityHosts6 and execution result when the request executes successfully.
+// Returns error for service API and SDK errors.
+// See the device - wireless-controller snmp community hosts6 chapter in the FortiManager Handbook - CLI Reference.
+func (c *FortiSDKClient) CreateWirelessControllerSnmpCommunityHosts6(params *map[string]interface{}, paradict, wsParams map[string]string) (output map[string]interface{}, err error) {
+	path := "/pm/config/device/{device}/vdom/{vdom}/wireless-controller/snmp/community/{community}/hosts6"
+	path, err = replaceParaWithValue(path, paradict)
+	if err != nil {
+		return nil, fmt.Errorf("%v", err)
+	}
+
+	output, err = createUpdate(c, path, "add", params, false, wsParams)
+	return
+}
+
+// UpdateWirelessControllerSnmpCommunityHosts6 API operation for FortiManager Device updates the specified SnmpCommunityHosts6.
+// Returns the index value of the SnmpCommunityHosts6 and execution result when the request executes successfully.
+// Returns error for service API and SDK errors.
+// See the device - wireless-controller snmp community hosts6 chapter in the FortiManager Handbook - CLI Reference.
+func (c *FortiSDKClient) UpdateWirelessControllerSnmpCommunityHosts6(params *map[string]interface{}, mkey string, paradict, wsParams map[string]string) (output map[string]interface{}, err error) {
+	path := "/pm/config/device/{device}/vdom/{vdom}/wireless-controller/snmp/community/{community}/hosts6"
+	path, err = replaceParaWithValue(path, paradict)
+	if err != nil {
+		return nil, fmt.Errorf("%v", err)
+	}
+
+	path += "/" + escapeURLString(mkey)
+
+	output, err = createUpdate(c, path, "set", params, false, wsParams)
+	return
+}
+
+// DeleteWirelessControllerSnmpCommunityHosts6 API operation for FortiManager Device deletes the specified SnmpCommunityHosts6.
+// Returns error for service API and SDK errors.
+// See the device - wireless-controller snmp community hosts6 chapter in the FortiManager Handbook - CLI Reference.
+func (c *FortiSDKClient) DeleteWirelessControllerSnmpCommunityHosts6(mkey string, paradict, wsParams map[string]string) (err error) {
+	path := "/pm/config/device/{device}/vdom/{vdom}/wireless-controller/snmp/community/{community}/hosts6"
+	path, err = replaceParaWithValue(path, paradict)
+	if err != nil {
+		return fmt.Errorf("%v", err)
+	}
+
+	path += "/" + escapeURLString(mkey)
+
+	err = delete(c, path, "delete", false, wsParams)
+	return
+}
+
+// ReadWirelessControllerSnmpCommunityHosts6 API operation for FortiManager Device gets the SnmpCommunityHosts6
+// with the specified index value.
+// Returns the requested SnmpCommunityHosts6 value when the request executes successfully.
+// Returns error for service API and SDK errors.
+// See the device - wireless-controller snmp community hosts6 chapter in the FortiManager Handbook - CLI Reference.
+func (c *FortiSDKClient) ReadWirelessControllerSnmpCommunityHosts6(mkey string, paradict map[string]string) (mapTmp map[string]interface{}, err error) {
+	path := "/pm/config/device/{device}/vdom/{vdom}/wireless-controller/snmp/community/{community}/hosts6"
 	path, err = replaceParaWithValue(path, paradict)
 	if err != nil {
 		return nil, fmt.Errorf("%v", err)
@@ -71491,6 +72095,46 @@ func (c *FortiSDKClient) ReadZtnaWebPortalBookmarkBookmarksMove(mkey string, par
 		"fields": []string{"name"},
 	}
 	listTmp, err = readMove(c, path, "get", &params, true)
+	return
+}
+
+// UpdateZtnaWebPortalBookmarkLlmSecureProxy API operation for FortiManager Device updates the specified Web Portal BookmarkLlm Secure Proxy.
+// Returns the index value of the Web Portal BookmarkLlm Secure Proxy and execution result when the request executes successfully.
+// Returns error for service API and SDK errors.
+// See the device - ztna web-portal-bookmark llm-secure-proxy chapter in the FortiManager Handbook - CLI Reference.
+func (c *FortiSDKClient) UpdateZtnaWebPortalBookmarkLlmSecureProxy(params *map[string]interface{}, mkey string, paradict, wsParams map[string]string) (output map[string]interface{}, err error) {
+	path := "/pm/config/device/{device}/vdom/{vdom}/ztna/web-portal-bookmark/{web-portal-bookmark}/llm-secure-proxy"
+	path, err = replaceParaWithValue(path, paradict)
+	if err != nil {
+		return nil, fmt.Errorf("%v", err)
+	}
+
+	output, err = createUpdate(c, path, "set", params, false, wsParams)
+	return
+}
+
+// DeleteZtnaWebPortalBookmarkLlmSecureProxy API operation for FortiManager Device deletes the specified Web Portal BookmarkLlm Secure Proxy.
+// Returns error for service API and SDK errors.
+// See the device - ztna web-portal-bookmark llm-secure-proxy chapter in the FortiManager Handbook - CLI Reference.
+func (c *FortiSDKClient) DeleteZtnaWebPortalBookmarkLlmSecureProxy(mkey string, paradict, wsParams map[string]string) (err error) {
+
+	//No unset API for ztna - web-portal-bookmark llm-secure-proxy
+	return
+}
+
+// ReadZtnaWebPortalBookmarkLlmSecureProxy API operation for FortiManager Device gets the Web Portal BookmarkLlm Secure Proxy
+// with the specified index value.
+// Returns the requested Web Portal BookmarkLlm Secure Proxy value when the request executes successfully.
+// Returns error for service API and SDK errors.
+// See the device - ztna web-portal-bookmark llm-secure-proxy chapter in the FortiManager Handbook - CLI Reference.
+func (c *FortiSDKClient) ReadZtnaWebPortalBookmarkLlmSecureProxy(mkey string, paradict map[string]string) (mapTmp map[string]interface{}, err error) {
+	path := "/pm/config/device/{device}/vdom/{vdom}/ztna/web-portal-bookmark/{web-portal-bookmark}/llm-secure-proxy"
+	path, err = replaceParaWithValue(path, paradict)
+	if err != nil {
+		return nil, fmt.Errorf("%v", err)
+	}
+
+	mapTmp, err = read(c, path, "get", false)
 	return
 }
 

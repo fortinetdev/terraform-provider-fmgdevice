@@ -108,6 +108,7 @@ func resourceVpnOcvpn() *schema.Resource {
 						"status": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 					},
 				},
@@ -140,6 +141,7 @@ func resourceVpnOcvpn() *schema.Resource {
 						"assign_ip": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"id": &schema.Schema{
 							Type:     schema.TypeInt,
@@ -153,10 +155,12 @@ func resourceVpnOcvpn() *schema.Resource {
 						"ipv4_end_ip": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"ipv4_start_ip": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"name": &schema.Schema{
 							Type:     schema.TypeString,
@@ -263,7 +267,7 @@ func resourceVpnOcvpnUpdate(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	obj, err := getObjectVpnOcvpn(d)
+	obj, err := getObjectVpnOcvpn(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating VpnOcvpn resource while getting object: %v", err)
 	}
@@ -284,7 +288,6 @@ func resourceVpnOcvpnUpdate(d *schema.ResourceData, m interface{}) error {
 
 func resourceVpnOcvpnDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -307,11 +310,17 @@ func resourceVpnOcvpnDelete(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	obj, err := getObjectVpnOcvpn(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating VpnOcvpn resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteVpnOcvpn(mkey, paradict, wsParams)
+	_, err = c.UpdateVpnOcvpn(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting VpnOcvpn resource: %v", err)
+		return fmt.Errorf("Error clearing VpnOcvpn resource: %v", err)
 	}
 
 	d.SetId("")
@@ -1193,7 +1202,7 @@ func expandVpnOcvpnWanInterface(d *schema.ResourceData, v interface{}, pre strin
 	return expandStringList(v.(*schema.Set).List()), nil
 }
 
-func getObjectVpnOcvpn(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectVpnOcvpn(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("auto_discovery"); ok || d.HasChange("auto_discovery") {
@@ -1277,12 +1286,16 @@ func getObjectVpnOcvpn(d *schema.ResourceData) (*map[string]interface{}, error) 
 		}
 	}
 
-	if v, ok := d.GetOk("overlays"); ok || d.HasChange("overlays") {
-		t, err := expandVpnOcvpnOverlays(d, v, "overlays")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["overlays"] = t
+	if bemptysontable {
+		obj["overlays"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("overlays"); ok || d.HasChange("overlays") {
+			t, err := expandVpnOcvpnOverlays(d, v, "overlays")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["overlays"] = t
+			}
 		}
 	}
 

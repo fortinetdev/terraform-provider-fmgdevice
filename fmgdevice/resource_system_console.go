@@ -43,10 +43,12 @@ func resourceSystemConsole() *schema.Resource {
 			"baudrate": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"fortiexplorer": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"login": &schema.Schema{
 				Type:     schema.TypeString,
@@ -86,7 +88,7 @@ func resourceSystemConsoleUpdate(d *schema.ResourceData, m interface{}) error {
 	}
 	paradict["device"] = device_name
 
-	obj, err := getObjectSystemConsole(d)
+	obj, err := getObjectSystemConsole(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemConsole resource while getting object: %v", err)
 	}
@@ -107,7 +109,6 @@ func resourceSystemConsoleUpdate(d *schema.ResourceData, m interface{}) error {
 
 func resourceSystemConsoleDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -125,11 +126,17 @@ func resourceSystemConsoleDelete(d *schema.ResourceData, m interface{}) error {
 	}
 	paradict["device"] = device_name
 
+	obj, err := getObjectSystemConsole(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating SystemConsole resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteSystemConsole(mkey, paradict, wsParams)
+	_, err = c.UpdateSystemConsole(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting SystemConsole resource: %v", err)
+		return fmt.Errorf("Error clearing SystemConsole resource: %v", err)
 	}
 
 	d.SetId("")
@@ -279,7 +286,7 @@ func expandSystemConsoleOutput(d *schema.ResourceData, v interface{}, pre string
 	return v, nil
 }
 
-func getObjectSystemConsole(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectSystemConsole(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("baudrate"); ok || d.HasChange("baudrate") {

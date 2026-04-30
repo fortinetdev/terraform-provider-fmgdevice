@@ -81,7 +81,7 @@ func resourceWanoptRemoteStorageUpdate(d *schema.ResourceData, m interface{}) er
 	}
 	paradict["device"] = device_name
 
-	obj, err := getObjectWanoptRemoteStorage(d)
+	obj, err := getObjectWanoptRemoteStorage(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating WanoptRemoteStorage resource while getting object: %v", err)
 	}
@@ -102,7 +102,6 @@ func resourceWanoptRemoteStorageUpdate(d *schema.ResourceData, m interface{}) er
 
 func resourceWanoptRemoteStorageDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -120,11 +119,17 @@ func resourceWanoptRemoteStorageDelete(d *schema.ResourceData, m interface{}) er
 	}
 	paradict["device"] = device_name
 
+	obj, err := getObjectWanoptRemoteStorage(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating WanoptRemoteStorage resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteWanoptRemoteStorage(mkey, paradict, wsParams)
+	_, err = c.UpdateWanoptRemoteStorage(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting WanoptRemoteStorage resource: %v", err)
+		return fmt.Errorf("Error clearing WanoptRemoteStorage resource: %v", err)
 	}
 
 	d.SetId("")
@@ -256,7 +261,7 @@ func expandWanoptRemoteStorageStatus(d *schema.ResourceData, v interface{}, pre 
 	return v, nil
 }
 
-func getObjectWanoptRemoteStorage(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectWanoptRemoteStorage(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("local_cache_id"); ok || d.HasChange("local_cache_id") {

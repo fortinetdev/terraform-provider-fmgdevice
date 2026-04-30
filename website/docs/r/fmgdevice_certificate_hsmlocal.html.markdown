@@ -1,5 +1,5 @@
 ---
-subcategory: "No Category"
+subcategory: "Certificate"
 layout: "fmgdevice"
 page_title: "FortiManager Device: fmgdevice_certificate_hsmlocal"
 description: |-

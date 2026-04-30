@@ -114,10 +114,12 @@ func resourceWirelessControllerBleProfile() *schema.Resource {
 			"scan_interval": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"scan_period": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"scan_threshold": &schema.Schema{
 				Type:     schema.TypeString,
@@ -127,6 +129,7 @@ func resourceWirelessControllerBleProfile() *schema.Resource {
 			"scan_time": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"scan_type": &schema.Schema{
 				Type:     schema.TypeString,
@@ -136,6 +139,7 @@ func resourceWirelessControllerBleProfile() *schema.Resource {
 			"scan_window": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"txpower": &schema.Schema{
 				Type:     schema.TypeString,

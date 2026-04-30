@@ -107,7 +107,7 @@ func resourceSwitchControllerAclIngressClassifierUpdate(d *schema.ResourceData, 
 	paradict["vdom"] = device_vdom
 	paradict["ingress"] = ingress
 
-	obj, err := getObjectSwitchControllerAclIngressClassifier(d)
+	obj, err := getObjectSwitchControllerAclIngressClassifier(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating SwitchControllerAclIngressClassifier resource while getting object: %v", err)
 	}
@@ -128,7 +128,6 @@ func resourceSwitchControllerAclIngressClassifierUpdate(d *schema.ResourceData, 
 
 func resourceSwitchControllerAclIngressClassifierDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -153,11 +152,17 @@ func resourceSwitchControllerAclIngressClassifierDelete(d *schema.ResourceData, 
 	paradict["vdom"] = device_vdom
 	paradict["ingress"] = ingress
 
+	obj, err := getObjectSwitchControllerAclIngressClassifier(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating SwitchControllerAclIngressClassifier resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteSwitchControllerAclIngressClassifier(mkey, paradict, wsParams)
+	_, err = c.UpdateSwitchControllerAclIngressClassifier(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting SwitchControllerAclIngressClassifier resource: %v", err)
+		return fmt.Errorf("Error clearing SwitchControllerAclIngressClassifier resource: %v", err)
 	}
 
 	d.SetId("")
@@ -329,7 +334,7 @@ func expandSwitchControllerAclIngressClassifierVlan2edl(d *schema.ResourceData, 
 	return v, nil
 }
 
-func getObjectSwitchControllerAclIngressClassifier(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectSwitchControllerAclIngressClassifier(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("dst_ip_prefix"); ok || d.HasChange("dst_ip_prefix") {

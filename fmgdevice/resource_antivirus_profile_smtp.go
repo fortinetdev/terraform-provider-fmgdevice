@@ -99,6 +99,7 @@ func resourceAntivirusProfileSmtp() *schema.Resource {
 			"fortindr": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"fortisandbox": &schema.Schema{
 				Type:     schema.TypeString,
@@ -149,7 +150,7 @@ func resourceAntivirusProfileSmtpUpdate(d *schema.ResourceData, m interface{}) e
 	paradict["vdom"] = device_vdom
 	paradict["profile"] = profile
 
-	obj, err := getObjectAntivirusProfileSmtp(d)
+	obj, err := getObjectAntivirusProfileSmtp(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating AntivirusProfileSmtp resource while getting object: %v", err)
 	}
@@ -170,7 +171,6 @@ func resourceAntivirusProfileSmtpUpdate(d *schema.ResourceData, m interface{}) e
 
 func resourceAntivirusProfileSmtpDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -195,11 +195,17 @@ func resourceAntivirusProfileSmtpDelete(d *schema.ResourceData, m interface{}) e
 	paradict["vdom"] = device_vdom
 	paradict["profile"] = profile
 
+	obj, err := getObjectAntivirusProfileSmtp(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating AntivirusProfileSmtp resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteAntivirusProfileSmtp(mkey, paradict, wsParams)
+	_, err = c.UpdateAntivirusProfileSmtp(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting AntivirusProfileSmtp resource: %v", err)
+		return fmt.Errorf("Error clearing AntivirusProfileSmtp resource: %v", err)
 	}
 
 	d.SetId("")
@@ -533,7 +539,7 @@ func expandAntivirusProfileSmtpQuarantine2edl(d *schema.ResourceData, v interfac
 	return v, nil
 }
 
-func getObjectAntivirusProfileSmtp(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectAntivirusProfileSmtp(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("archive_block"); ok || d.HasChange("archive_block") {

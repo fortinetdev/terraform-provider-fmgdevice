@@ -99,6 +99,7 @@ func resourceRouterStatic6() *schema.Resource {
 			"gateway": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"link_monitor_exempt": &schema.Schema{
 				Type:     schema.TypeString,
@@ -143,6 +144,7 @@ func resourceRouterStatic6() *schema.Resource {
 			"vrf": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"weight": &schema.Schema{
 				Type:     schema.TypeInt,

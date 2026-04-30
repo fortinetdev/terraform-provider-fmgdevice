@@ -324,7 +324,7 @@ func resourceRouterRipngUpdate(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	obj, err := getObjectRouterRipng(d)
+	obj, err := getObjectRouterRipng(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating RouterRipng resource while getting object: %v", err)
 	}
@@ -345,7 +345,6 @@ func resourceRouterRipngUpdate(d *schema.ResourceData, m interface{}) error {
 
 func resourceRouterRipngDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -368,11 +367,17 @@ func resourceRouterRipngDelete(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	obj, err := getObjectRouterRipng(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating RouterRipng resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteRouterRipng(mkey, paradict, wsParams)
+	_, err = c.UpdateRouterRipng(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting RouterRipng resource: %v", err)
+		return fmt.Errorf("Error clearing RouterRipng resource: %v", err)
 	}
 
 	d.SetId("")
@@ -1759,15 +1764,19 @@ func expandRouterRipngUpdateTimer(d *schema.ResourceData, v interface{}, pre str
 	return v, nil
 }
 
-func getObjectRouterRipng(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectRouterRipng(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
-	if v, ok := d.GetOk("aggregate_address"); ok || d.HasChange("aggregate_address") {
-		t, err := expandRouterRipngAggregateAddress(d, v, "aggregate_address")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["aggregate-address"] = t
+	if bemptysontable {
+		obj["aggregate-address"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("aggregate_address"); ok || d.HasChange("aggregate_address") {
+			t, err := expandRouterRipngAggregateAddress(d, v, "aggregate_address")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["aggregate-address"] = t
+			}
 		}
 	}
 
@@ -1789,21 +1798,29 @@ func getObjectRouterRipng(d *schema.ResourceData) (*map[string]interface{}, erro
 		}
 	}
 
-	if v, ok := d.GetOk("distance"); ok || d.HasChange("distance") {
-		t, err := expandRouterRipngDistance(d, v, "distance")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["distance"] = t
+	if bemptysontable {
+		obj["distance"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("distance"); ok || d.HasChange("distance") {
+			t, err := expandRouterRipngDistance(d, v, "distance")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["distance"] = t
+			}
 		}
 	}
 
-	if v, ok := d.GetOk("distribute_list"); ok || d.HasChange("distribute_list") {
-		t, err := expandRouterRipngDistributeList(d, v, "distribute_list")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["distribute-list"] = t
+	if bemptysontable {
+		obj["distribute-list"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("distribute_list"); ok || d.HasChange("distribute_list") {
+			t, err := expandRouterRipngDistributeList(d, v, "distribute_list")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["distribute-list"] = t
+			}
 		}
 	}
 
@@ -1816,12 +1833,16 @@ func getObjectRouterRipng(d *schema.ResourceData) (*map[string]interface{}, erro
 		}
 	}
 
-	if v, ok := d.GetOk("interface"); ok || d.HasChange("interface") {
-		t, err := expandRouterRipngInterface(d, v, "interface")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["interface"] = t
+	if bemptysontable {
+		obj["interface"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("interface"); ok || d.HasChange("interface") {
+			t, err := expandRouterRipngInterface(d, v, "interface")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["interface"] = t
+			}
 		}
 	}
 
@@ -1834,30 +1855,42 @@ func getObjectRouterRipng(d *schema.ResourceData) (*map[string]interface{}, erro
 		}
 	}
 
-	if v, ok := d.GetOk("neighbor"); ok || d.HasChange("neighbor") {
-		t, err := expandRouterRipngNeighbor(d, v, "neighbor")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["neighbor"] = t
+	if bemptysontable {
+		obj["neighbor"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("neighbor"); ok || d.HasChange("neighbor") {
+			t, err := expandRouterRipngNeighbor(d, v, "neighbor")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["neighbor"] = t
+			}
 		}
 	}
 
-	if v, ok := d.GetOk("network"); ok || d.HasChange("network") {
-		t, err := expandRouterRipngNetwork(d, v, "network")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["network"] = t
+	if bemptysontable {
+		obj["network"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("network"); ok || d.HasChange("network") {
+			t, err := expandRouterRipngNetwork(d, v, "network")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["network"] = t
+			}
 		}
 	}
 
-	if v, ok := d.GetOk("offset_list"); ok || d.HasChange("offset_list") {
-		t, err := expandRouterRipngOffsetList(d, v, "offset_list")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["offset-list"] = t
+	if bemptysontable {
+		obj["offset-list"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("offset_list"); ok || d.HasChange("offset_list") {
+			t, err := expandRouterRipngOffsetList(d, v, "offset_list")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["offset-list"] = t
+			}
 		}
 	}
 
@@ -1870,12 +1903,16 @@ func getObjectRouterRipng(d *schema.ResourceData) (*map[string]interface{}, erro
 		}
 	}
 
-	if v, ok := d.GetOk("redistribute"); ok || d.HasChange("redistribute") {
-		t, err := expandRouterRipngRedistribute(d, v, "redistribute")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["redistribute"] = t
+	if bemptysontable {
+		obj["redistribute"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("redistribute"); ok || d.HasChange("redistribute") {
+			t, err := expandRouterRipngRedistribute(d, v, "redistribute")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["redistribute"] = t
+			}
 		}
 	}
 

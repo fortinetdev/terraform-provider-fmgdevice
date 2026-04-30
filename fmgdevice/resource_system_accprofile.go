@@ -48,6 +48,7 @@ func resourceSystemAccprofile() *schema.Resource {
 			"admintimeout": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"admintimeout_override": &schema.Schema{
 				Type:     schema.TypeString,
@@ -108,22 +109,27 @@ func resourceSystemAccprofile() *schema.Resource {
 						"address": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"others": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"policy": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"schedule": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"service": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 					},
 				},
@@ -143,18 +149,22 @@ func resourceSystemAccprofile() *schema.Resource {
 						"config": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"data_access": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"report_access": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"threat_weight": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 					},
 				},
@@ -179,14 +189,17 @@ func resourceSystemAccprofile() *schema.Resource {
 						"cfg": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"packet_capture": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"route_cfg": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 					},
 				},
@@ -200,6 +213,30 @@ func resourceSystemAccprofile() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+			},
+			"secfabgrp_permission": &schema.Schema{
+				Type:     schema.TypeList,
+				Optional: true,
+				MaxItems: 1,
+				Computed: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"csffoo": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+							Computed: true,
+						},
+						"csfsys": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+							Computed: true,
+						},
+						"mmsgtp": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+					},
+				},
 			},
 			"sysgrp": &schema.Schema{
 				Type:     schema.TypeString,
@@ -216,18 +253,22 @@ func resourceSystemAccprofile() *schema.Resource {
 						"admin": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"cfg": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"mnt": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"upd": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 					},
 				},
@@ -262,50 +303,62 @@ func resourceSystemAccprofile() *schema.Resource {
 						"antivirus": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"application_control": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"casb": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"data_leak_prevention": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"data_loss_prevention": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"dlp": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"dnsfilter": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"emailfilter": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"endpoint_control": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"file_filter": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"icap": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"ips": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"mmsgtp": &schema.Schema{
 							Type:     schema.TypeString,
@@ -314,26 +367,32 @@ func resourceSystemAccprofile() *schema.Resource {
 						"telemetry": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"videofilter": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"virtual_patch": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"voip": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"waf": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"webfilter": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 					},
 				},
@@ -731,6 +790,46 @@ func flattenSystemAccprofileScope(v interface{}, d *schema.ResourceData, pre str
 }
 
 func flattenSystemAccprofileSecfabgrp(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemAccprofileSecfabgrpPermission(v interface{}, d *schema.ResourceData, pre string) []map[string]interface{} {
+	if v == nil {
+		return nil
+	}
+
+	i := v.(map[string]interface{})
+	result := make(map[string]interface{})
+
+	pre_append := "" // complex
+	pre_append = pre + ".0." + "csffoo"
+	if _, ok := i["csffoo"]; ok {
+		result["csffoo"] = flattenSystemAccprofileSecfabgrpPermissionCsffoo(i["csffoo"], d, pre_append)
+	}
+
+	pre_append = pre + ".0." + "csfsys"
+	if _, ok := i["csfsys"]; ok {
+		result["csfsys"] = flattenSystemAccprofileSecfabgrpPermissionCsfsys(i["csfsys"], d, pre_append)
+	}
+
+	pre_append = pre + ".0." + "mmsgtp"
+	if _, ok := i["mmsgtp"]; ok {
+		result["mmsgtp"] = flattenSystemAccprofileSecfabgrpPermissionMmsgtp(i["mmsgtp"], d, pre_append)
+	}
+
+	lastresult := []map[string]interface{}{result}
+	return lastresult
+}
+
+func flattenSystemAccprofileSecfabgrpPermissionCsffoo(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemAccprofileSecfabgrpPermissionCsfsys(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemAccprofileSecfabgrpPermissionMmsgtp(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -1234,6 +1333,30 @@ func refreshObjectSystemAccprofile(d *schema.ResourceData, o map[string]interfac
 		}
 	}
 
+	if isImportTable() {
+		if err = d.Set("secfabgrp_permission", flattenSystemAccprofileSecfabgrpPermission(o["secfabgrp-permission"], d, "secfabgrp_permission")); err != nil {
+			if vv, ok := fortiAPIPatch(o["secfabgrp-permission"], "SystemAccprofile-SecfabgrpPermission"); ok {
+				if err = d.Set("secfabgrp_permission", vv); err != nil {
+					return fmt.Errorf("Error reading secfabgrp_permission: %v", err)
+				}
+			} else {
+				return fmt.Errorf("Error reading secfabgrp_permission: %v", err)
+			}
+		}
+	} else {
+		if _, ok := d.GetOk("secfabgrp_permission"); ok {
+			if err = d.Set("secfabgrp_permission", flattenSystemAccprofileSecfabgrpPermission(o["secfabgrp-permission"], d, "secfabgrp_permission")); err != nil {
+				if vv, ok := fortiAPIPatch(o["secfabgrp-permission"], "SystemAccprofile-SecfabgrpPermission"); ok {
+					if err = d.Set("secfabgrp_permission", vv); err != nil {
+						return fmt.Errorf("Error reading secfabgrp_permission: %v", err)
+					}
+				} else {
+					return fmt.Errorf("Error reading secfabgrp_permission: %v", err)
+				}
+			}
+		}
+	}
+
 	if err = d.Set("sysgrp", flattenSystemAccprofileSysgrp(o["sysgrp"], d, "sysgrp")); err != nil {
 		if vv, ok := fortiAPIPatch(o["sysgrp"], "SystemAccprofile-Sysgrp"); ok {
 			if err = d.Set("sysgrp", vv); err != nil {
@@ -1570,6 +1693,44 @@ func expandSystemAccprofileScope(d *schema.ResourceData, v interface{}, pre stri
 }
 
 func expandSystemAccprofileSecfabgrp(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemAccprofileSecfabgrpPermission(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	l := v.([]interface{})
+	if len(l) == 0 || l[0] == nil {
+		return nil, nil
+	}
+
+	i := l[0].(map[string]interface{})
+	result := make(map[string]interface{})
+
+	pre_append := "" // complex
+	pre_append = pre + ".0." + "csffoo"
+	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+		result["csffoo"], _ = expandSystemAccprofileSecfabgrpPermissionCsffoo(d, i["csffoo"], pre_append)
+	}
+	pre_append = pre + ".0." + "csfsys"
+	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+		result["csfsys"], _ = expandSystemAccprofileSecfabgrpPermissionCsfsys(d, i["csfsys"], pre_append)
+	}
+	pre_append = pre + ".0." + "mmsgtp"
+	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+		result["mmsgtp"], _ = expandSystemAccprofileSecfabgrpPermissionMmsgtp(d, i["mmsgtp"], pre_append)
+	}
+
+	return result, nil
+}
+
+func expandSystemAccprofileSecfabgrpPermissionCsffoo(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemAccprofileSecfabgrpPermissionCsfsys(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemAccprofileSecfabgrpPermissionMmsgtp(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -1988,6 +2149,15 @@ func getObjectSystemAccprofile(d *schema.ResourceData) (*map[string]interface{},
 			return &obj, err
 		} else if t != nil {
 			obj["secfabgrp"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("secfabgrp_permission"); ok || d.HasChange("secfabgrp_permission") {
+		t, err := expandSystemAccprofileSecfabgrpPermission(d, v, "secfabgrp_permission")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["secfabgrp-permission"] = t
 		}
 	}
 

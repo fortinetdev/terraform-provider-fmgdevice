@@ -191,7 +191,7 @@ func resourceWafProfileSignatureUpdate(d *schema.ResourceData, m interface{}) er
 	paradict["vdom"] = device_vdom
 	paradict["profile"] = profile
 
-	obj, err := getObjectWafProfileSignature(d)
+	obj, err := getObjectWafProfileSignature(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating WafProfileSignature resource while getting object: %v", err)
 	}
@@ -212,7 +212,6 @@ func resourceWafProfileSignatureUpdate(d *schema.ResourceData, m interface{}) er
 
 func resourceWafProfileSignatureDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -237,11 +236,17 @@ func resourceWafProfileSignatureDelete(d *schema.ResourceData, m interface{}) er
 	paradict["vdom"] = device_vdom
 	paradict["profile"] = profile
 
+	obj, err := getObjectWafProfileSignature(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating WafProfileSignature resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteWafProfileSignature(mkey, paradict, wsParams)
+	_, err = c.UpdateWafProfileSignature(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting WafProfileSignature resource: %v", err)
+		return fmt.Errorf("Error clearing WafProfileSignature resource: %v", err)
 	}
 
 	d.SetId("")
@@ -765,7 +770,7 @@ func expandWafProfileSignatureMainClassStatus2edl(d *schema.ResourceData, v inte
 	return v, nil
 }
 
-func getObjectWafProfileSignature(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectWafProfileSignature(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("credit_card_detection_threshold"); ok || d.HasChange("credit_card_detection_threshold") {
@@ -777,12 +782,16 @@ func getObjectWafProfileSignature(d *schema.ResourceData) (*map[string]interface
 		}
 	}
 
-	if v, ok := d.GetOk("custom_signature"); ok || d.HasChange("custom_signature") {
-		t, err := expandWafProfileSignatureCustomSignature2edl(d, v, "custom_signature")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["custom-signature"] = t
+	if bemptysontable {
+		obj["custom-signature"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("custom_signature"); ok || d.HasChange("custom_signature") {
+			t, err := expandWafProfileSignatureCustomSignature2edl(d, v, "custom_signature")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["custom-signature"] = t
+			}
 		}
 	}
 

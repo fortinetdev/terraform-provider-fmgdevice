@@ -155,7 +155,7 @@ func resourceFirewallSslSshProfileDotUpdate(d *schema.ResourceData, m interface{
 	paradict["vdom"] = device_vdom
 	paradict["ssl_ssh_profile"] = ssl_ssh_profile
 
-	obj, err := getObjectFirewallSslSshProfileDot(d)
+	obj, err := getObjectFirewallSslSshProfileDot(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating FirewallSslSshProfileDot resource while getting object: %v", err)
 	}
@@ -176,7 +176,6 @@ func resourceFirewallSslSshProfileDotUpdate(d *schema.ResourceData, m interface{
 
 func resourceFirewallSslSshProfileDotDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -201,11 +200,17 @@ func resourceFirewallSslSshProfileDotDelete(d *schema.ResourceData, m interface{
 	paradict["vdom"] = device_vdom
 	paradict["ssl_ssh_profile"] = ssl_ssh_profile
 
+	obj, err := getObjectFirewallSslSshProfileDot(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating FirewallSslSshProfileDot resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteFirewallSslSshProfileDot(mkey, paradict, wsParams)
+	_, err = c.UpdateFirewallSslSshProfileDot(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting FirewallSslSshProfileDot resource: %v", err)
+		return fmt.Errorf("Error clearing FirewallSslSshProfileDot resource: %v", err)
 	}
 
 	d.SetId("")
@@ -557,7 +562,7 @@ func expandFirewallSslSshProfileDotUntrustedServerCert2edl(d *schema.ResourceDat
 	return v, nil
 }
 
-func getObjectFirewallSslSshProfileDot(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectFirewallSslSshProfileDot(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("cert_validation_failure"); ok || d.HasChange("cert_validation_failure") {

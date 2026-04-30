@@ -202,6 +202,7 @@ func resourceLogThreatWeight() *schema.Resource {
 						"fortiai": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"fsa_high_risk": &schema.Schema{
 							Type:     schema.TypeString,
@@ -266,10 +267,12 @@ func resourceLogThreatWeight() *schema.Resource {
 						"fortindr": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"fortisandbox": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 					},
 				},
@@ -340,7 +343,7 @@ func resourceLogThreatWeightUpdate(d *schema.ResourceData, m interface{}) error 
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	obj, err := getObjectLogThreatWeight(d)
+	obj, err := getObjectLogThreatWeight(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating LogThreatWeight resource while getting object: %v", err)
 	}
@@ -361,7 +364,6 @@ func resourceLogThreatWeightUpdate(d *schema.ResourceData, m interface{}) error 
 
 func resourceLogThreatWeightDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -384,11 +386,17 @@ func resourceLogThreatWeightDelete(d *schema.ResourceData, m interface{}) error 
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	obj, err := getObjectLogThreatWeight(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating LogThreatWeight resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteLogThreatWeight(mkey, paradict, wsParams)
+	_, err = c.UpdateLogThreatWeight(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting LogThreatWeight resource: %v", err)
+		return fmt.Errorf("Error clearing LogThreatWeight resource: %v", err)
 	}
 
 	d.SetId("")
@@ -1584,15 +1592,19 @@ func expandLogThreatWeightWebLevel(d *schema.ResourceData, v interface{}, pre st
 	return v, nil
 }
 
-func getObjectLogThreatWeight(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectLogThreatWeight(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
-	if v, ok := d.GetOk("application"); ok || d.HasChange("application") {
-		t, err := expandLogThreatWeightApplication(d, v, "application")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["application"] = t
+	if bemptysontable {
+		obj["application"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("application"); ok || d.HasChange("application") {
+			t, err := expandLogThreatWeightApplication(d, v, "application")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["application"] = t
+			}
 		}
 	}
 
@@ -1623,12 +1635,16 @@ func getObjectLogThreatWeight(d *schema.ResourceData) (*map[string]interface{}, 
 		}
 	}
 
-	if v, ok := d.GetOk("geolocation"); ok || d.HasChange("geolocation") {
-		t, err := expandLogThreatWeightGeolocation(d, v, "geolocation")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["geolocation"] = t
+	if bemptysontable {
+		obj["geolocation"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("geolocation"); ok || d.HasChange("geolocation") {
+			t, err := expandLogThreatWeightGeolocation(d, v, "geolocation")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["geolocation"] = t
+			}
 		}
 	}
 
@@ -1677,12 +1693,16 @@ func getObjectLogThreatWeight(d *schema.ResourceData) (*map[string]interface{}, 
 		}
 	}
 
-	if v, ok := d.GetOk("web"); ok || d.HasChange("web") {
-		t, err := expandLogThreatWeightWeb(d, v, "web")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["web"] = t
+	if bemptysontable {
+		obj["web"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("web"); ok || d.HasChange("web") {
+			t, err := expandLogThreatWeightWeb(d, v, "web")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["web"] = t
+			}
 		}
 	}
 

@@ -159,6 +159,10 @@ func resourceApplicationList() *schema.Resource {
 										Type:     schema.TypeInt,
 										Optional: true,
 									},
+									"value": &schema.Schema{
+										Type:     schema.TypeString,
+										Optional: true,
+									},
 									"members": &schema.Schema{
 										Type:     schema.TypeList,
 										Optional: true,
@@ -868,6 +872,12 @@ func flattenApplicationListEntriesParameters(v interface{}, d *schema.ResourceDa
 			tmp["id"] = fortiAPISubPartPatch(v, "ApplicationListEntries-Parameters-Id")
 		}
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "value"
+		if _, ok := i["value"]; ok {
+			v := flattenApplicationListEntriesParametersValue(i["value"], d, pre_append)
+			tmp["value"] = fortiAPISubPartPatch(v, "ApplicationListEntries-Parameters-Value")
+		}
+
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "members"
 		if _, ok := i["members"]; ok {
 			v := flattenApplicationListEntriesParametersMembers(i["members"], d, pre_append)
@@ -885,6 +895,10 @@ func flattenApplicationListEntriesParameters(v interface{}, d *schema.ResourceDa
 }
 
 func flattenApplicationListEntriesParametersId(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenApplicationListEntriesParametersValue(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -1573,6 +1587,11 @@ func expandApplicationListEntriesParameters(d *schema.ResourceData, v interface{
 			tmp["id"], _ = expandApplicationListEntriesParametersId(d, i["id"], pre_append)
 		}
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "value"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["value"], _ = expandApplicationListEntriesParametersValue(d, i["value"], pre_append)
+		}
+
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "members"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
 			t, err := expandApplicationListEntriesParametersMembers(d, i["members"], pre_append)
@@ -1594,6 +1613,10 @@ func expandApplicationListEntriesParameters(d *schema.ResourceData, v interface{
 }
 
 func expandApplicationListEntriesParametersId(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandApplicationListEntriesParametersValue(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 

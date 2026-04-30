@@ -348,6 +348,11 @@ func resourceVpnSslSettings() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"remote_https_cert_check": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
 			"reqclientcert": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -416,6 +421,12 @@ func resourceVpnSslSettings() *schema.Resource {
 			},
 			"status": &schema.Schema{
 				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+			"tls_groups": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
 				Optional: true,
 				Computed: true,
 			},
@@ -524,7 +535,7 @@ func resourceVpnSslSettingsUpdate(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	obj, err := getObjectVpnSslSettings(d)
+	obj, err := getObjectVpnSslSettings(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating VpnSslSettings resource while getting object: %v", err)
 	}
@@ -545,7 +556,6 @@ func resourceVpnSslSettingsUpdate(d *schema.ResourceData, m interface{}) error {
 
 func resourceVpnSslSettingsDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -568,11 +578,17 @@ func resourceVpnSslSettingsDelete(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	obj, err := getObjectVpnSslSettings(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating VpnSslSettings resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteVpnSslSettings(mkey, paradict, wsParams)
+	_, err = c.UpdateVpnSslSettings(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting VpnSslSettings resource: %v", err)
+		return fmt.Errorf("Error clearing VpnSslSettings resource: %v", err)
 	}
 
 	d.SetId("")
@@ -972,6 +988,10 @@ func flattenVpnSslSettingsPortPrecedence(v interface{}, d *schema.ResourceData, 
 	return v
 }
 
+func flattenVpnSslSettingsRemoteHttpsCertCheck(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenVpnSslSettingsReqclientcert(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -1026,6 +1046,10 @@ func flattenVpnSslSettingsSslMinProtoVer(v interface{}, d *schema.ResourceData, 
 
 func flattenVpnSslSettingsStatus(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
+}
+
+func flattenVpnSslSettingsTlsGroups(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
 }
 
 func flattenVpnSslSettingsTransformBackwardSlashes(v interface{}, d *schema.ResourceData, pre string) interface{} {
@@ -1545,6 +1569,16 @@ func refreshObjectVpnSslSettings(d *schema.ResourceData, o map[string]interface{
 		}
 	}
 
+	if err = d.Set("remote_https_cert_check", flattenVpnSslSettingsRemoteHttpsCertCheck(o["remote-https-cert-check"], d, "remote_https_cert_check")); err != nil {
+		if vv, ok := fortiAPIPatch(o["remote-https-cert-check"], "VpnSslSettings-RemoteHttpsCertCheck"); ok {
+			if err = d.Set("remote_https_cert_check", vv); err != nil {
+				return fmt.Errorf("Error reading remote_https_cert_check: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading remote_https_cert_check: %v", err)
+		}
+	}
+
 	if err = d.Set("reqclientcert", flattenVpnSslSettingsReqclientcert(o["reqclientcert"], d, "reqclientcert")); err != nil {
 		if vv, ok := fortiAPIPatch(o["reqclientcert"], "VpnSslSettings-Reqclientcert"); ok {
 			if err = d.Set("reqclientcert", vv); err != nil {
@@ -1682,6 +1716,16 @@ func refreshObjectVpnSslSettings(d *schema.ResourceData, o map[string]interface{
 			}
 		} else {
 			return fmt.Errorf("Error reading status: %v", err)
+		}
+	}
+
+	if err = d.Set("tls_groups", flattenVpnSslSettingsTlsGroups(o["tls-groups"], d, "tls_groups")); err != nil {
+		if vv, ok := fortiAPIPatch(o["tls-groups"], "VpnSslSettings-TlsGroups"); ok {
+			if err = d.Set("tls_groups", vv); err != nil {
+				return fmt.Errorf("Error reading tls_groups: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading tls_groups: %v", err)
 		}
 	}
 
@@ -2156,6 +2200,10 @@ func expandVpnSslSettingsPortPrecedence(d *schema.ResourceData, v interface{}, p
 	return v, nil
 }
 
+func expandVpnSslSettingsRemoteHttpsCertCheck(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandVpnSslSettingsReqclientcert(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -2210,6 +2258,10 @@ func expandVpnSslSettingsSslMinProtoVer(d *schema.ResourceData, v interface{}, p
 
 func expandVpnSslSettingsStatus(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
+}
+
+func expandVpnSslSettingsTlsGroups(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
 }
 
 func expandVpnSslSettingsTransformBackwardSlashes(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
@@ -2268,7 +2320,7 @@ func expandVpnSslSettingsZtnaTrustedClient(d *schema.ResourceData, v interface{}
 	return v, nil
 }
 
-func getObjectVpnSslSettings(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectVpnSslSettings(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("algorithm"); ok || d.HasChange("algorithm") {
@@ -2298,12 +2350,16 @@ func getObjectVpnSslSettings(d *schema.ResourceData) (*map[string]interface{}, e
 		}
 	}
 
-	if v, ok := d.GetOk("authentication_rule"); ok || d.HasChange("authentication_rule") {
-		t, err := expandVpnSslSettingsAuthenticationRule(d, v, "authentication_rule")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["authentication-rule"] = t
+	if bemptysontable {
+		obj["authentication-rule"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("authentication_rule"); ok || d.HasChange("authentication_rule") {
+			t, err := expandVpnSslSettingsAuthenticationRule(d, v, "authentication_rule")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["authentication-rule"] = t
+			}
 		}
 	}
 
@@ -2667,6 +2723,15 @@ func getObjectVpnSslSettings(d *schema.ResourceData) (*map[string]interface{}, e
 		}
 	}
 
+	if v, ok := d.GetOk("remote_https_cert_check"); ok || d.HasChange("remote_https_cert_check") {
+		t, err := expandVpnSslSettingsRemoteHttpsCertCheck(d, v, "remote_https_cert_check")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["remote-https-cert-check"] = t
+		}
+	}
+
 	if v, ok := d.GetOk("reqclientcert"); ok || d.HasChange("reqclientcert") {
 		t, err := expandVpnSslSettingsReqclientcert(d, v, "reqclientcert")
 		if err != nil {
@@ -2790,6 +2855,15 @@ func getObjectVpnSslSettings(d *schema.ResourceData) (*map[string]interface{}, e
 			return &obj, err
 		} else if t != nil {
 			obj["status"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("tls_groups"); ok || d.HasChange("tls_groups") {
+		t, err := expandVpnSslSettingsTlsGroups(d, v, "tls_groups")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["tls-groups"] = t
 		}
 	}
 

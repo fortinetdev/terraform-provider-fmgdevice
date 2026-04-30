@@ -107,7 +107,7 @@ func resourceSwitchControllerLocationCoordinatesUpdate(d *schema.ResourceData, m
 	paradict["vdom"] = device_vdom
 	paradict["location"] = location
 
-	obj, err := getObjectSwitchControllerLocationCoordinates(d)
+	obj, err := getObjectSwitchControllerLocationCoordinates(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating SwitchControllerLocationCoordinates resource while getting object: %v", err)
 	}
@@ -128,7 +128,6 @@ func resourceSwitchControllerLocationCoordinatesUpdate(d *schema.ResourceData, m
 
 func resourceSwitchControllerLocationCoordinatesDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -153,11 +152,17 @@ func resourceSwitchControllerLocationCoordinatesDelete(d *schema.ResourceData, m
 	paradict["vdom"] = device_vdom
 	paradict["location"] = location
 
+	obj, err := getObjectSwitchControllerLocationCoordinates(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating SwitchControllerLocationCoordinates resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteSwitchControllerLocationCoordinates(mkey, paradict, wsParams)
+	_, err = c.UpdateSwitchControllerLocationCoordinates(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting SwitchControllerLocationCoordinates resource: %v", err)
+		return fmt.Errorf("Error clearing SwitchControllerLocationCoordinates resource: %v", err)
 	}
 
 	d.SetId("")
@@ -347,7 +352,7 @@ func expandSwitchControllerLocationCoordinatesParentKey2edl(d *schema.ResourceDa
 	return v, nil
 }
 
-func getObjectSwitchControllerLocationCoordinates(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectSwitchControllerLocationCoordinates(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("altitude"); ok || d.HasChange("altitude") {

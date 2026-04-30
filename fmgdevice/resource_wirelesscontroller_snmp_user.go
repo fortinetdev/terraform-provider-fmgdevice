@@ -74,6 +74,12 @@ func resourceWirelessControllerSnmpUser() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"notify_hosts6": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Computed: true,
+			},
 			"priv_proto": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -314,6 +320,10 @@ func flattenWirelessControllerSnmpUserNotifyHosts2edl(v interface{}, d *schema.R
 	return flattenStringList(v)
 }
 
+func flattenWirelessControllerSnmpUserNotifyHosts62edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
 func flattenWirelessControllerSnmpUserPrivProto2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -364,6 +374,16 @@ func refreshObjectWirelessControllerSnmpUser(d *schema.ResourceData, o map[strin
 			}
 		} else {
 			return fmt.Errorf("Error reading notify_hosts: %v", err)
+		}
+	}
+
+	if err = d.Set("notify_hosts6", flattenWirelessControllerSnmpUserNotifyHosts62edl(o["notify-hosts6"], d, "notify_hosts6")); err != nil {
+		if vv, ok := fortiAPIPatch(o["notify-hosts6"], "WirelessControllerSnmpUser-NotifyHosts6"); ok {
+			if err = d.Set("notify_hosts6", vv); err != nil {
+				return fmt.Errorf("Error reading notify_hosts6: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading notify_hosts6: %v", err)
 		}
 	}
 
@@ -442,6 +462,10 @@ func expandWirelessControllerSnmpUserNotifyHosts2edl(d *schema.ResourceData, v i
 	return expandStringList(v.(*schema.Set).List()), nil
 }
 
+func expandWirelessControllerSnmpUserNotifyHosts62edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
 func expandWirelessControllerSnmpUserPrivProto2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -502,6 +526,15 @@ func getObjectWirelessControllerSnmpUser(d *schema.ResourceData) (*map[string]in
 			return &obj, err
 		} else if t != nil {
 			obj["notify-hosts"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("notify_hosts6"); ok || d.HasChange("notify_hosts6") {
+		t, err := expandWirelessControllerSnmpUserNotifyHosts62edl(d, v, "notify_hosts6")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["notify-hosts6"] = t
 		}
 	}
 

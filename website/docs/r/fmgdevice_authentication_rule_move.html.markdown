@@ -1,5 +1,5 @@
 ---
-subcategory: "No Category"
+subcategory: "Authentication"
 layout: "fmgdevice"
 page_title: "FortiManager Device: fmgdevice_authentication_rule_move"
 description: |-

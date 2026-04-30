@@ -99,7 +99,7 @@ func resourceFirewallAuthPortalUpdate(d *schema.ResourceData, m interface{}) err
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	obj, err := getObjectFirewallAuthPortal(d)
+	obj, err := getObjectFirewallAuthPortal(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating FirewallAuthPortal resource while getting object: %v", err)
 	}
@@ -120,7 +120,6 @@ func resourceFirewallAuthPortalUpdate(d *schema.ResourceData, m interface{}) err
 
 func resourceFirewallAuthPortalDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -143,11 +142,17 @@ func resourceFirewallAuthPortalDelete(d *schema.ResourceData, m interface{}) err
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	obj, err := getObjectFirewallAuthPortal(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating FirewallAuthPortal resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteFirewallAuthPortal(mkey, paradict, wsParams)
+	_, err = c.UpdateFirewallAuthPortal(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting FirewallAuthPortal resource: %v", err)
+		return fmt.Errorf("Error clearing FirewallAuthPortal resource: %v", err)
 	}
 
 	d.SetId("")
@@ -308,7 +313,7 @@ func expandFirewallAuthPortalProxyAuth(d *schema.ResourceData, v interface{}, pr
 	return v, nil
 }
 
-func getObjectFirewallAuthPortal(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectFirewallAuthPortal(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("groups"); ok || d.HasChange("groups") {

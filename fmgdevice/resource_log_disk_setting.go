@@ -222,7 +222,7 @@ func resourceLogDiskSettingUpdate(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	obj, err := getObjectLogDiskSetting(d)
+	obj, err := getObjectLogDiskSetting(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating LogDiskSetting resource while getting object: %v", err)
 	}
@@ -243,7 +243,6 @@ func resourceLogDiskSettingUpdate(d *schema.ResourceData, m interface{}) error {
 
 func resourceLogDiskSettingDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -266,11 +265,17 @@ func resourceLogDiskSettingDelete(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	obj, err := getObjectLogDiskSetting(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating LogDiskSetting resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteLogDiskSetting(mkey, paradict, wsParams)
+	_, err = c.UpdateLogDiskSetting(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting LogDiskSetting resource: %v", err)
+		return fmt.Errorf("Error clearing LogDiskSetting resource: %v", err)
 	}
 
 	d.SetId("")
@@ -885,7 +890,7 @@ func expandLogDiskSettingVrfSelect(d *schema.ResourceData, v interface{}, pre st
 	return v, nil
 }
 
-func getObjectLogDiskSetting(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectLogDiskSetting(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("diskfull"); ok || d.HasChange("diskfull") {

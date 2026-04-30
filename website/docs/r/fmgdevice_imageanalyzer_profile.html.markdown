@@ -1,5 +1,5 @@
 ---
-subcategory: "No Category"
+subcategory: "Image Analyzer"
 layout: "fmgdevice"
 page_title: "FortiManager Device: fmgdevice_imageanalyzer_profile"
 description: |-

@@ -149,6 +149,7 @@ func resourceUserLocal() *schema.Resource {
 			"status": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"tacacs_server": &schema.Schema{
 				Type:     schema.TypeSet,
@@ -185,6 +186,7 @@ func resourceUserLocal() *schema.Resource {
 			"username_sensitivity": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"workstation": &schema.Schema{
 				Type:     schema.TypeString,

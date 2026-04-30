@@ -1,5 +1,5 @@
 ---
-subcategory: "No Category"
+subcategory: "Alter Email"
 layout: "fmgdevice"
 page_title: "FortiManager Device: fmgdevice_alertemail_setting"
 description: |-

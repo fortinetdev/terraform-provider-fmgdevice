@@ -91,6 +91,7 @@ func resourceReportLayout() *schema.Resource {
 						"hide": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"id": &schema.Schema{
 							Type:     schema.TypeInt,
@@ -119,6 +120,7 @@ func resourceReportLayout() *schema.Resource {
 						"list_component": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"misc_component": &schema.Schema{
 							Type:     schema.TypeString,

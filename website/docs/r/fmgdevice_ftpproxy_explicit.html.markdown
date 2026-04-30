@@ -1,5 +1,5 @@
 ---
-subcategory: "No Category"
+subcategory: "FTP Proxy"
 layout: "fmgdevice"
 page_title: "FortiManager Device: fmgdevice_ftpproxy_explicit"
 description: |-

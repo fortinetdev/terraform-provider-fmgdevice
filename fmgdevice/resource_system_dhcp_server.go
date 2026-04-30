@@ -207,6 +207,7 @@ func resourceSystemDhcpServer() *schema.Resource {
 				Type:     schema.TypeInt,
 				ForceNew: true,
 				Optional: true,
+				Computed: true,
 			},
 			"interface": &schema.Schema{
 				Type:     schema.TypeSet,
@@ -322,6 +323,7 @@ func resourceSystemDhcpServer() *schema.Resource {
 						"id": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"ip": &schema.Schema{
 							Type:     schema.TypeSet,
@@ -332,10 +334,12 @@ func resourceSystemDhcpServer() *schema.Resource {
 						"type": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"uci_match": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"uci_string": &schema.Schema{
 							Type:     schema.TypeSet,
@@ -350,6 +354,7 @@ func resourceSystemDhcpServer() *schema.Resource {
 						"vci_match": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"vci_string": &schema.Schema{
 							Type:     schema.TypeSet,
@@ -544,11 +549,19 @@ func resourceSystemDhcpServerCreate(d *schema.ResourceData, m interface{}) error
 	}
 
 	if !existing {
-		_, err = c.CreateSystemDhcpServer(obj, paradict, wsParams)
+		v, err := c.CreateSystemDhcpServer(obj, paradict, wsParams)
 		if err != nil {
 			return fmt.Errorf("Error creating SystemDhcpServer resource: %v", err)
 		}
 
+		if v != nil && v["id"] != nil {
+			if vidn, ok := v["id"].(float64); ok {
+				d.SetId(strconv.Itoa(int(vidn)))
+				return resourceSystemDhcpServerRead(d, m)
+			} else {
+				return fmt.Errorf("Error creating SystemDhcpServer resource: %v", err)
+			}
+		}
 	}
 
 	d.SetId(strconv.Itoa(getIntKey(d, "fosid")))

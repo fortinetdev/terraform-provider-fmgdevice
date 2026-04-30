@@ -90,7 +90,7 @@ func resourceFirewallProfileProtocolOptionsMailSignatureUpdate(d *schema.Resourc
 	paradict["vdom"] = device_vdom
 	paradict["profile_protocol_options"] = profile_protocol_options
 
-	obj, err := getObjectFirewallProfileProtocolOptionsMailSignature(d)
+	obj, err := getObjectFirewallProfileProtocolOptionsMailSignature(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating FirewallProfileProtocolOptionsMailSignature resource while getting object: %v", err)
 	}
@@ -111,7 +111,6 @@ func resourceFirewallProfileProtocolOptionsMailSignatureUpdate(d *schema.Resourc
 
 func resourceFirewallProfileProtocolOptionsMailSignatureDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -136,11 +135,17 @@ func resourceFirewallProfileProtocolOptionsMailSignatureDelete(d *schema.Resourc
 	paradict["vdom"] = device_vdom
 	paradict["profile_protocol_options"] = profile_protocol_options
 
+	obj, err := getObjectFirewallProfileProtocolOptionsMailSignature(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating FirewallProfileProtocolOptionsMailSignature resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteFirewallProfileProtocolOptionsMailSignature(mkey, paradict, wsParams)
+	_, err = c.UpdateFirewallProfileProtocolOptionsMailSignature(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting FirewallProfileProtocolOptionsMailSignature resource: %v", err)
+		return fmt.Errorf("Error clearing FirewallProfileProtocolOptionsMailSignature resource: %v", err)
 	}
 
 	d.SetId("")
@@ -258,7 +263,7 @@ func expandFirewallProfileProtocolOptionsMailSignatureStatus2edl(d *schema.Resou
 	return v, nil
 }
 
-func getObjectFirewallProfileProtocolOptionsMailSignature(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectFirewallProfileProtocolOptionsMailSignature(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("signature"); ok || d.HasChange("signature") {

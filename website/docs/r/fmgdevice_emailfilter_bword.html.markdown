@@ -1,5 +1,5 @@
 ---
-subcategory: "No Category"
+subcategory: "Email Filter"
 layout: "fmgdevice"
 page_title: "FortiManager Device: fmgdevice_emailfilter_bword"
 description: |-

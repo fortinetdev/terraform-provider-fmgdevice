@@ -172,7 +172,7 @@ func resourceLogNullDeviceFilterUpdate(d *schema.ResourceData, m interface{}) er
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	obj, err := getObjectLogNullDeviceFilter(d)
+	obj, err := getObjectLogNullDeviceFilter(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating LogNullDeviceFilter resource while getting object: %v", err)
 	}
@@ -193,7 +193,6 @@ func resourceLogNullDeviceFilterUpdate(d *schema.ResourceData, m interface{}) er
 
 func resourceLogNullDeviceFilterDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -216,11 +215,17 @@ func resourceLogNullDeviceFilterDelete(d *schema.ResourceData, m interface{}) er
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	obj, err := getObjectLogNullDeviceFilter(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating LogNullDeviceFilter resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteLogNullDeviceFilter(mkey, paradict, wsParams)
+	_, err = c.UpdateLogNullDeviceFilter(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting LogNullDeviceFilter resource: %v", err)
+		return fmt.Errorf("Error clearing LogNullDeviceFilter resource: %v", err)
 	}
 
 	d.SetId("")
@@ -700,7 +705,7 @@ func expandLogNullDeviceFilterZtnaTraffic(d *schema.ResourceData, v interface{},
 	return v, nil
 }
 
-func getObjectLogNullDeviceFilter(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectLogNullDeviceFilter(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("anomaly"); ok || d.HasChange("anomaly") {
@@ -757,12 +762,16 @@ func getObjectLogNullDeviceFilter(d *schema.ResourceData) (*map[string]interface
 		}
 	}
 
-	if v, ok := d.GetOk("free_style"); ok || d.HasChange("free_style") {
-		t, err := expandLogNullDeviceFilterFreeStyle(d, v, "free_style")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["free-style"] = t
+	if bemptysontable {
+		obj["free-style"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("free_style"); ok || d.HasChange("free_style") {
+			t, err := expandLogNullDeviceFilterFreeStyle(d, v, "free_style")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["free-style"] = t
+			}
 		}
 	}
 

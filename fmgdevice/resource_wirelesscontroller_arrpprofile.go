@@ -58,6 +58,7 @@ func resourceWirelessControllerArrpProfile() *schema.Resource {
 			"darrp_optimize": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"darrp_optimize_schedules": &schema.Schema{
 				Type:     schema.TypeSet,

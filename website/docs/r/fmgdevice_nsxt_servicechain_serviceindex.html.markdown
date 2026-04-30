@@ -1,5 +1,5 @@
 ---
-subcategory: "No Category"
+subcategory: "NSXT"
 layout: "fmgdevice"
 page_title: "FortiManager Device: fmgdevice_nsxt_servicechain_serviceindex"
 description: |-

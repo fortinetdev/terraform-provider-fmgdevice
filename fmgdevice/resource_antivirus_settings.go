@@ -53,6 +53,7 @@ func resourceAntivirusSettings() *schema.Resource {
 			"cache_clean_result": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"cache_infected_result": &schema.Schema{
 				Type:     schema.TypeString,
@@ -106,7 +107,7 @@ func resourceAntivirusSettingsUpdate(d *schema.ResourceData, m interface{}) erro
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	obj, err := getObjectAntivirusSettings(d)
+	obj, err := getObjectAntivirusSettings(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating AntivirusSettings resource while getting object: %v", err)
 	}
@@ -127,7 +128,6 @@ func resourceAntivirusSettingsUpdate(d *schema.ResourceData, m interface{}) erro
 
 func resourceAntivirusSettingsDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -150,11 +150,17 @@ func resourceAntivirusSettingsDelete(d *schema.ResourceData, m interface{}) erro
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	obj, err := getObjectAntivirusSettings(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating AntivirusSettings resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteAntivirusSettings(mkey, paradict, wsParams)
+	_, err = c.UpdateAntivirusSettings(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting AntivirusSettings resource: %v", err)
+		return fmt.Errorf("Error clearing AntivirusSettings resource: %v", err)
 	}
 
 	d.SetId("")
@@ -351,7 +357,7 @@ func expandAntivirusSettingsUseExtremeDb(d *schema.ResourceData, v interface{}, 
 	return v, nil
 }
 
-func getObjectAntivirusSettings(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectAntivirusSettings(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("default_db"); ok || d.HasChange("default_db") {

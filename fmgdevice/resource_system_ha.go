@@ -43,6 +43,7 @@ func resourceSystemHa() *schema.Resource {
 			"arps": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"arps_interval": &schema.Schema{
 				Type:     schema.TypeInt,
@@ -82,6 +83,7 @@ func resourceSystemHa() *schema.Resource {
 			"check_secondary_dev_health": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"cpu_threshold": &schema.Schema{
 				Type:     schema.TypeString,
@@ -202,6 +204,7 @@ func resourceSystemHa() *schema.Resource {
 			"ha_mgmt_status": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"ha_port_dtag_mode": &schema.Schema{
 				Type:     schema.TypeString,
@@ -307,6 +310,7 @@ func resourceSystemHa() *schema.Resource {
 			"load_balance_all": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"logical_sn": &schema.Schema{
 				Type:     schema.TypeString,
@@ -411,6 +415,7 @@ func resourceSystemHa() *schema.Resource {
 			"pingserver_slave_force_reset": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"pop3_proxy_threshold": &schema.Schema{
 				Type:     schema.TypeString,
@@ -439,6 +444,7 @@ func resourceSystemHa() *schema.Resource {
 			"schedule": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"secondary_switch_standby": &schema.Schema{
 				Type:     schema.TypeString,
@@ -460,6 +466,7 @@ func resourceSystemHa() *schema.Resource {
 						"override": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"override_wait_time": &schema.Schema{
 							Type:     schema.TypeInt,
@@ -478,6 +485,7 @@ func resourceSystemHa() *schema.Resource {
 						"pingserver_secondary_force_reset": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"pingserver_slave_force_reset": &schema.Schema{
 							Type:     schema.TypeString,
@@ -486,10 +494,12 @@ func resourceSystemHa() *schema.Resource {
 						"priority": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"vcluster_id": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"vdom": &schema.Schema{
 							Type:     schema.TypeSet,
@@ -680,6 +690,7 @@ func resourceSystemHa() *schema.Resource {
 						"pingserver_slave_force_reset": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"priority": &schema.Schema{
 							Type:     schema.TypeInt,
@@ -689,6 +700,7 @@ func resourceSystemHa() *schema.Resource {
 						"vcluster_id": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"vdom": &schema.Schema{
 							Type:     schema.TypeSet,
@@ -746,7 +758,7 @@ func resourceSystemHaUpdate(d *schema.ResourceData, m interface{}) error {
 	}
 	paradict["device"] = device_name
 
-	obj, err := getObjectSystemHa(d)
+	obj, err := getObjectSystemHa(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemHa resource while getting object: %v", err)
 	}
@@ -767,7 +779,6 @@ func resourceSystemHaUpdate(d *schema.ResourceData, m interface{}) error {
 
 func resourceSystemHaDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -785,11 +796,17 @@ func resourceSystemHaDelete(d *schema.ResourceData, m interface{}) error {
 	}
 	paradict["device"] = device_name
 
+	obj, err := getObjectSystemHa(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating SystemHa resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteSystemHa(mkey, paradict, wsParams)
+	_, err = c.UpdateSystemHa(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting SystemHa resource: %v", err)
+		return fmt.Errorf("Error clearing SystemHa resource: %v", err)
 	}
 
 	d.SetId("")
@@ -3522,7 +3539,7 @@ func expandSystemHaSequentialUpgrade(d *schema.ResourceData, v interface{}, pre 
 	return v, nil
 }
 
-func getObjectSystemHa(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectSystemHa(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("arps"); ok || d.HasChange("arps") {
@@ -3714,12 +3731,16 @@ func getObjectSystemHa(d *schema.ResourceData) (*map[string]interface{}, error) 
 		}
 	}
 
-	if v, ok := d.GetOk("ha_mgmt_interfaces"); ok || d.HasChange("ha_mgmt_interfaces") {
-		t, err := expandSystemHaHaMgmtInterfaces(d, v, "ha_mgmt_interfaces")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["ha-mgmt-interfaces"] = t
+	if bemptysontable {
+		obj["ha-mgmt-interfaces"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("ha_mgmt_interfaces"); ok || d.HasChange("ha_mgmt_interfaces") {
+			t, err := expandSystemHaHaMgmtInterfaces(d, v, "ha_mgmt_interfaces")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["ha-mgmt-interfaces"] = t
+			}
 		}
 	}
 
@@ -4344,12 +4365,16 @@ func getObjectSystemHa(d *schema.ResourceData) (*map[string]interface{}, error) 
 		}
 	}
 
-	if v, ok := d.GetOk("unicast_peers"); ok || d.HasChange("unicast_peers") {
-		t, err := expandSystemHaUnicastPeers(d, v, "unicast_peers")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["unicast-peers"] = t
+	if bemptysontable {
+		obj["unicast-peers"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("unicast_peers"); ok || d.HasChange("unicast_peers") {
+			t, err := expandSystemHaUnicastPeers(d, v, "unicast_peers")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["unicast-peers"] = t
+			}
 		}
 	}
 
@@ -4416,12 +4441,16 @@ func getObjectSystemHa(d *schema.ResourceData) (*map[string]interface{}, error) 
 		}
 	}
 
-	if v, ok := d.GetOk("vcluster"); ok || d.HasChange("vcluster") {
-		t, err := expandSystemHaVcluster(d, v, "vcluster")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["vcluster"] = t
+	if bemptysontable {
+		obj["vcluster"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("vcluster"); ok || d.HasChange("vcluster") {
+			t, err := expandSystemHaVcluster(d, v, "vcluster")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["vcluster"] = t
+			}
 		}
 	}
 

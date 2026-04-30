@@ -1,5 +1,5 @@
 ---
-subcategory: "No Category"
+subcategory: "VPN"
 layout: "fmgdevice"
 page_title: "FortiManager Device: fmgdevice_vpn_ssl_settings"
 description: |-
@@ -103,6 +103,8 @@ The following arguments are supported:
 * `port` - SSL-VPN access port (1 - 65535).
 * `port_precedence` - Enable/disable, Enable means that if SSL-VPN connections are allowed on an interface admin GUI connections are blocked on that interface. Valid values: `disable`, `enable`.
 
+* `remote_https_cert_check` - Configure how the FortiGate unit checks and responds to the remote HTTPS server's certificate (default = warn-on-error). Valid values: `no-check`, `warn-on-error`, `reject-on-error`.
+
 * `reqclientcert` - Enable/disable to require client certificates for all SSL-VPN users. Valid values: `disable`, `enable`.
 
 * `saml_redirect_port` - SAML local redirect port in the machine running FortiClient (0 - 65535). 0 is to disable redirection on FGT side.
@@ -124,6 +126,8 @@ The following arguments are supported:
 * `ssl_min_proto_ver` - SSL minimum protocol version. Valid values: `tls1-0`, `tls1-1`, `tls1-2`, `tls1-3`.
 
 * `status` - Enable/disable SSL-VPN. Valid values: `disable`, `enable`.
+
+* `tls_groups` - Configure the supported groups for TLS negotiation. Valid values: `P-521`, `P-384`, `P-256`, `ML-KEM512`, `ML-KEM768`, `ML-KEM1024`, `P-384-MLKEM1024`, `P-256-MLKEM768`, `X25519-MLKEM768`, `X448`, `X25519`, `FFDHE2048`, `FFDHE3072`, `FFDHE4096`, `FFDHE6144`, `FFDHE8192`.
 
 * `transform_backward_slashes` - Transform backward slashes to forward slashes in URLs. Valid values: `disable`, `enable`.
 

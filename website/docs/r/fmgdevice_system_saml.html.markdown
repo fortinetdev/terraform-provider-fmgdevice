@@ -1,5 +1,5 @@
 ---
-subcategory: "No Category"
+subcategory: "System"
 layout: "fmgdevice"
 page_title: "FortiManager Device: fmgdevice_system_saml"
 description: |-
@@ -49,6 +49,8 @@ The following arguments are supported:
 * `idp_single_sign_on_url` - IDP single sign-on URL.
 * `life` - Length of the range of time when the assertion is valid (in minutes).
 * `portal_url` - Portal-Url.
+* `require_signed_resp_and_asrt` - Require both response and assertion from IDP to be signed when FGT acts as SP (default = disable). Valid values: `disable`, `enable`.
+
 * `role` - SAML role. Valid values: `IDP`, `SP`, `identity-provider`, `service-provider`.
 
 * `server_address` - Server address.

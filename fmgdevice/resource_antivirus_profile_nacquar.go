@@ -96,7 +96,7 @@ func resourceAntivirusProfileNacQuarUpdate(d *schema.ResourceData, m interface{}
 	paradict["vdom"] = device_vdom
 	paradict["profile"] = profile
 
-	obj, err := getObjectAntivirusProfileNacQuar(d)
+	obj, err := getObjectAntivirusProfileNacQuar(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating AntivirusProfileNacQuar resource while getting object: %v", err)
 	}
@@ -117,7 +117,6 @@ func resourceAntivirusProfileNacQuarUpdate(d *schema.ResourceData, m interface{}
 
 func resourceAntivirusProfileNacQuarDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -142,11 +141,17 @@ func resourceAntivirusProfileNacQuarDelete(d *schema.ResourceData, m interface{}
 	paradict["vdom"] = device_vdom
 	paradict["profile"] = profile
 
+	obj, err := getObjectAntivirusProfileNacQuar(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating AntivirusProfileNacQuar resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteAntivirusProfileNacQuar(mkey, paradict, wsParams)
+	_, err = c.UpdateAntivirusProfileNacQuar(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting AntivirusProfileNacQuar resource: %v", err)
+		return fmt.Errorf("Error clearing AntivirusProfileNacQuar resource: %v", err)
 	}
 
 	d.SetId("")
@@ -282,7 +287,7 @@ func expandAntivirusProfileNacQuarLog2edl(d *schema.ResourceData, v interface{},
 	return v, nil
 }
 
-func getObjectAntivirusProfileNacQuar(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectAntivirusProfileNacQuar(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("expiry"); ok || d.HasChange("expiry") {

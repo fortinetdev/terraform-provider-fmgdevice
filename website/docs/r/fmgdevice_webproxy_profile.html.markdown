@@ -1,5 +1,5 @@
 ---
-subcategory: "No Category"
+subcategory: "Web Proxy"
 layout: "fmgdevice"
 page_title: "FortiManager Device: fmgdevice_webproxy_profile"
 description: |-
@@ -21,6 +21,8 @@ The following arguments are supported:
 
 * `device_name` - FortiManager managed device name. This variable is used in the request URL. If not specified, it will inherit the variable `device_name` of the provider.
 * `device_vdom` - FortiManager managed device vdom. This variable is used in the request URL. If not specified, it will inherit the variable `device_vdom` of the provider.
+
+* `header_client_cert` - Action to take on the HTTP Client-Cert/Client-Cert-Chain headers in forwarded responses: forwards (pass), adds, or removes the HTTP header. Valid values: `pass`, `add`, `remove`.
 
 * `header_client_ip` - Action to take on the HTTP client-IP header in forwarded requests: forwards (pass), adds, or removes the HTTP header. Valid values: `pass`, `add`, `remove`.
 

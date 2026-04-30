@@ -78,10 +78,12 @@ func resourceEmailfilterIptrust() *schema.Resource {
 						"ip6_subnet": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"status": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 					},
 				},

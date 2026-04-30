@@ -119,6 +119,12 @@ func resourceFirewallProxyAddress6() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
+			"llm_servers": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Computed: true,
+			},
 			"method": &schema.Schema{
 				Type:     schema.TypeSet,
 				Elem:     &schema.Schema{Type: schema.TypeString},
@@ -507,6 +513,10 @@ func flattenFirewallProxyAddress6HostRegex(v interface{}, d *schema.ResourceData
 	return v
 }
 
+func flattenFirewallProxyAddress6LlmServers(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
 func flattenFirewallProxyAddress6Method(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return flattenStringList(v)
 }
@@ -732,6 +742,16 @@ func refreshObjectFirewallProxyAddress6(d *schema.ResourceData, o map[string]int
 			}
 		} else {
 			return fmt.Errorf("Error reading host_regex: %v", err)
+		}
+	}
+
+	if err = d.Set("llm_servers", flattenFirewallProxyAddress6LlmServers(o["llm-servers"], d, "llm_servers")); err != nil {
+		if vv, ok := fortiAPIPatch(o["llm-servers"], "FirewallProxyAddress6-LlmServers"); ok {
+			if err = d.Set("llm_servers", vv); err != nil {
+				return fmt.Errorf("Error reading llm_servers: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading llm_servers: %v", err)
 		}
 	}
 
@@ -984,6 +1004,10 @@ func expandFirewallProxyAddress6HostRegex(d *schema.ResourceData, v interface{},
 	return v, nil
 }
 
+func expandFirewallProxyAddress6LlmServers(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
 func expandFirewallProxyAddress6Method(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return expandStringList(v.(*schema.Set).List()), nil
 }
@@ -1173,6 +1197,15 @@ func getObjectFirewallProxyAddress6(d *schema.ResourceData) (*map[string]interfa
 			return &obj, err
 		} else if t != nil {
 			obj["host-regex"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("llm_servers"); ok || d.HasChange("llm_servers") {
+		t, err := expandFirewallProxyAddress6LlmServers(d, v, "llm_servers")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["llm-servers"] = t
 		}
 	}
 

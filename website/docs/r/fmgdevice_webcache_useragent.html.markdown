@@ -1,5 +1,5 @@
 ---
-subcategory: "No Category"
+subcategory: "Web Cache"
 layout: "fmgdevice"
 page_title: "FortiManager Device: fmgdevice_webcache_useragent"
 description: |-

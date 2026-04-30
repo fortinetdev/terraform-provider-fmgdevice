@@ -83,6 +83,7 @@ func resourceSystemAutomationAction() *schema.Resource {
 			"alicloud_function_domain": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"alicloud_region": &schema.Schema{
 				Type:     schema.TypeString,
@@ -118,6 +119,7 @@ func resourceSystemAutomationAction() *schema.Resource {
 			"aws_domain": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"aws_region": &schema.Schema{
 				Type:     schema.TypeString,
@@ -137,6 +139,7 @@ func resourceSystemAutomationAction() *schema.Resource {
 			"azure_domain": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"azure_function": &schema.Schema{
 				Type:     schema.TypeString,
@@ -185,6 +188,7 @@ func resourceSystemAutomationAction() *schema.Resource {
 			"gcp_function_domain": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"gcp_function_region": &schema.Schema{
 				Type:     schema.TypeString,
@@ -278,6 +282,7 @@ func resourceSystemAutomationAction() *schema.Resource {
 			"method": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"minimum_interval": &schema.Schema{
 				Type:     schema.TypeInt,
@@ -304,6 +309,7 @@ func resourceSystemAutomationAction() *schema.Resource {
 			"protocol": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"regular_expression": &schema.Schema{
 				Type:     schema.TypeString,
@@ -323,6 +329,7 @@ func resourceSystemAutomationAction() *schema.Resource {
 			"required": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"script": &schema.Schema{
 				Type:     schema.TypeString,

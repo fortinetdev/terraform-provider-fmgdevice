@@ -43,6 +43,7 @@ func resourceSwitchControllerSystem() *schema.Resource {
 			"caputp_echo_interval": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"caputp_max_retransmit": &schema.Schema{
 				Type:     schema.TypeInt,
@@ -122,7 +123,7 @@ func resourceSwitchControllerSystemUpdate(d *schema.ResourceData, m interface{})
 	}
 	paradict["device"] = device_name
 
-	obj, err := getObjectSwitchControllerSystem(d)
+	obj, err := getObjectSwitchControllerSystem(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating SwitchControllerSystem resource while getting object: %v", err)
 	}
@@ -143,7 +144,6 @@ func resourceSwitchControllerSystemUpdate(d *schema.ResourceData, m interface{})
 
 func resourceSwitchControllerSystemDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -161,11 +161,17 @@ func resourceSwitchControllerSystemDelete(d *schema.ResourceData, m interface{})
 	}
 	paradict["device"] = device_name
 
+	obj, err := getObjectSwitchControllerSystem(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating SwitchControllerSystem resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteSwitchControllerSystem(mkey, paradict, wsParams)
+	_, err = c.UpdateSwitchControllerSystem(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting SwitchControllerSystem resource: %v", err)
+		return fmt.Errorf("Error clearing SwitchControllerSystem resource: %v", err)
 	}
 
 	d.SetId("")
@@ -441,7 +447,7 @@ func expandSwitchControllerSystemTunnelMode(d *schema.ResourceData, v interface{
 	return v, nil
 }
 
-func getObjectSwitchControllerSystem(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectSwitchControllerSystem(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("caputp_echo_interval"); ok || d.HasChange("caputp_echo_interval") {

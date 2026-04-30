@@ -109,6 +109,10 @@ func resourceApplicationListEntries() *schema.Resource {
 							Type:     schema.TypeInt,
 							Optional: true,
 						},
+						"value": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
 						"members": &schema.Schema{
 							Type:     schema.TypeList,
 							Optional: true,
@@ -499,6 +503,12 @@ func flattenApplicationListEntriesParameters2edl(v interface{}, d *schema.Resour
 			tmp["id"] = fortiAPISubPartPatch(v, "ApplicationListEntries-Parameters-Id")
 		}
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "value"
+		if _, ok := i["value"]; ok {
+			v := flattenApplicationListEntriesParametersValue2edl(i["value"], d, pre_append)
+			tmp["value"] = fortiAPISubPartPatch(v, "ApplicationListEntries-Parameters-Value")
+		}
+
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "members"
 		if _, ok := i["members"]; ok {
 			v := flattenApplicationListEntriesParametersMembers2edl(i["members"], d, pre_append)
@@ -516,6 +526,10 @@ func flattenApplicationListEntriesParameters2edl(v interface{}, d *schema.Resour
 }
 
 func flattenApplicationListEntriesParametersId2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenApplicationListEntriesParametersValue2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -987,6 +1001,11 @@ func expandApplicationListEntriesParameters2edl(d *schema.ResourceData, v interf
 			tmp["id"], _ = expandApplicationListEntriesParametersId2edl(d, i["id"], pre_append)
 		}
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "value"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["value"], _ = expandApplicationListEntriesParametersValue2edl(d, i["value"], pre_append)
+		}
+
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "members"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
 			t, err := expandApplicationListEntriesParametersMembers2edl(d, i["members"], pre_append)
@@ -1008,6 +1027,10 @@ func expandApplicationListEntriesParameters2edl(d *schema.ResourceData, v interf
 }
 
 func expandApplicationListEntriesParametersId2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandApplicationListEntriesParametersValue2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 

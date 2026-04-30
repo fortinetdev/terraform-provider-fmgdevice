@@ -106,7 +106,7 @@ func resourceWafProfileConstraintParamLengthUpdate(d *schema.ResourceData, m int
 	paradict["vdom"] = device_vdom
 	paradict["profile"] = profile
 
-	obj, err := getObjectWafProfileConstraintParamLength(d)
+	obj, err := getObjectWafProfileConstraintParamLength(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating WafProfileConstraintParamLength resource while getting object: %v", err)
 	}
@@ -127,7 +127,6 @@ func resourceWafProfileConstraintParamLengthUpdate(d *schema.ResourceData, m int
 
 func resourceWafProfileConstraintParamLengthDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -152,11 +151,17 @@ func resourceWafProfileConstraintParamLengthDelete(d *schema.ResourceData, m int
 	paradict["vdom"] = device_vdom
 	paradict["profile"] = profile
 
+	obj, err := getObjectWafProfileConstraintParamLength(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating WafProfileConstraintParamLength resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteWafProfileConstraintParamLength(mkey, paradict, wsParams)
+	_, err = c.UpdateWafProfileConstraintParamLength(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting WafProfileConstraintParamLength resource: %v", err)
+		return fmt.Errorf("Error clearing WafProfileConstraintParamLength resource: %v", err)
 	}
 
 	d.SetId("")
@@ -328,7 +333,7 @@ func expandWafProfileConstraintParamLengthStatus3rdl(d *schema.ResourceData, v i
 	return v, nil
 }
 
-func getObjectWafProfileConstraintParamLength(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectWafProfileConstraintParamLength(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("action"); ok || d.HasChange("action") {

@@ -1,5 +1,5 @@
 ---
-subcategory: "No Category"
+subcategory: "DNS Filter"
 layout: "fmgdevice"
 page_title: "FortiManager Device: fmgdevice_dnsfilter_domainfilter_entries_move"
 description: |-

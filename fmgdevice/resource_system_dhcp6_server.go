@@ -123,6 +123,7 @@ func resourceSystemDhcp6Server() *schema.Resource {
 						"id": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"start_ip": &schema.Schema{
 							Type:     schema.TypeString,
@@ -222,6 +223,7 @@ func resourceSystemDhcp6Server() *schema.Resource {
 						"id": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"prefix_length": &schema.Schema{
 							Type:     schema.TypeInt,

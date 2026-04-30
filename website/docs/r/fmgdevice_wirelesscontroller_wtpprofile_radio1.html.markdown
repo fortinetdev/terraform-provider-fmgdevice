@@ -1,5 +1,5 @@
 ---
-subcategory: "No Category"
+subcategory: "Wireless Controller"
 layout: "fmgdevice"
 page_title: "FortiManager Device: fmgdevice_wirelesscontroller_wtpprofile_radio1"
 description: |-
@@ -39,6 +39,8 @@ The following arguments are supported:
 * `n80211d` - Enable/disable 802.11d countryie(default = enable). Valid values: `disable`, `enable`.
 
 * `n80211mc` - Enable/disable 802.11mc responder mode (default = disable). Valid values: `disable`, `enable`.
+
+* `ai_darrp_support` - Enable/disable support for FortiAIOps to retrieve Distributed Automatic Radio Resource Provisioning (DARRP) data through REST API calls (default = disable). Valid values: `disable`, `enable`.
 
 * `airtime_fairness` - Enable/disable airtime fairness (default = disable). Valid values: `disable`, `enable`.
 

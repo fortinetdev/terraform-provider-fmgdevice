@@ -43,10 +43,12 @@ func resourceFirewallInternetService() *schema.Resource {
 			"database": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"direction": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"extra_ip_range_number": &schema.Schema{
 				Type:     schema.TypeInt,
@@ -84,7 +86,15 @@ func resourceFirewallInternetService() *schema.Resource {
 				Type:     schema.TypeInt,
 				Optional: true,
 			},
+			"reputation": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+			},
 			"singularity": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+			},
+			"sld_id": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
 			},
@@ -111,7 +121,7 @@ func resourceFirewallInternetServiceUpdate(d *schema.ResourceData, m interface{}
 	}
 	paradict["device"] = device_name
 
-	obj, err := getObjectFirewallInternetService(d)
+	obj, err := getObjectFirewallInternetService(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating FirewallInternetService resource while getting object: %v", err)
 	}
@@ -132,7 +142,6 @@ func resourceFirewallInternetServiceUpdate(d *schema.ResourceData, m interface{}
 
 func resourceFirewallInternetServiceDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -150,11 +159,17 @@ func resourceFirewallInternetServiceDelete(d *schema.ResourceData, m interface{}
 	}
 	paradict["device"] = device_name
 
+	obj, err := getObjectFirewallInternetService(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating FirewallInternetService resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteFirewallInternetService(mkey, paradict, wsParams)
+	_, err = c.UpdateFirewallInternetService(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting FirewallInternetService resource: %v", err)
+		return fmt.Errorf("Error clearing FirewallInternetService resource: %v", err)
 	}
 
 	d.SetId("")
@@ -246,7 +261,15 @@ func flattenFirewallInternetServiceObsolete(v interface{}, d *schema.ResourceDat
 	return v
 }
 
+func flattenFirewallInternetServiceReputation(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenFirewallInternetServiceSingularity(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenFirewallInternetServiceSldId(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -363,6 +386,16 @@ func refreshObjectFirewallInternetService(d *schema.ResourceData, o map[string]i
 		}
 	}
 
+	if err = d.Set("reputation", flattenFirewallInternetServiceReputation(o["reputation"], d, "reputation")); err != nil {
+		if vv, ok := fortiAPIPatch(o["reputation"], "FirewallInternetService-Reputation"); ok {
+			if err = d.Set("reputation", vv); err != nil {
+				return fmt.Errorf("Error reading reputation: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading reputation: %v", err)
+		}
+	}
+
 	if err = d.Set("singularity", flattenFirewallInternetServiceSingularity(o["singularity"], d, "singularity")); err != nil {
 		if vv, ok := fortiAPIPatch(o["singularity"], "FirewallInternetService-Singularity"); ok {
 			if err = d.Set("singularity", vv); err != nil {
@@ -370,6 +403,16 @@ func refreshObjectFirewallInternetService(d *schema.ResourceData, o map[string]i
 			}
 		} else {
 			return fmt.Errorf("Error reading singularity: %v", err)
+		}
+	}
+
+	if err = d.Set("sld_id", flattenFirewallInternetServiceSldId(o["sld-id"], d, "sld_id")); err != nil {
+		if vv, ok := fortiAPIPatch(o["sld-id"], "FirewallInternetService-SldId"); ok {
+			if err = d.Set("sld_id", vv); err != nil {
+				return fmt.Errorf("Error reading sld_id: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading sld_id: %v", err)
 		}
 	}
 
@@ -426,11 +469,19 @@ func expandFirewallInternetServiceObsolete(d *schema.ResourceData, v interface{}
 	return v, nil
 }
 
+func expandFirewallInternetServiceReputation(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandFirewallInternetServiceSingularity(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
-func getObjectFirewallInternetService(d *schema.ResourceData) (*map[string]interface{}, error) {
+func expandFirewallInternetServiceSldId(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func getObjectFirewallInternetService(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("database"); ok || d.HasChange("database") {
@@ -532,12 +583,30 @@ func getObjectFirewallInternetService(d *schema.ResourceData) (*map[string]inter
 		}
 	}
 
+	if v, ok := d.GetOk("reputation"); ok || d.HasChange("reputation") {
+		t, err := expandFirewallInternetServiceReputation(d, v, "reputation")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["reputation"] = t
+		}
+	}
+
 	if v, ok := d.GetOk("singularity"); ok || d.HasChange("singularity") {
 		t, err := expandFirewallInternetServiceSingularity(d, v, "singularity")
 		if err != nil {
 			return &obj, err
 		} else if t != nil {
 			obj["singularity"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("sld_id"); ok || d.HasChange("sld_id") {
+		t, err := expandFirewallInternetServiceSldId(d, v, "sld_id")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["sld-id"] = t
 		}
 	}
 

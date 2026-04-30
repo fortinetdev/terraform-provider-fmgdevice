@@ -1,5 +1,5 @@
 ---
-subcategory: "No Category"
+subcategory: "System"
 layout: "fmgdevice"
 page_title: "FortiManager Device: fmgdevice_system_global"
 description: |-
@@ -234,6 +234,8 @@ The following arguments are supported:
 
 * `fortitoken_cloud_region` - Region domain of FortiToken Cloud(unset to non-region).
 * `fortitoken_cloud_sync_interval` - Interval in which to clean up remote users in FortiToken Cloud (0 - 336 hours (14 days), default = 24, disable = 0).
+* `geoip_full_db` - When enabled, the full geographic database will be loaded into the kernel which enables geographic information in traffic logs - required for FortiView countries. Disabling this option will conserve memory. Valid values: `disable`, `enable`.
+
 * `gtpu_dynamic_source_port` - Enable/disable GTP-U dynamic source port support. Valid values: `disable`, `enable`.
 
 * `gui_allow_incompatible_fabric_fgt` - Enable/disable Allow FGT with incompatible firmware to be treated as compatible in security fabric on the GUI. May cause unexpected error. Valid values: `disable`, `enable`.
@@ -346,6 +348,7 @@ The following arguments are supported:
 
 * `lldp_transmission` - Enable/disable Link Layer Discovery Protocol (LLDP) transmission. Valid values: `disable`, `enable`.
 
+* `log_daemon_cpu_threshold` - Configure syslog daemon process spawning threshold. Use a percentage threshold of syslogd CPU usage (1 - 99) or set to zero to use dynamic scheduling based on the number of packets in the syslogd queue (default = 0).
 * `log_single_cpu_high` - Enable/disable logging the event of a single CPU core reaching CPU usage threshold. Valid values: `disable`, `enable`.
 
 * `log_ssl_connection` - Enable/disable logging of SSL connection events. Valid values: `disable`, `enable`.
@@ -576,6 +579,11 @@ The following arguments are supported:
 * `wad_source_affinity` - Enable/disable dispatching traffic to WAD workers based on source affinity. Valid values: `disable`, `enable`.
 
 * `wad_worker_count` - Number of explicit proxy WAN optimization daemon (WAD) processes. By default WAN optimization, explicit proxy, and web caching is handled by all of the CPU cores in a FortiGate unit.
+* `wad_worker_dev_cache` - Number of cached devices for each ZTNA proxy worker. The default value is tuned by memory consumption. Set the option to 0 to disable the cache.
+* `web_svc_auto_restart` - Enable/disable periodic restarting of the web-svc daemon. Valid values: `disable`, `enable`.
+
+* `web_svc_auto_restart_mem_threshold` - Memory threshold, in MB, for the periodic auto-restarting of the web-svc daemon (0 = default based on system memory).
+* `web_svc_auto_restart_time_threshold` - Uptime, in minutes, that the web-svc daemon should be running for in order to trigger an auto-restart.
 * `wifi_ca_certificate` - CA certificate that verifies the WiFi certificate.
 * `wifi_certificate` - Certificate to use for WiFi authentication.
 * `wimax_4g_usb` - Enable/disable comparability with WiMAX 4G USB devices. Valid values: `disable`, `enable`.

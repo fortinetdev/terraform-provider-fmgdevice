@@ -1,5 +1,5 @@
 ---
-subcategory: "No Category"
+subcategory: "Wanopt"
 layout: "fmgdevice"
 page_title: "FortiManager Device: fmgdevice_wanopt_profile_cifs"
 description: |-
@@ -26,6 +26,7 @@ The following arguments are supported:
 
 * `log_traffic` - Enable/disable logging. Valid values: `disable`, `enable`.
 
+* `port` - Single port number or port number range for CIFS. Only packets with a destination port number that matches this port number or range are accepted by this profile.
 * `prefer_chunking` - Select dynamic or fixed-size data chunking for WAN Optimization. Valid values: `dynamic`, `fix`.
 
 * `protocol_opt` - Select protocol specific optimization or generic TCP optimization. Valid values: `protocol`, `tcp`.

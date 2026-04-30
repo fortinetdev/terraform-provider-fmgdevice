@@ -291,6 +291,7 @@ func resourceSwitchControllerManagedSwitch() *schema.Resource {
 									"vlan_name": &schema.Schema{
 										Type:     schema.TypeString,
 										Optional: true,
+										Computed: true,
 									},
 								},
 							},
@@ -344,6 +345,10 @@ func resourceSwitchControllerManagedSwitch() *schema.Resource {
 				Type:     schema.TypeInt,
 				Optional: true,
 				Computed: true,
+			},
+			"max_poe_budget": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
 			},
 			"mclag_igmp_snooping_aware": &schema.Schema{
 				Type:     schema.TypeString,
@@ -432,6 +437,7 @@ func resourceSwitchControllerManagedSwitch() *schema.Resource {
 			"poe_pre_standard_detection": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"ports": &schema.Schema{
 				Type:     schema.TypeList,
@@ -441,6 +447,7 @@ func resourceSwitchControllerManagedSwitch() *schema.Resource {
 						"access_mode": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"acl_group": &schema.Schema{
 							Type:     schema.TypeSet,
@@ -451,10 +458,12 @@ func resourceSwitchControllerManagedSwitch() *schema.Resource {
 						"aggregator_mode": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"allow_arp_monitor": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"allowed_vlans": &schema.Schema{
 							Type:     schema.TypeSet,
@@ -465,10 +474,12 @@ func resourceSwitchControllerManagedSwitch() *schema.Resource {
 						"allowed_vlans_all": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"arp_inspection_trust": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"authenticated_port": &schema.Schema{
 							Type:     schema.TypeInt,
@@ -477,6 +488,7 @@ func resourceSwitchControllerManagedSwitch() *schema.Resource {
 						"bundle": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"description": &schema.Schema{
 							Type:     schema.TypeString,
@@ -505,14 +517,17 @@ func resourceSwitchControllerManagedSwitch() *schema.Resource {
 						"dhcp_snoop_option82_trust": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"dhcp_snooping": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"discard_mode": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"dsl_profile": &schema.Schema{
 							Type:     schema.TypeSet,
@@ -523,6 +538,7 @@ func resourceSwitchControllerManagedSwitch() *schema.Resource {
 						"edge_port": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"export_tags": &schema.Schema{
 							Type:     schema.TypeSet,
@@ -561,6 +577,7 @@ func resourceSwitchControllerManagedSwitch() *schema.Resource {
 						"fec_state": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"fgt_peer_device_name": &schema.Schema{
 							Type:     schema.TypeString,
@@ -581,10 +598,12 @@ func resourceSwitchControllerManagedSwitch() *schema.Resource {
 						"flap_duration": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"flap_rate": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"flap_timeout": &schema.Schema{
 							Type:     schema.TypeInt,
@@ -593,10 +612,12 @@ func resourceSwitchControllerManagedSwitch() *schema.Resource {
 						"flapguard": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"flow_control": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"fortilink_port": &schema.Schema{
 							Type:     schema.TypeInt,
@@ -615,14 +636,17 @@ func resourceSwitchControllerManagedSwitch() *schema.Resource {
 						"igmp_snooping_flood_reports": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"igmps_flood_reports": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"igmps_flood_traffic": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"interface_tags": &schema.Schema{
 							Type:     schema.TypeSet,
@@ -633,6 +657,7 @@ func resourceSwitchControllerManagedSwitch() *schema.Resource {
 						"ip_source_guard": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"isl_local_trunk_name": &schema.Schema{
 							Type:     schema.TypeString,
@@ -653,6 +678,7 @@ func resourceSwitchControllerManagedSwitch() *schema.Resource {
 						"lacp_speed": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"learning_limit": &schema.Schema{
 							Type:     schema.TypeInt,
@@ -661,6 +687,7 @@ func resourceSwitchControllerManagedSwitch() *schema.Resource {
 						"link_status": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"lldp_profile": &schema.Schema{
 							Type:     schema.TypeSet,
@@ -671,22 +698,27 @@ func resourceSwitchControllerManagedSwitch() *schema.Resource {
 						"lldp_status": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"log_mac_event": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"loop_guard": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"loop_guard_timeout": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"mac_addr": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"matched_dpp_intf_tags": &schema.Schema{
 							Type:     schema.TypeString,
@@ -699,14 +731,17 @@ func resourceSwitchControllerManagedSwitch() *schema.Resource {
 						"max_bundle": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"mcast_snooping_flood_traffic": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"mclag": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"mclag_icl_port": &schema.Schema{
 							Type:     schema.TypeInt,
@@ -719,6 +754,7 @@ func resourceSwitchControllerManagedSwitch() *schema.Resource {
 						"member_withdrawal_behavior": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"members": &schema.Schema{
 							Type:     schema.TypeSet,
@@ -729,10 +765,12 @@ func resourceSwitchControllerManagedSwitch() *schema.Resource {
 						"min_bundle": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"mode": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"p2p_port": &schema.Schema{
 							Type:     schema.TypeInt,
@@ -741,10 +779,12 @@ func resourceSwitchControllerManagedSwitch() *schema.Resource {
 						"packet_sample_rate": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"packet_sampler": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"pause_meter": &schema.Schema{
 							Type:     schema.TypeInt,
@@ -753,6 +793,7 @@ func resourceSwitchControllerManagedSwitch() *schema.Resource {
 						"pause_meter_resume": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"pd_capable": &schema.Schema{
 							Type:     schema.TypeInt,
@@ -773,18 +814,22 @@ func resourceSwitchControllerManagedSwitch() *schema.Resource {
 						"poe_port_mode": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"poe_port_power": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"poe_port_priority": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"poe_pre_standard_detection": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"poe_standard": &schema.Schema{
 							Type:     schema.TypeString,
@@ -793,6 +838,7 @@ func resourceSwitchControllerManagedSwitch() *schema.Resource {
 						"poe_status": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"port_name": &schema.Schema{
 							Type:     schema.TypeString,
@@ -825,6 +871,7 @@ func resourceSwitchControllerManagedSwitch() *schema.Resource {
 						"port_selection_criteria": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"ptp_policy": &schema.Schema{
 							Type:     schema.TypeSet,
@@ -835,6 +882,7 @@ func resourceSwitchControllerManagedSwitch() *schema.Resource {
 						"ptp_status": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"qnq": &schema.Schema{
 							Type:     schema.TypeSet,
@@ -855,10 +903,12 @@ func resourceSwitchControllerManagedSwitch() *schema.Resource {
 						"rpvst_port": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"sample_direction": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"sflow_counter_interval": &schema.Schema{
 							Type:     schema.TypeInt,
@@ -867,6 +917,7 @@ func resourceSwitchControllerManagedSwitch() *schema.Resource {
 						"speed": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"speed_mask": &schema.Schema{
 							Type:     schema.TypeInt,
@@ -879,10 +930,12 @@ func resourceSwitchControllerManagedSwitch() *schema.Resource {
 						"status": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"sticky_mac": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"storm_control_policy": &schema.Schema{
 							Type:     schema.TypeSet,
@@ -893,18 +946,22 @@ func resourceSwitchControllerManagedSwitch() *schema.Resource {
 						"stp_bpdu_guard": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"stp_bpdu_guard_timeout": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"stp_root_guard": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"stp_state": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"switch_id": &schema.Schema{
 							Type:     schema.TypeString,
@@ -917,6 +974,7 @@ func resourceSwitchControllerManagedSwitch() *schema.Resource {
 						"type": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"untagged_vlans": &schema.Schema{
 							Type:     schema.TypeSet,
@@ -960,14 +1018,17 @@ func resourceSwitchControllerManagedSwitch() *schema.Resource {
 			"qos_drop_policy": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"qos_red_probability": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"radius_nas_ip": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"radius_nas_ip_override": &schema.Schema{
 				Type:     schema.TypeString,
@@ -1270,6 +1331,7 @@ func resourceSwitchControllerManagedSwitch() *schema.Resource {
 						"trap_high_cpu_threshold": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"trap_log_full_threshold": &schema.Schema{
 							Type:     schema.TypeInt,
@@ -1385,6 +1447,7 @@ func resourceSwitchControllerManagedSwitch() *schema.Resource {
 						"broadcast": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"burst_size_level": &schema.Schema{
 							Type:     schema.TypeInt,
@@ -1506,6 +1569,7 @@ func resourceSwitchControllerManagedSwitch() *schema.Resource {
 						"local_override": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"severity": &schema.Schema{
 							Type:     schema.TypeString,
@@ -1559,6 +1623,7 @@ func resourceSwitchControllerManagedSwitch() *schema.Resource {
 						"id": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"interface": &schema.Schema{
 							Type:     schema.TypeSet,
@@ -1574,6 +1639,7 @@ func resourceSwitchControllerManagedSwitch() *schema.Resource {
 									"end_ip": &schema.Schema{
 										Type:     schema.TypeString,
 										Optional: true,
+										Computed: true,
 									},
 									"id": &schema.Schema{
 										Type:     schema.TypeInt,
@@ -1582,6 +1648,7 @@ func resourceSwitchControllerManagedSwitch() *schema.Resource {
 									"start_ip": &schema.Schema{
 										Type:     schema.TypeString,
 										Optional: true,
+										Computed: true,
 									},
 								},
 							},
@@ -1636,6 +1703,7 @@ func resourceSwitchControllerManagedSwitch() *schema.Resource {
 									"type": &schema.Schema{
 										Type:     schema.TypeString,
 										Optional: true,
+										Computed: true,
 									},
 									"value": &schema.Schema{
 										Type:     schema.TypeString,
@@ -1684,6 +1752,7 @@ func resourceSwitchControllerManagedSwitch() *schema.Resource {
 						"mode": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"name": &schema.Schema{
 							Type:     schema.TypeString,
@@ -1692,6 +1761,7 @@ func resourceSwitchControllerManagedSwitch() *schema.Resource {
 						"status": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"switch_id": &schema.Schema{
 							Type:     schema.TypeSet,
@@ -1702,6 +1772,7 @@ func resourceSwitchControllerManagedSwitch() *schema.Resource {
 						"type": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"vlan": &schema.Schema{
 							Type:     schema.TypeSet,
@@ -2501,6 +2572,10 @@ func flattenSwitchControllerManagedSwitchL3Discovered(v interface{}, d *schema.R
 }
 
 func flattenSwitchControllerManagedSwitchMaxAllowedTrunkMembers(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSwitchControllerManagedSwitchMaxPoeBudget(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -4341,7 +4416,7 @@ func flattenSwitchControllerManagedSwitchSnmpCommunity(v interface{}, d *schema.
 }
 
 func flattenSwitchControllerManagedSwitchSnmpCommunityEvents(v interface{}, d *schema.ResourceData, pre string) interface{} {
-	return flattenStringList(v)
+	return convstr2list(v, d.Get(pre))
 }
 
 func flattenSwitchControllerManagedSwitchSnmpCommunityHosts(v interface{}, d *schema.ResourceData, pre string) []map[string]interface{} {
@@ -5821,6 +5896,16 @@ func refreshObjectSwitchControllerManagedSwitch(d *schema.ResourceData, o map[st
 		}
 	}
 
+	if err = d.Set("max_poe_budget", flattenSwitchControllerManagedSwitchMaxPoeBudget(o["max-poe-budget"], d, "max_poe_budget")); err != nil {
+		if vv, ok := fortiAPIPatch(o["max-poe-budget"], "SwitchControllerManagedSwitch-MaxPoeBudget"); ok {
+			if err = d.Set("max_poe_budget", vv); err != nil {
+				return fmt.Errorf("Error reading max_poe_budget: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading max_poe_budget: %v", err)
+		}
+	}
+
 	if err = d.Set("mclag_igmp_snooping_aware", flattenSwitchControllerManagedSwitchMclagIgmpSnoopingAware(o["mclag-igmp-snooping-aware"], d, "mclag_igmp_snooping_aware")); err != nil {
 		if vv, ok := fortiAPIPatch(o["mclag-igmp-snooping-aware"], "SwitchControllerManagedSwitch-MclagIgmpSnoopingAware"); ok {
 			if err = d.Set("mclag_igmp_snooping_aware", vv); err != nil {
@@ -7073,6 +7158,10 @@ func expandSwitchControllerManagedSwitchL3Discovered(d *schema.ResourceData, v i
 }
 
 func expandSwitchControllerManagedSwitchMaxAllowedTrunkMembers(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSwitchControllerManagedSwitchMaxPoeBudget(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -10014,6 +10103,15 @@ func getObjectSwitchControllerManagedSwitch(d *schema.ResourceData) (*map[string
 			return &obj, err
 		} else if t != nil {
 			obj["max-allowed-trunk-members"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("max_poe_budget"); ok || d.HasChange("max_poe_budget") {
+		t, err := expandSwitchControllerManagedSwitchMaxPoeBudget(d, v, "max_poe_budget")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["max-poe-budget"] = t
 		}
 	}
 

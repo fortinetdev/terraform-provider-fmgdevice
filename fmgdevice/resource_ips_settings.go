@@ -63,6 +63,7 @@ func resourceIpsSettings() *schema.Resource {
 			"packet_log_memory": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"packet_log_post_attack": &schema.Schema{
 				Type:     schema.TypeInt,
@@ -101,7 +102,7 @@ func resourceIpsSettingsUpdate(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	obj, err := getObjectIpsSettings(d)
+	obj, err := getObjectIpsSettings(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating IpsSettings resource while getting object: %v", err)
 	}
@@ -122,7 +123,6 @@ func resourceIpsSettingsUpdate(d *schema.ResourceData, m interface{}) error {
 
 func resourceIpsSettingsDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -145,11 +145,17 @@ func resourceIpsSettingsDelete(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	obj, err := getObjectIpsSettings(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating IpsSettings resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteIpsSettings(mkey, paradict, wsParams)
+	_, err = c.UpdateIpsSettings(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting IpsSettings resource: %v", err)
+		return fmt.Errorf("Error clearing IpsSettings resource: %v", err)
 	}
 
 	d.SetId("")
@@ -328,7 +334,7 @@ func expandIpsSettingsProxyInlineIps(d *schema.ResourceData, v interface{}, pre 
 	return v, nil
 }
 
-func getObjectIpsSettings(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectIpsSettings(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("ha_session_pickup"); ok || d.HasChange("ha_session_pickup") {

@@ -1,5 +1,5 @@
 ---
-subcategory: "No Category"
+subcategory: "WAF"
 layout: "fmgdevice"
 page_title: "FortiManager Device: fmgdevice_waf_profile_constraint_exception"
 description: |-

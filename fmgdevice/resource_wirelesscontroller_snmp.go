@@ -59,8 +59,27 @@ func resourceWirelessControllerSnmp() *schema.Resource {
 									"id": &schema.Schema{
 										Type:     schema.TypeInt,
 										Optional: true,
+										Computed: true,
 									},
 									"ip": &schema.Schema{
+										Type:     schema.TypeString,
+										Optional: true,
+										Computed: true,
+									},
+								},
+							},
+						},
+						"hosts6": &schema.Schema{
+							Type:     schema.TypeList,
+							Optional: true,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"id": &schema.Schema{
+										Type:     schema.TypeInt,
+										Optional: true,
+										Computed: true,
+									},
+									"ipv6": &schema.Schema{
 										Type:     schema.TypeString,
 										Optional: true,
 										Computed: true,
@@ -71,6 +90,7 @@ func resourceWirelessControllerSnmp() *schema.Resource {
 						"id": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"name": &schema.Schema{
 							Type:     schema.TypeString,
@@ -142,8 +162,15 @@ func resourceWirelessControllerSnmp() *schema.Resource {
 						"name": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"notify_hosts": &schema.Schema{
+							Type:     schema.TypeSet,
+							Elem:     &schema.Schema{Type: schema.TypeString},
+							Optional: true,
+							Computed: true,
+						},
+						"notify_hosts6": &schema.Schema{
 							Type:     schema.TypeSet,
 							Elem:     &schema.Schema{Type: schema.TypeString},
 							Optional: true,
@@ -217,7 +244,7 @@ func resourceWirelessControllerSnmpUpdate(d *schema.ResourceData, m interface{})
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	obj, err := getObjectWirelessControllerSnmp(d)
+	obj, err := getObjectWirelessControllerSnmp(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating WirelessControllerSnmp resource while getting object: %v", err)
 	}
@@ -238,7 +265,6 @@ func resourceWirelessControllerSnmpUpdate(d *schema.ResourceData, m interface{})
 
 func resourceWirelessControllerSnmpDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -261,11 +287,17 @@ func resourceWirelessControllerSnmpDelete(d *schema.ResourceData, m interface{})
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	obj, err := getObjectWirelessControllerSnmp(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating WirelessControllerSnmp resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteWirelessControllerSnmp(mkey, paradict, wsParams)
+	_, err = c.UpdateWirelessControllerSnmp(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting WirelessControllerSnmp resource: %v", err)
+		return fmt.Errorf("Error clearing WirelessControllerSnmp resource: %v", err)
 	}
 
 	d.SetId("")
@@ -347,6 +379,12 @@ func flattenWirelessControllerSnmpCommunity(v interface{}, d *schema.ResourceDat
 		if _, ok := i["hosts"]; ok {
 			v := flattenWirelessControllerSnmpCommunityHosts(i["hosts"], d, pre_append)
 			tmp["hosts"] = fortiAPISubPartPatch(v, "WirelessControllerSnmp-Community-Hosts")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "hosts6"
+		if _, ok := i["hosts6"]; ok {
+			v := flattenWirelessControllerSnmpCommunityHosts6(i["hosts6"], d, pre_append)
+			tmp["hosts6"] = fortiAPISubPartPatch(v, "WirelessControllerSnmp-Community-Hosts6")
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "id"
@@ -450,6 +488,55 @@ func flattenWirelessControllerSnmpCommunityHostsIp(v interface{}, d *schema.Reso
 	return v
 }
 
+func flattenWirelessControllerSnmpCommunityHosts6(v interface{}, d *schema.ResourceData, pre string) []map[string]interface{} {
+	if v == nil {
+		return nil
+	}
+
+	l := v.([]interface{})
+	if len(l) == 0 || l[0] == nil {
+		return nil
+	}
+
+	result := make([]map[string]interface{}, 0, len(l))
+
+	con := 0
+	for _, r := range l {
+		tmp := make(map[string]interface{})
+		i := r.(map[string]interface{})
+
+		pre_append := "" // table
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "id"
+		if _, ok := i["id"]; ok {
+			v := flattenWirelessControllerSnmpCommunityHosts6Id(i["id"], d, pre_append)
+			tmp["id"] = fortiAPISubPartPatch(v, "WirelessControllerSnmpCommunity-Hosts6-Id")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "ipv6"
+		if _, ok := i["ipv6"]; ok {
+			v := flattenWirelessControllerSnmpCommunityHosts6Ipv6(i["ipv6"], d, pre_append)
+			tmp["ipv6"] = fortiAPISubPartPatch(v, "WirelessControllerSnmpCommunity-Hosts6-Ipv6")
+		}
+
+		if len(tmp) > 0 {
+			result = append(result, tmp)
+		}
+
+		con += 1
+	}
+
+	return result
+}
+
+func flattenWirelessControllerSnmpCommunityHosts6Id(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWirelessControllerSnmpCommunityHosts6Ipv6(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenWirelessControllerSnmpCommunityId(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -531,6 +618,12 @@ func flattenWirelessControllerSnmpUser(v interface{}, d *schema.ResourceData, pr
 			tmp["notify_hosts"] = fortiAPISubPartPatch(v, "WirelessControllerSnmp-User-NotifyHosts")
 		}
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "notify_hosts6"
+		if _, ok := i["notify-hosts6"]; ok {
+			v := flattenWirelessControllerSnmpUserNotifyHosts6(i["notify-hosts6"], d, pre_append)
+			tmp["notify_hosts6"] = fortiAPISubPartPatch(v, "WirelessControllerSnmp-User-NotifyHosts6")
+		}
+
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "priv_proto"
 		if _, ok := i["priv-proto"]; ok {
 			v := flattenWirelessControllerSnmpUserPrivProto(i["priv-proto"], d, pre_append)
@@ -580,6 +673,10 @@ func flattenWirelessControllerSnmpUserName(v interface{}, d *schema.ResourceData
 }
 
 func flattenWirelessControllerSnmpUserNotifyHosts(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
+func flattenWirelessControllerSnmpUserNotifyHosts6(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return flattenStringList(v)
 }
 
@@ -731,6 +828,16 @@ func expandWirelessControllerSnmpCommunity(d *schema.ResourceData, v interface{}
 			}
 		}
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "hosts6"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			t, err := expandWirelessControllerSnmpCommunityHosts6(d, i["hosts6"], pre_append)
+			if err != nil {
+				return result, err
+			} else if t != nil {
+				tmp["hosts6"] = t
+			}
+		}
+
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "id"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
 			tmp["id"], _ = expandWirelessControllerSnmpCommunityId(d, i["id"], pre_append)
@@ -818,6 +925,48 @@ func expandWirelessControllerSnmpCommunityHostsIp(d *schema.ResourceData, v inte
 	return v, nil
 }
 
+func expandWirelessControllerSnmpCommunityHosts6(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	l := v.([]interface{})
+	result := make([]map[string]interface{}, 0, len(l))
+
+	if len(l) == 0 || l[0] == nil {
+		return result, nil
+	}
+
+	con := 0
+	for _, r := range l {
+		tmp := make(map[string]interface{})
+		i := r.(map[string]interface{})
+		pre_append := "" // table
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "id"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["id"], _ = expandWirelessControllerSnmpCommunityHosts6Id(d, i["id"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "ipv6"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["ipv6"], _ = expandWirelessControllerSnmpCommunityHosts6Ipv6(d, i["ipv6"], pre_append)
+		}
+
+		if len(tmp) > 0 {
+			result = append(result, tmp)
+		}
+
+		con += 1
+	}
+
+	return result, nil
+}
+
+func expandWirelessControllerSnmpCommunityHosts6Id(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWirelessControllerSnmpCommunityHosts6Ipv6(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandWirelessControllerSnmpCommunityId(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -896,6 +1045,11 @@ func expandWirelessControllerSnmpUser(d *schema.ResourceData, v interface{}, pre
 			tmp["notify-hosts"], _ = expandWirelessControllerSnmpUserNotifyHosts(d, i["notify_hosts"], pre_append)
 		}
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "notify_hosts6"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["notify-hosts6"], _ = expandWirelessControllerSnmpUserNotifyHosts6(d, i["notify_hosts6"], pre_append)
+		}
+
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "priv_proto"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
 			tmp["priv-proto"], _ = expandWirelessControllerSnmpUserPrivProto(d, i["priv_proto"], pre_append)
@@ -952,6 +1106,10 @@ func expandWirelessControllerSnmpUserNotifyHosts(d *schema.ResourceData, v inter
 	return expandStringList(v.(*schema.Set).List()), nil
 }
 
+func expandWirelessControllerSnmpUserNotifyHosts6(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
 func expandWirelessControllerSnmpUserPrivProto(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -976,15 +1134,19 @@ func expandWirelessControllerSnmpUserTrapStatus(d *schema.ResourceData, v interf
 	return v, nil
 }
 
-func getObjectWirelessControllerSnmp(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectWirelessControllerSnmp(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
-	if v, ok := d.GetOk("community"); ok || d.HasChange("community") {
-		t, err := expandWirelessControllerSnmpCommunity(d, v, "community")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["community"] = t
+	if bemptysontable {
+		obj["community"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("community"); ok || d.HasChange("community") {
+			t, err := expandWirelessControllerSnmpCommunity(d, v, "community")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["community"] = t
+			}
 		}
 	}
 
@@ -1024,12 +1186,16 @@ func getObjectWirelessControllerSnmp(d *schema.ResourceData) (*map[string]interf
 		}
 	}
 
-	if v, ok := d.GetOk("user"); ok || d.HasChange("user") {
-		t, err := expandWirelessControllerSnmpUser(d, v, "user")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["user"] = t
+	if bemptysontable {
+		obj["user"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("user"); ok || d.HasChange("user") {
+			t, err := expandWirelessControllerSnmpUser(d, v, "user")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["user"] = t
+			}
 		}
 	}
 

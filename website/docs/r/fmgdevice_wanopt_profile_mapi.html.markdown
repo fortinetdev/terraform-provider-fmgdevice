@@ -1,5 +1,5 @@
 ---
-subcategory: "No Category"
+subcategory: "Wanopt"
 layout: "fmgdevice"
 page_title: "FortiManager Device: fmgdevice_wanopt_profile_mapi"
 description: |-
@@ -26,6 +26,7 @@ The following arguments are supported:
 
 * `log_traffic` - Enable/disable logging. Valid values: `disable`, `enable`.
 
+* `port` - Single port number or port number range for MAPI. Only packets with a destination port number that matches this port number or range are accepted by this profile.
 * `secure_tunnel` - Enable/disable securing the WAN Opt tunnel using SSL. Secure and non-secure tunnels use the same TCP port (7810). Valid values: `disable`, `enable`.
 
 * `status` - Enable/disable WAN Optimization. Valid values: `disable`, `enable`.

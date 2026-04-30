@@ -69,6 +69,7 @@ func resourceWirelessControllerWidsProfile() *schema.Resource {
 			"ap_auto_suppress": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"ap_bgscan_disable_schedules": &schema.Schema{
 				Type:     schema.TypeSet,
@@ -79,26 +80,32 @@ func resourceWirelessControllerWidsProfile() *schema.Resource {
 			"ap_bgscan_duration": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"ap_bgscan_idle": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"ap_bgscan_intv": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"ap_bgscan_period": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"ap_bgscan_report_intv": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"ap_fgscan_report_intv": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"ap_impersonation": &schema.Schema{
 				Type:     schema.TypeString,
@@ -125,10 +132,12 @@ func resourceWirelessControllerWidsProfile() *schema.Resource {
 			"ap_scan_passive": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"ap_scan_threshold": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"ap_spoofing": &schema.Schema{
 				Type:     schema.TypeString,

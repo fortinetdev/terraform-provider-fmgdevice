@@ -1,5 +1,5 @@
 ---
-subcategory: "No Category"
+subcategory: "System"
 layout: "fmgdevice"
 page_title: "FortiManager Device: fmgdevice_system_sdwan"
 description: |-
@@ -164,6 +164,8 @@ The `health_check` block supports:
 * `threshold_warning_jitter` - Warning threshold for jitter (ms, default = 0).
 * `threshold_warning_latency` - Warning threshold for latency (ms, default = 0).
 * `threshold_warning_packetloss` - Warning threshold for packet loss (percentage, default = 0).
+* `update_bgp_route` - Enable/disable updating the BGP route. Valid values: `disable`, `enable`.
+
 * `update_cascade_interface` - Enable/disable update cascade interface. Valid values: `disable`, `enable`.
 
 * `update_static_route` - Enable/disable updating the static route. Valid values: `disable`, `enable`.

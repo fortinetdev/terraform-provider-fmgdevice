@@ -197,6 +197,10 @@ func resourceFirewallAddrgrp6() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"visibility": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 			"dynamic_sort_subtable": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -691,6 +695,10 @@ func flattenFirewallAddrgrp6Uuid(v interface{}, d *schema.ResourceData, pre stri
 	return v
 }
 
+func flattenFirewallAddrgrp6Visibility(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func refreshObjectFirewallAddrgrp6(d *schema.ResourceData, o map[string]interface{}) error {
 	var err error
 
@@ -843,6 +851,16 @@ func refreshObjectFirewallAddrgrp6(d *schema.ResourceData, o map[string]interfac
 			}
 		} else {
 			return fmt.Errorf("Error reading uuid: %v", err)
+		}
+	}
+
+	if err = d.Set("visibility", flattenFirewallAddrgrp6Visibility(o["visibility"], d, "visibility")); err != nil {
+		if vv, ok := fortiAPIPatch(o["visibility"], "FirewallAddrgrp6-Visibility"); ok {
+			if err = d.Set("visibility", vv); err != nil {
+				return fmt.Errorf("Error reading visibility: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading visibility: %v", err)
 		}
 	}
 
@@ -1121,6 +1139,10 @@ func expandFirewallAddrgrp6Uuid(d *schema.ResourceData, v interface{}, pre strin
 	return v, nil
 }
 
+func expandFirewallAddrgrp6Visibility(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func getObjectFirewallAddrgrp6(d *schema.ResourceData) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
@@ -1229,6 +1251,15 @@ func getObjectFirewallAddrgrp6(d *schema.ResourceData) (*map[string]interface{},
 			return &obj, err
 		} else if t != nil {
 			obj["uuid"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("visibility"); ok || d.HasChange("visibility") {
+		t, err := expandFirewallAddrgrp6Visibility(d, v, "visibility")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["visibility"] = t
 		}
 	}
 

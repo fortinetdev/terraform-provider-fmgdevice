@@ -102,7 +102,7 @@ func resourceSwitchControllerManagedSwitchSnmpSysinfoUpdate(d *schema.ResourceDa
 	paradict["vdom"] = device_vdom
 	paradict["managed_switch"] = managed_switch
 
-	obj, err := getObjectSwitchControllerManagedSwitchSnmpSysinfo(d)
+	obj, err := getObjectSwitchControllerManagedSwitchSnmpSysinfo(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating SwitchControllerManagedSwitchSnmpSysinfo resource while getting object: %v", err)
 	}
@@ -123,7 +123,6 @@ func resourceSwitchControllerManagedSwitchSnmpSysinfoUpdate(d *schema.ResourceDa
 
 func resourceSwitchControllerManagedSwitchSnmpSysinfoDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -148,11 +147,17 @@ func resourceSwitchControllerManagedSwitchSnmpSysinfoDelete(d *schema.ResourceDa
 	paradict["vdom"] = device_vdom
 	paradict["managed_switch"] = managed_switch
 
+	obj, err := getObjectSwitchControllerManagedSwitchSnmpSysinfo(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating SwitchControllerManagedSwitchSnmpSysinfo resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteSwitchControllerManagedSwitchSnmpSysinfo(mkey, paradict, wsParams)
+	_, err = c.UpdateSwitchControllerManagedSwitchSnmpSysinfo(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting SwitchControllerManagedSwitchSnmpSysinfo resource: %v", err)
+		return fmt.Errorf("Error clearing SwitchControllerManagedSwitchSnmpSysinfo resource: %v", err)
 	}
 
 	d.SetId("")
@@ -324,7 +329,7 @@ func expandSwitchControllerManagedSwitchSnmpSysinfoStatus2edl(d *schema.Resource
 	return v, nil
 }
 
-func getObjectSwitchControllerManagedSwitchSnmpSysinfo(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectSwitchControllerManagedSwitchSnmpSysinfo(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("contact_info"); ok || d.HasChange("contact_info") {

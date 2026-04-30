@@ -98,6 +98,7 @@ func resourceWebProxyForwardServer() *schema.Resource {
 			"monitor": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"name": &schema.Schema{
 				Type:     schema.TypeString,
@@ -128,6 +129,7 @@ func resourceWebProxyForwardServer() *schema.Resource {
 			"vrf_select": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"ippool": &schema.Schema{
 				Type:     schema.TypeSet,

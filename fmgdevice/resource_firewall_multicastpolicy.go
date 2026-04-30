@@ -85,6 +85,7 @@ func resourceFirewallMulticastPolicy() *schema.Resource {
 			"end_port": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"fosid": &schema.Schema{
 				Type:     schema.TypeInt,
@@ -119,6 +120,7 @@ func resourceFirewallMulticastPolicy() *schema.Resource {
 			"snat_ip": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"srcaddr": &schema.Schema{
 				Type:     schema.TypeSet,
@@ -135,6 +137,7 @@ func resourceFirewallMulticastPolicy() *schema.Resource {
 			"start_port": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"status": &schema.Schema{
 				Type:     schema.TypeString,

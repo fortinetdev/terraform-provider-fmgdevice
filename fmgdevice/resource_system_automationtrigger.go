@@ -97,6 +97,7 @@ func resourceSystemAutomationTrigger() *schema.Resource {
 			"ioc_level": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"license_type": &schema.Schema{
 				Type:     schema.TypeString,

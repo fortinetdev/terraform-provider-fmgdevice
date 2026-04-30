@@ -51,6 +51,14 @@ func resourceFirewallSslSshProfileFtps() *schema.Resource {
 				Required: true,
 				ForceNew: true,
 			},
+			"client_cert_request": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"invalid_server_cert": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 			"cert_validation_failure": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -95,6 +103,10 @@ func resourceFirewallSslSshProfileFtps() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+			},
+			"unsupported_ssl": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
 			},
 			"unsupported_ssl_cipher": &schema.Schema{
 				Type:     schema.TypeString,
@@ -146,7 +158,7 @@ func resourceFirewallSslSshProfileFtpsUpdate(d *schema.ResourceData, m interface
 	paradict["vdom"] = device_vdom
 	paradict["ssl_ssh_profile"] = ssl_ssh_profile
 
-	obj, err := getObjectFirewallSslSshProfileFtps(d)
+	obj, err := getObjectFirewallSslSshProfileFtps(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating FirewallSslSshProfileFtps resource while getting object: %v", err)
 	}
@@ -167,7 +179,6 @@ func resourceFirewallSslSshProfileFtpsUpdate(d *schema.ResourceData, m interface
 
 func resourceFirewallSslSshProfileFtpsDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -192,11 +203,17 @@ func resourceFirewallSslSshProfileFtpsDelete(d *schema.ResourceData, m interface
 	paradict["vdom"] = device_vdom
 	paradict["ssl_ssh_profile"] = ssl_ssh_profile
 
+	obj, err := getObjectFirewallSslSshProfileFtps(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating FirewallSslSshProfileFtps resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteFirewallSslSshProfileFtps(mkey, paradict, wsParams)
+	_, err = c.UpdateFirewallSslSshProfileFtps(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting FirewallSslSshProfileFtps resource: %v", err)
+		return fmt.Errorf("Error clearing FirewallSslSshProfileFtps resource: %v", err)
 	}
 
 	d.SetId("")
@@ -266,6 +283,14 @@ func resourceFirewallSslSshProfileFtpsRead(d *schema.ResourceData, m interface{}
 	return nil
 }
 
+func flattenFirewallSslSshProfileFtpsClientCertRequest2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenFirewallSslSshProfileFtpsInvalidServerCert2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenFirewallSslSshProfileFtpsCertValidationFailure2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -302,6 +327,10 @@ func flattenFirewallSslSshProfileFtpsStatus2edl(v interface{}, d *schema.Resourc
 	return v
 }
 
+func flattenFirewallSslSshProfileFtpsUnsupportedSsl2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenFirewallSslSshProfileFtpsUnsupportedSslCipher2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -320,6 +349,26 @@ func flattenFirewallSslSshProfileFtpsUntrustedServerCert2edl(v interface{}, d *s
 
 func refreshObjectFirewallSslSshProfileFtps(d *schema.ResourceData, o map[string]interface{}) error {
 	var err error
+
+	if err = d.Set("client_cert_request", flattenFirewallSslSshProfileFtpsClientCertRequest2edl(o["client-cert-request"], d, "client_cert_request")); err != nil {
+		if vv, ok := fortiAPIPatch(o["client-cert-request"], "FirewallSslSshProfileFtps-ClientCertRequest"); ok {
+			if err = d.Set("client_cert_request", vv); err != nil {
+				return fmt.Errorf("Error reading client_cert_request: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading client_cert_request: %v", err)
+		}
+	}
+
+	if err = d.Set("invalid_server_cert", flattenFirewallSslSshProfileFtpsInvalidServerCert2edl(o["invalid-server-cert"], d, "invalid_server_cert")); err != nil {
+		if vv, ok := fortiAPIPatch(o["invalid-server-cert"], "FirewallSslSshProfileFtps-InvalidServerCert"); ok {
+			if err = d.Set("invalid_server_cert", vv); err != nil {
+				return fmt.Errorf("Error reading invalid_server_cert: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading invalid_server_cert: %v", err)
+		}
+	}
 
 	if err = d.Set("cert_validation_failure", flattenFirewallSslSshProfileFtpsCertValidationFailure2edl(o["cert-validation-failure"], d, "cert_validation_failure")); err != nil {
 		if vv, ok := fortiAPIPatch(o["cert-validation-failure"], "FirewallSslSshProfileFtps-CertValidationFailure"); ok {
@@ -411,6 +460,16 @@ func refreshObjectFirewallSslSshProfileFtps(d *schema.ResourceData, o map[string
 		}
 	}
 
+	if err = d.Set("unsupported_ssl", flattenFirewallSslSshProfileFtpsUnsupportedSsl2edl(o["unsupported-ssl"], d, "unsupported_ssl")); err != nil {
+		if vv, ok := fortiAPIPatch(o["unsupported-ssl"], "FirewallSslSshProfileFtps-UnsupportedSsl"); ok {
+			if err = d.Set("unsupported_ssl", vv); err != nil {
+				return fmt.Errorf("Error reading unsupported_ssl: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading unsupported_ssl: %v", err)
+		}
+	}
+
 	if err = d.Set("unsupported_ssl_cipher", flattenFirewallSslSshProfileFtpsUnsupportedSslCipher2edl(o["unsupported-ssl-cipher"], d, "unsupported_ssl_cipher")); err != nil {
 		if vv, ok := fortiAPIPatch(o["unsupported-ssl-cipher"], "FirewallSslSshProfileFtps-UnsupportedSslCipher"); ok {
 			if err = d.Set("unsupported_ssl_cipher", vv); err != nil {
@@ -460,6 +519,14 @@ func flattenFirewallSslSshProfileFtpsFortiTestDebug(d *schema.ResourceData, fosd
 	log.Printf("ER List: %v", e)
 }
 
+func expandFirewallSslSshProfileFtpsClientCertRequest2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandFirewallSslSshProfileFtpsInvalidServerCert2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandFirewallSslSshProfileFtpsCertValidationFailure2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -496,6 +563,10 @@ func expandFirewallSslSshProfileFtpsStatus2edl(d *schema.ResourceData, v interfa
 	return v, nil
 }
 
+func expandFirewallSslSshProfileFtpsUnsupportedSsl2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandFirewallSslSshProfileFtpsUnsupportedSslCipher2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -512,8 +583,26 @@ func expandFirewallSslSshProfileFtpsUntrustedServerCert2edl(d *schema.ResourceDa
 	return v, nil
 }
 
-func getObjectFirewallSslSshProfileFtps(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectFirewallSslSshProfileFtps(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
+
+	if v, ok := d.GetOk("client_cert_request"); ok || d.HasChange("client_cert_request") {
+		t, err := expandFirewallSslSshProfileFtpsClientCertRequest2edl(d, v, "client_cert_request")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["client-cert-request"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("invalid_server_cert"); ok || d.HasChange("invalid_server_cert") {
+		t, err := expandFirewallSslSshProfileFtpsInvalidServerCert2edl(d, v, "invalid_server_cert")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["invalid-server-cert"] = t
+		}
+	}
 
 	if v, ok := d.GetOk("cert_validation_failure"); ok || d.HasChange("cert_validation_failure") {
 		t, err := expandFirewallSslSshProfileFtpsCertValidationFailure2edl(d, v, "cert_validation_failure")
@@ -593,6 +682,15 @@ func getObjectFirewallSslSshProfileFtps(d *schema.ResourceData) (*map[string]int
 			return &obj, err
 		} else if t != nil {
 			obj["status"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("unsupported_ssl"); ok || d.HasChange("unsupported_ssl") {
+		t, err := expandFirewallSslSshProfileFtpsUnsupportedSsl2edl(d, v, "unsupported_ssl")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["unsupported-ssl"] = t
 		}
 	}
 

@@ -94,7 +94,7 @@ func resourceLogThreatWeightLevelUpdate(d *schema.ResourceData, m interface{}) e
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	obj, err := getObjectLogThreatWeightLevel(d)
+	obj, err := getObjectLogThreatWeightLevel(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating LogThreatWeightLevel resource while getting object: %v", err)
 	}
@@ -115,7 +115,6 @@ func resourceLogThreatWeightLevelUpdate(d *schema.ResourceData, m interface{}) e
 
 func resourceLogThreatWeightLevelDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -138,11 +137,17 @@ func resourceLogThreatWeightLevelDelete(d *schema.ResourceData, m interface{}) e
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	obj, err := getObjectLogThreatWeightLevel(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating LogThreatWeightLevel resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteLogThreatWeightLevel(mkey, paradict, wsParams)
+	_, err = c.UpdateLogThreatWeightLevel(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting LogThreatWeightLevel resource: %v", err)
+		return fmt.Errorf("Error clearing LogThreatWeightLevel resource: %v", err)
 	}
 
 	d.SetId("")
@@ -285,7 +290,7 @@ func expandLogThreatWeightLevelMedium2edl(d *schema.ResourceData, v interface{},
 	return v, nil
 }
 
-func getObjectLogThreatWeightLevel(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectLogThreatWeightLevel(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("critical"); ok || d.HasChange("critical") {

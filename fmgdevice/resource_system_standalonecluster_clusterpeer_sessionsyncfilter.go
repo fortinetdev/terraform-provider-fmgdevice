@@ -131,7 +131,7 @@ func resourceSystemStandaloneClusterClusterPeerSessionSyncFilterUpdate(d *schema
 	paradict["device"] = device_name
 	paradict["cluster_peer"] = cluster_peer
 
-	obj, err := getObjectSystemStandaloneClusterClusterPeerSessionSyncFilter(d)
+	obj, err := getObjectSystemStandaloneClusterClusterPeerSessionSyncFilter(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemStandaloneClusterClusterPeerSessionSyncFilter resource while getting object: %v", err)
 	}
@@ -152,7 +152,6 @@ func resourceSystemStandaloneClusterClusterPeerSessionSyncFilterUpdate(d *schema
 
 func resourceSystemStandaloneClusterClusterPeerSessionSyncFilterDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -172,11 +171,17 @@ func resourceSystemStandaloneClusterClusterPeerSessionSyncFilterDelete(d *schema
 	paradict["device"] = device_name
 	paradict["cluster_peer"] = cluster_peer
 
+	obj, err := getObjectSystemStandaloneClusterClusterPeerSessionSyncFilter(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating SystemStandaloneClusterClusterPeerSessionSyncFilter resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteSystemStandaloneClusterClusterPeerSessionSyncFilter(mkey, paradict, wsParams)
+	_, err = c.UpdateSystemStandaloneClusterClusterPeerSessionSyncFilter(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting SystemStandaloneClusterClusterPeerSessionSyncFilter resource: %v", err)
+		return fmt.Errorf("Error clearing SystemStandaloneClusterClusterPeerSessionSyncFilter resource: %v", err)
 	}
 
 	d.SetId("")
@@ -493,15 +498,19 @@ func expandSystemStandaloneClusterClusterPeerSessionSyncFilterSrcintf3rdl(d *sch
 	return expandStringList(v.(*schema.Set).List()), nil
 }
 
-func getObjectSystemStandaloneClusterClusterPeerSessionSyncFilter(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectSystemStandaloneClusterClusterPeerSessionSyncFilter(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
-	if v, ok := d.GetOk("custom_service"); ok || d.HasChange("custom_service") {
-		t, err := expandSystemStandaloneClusterClusterPeerSessionSyncFilterCustomService3rdl(d, v, "custom_service")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["custom-service"] = t
+	if bemptysontable {
+		obj["custom-service"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("custom_service"); ok || d.HasChange("custom_service") {
+			t, err := expandSystemStandaloneClusterClusterPeerSessionSyncFilterCustomService3rdl(d, v, "custom_service")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["custom-service"] = t
+			}
 		}
 	}
 

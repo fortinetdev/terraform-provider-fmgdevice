@@ -245,6 +245,7 @@ func resourceWirelessControllerVap() *schema.Resource {
 			"auth": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"auth_cert": &schema.Schema{
 				Type:     schema.TypeSet,
@@ -360,6 +361,7 @@ func resourceWirelessControllerVap() *schema.Resource {
 			"dhcp_lease_time": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"dhcp_option43_insertion": &schema.Schema{
 				Type:     schema.TypeString,
@@ -384,10 +386,12 @@ func resourceWirelessControllerVap() *schema.Resource {
 			"domain_name_stripping": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"dynamic_vlan": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"dynamic_mapping": &schema.Schema{
 				Type:     schema.TypeList,
@@ -994,6 +998,10 @@ func resourceWirelessControllerVap() *schema.Resource {
 							Type:     schema.TypeString,
 							Optional: true,
 						},
+						"mlo": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
 						"mpsk": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
@@ -1456,6 +1464,7 @@ func resourceWirelessControllerVap() *schema.Resource {
 			"external_web_format": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"fast_bss_transition": &schema.Schema{
 				Type:     schema.TypeString,
@@ -1470,14 +1479,17 @@ func resourceWirelessControllerVap() *schema.Resource {
 			"ft_mobility_domain": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"ft_over_ds": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"ft_r0_key_lifetime": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"gas_comeback_delay": &schema.Schema{
 				Type:     schema.TypeInt,
@@ -1588,6 +1600,7 @@ func resourceWirelessControllerVap() *schema.Resource {
 			"keyindex": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"l3_roaming": &schema.Schema{
 				Type:     schema.TypeString,
@@ -1607,6 +1620,7 @@ func resourceWirelessControllerVap() *schema.Resource {
 			"local_authentication": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"local_bridging": &schema.Schema{
 				Type:     schema.TypeString,
@@ -1621,6 +1635,7 @@ func resourceWirelessControllerVap() *schema.Resource {
 			"local_lan_partition": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"local_standalone": &schema.Schema{
 				Type:     schema.TypeString,
@@ -1641,6 +1656,7 @@ func resourceWirelessControllerVap() *schema.Resource {
 			"local_standalone_nat": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"mac_auth_bypass": &schema.Schema{
 				Type:     schema.TypeString,
@@ -1679,10 +1695,12 @@ func resourceWirelessControllerVap() *schema.Resource {
 						"mac": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"mac_filter_policy": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 					},
 				},
@@ -1726,6 +1744,11 @@ func resourceWirelessControllerVap() *schema.Resource {
 				Computed: true,
 			},
 			"mesh_backhaul": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+			"mlo": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
@@ -1915,6 +1938,7 @@ func resourceWirelessControllerVap() *schema.Resource {
 			"portal_type": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"pre_auth": &schema.Schema{
 				Type:     schema.TypeString,
@@ -2081,6 +2105,7 @@ func resourceWirelessControllerVap() *schema.Resource {
 			"roaming_acct_interim_update": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"sae_groups": &schema.Schema{
 				Type:     schema.TypeSet,
@@ -2096,6 +2121,7 @@ func resourceWirelessControllerVap() *schema.Resource {
 			"sae_hnp_only": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"sae_password": &schema.Schema{
 				Type:      schema.TypeSet,
@@ -2199,10 +2225,12 @@ func resourceWirelessControllerVap() *schema.Resource {
 			"tunnel_echo_interval": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"tunnel_fallback_interval": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"usergroup": &schema.Schema{
 				Type:     schema.TypeSet,
@@ -3485,6 +3513,12 @@ func flattenWirelessControllerVapDynamicMapping(v interface{}, d *schema.Resourc
 			tmp["mesh_backhaul"] = fortiAPISubPartPatch(v, "WirelessControllerVap-DynamicMapping-MeshBackhaul")
 		}
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "mlo"
+		if _, ok := i["mlo"]; ok {
+			v := flattenWirelessControllerVapDynamicMappingMlo(i["mlo"], d, pre_append)
+			tmp["mlo"] = fortiAPISubPartPatch(v, "WirelessControllerVap-DynamicMapping-Mlo")
+		}
+
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "mpsk"
 		if _, ok := i["mpsk"]; ok {
 			v := flattenWirelessControllerVapDynamicMappingMpsk(i["mpsk"], d, pre_append)
@@ -4643,6 +4677,10 @@ func flattenWirelessControllerVapDynamicMappingMeshBackhaul(v interface{}, d *sc
 	return v
 }
 
+func flattenWirelessControllerVapDynamicMappingMlo(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenWirelessControllerVapDynamicMappingMpsk(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -5354,6 +5392,10 @@ func flattenWirelessControllerVapMeDisableThresh(v interface{}, d *schema.Resour
 }
 
 func flattenWirelessControllerVapMeshBackhaul(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWirelessControllerVapMlo(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -7161,6 +7203,16 @@ func refreshObjectWirelessControllerVap(d *schema.ResourceData, o map[string]int
 			}
 		} else {
 			return fmt.Errorf("Error reading mesh_backhaul: %v", err)
+		}
+	}
+
+	if err = d.Set("mlo", flattenWirelessControllerVapMlo(o["mlo"], d, "mlo")); err != nil {
+		if vv, ok := fortiAPIPatch(o["mlo"], "WirelessControllerVap-Mlo"); ok {
+			if err = d.Set("mlo", vv); err != nil {
+				return fmt.Errorf("Error reading mlo: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading mlo: %v", err)
 		}
 	}
 
@@ -9056,6 +9108,11 @@ func expandWirelessControllerVapDynamicMapping(d *schema.ResourceData, v interfa
 			tmp["mesh-backhaul"], _ = expandWirelessControllerVapDynamicMappingMeshBackhaul(d, i["mesh_backhaul"], pre_append)
 		}
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "mlo"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["mlo"], _ = expandWirelessControllerVapDynamicMappingMlo(d, i["mlo"], pre_append)
+		}
+
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "mpsk"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
 			tmp["mpsk"], _ = expandWirelessControllerVapDynamicMappingMpsk(d, i["mpsk"], pre_append)
@@ -10129,6 +10186,10 @@ func expandWirelessControllerVapDynamicMappingMeshBackhaul(d *schema.ResourceDat
 	return v, nil
 }
 
+func expandWirelessControllerVapDynamicMappingMlo(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandWirelessControllerVapDynamicMappingMpsk(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -10832,6 +10893,10 @@ func expandWirelessControllerVapMeDisableThresh(d *schema.ResourceData, v interf
 }
 
 func expandWirelessControllerVapMeshBackhaul(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWirelessControllerVapMlo(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -12492,6 +12557,15 @@ func getObjectWirelessControllerVap(d *schema.ResourceData) (*map[string]interfa
 			return &obj, err
 		} else if t != nil {
 			obj["mesh-backhaul"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("mlo"); ok || d.HasChange("mlo") {
+		t, err := expandWirelessControllerVapMlo(d, v, "mlo")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["mlo"] = t
 		}
 	}
 

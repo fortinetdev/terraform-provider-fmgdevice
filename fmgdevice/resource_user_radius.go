@@ -158,6 +158,7 @@ func resourceUserRadius() *schema.Resource {
 			"delimiter": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"dynamic_mapping": &schema.Schema{
 				Type:     schema.TypeList,
@@ -721,10 +722,12 @@ func resourceUserRadius() *schema.Resource {
 			"rsso_context_timeout": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"rsso_endpoint_attribute": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"rsso_endpoint_block_attribute": &schema.Schema{
 				Type:     schema.TypeString,
@@ -733,10 +736,12 @@ func resourceUserRadius() *schema.Resource {
 			"rsso_ep_one_ip_only": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"rsso_flush_ip_session": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"rsso_log_flags": &schema.Schema{
 				Type:     schema.TypeSet,
@@ -751,10 +756,12 @@ func resourceUserRadius() *schema.Resource {
 			"rsso_radius_response": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"rsso_radius_server_port": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"rsso_secret": &schema.Schema{
 				Type:      schema.TypeSet,
@@ -766,6 +773,7 @@ func resourceUserRadius() *schema.Resource {
 			"rsso_validate_request_secret": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"secondary_secret": &schema.Schema{
 				Type:      schema.TypeSet,
@@ -792,6 +800,7 @@ func resourceUserRadius() *schema.Resource {
 			"server_identity_check": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"source_ip": &schema.Schema{
 				Type:     schema.TypeString,
@@ -806,6 +815,7 @@ func resourceUserRadius() *schema.Resource {
 			"sso_attribute": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"sso_attribute_key": &schema.Schema{
 				Type:     schema.TypeString,
@@ -814,6 +824,7 @@ func resourceUserRadius() *schema.Resource {
 			"sso_attribute_value_override": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"status_ttl": &schema.Schema{
 				Type:     schema.TypeInt,
@@ -855,6 +866,7 @@ func resourceUserRadius() *schema.Resource {
 			"tls_min_proto_version": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"transport_protocol": &schema.Schema{
 				Type:     schema.TypeString,

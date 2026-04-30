@@ -77,7 +77,7 @@ func resourceEmailfilterFortiguardUpdate(d *schema.ResourceData, m interface{}) 
 	}
 	paradict["device"] = device_name
 
-	obj, err := getObjectEmailfilterFortiguard(d)
+	obj, err := getObjectEmailfilterFortiguard(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating EmailfilterFortiguard resource while getting object: %v", err)
 	}
@@ -98,7 +98,6 @@ func resourceEmailfilterFortiguardUpdate(d *schema.ResourceData, m interface{}) 
 
 func resourceEmailfilterFortiguardDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -116,11 +115,17 @@ func resourceEmailfilterFortiguardDelete(d *schema.ResourceData, m interface{}) 
 	}
 	paradict["device"] = device_name
 
+	obj, err := getObjectEmailfilterFortiguard(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating EmailfilterFortiguard resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteEmailfilterFortiguard(mkey, paradict, wsParams)
+	_, err = c.UpdateEmailfilterFortiguard(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting EmailfilterFortiguard resource: %v", err)
+		return fmt.Errorf("Error clearing EmailfilterFortiguard resource: %v", err)
 	}
 
 	d.SetId("")
@@ -234,7 +239,7 @@ func expandEmailfilterFortiguardSpamSubmitTxt2Htm(d *schema.ResourceData, v inte
 	return v, nil
 }
 
-func getObjectEmailfilterFortiguard(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectEmailfilterFortiguard(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("spam_submit_force"); ok || d.HasChange("spam_submit_force") {

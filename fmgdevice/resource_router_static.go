@@ -100,6 +100,7 @@ func resourceRouterStatic() *schema.Resource {
 			"gateway": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"internet_service": &schema.Schema{
 				Type:     schema.TypeSet,
@@ -137,6 +138,7 @@ func resourceRouterStatic() *schema.Resource {
 			"sdwan": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"sdwan_zone": &schema.Schema{
 				Type:     schema.TypeSet,
@@ -172,6 +174,7 @@ func resourceRouterStatic() *schema.Resource {
 			"vrf": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"weight": &schema.Schema{
 				Type:     schema.TypeInt,

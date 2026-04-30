@@ -43,6 +43,7 @@ func resourceSystemProbeResponse() *schema.Resource {
 			"http_probe_value": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"mode": &schema.Schema{
 				Type:     schema.TypeString,
@@ -59,6 +60,7 @@ func resourceSystemProbeResponse() *schema.Resource {
 			"port": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"security_mode": &schema.Schema{
 				Type:     schema.TypeString,
@@ -73,6 +75,7 @@ func resourceSystemProbeResponse() *schema.Resource {
 			"ttl_mode": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 		},
 	}
@@ -97,7 +100,7 @@ func resourceSystemProbeResponseUpdate(d *schema.ResourceData, m interface{}) er
 	}
 	paradict["device"] = device_name
 
-	obj, err := getObjectSystemProbeResponse(d)
+	obj, err := getObjectSystemProbeResponse(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemProbeResponse resource while getting object: %v", err)
 	}
@@ -118,7 +121,6 @@ func resourceSystemProbeResponseUpdate(d *schema.ResourceData, m interface{}) er
 
 func resourceSystemProbeResponseDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -136,11 +138,17 @@ func resourceSystemProbeResponseDelete(d *schema.ResourceData, m interface{}) er
 	}
 	paradict["device"] = device_name
 
+	obj, err := getObjectSystemProbeResponse(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating SystemProbeResponse resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteSystemProbeResponse(mkey, paradict, wsParams)
+	_, err = c.UpdateSystemProbeResponse(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting SystemProbeResponse resource: %v", err)
+		return fmt.Errorf("Error clearing SystemProbeResponse resource: %v", err)
 	}
 
 	d.SetId("")
@@ -312,7 +320,7 @@ func expandSystemProbeResponseTtlMode(d *schema.ResourceData, v interface{}, pre
 	return v, nil
 }
 
-func getObjectSystemProbeResponse(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectSystemProbeResponse(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("http_probe_value"); ok || d.HasChange("http_probe_value") {

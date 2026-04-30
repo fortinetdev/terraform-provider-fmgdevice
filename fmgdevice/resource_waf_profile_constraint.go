@@ -609,7 +609,7 @@ func resourceWafProfileConstraintUpdate(d *schema.ResourceData, m interface{}) e
 	paradict["vdom"] = device_vdom
 	paradict["profile"] = profile
 
-	obj, err := getObjectWafProfileConstraint(d)
+	obj, err := getObjectWafProfileConstraint(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating WafProfileConstraint resource while getting object: %v", err)
 	}
@@ -630,7 +630,6 @@ func resourceWafProfileConstraintUpdate(d *schema.ResourceData, m interface{}) e
 
 func resourceWafProfileConstraintDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -655,11 +654,17 @@ func resourceWafProfileConstraintDelete(d *schema.ResourceData, m interface{}) e
 	paradict["vdom"] = device_vdom
 	paradict["profile"] = profile
 
+	obj, err := getObjectWafProfileConstraint(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating WafProfileConstraint resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteWafProfileConstraint(mkey, paradict, wsParams)
+	_, err = c.UpdateWafProfileConstraint(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting WafProfileConstraint resource: %v", err)
+		return fmt.Errorf("Error clearing WafProfileConstraint resource: %v", err)
 	}
 
 	d.SetId("")
@@ -2845,7 +2850,7 @@ func expandWafProfileConstraintVersionStatus2edl(d *schema.ResourceData, v inter
 	return v, nil
 }
 
-func getObjectWafProfileConstraint(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectWafProfileConstraint(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("content_length"); ok || d.HasChange("content_length") {
@@ -2857,12 +2862,16 @@ func getObjectWafProfileConstraint(d *schema.ResourceData) (*map[string]interfac
 		}
 	}
 
-	if v, ok := d.GetOk("exception"); ok || d.HasChange("exception") {
-		t, err := expandWafProfileConstraintException2edl(d, v, "exception")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["exception"] = t
+	if bemptysontable {
+		obj["exception"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("exception"); ok || d.HasChange("exception") {
+			t, err := expandWafProfileConstraintException2edl(d, v, "exception")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["exception"] = t
+			}
 		}
 	}
 

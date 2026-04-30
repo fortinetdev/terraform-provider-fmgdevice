@@ -167,7 +167,7 @@ func resourceExtensionControllerExtenderProfileWifiRadio2Update(d *schema.Resour
 	paradict["vdom"] = device_vdom
 	paradict["extender_profile"] = extender_profile
 
-	obj, err := getObjectExtensionControllerExtenderProfileWifiRadio2(d)
+	obj, err := getObjectExtensionControllerExtenderProfileWifiRadio2(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating ExtensionControllerExtenderProfileWifiRadio2 resource while getting object: %v", err)
 	}
@@ -188,7 +188,6 @@ func resourceExtensionControllerExtenderProfileWifiRadio2Update(d *schema.Resour
 
 func resourceExtensionControllerExtenderProfileWifiRadio2Delete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -213,11 +212,17 @@ func resourceExtensionControllerExtenderProfileWifiRadio2Delete(d *schema.Resour
 	paradict["vdom"] = device_vdom
 	paradict["extender_profile"] = extender_profile
 
+	obj, err := getObjectExtensionControllerExtenderProfileWifiRadio2(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating ExtensionControllerExtenderProfileWifiRadio2 resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteExtensionControllerExtenderProfileWifiRadio2(mkey, paradict, wsParams)
+	_, err = c.UpdateExtensionControllerExtenderProfileWifiRadio2(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting ExtensionControllerExtenderProfileWifiRadio2 resource: %v", err)
+		return fmt.Errorf("Error clearing ExtensionControllerExtenderProfileWifiRadio2 resource: %v", err)
 	}
 
 	d.SetId("")
@@ -605,7 +610,7 @@ func expandExtensionControllerExtenderProfileWifiRadio2Status3rdl(d *schema.Reso
 	return v, nil
 }
 
-func getObjectExtensionControllerExtenderProfileWifiRadio2(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectExtensionControllerExtenderProfileWifiRadio2(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("n80211d"); ok || d.HasChange("n80211d") {

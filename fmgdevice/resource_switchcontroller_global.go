@@ -235,7 +235,7 @@ func resourceSwitchControllerGlobalUpdate(d *schema.ResourceData, m interface{})
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	obj, err := getObjectSwitchControllerGlobal(d)
+	obj, err := getObjectSwitchControllerGlobal(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating SwitchControllerGlobal resource while getting object: %v", err)
 	}
@@ -256,7 +256,6 @@ func resourceSwitchControllerGlobalUpdate(d *schema.ResourceData, m interface{})
 
 func resourceSwitchControllerGlobalDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -279,11 +278,17 @@ func resourceSwitchControllerGlobalDelete(d *schema.ResourceData, m interface{})
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	obj, err := getObjectSwitchControllerGlobal(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating SwitchControllerGlobal resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteSwitchControllerGlobal(mkey, paradict, wsParams)
+	_, err = c.UpdateSwitchControllerGlobal(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting SwitchControllerGlobal resource: %v", err)
+		return fmt.Errorf("Error clearing SwitchControllerGlobal resource: %v", err)
 	}
 
 	d.SetId("")
@@ -959,7 +964,7 @@ func expandSwitchControllerGlobalVlanOptimization(d *schema.ResourceData, v inte
 	return v, nil
 }
 
-func getObjectSwitchControllerGlobal(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectSwitchControllerGlobal(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("allow_multiple_interfaces"); ok || d.HasChange("allow_multiple_interfaces") {
@@ -980,12 +985,16 @@ func getObjectSwitchControllerGlobal(d *schema.ResourceData) (*map[string]interf
 		}
 	}
 
-	if v, ok := d.GetOk("custom_command"); ok || d.HasChange("custom_command") {
-		t, err := expandSwitchControllerGlobalCustomCommand(d, v, "custom_command")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["custom-command"] = t
+	if bemptysontable {
+		obj["custom-command"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("custom_command"); ok || d.HasChange("custom_command") {
+			t, err := expandSwitchControllerGlobalCustomCommand(d, v, "custom_command")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["custom-command"] = t
+			}
 		}
 	}
 

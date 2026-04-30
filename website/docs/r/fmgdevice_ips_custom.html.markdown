@@ -1,5 +1,5 @@
 ---
-subcategory: "No Category"
+subcategory: "IPS"
 layout: "fmgdevice"
 page_title: "FortiManager Device: fmgdevice_ips_custom"
 description: |-

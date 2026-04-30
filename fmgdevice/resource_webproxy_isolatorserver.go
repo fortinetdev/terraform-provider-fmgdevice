@@ -103,6 +103,7 @@ func resourceWebProxyIsolatorServer() *schema.Resource {
 			"vrf_select": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"ippool": &schema.Schema{
 				Type:     schema.TypeSet,

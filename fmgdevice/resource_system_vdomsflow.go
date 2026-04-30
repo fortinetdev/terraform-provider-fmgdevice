@@ -49,10 +49,12 @@ func resourceSystemVdomSflow() *schema.Resource {
 			"collector_ip": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"collector_port": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"interface": &schema.Schema{
 				Type:     schema.TypeSet,
@@ -63,10 +65,12 @@ func resourceSystemVdomSflow() *schema.Resource {
 			"interface_select_method": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"source_ip": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"collectors": &schema.Schema{
 				Type:     schema.TypeList,
@@ -144,7 +148,7 @@ func resourceSystemVdomSflowUpdate(d *schema.ResourceData, m interface{}) error 
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	obj, err := getObjectSystemVdomSflow(d)
+	obj, err := getObjectSystemVdomSflow(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemVdomSflow resource while getting object: %v", err)
 	}
@@ -165,7 +169,6 @@ func resourceSystemVdomSflowUpdate(d *schema.ResourceData, m interface{}) error 
 
 func resourceSystemVdomSflowDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -188,11 +191,17 @@ func resourceSystemVdomSflowDelete(d *schema.ResourceData, m interface{}) error 
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	obj, err := getObjectSystemVdomSflow(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating SystemVdomSflow resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteSystemVdomSflow(mkey, paradict, wsParams)
+	_, err = c.UpdateSystemVdomSflow(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting SystemVdomSflow resource: %v", err)
+		return fmt.Errorf("Error clearing SystemVdomSflow resource: %v", err)
 	}
 
 	d.SetId("")
@@ -566,7 +575,7 @@ func expandSystemVdomSflowVdomSflow(d *schema.ResourceData, v interface{}, pre s
 	return v, nil
 }
 
-func getObjectSystemVdomSflow(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectSystemVdomSflow(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("collector_ip"); ok || d.HasChange("collector_ip") {
@@ -614,12 +623,16 @@ func getObjectSystemVdomSflow(d *schema.ResourceData) (*map[string]interface{}, 
 		}
 	}
 
-	if v, ok := d.GetOk("collectors"); ok || d.HasChange("collectors") {
-		t, err := expandSystemVdomSflowCollectors(d, v, "collectors")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["collectors"] = t
+	if bemptysontable {
+		obj["collectors"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("collectors"); ok || d.HasChange("collectors") {
+			t, err := expandSystemVdomSflowCollectors(d, v, "collectors")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["collectors"] = t
+			}
 		}
 	}
 

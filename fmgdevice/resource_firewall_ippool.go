@@ -76,6 +76,7 @@ func resourceFirewallIppool() *schema.Resource {
 			"block_size": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"cgn_block_size": &schema.Schema{
 				Type:     schema.TypeInt,
@@ -116,6 +117,7 @@ func resourceFirewallIppool() *schema.Resource {
 			"client_prefix_length": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"comments": &schema.Schema{
 				Type:     schema.TypeString,
@@ -302,10 +304,12 @@ func resourceFirewallIppool() *schema.Resource {
 			"endip": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"endport": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"exclude_ip": &schema.Schema{
 				Type:     schema.TypeSet,
@@ -329,6 +333,7 @@ func resourceFirewallIppool() *schema.Resource {
 			"num_blocks_per_user": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"pba_interim_log": &schema.Schema{
 				Type:     schema.TypeInt,
@@ -337,10 +342,12 @@ func resourceFirewallIppool() *schema.Resource {
 			"pba_timeout": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"permit_any_host": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"port_per_user": &schema.Schema{
 				Type:     schema.TypeInt,
@@ -354,22 +361,27 @@ func resourceFirewallIppool() *schema.Resource {
 			"source_endip": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"source_prefix6": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"source_startip": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"startip": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"startport": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"subnet_broadcast_in_ippool": &schema.Schema{
 				Type:     schema.TypeString,

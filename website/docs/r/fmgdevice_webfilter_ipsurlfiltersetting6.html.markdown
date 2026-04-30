@@ -1,5 +1,5 @@
 ---
-subcategory: "No Category"
+subcategory: "Web Filter"
 layout: "fmgdevice"
 page_title: "FortiManager Device: fmgdevice_webfilter_ipsurlfiltersetting6"
 description: |-

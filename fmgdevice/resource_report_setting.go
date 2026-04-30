@@ -100,7 +100,7 @@ func resourceReportSettingUpdate(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	obj, err := getObjectReportSetting(d)
+	obj, err := getObjectReportSetting(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating ReportSetting resource while getting object: %v", err)
 	}
@@ -121,7 +121,6 @@ func resourceReportSettingUpdate(d *schema.ResourceData, m interface{}) error {
 
 func resourceReportSettingDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -144,11 +143,17 @@ func resourceReportSettingDelete(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	obj, err := getObjectReportSetting(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating ReportSetting resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteReportSetting(mkey, paradict, wsParams)
+	_, err = c.UpdateReportSetting(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting ReportSetting resource: %v", err)
+		return fmt.Errorf("Error clearing ReportSetting resource: %v", err)
 	}
 
 	d.SetId("")
@@ -309,7 +314,7 @@ func expandReportSettingWebBrowsingThreshold(d *schema.ResourceData, v interface
 	return v, nil
 }
 
-func getObjectReportSetting(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectReportSetting(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("fortiview"); ok || d.HasChange("fortiview") {

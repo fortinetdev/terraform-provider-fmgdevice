@@ -92,6 +92,7 @@ func resourceUserQuarantine() *schema.Resource {
 									"mac": &schema.Schema{
 										Type:     schema.TypeString,
 										Optional: true,
+										Computed: true,
 									},
 									"parent": &schema.Schema{
 										Type:     schema.TypeString,
@@ -142,7 +143,7 @@ func resourceUserQuarantineUpdate(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	obj, err := getObjectUserQuarantine(d)
+	obj, err := getObjectUserQuarantine(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating UserQuarantine resource while getting object: %v", err)
 	}
@@ -163,7 +164,6 @@ func resourceUserQuarantineUpdate(d *schema.ResourceData, m interface{}) error {
 
 func resourceUserQuarantineDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -186,11 +186,17 @@ func resourceUserQuarantineDelete(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	obj, err := getObjectUserQuarantine(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating UserQuarantine resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteUserQuarantine(mkey, paradict, wsParams)
+	_, err = c.UpdateUserQuarantine(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting UserQuarantine resource: %v", err)
+		return fmt.Errorf("Error clearing UserQuarantine resource: %v", err)
 	}
 
 	d.SetId("")
@@ -598,7 +604,7 @@ func expandUserQuarantineTrafficPolicy(d *schema.ResourceData, v interface{}, pr
 	return expandStringList(v.(*schema.Set).List()), nil
 }
 
-func getObjectUserQuarantine(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectUserQuarantine(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("firewall_groups"); ok || d.HasChange("firewall_groups") {
@@ -619,12 +625,16 @@ func getObjectUserQuarantine(d *schema.ResourceData) (*map[string]interface{}, e
 		}
 	}
 
-	if v, ok := d.GetOk("targets"); ok || d.HasChange("targets") {
-		t, err := expandUserQuarantineTargets(d, v, "targets")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["targets"] = t
+	if bemptysontable {
+		obj["targets"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("targets"); ok || d.HasChange("targets") {
+			t, err := expandUserQuarantineTargets(d, v, "targets")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["targets"] = t
+			}
 		}
 	}
 

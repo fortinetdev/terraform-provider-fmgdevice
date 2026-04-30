@@ -278,7 +278,7 @@ func resourceVpnCertificateSettingUpdate(d *schema.ResourceData, m interface{}) 
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	obj, err := getObjectVpnCertificateSetting(d)
+	obj, err := getObjectVpnCertificateSetting(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating VpnCertificateSetting resource while getting object: %v", err)
 	}
@@ -299,7 +299,6 @@ func resourceVpnCertificateSettingUpdate(d *schema.ResourceData, m interface{}) 
 
 func resourceVpnCertificateSettingDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -322,11 +321,17 @@ func resourceVpnCertificateSettingDelete(d *schema.ResourceData, m interface{}) 
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	obj, err := getObjectVpnCertificateSetting(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating VpnCertificateSetting resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteVpnCertificateSetting(mkey, paradict, wsParams)
+	_, err = c.UpdateVpnCertificateSetting(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting VpnCertificateSetting resource: %v", err)
+		return fmt.Errorf("Error clearing VpnCertificateSetting resource: %v", err)
 	}
 
 	d.SetId("")
@@ -1097,7 +1102,7 @@ func expandVpnCertificateSettingVrfSelect(d *schema.ResourceData, v interface{},
 	return v, nil
 }
 
-func getObjectVpnCertificateSetting(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectVpnCertificateSetting(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("cert_expire_warning"); ok || d.HasChange("cert_expire_warning") {

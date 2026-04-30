@@ -1,5 +1,5 @@
 ---
-subcategory: "No Category"
+subcategory: "Email Filter"
 layout: "fmgdevice"
 page_title: "FortiManager Device: fmgdevice_emailfilter_profile"
 description: |-
@@ -10,6 +10,7 @@ description: |-
 <i>This object will be purged after policy copy and install.</i> Configure Email Filter profiles.
 
 ~> The following variables have sub resource. Avoid using them together, otherwise conflicts and overwrites may occur.
+>- `file_filter`: `fmgdevice_emailfilter_profile_filefilter`
 >- `gmail`: `fmgdevice_emailfilter_profile_gmail`
 >- `imap`: `fmgdevice_emailfilter_profile_imap`
 >- `mapi`: `fmgdevice_emailfilter_profile_mapi`
@@ -31,6 +32,7 @@ The following arguments are supported:
 * `comment` - Comment.
 * `external` - Enable/disable external Email inspection. Valid values: `disable`, `enable`.
 
+* `file_filter` - File-Filter. The structure of `file_filter` block is documented below.
 * `feature_set` - Flow/proxy feature set. Valid values: `proxy`, `flow`.
 
 * `gmail` - Gmail. The structure of `gmail` block is documented below.
@@ -57,6 +59,28 @@ The following arguments are supported:
 
 * `spam_mheader_table` - Anti-spam MIME header table ID.
 * `spam_rbl_table` - Anti-spam DNSBL table ID.
+
+The `file_filter` block supports:
+
+* `entries` - Entries. The structure of `entries` block is documented below.
+* `log` - Enable/disable file filter logging. Valid values: `disable`, `enable`.
+
+* `scan_archive_contents` - Enable/disable file filter archive contents scan. Valid values: `disable`, `enable`.
+
+* `status` - Enable/disable file filter. Valid values: `disable`, `enable`.
+
+
+The `entries` block supports:
+
+* `action` - Action taken for matched file. Valid values: `log`, `block`.
+
+* `comment` - Comment.
+* `file_type` - Select file type.
+* `filter` - Add a file filter.
+* `password_protected` - Match password-protected files. Valid values: `any`, `yes`.
+
+* `protocol` - Protocols to apply with. Valid values: `smtp`, `imap`, `pop3`.
+
 
 The `gmail` block supports:
 

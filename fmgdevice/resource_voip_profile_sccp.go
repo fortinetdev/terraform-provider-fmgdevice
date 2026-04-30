@@ -109,7 +109,7 @@ func resourceVoipProfileSccpUpdate(d *schema.ResourceData, m interface{}) error 
 	paradict["vdom"] = device_vdom
 	paradict["profile"] = profile
 
-	obj, err := getObjectVoipProfileSccp(d)
+	obj, err := getObjectVoipProfileSccp(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating VoipProfileSccp resource while getting object: %v", err)
 	}
@@ -130,7 +130,6 @@ func resourceVoipProfileSccpUpdate(d *schema.ResourceData, m interface{}) error 
 
 func resourceVoipProfileSccpDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -155,11 +154,17 @@ func resourceVoipProfileSccpDelete(d *schema.ResourceData, m interface{}) error 
 	paradict["vdom"] = device_vdom
 	paradict["profile"] = profile
 
+	obj, err := getObjectVoipProfileSccp(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating VoipProfileSccp resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteVoipProfileSccp(mkey, paradict, wsParams)
+	_, err = c.UpdateVoipProfileSccp(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting VoipProfileSccp resource: %v", err)
+		return fmt.Errorf("Error clearing VoipProfileSccp resource: %v", err)
 	}
 
 	d.SetId("")
@@ -349,7 +354,7 @@ func expandVoipProfileSccpVerifyHeader2edl(d *schema.ResourceData, v interface{}
 	return v, nil
 }
 
-func getObjectVoipProfileSccp(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectVoipProfileSccp(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("block_mcast"); ok || d.HasChange("block_mcast") {

@@ -126,7 +126,7 @@ func resourceRouterMulticastInterfaceIgmpUpdate(d *schema.ResourceData, m interf
 	paradict["vdom"] = device_vdom
 	paradict["interface"] = var_interface
 
-	obj, err := getObjectRouterMulticastInterfaceIgmp(d)
+	obj, err := getObjectRouterMulticastInterfaceIgmp(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating RouterMulticastInterfaceIgmp resource while getting object: %v", err)
 	}
@@ -147,7 +147,6 @@ func resourceRouterMulticastInterfaceIgmpUpdate(d *schema.ResourceData, m interf
 
 func resourceRouterMulticastInterfaceIgmpDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -172,11 +171,17 @@ func resourceRouterMulticastInterfaceIgmpDelete(d *schema.ResourceData, m interf
 	paradict["vdom"] = device_vdom
 	paradict["interface"] = var_interface
 
+	obj, err := getObjectRouterMulticastInterfaceIgmp(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating RouterMulticastInterfaceIgmp resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteRouterMulticastInterfaceIgmp(mkey, paradict, wsParams)
+	_, err = c.UpdateRouterMulticastInterfaceIgmp(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting RouterMulticastInterfaceIgmp resource: %v", err)
+		return fmt.Errorf("Error clearing RouterMulticastInterfaceIgmp resource: %v", err)
 	}
 
 	d.SetId("")
@@ -420,7 +425,7 @@ func expandRouterMulticastInterfaceIgmpVersion3rdl(d *schema.ResourceData, v int
 	return v, nil
 }
 
-func getObjectRouterMulticastInterfaceIgmp(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectRouterMulticastInterfaceIgmp(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("access_group"); ok || d.HasChange("access_group") {

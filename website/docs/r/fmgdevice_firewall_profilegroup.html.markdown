@@ -1,5 +1,5 @@
 ---
-subcategory: "No Category"
+subcategory: "Firewall"
 layout: "fmgdevice"
 page_title: "FortiManager Device: fmgdevice_firewall_profilegroup"
 description: |-
@@ -28,6 +28,7 @@ The following arguments are supported:
 * `file_filter_profile` - Name of an existing file-filter profile.
 * `icap_profile` - Name of an existing ICAP profile.
 * `ips_sensor` - Name of an existing IPS sensor.
+* `mms_profile` - Name of an existing MMS profile.
 * `ips_voip_filter` - Name of an existing VoIP (ips) profile.
 * `name` - Profile group name.
 * `profile_protocol_options` - Name of an existing Protocol options profile.
@@ -43,6 +44,7 @@ The following arguments are supported:
 * `dlp_sensor` - Dlp-Sensor.
 * `ia_profile` - Ia-Profile.
 * `isolator_profile` - Isolator-Profile.
+* `llm_profile` - Llm-Profile.
 * `redirect_profile` - Redirect-Profile.
 
 

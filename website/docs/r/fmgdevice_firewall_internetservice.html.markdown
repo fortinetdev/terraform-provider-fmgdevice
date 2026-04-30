@@ -1,5 +1,5 @@
 ---
-subcategory: "No Category"
+subcategory: "Firewall"
 layout: "fmgdevice"
 page_title: "FortiManager Device: fmgdevice_firewall_internetservice"
 description: |-
@@ -29,7 +29,9 @@ The following arguments are supported:
 * `ip6_range_number` - Ip6-Range-Number.
 * `name` - Name.
 * `obsolete` - Obsolete.
+* `reputation` - Reputation.
 * `singularity` - Singularity.
+* `sld_id` - Sld-Id.
 
 
 ## Attribute Reference

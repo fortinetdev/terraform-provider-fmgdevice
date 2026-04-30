@@ -68,6 +68,7 @@ func resourceWebProxyWisp() *schema.Resource {
 			"outgoing_ip": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"server_ip": &schema.Schema{
 				Type:     schema.TypeString,

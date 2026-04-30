@@ -49,6 +49,7 @@ func resourceSystemFtmPush() *schema.Resource {
 			"proxy": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"server": &schema.Schema{
 				Type:     schema.TypeString,
@@ -98,7 +99,7 @@ func resourceSystemFtmPushUpdate(d *schema.ResourceData, m interface{}) error {
 	}
 	paradict["device"] = device_name
 
-	obj, err := getObjectSystemFtmPush(d)
+	obj, err := getObjectSystemFtmPush(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemFtmPush resource while getting object: %v", err)
 	}
@@ -119,7 +120,6 @@ func resourceSystemFtmPushUpdate(d *schema.ResourceData, m interface{}) error {
 
 func resourceSystemFtmPushDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -137,11 +137,17 @@ func resourceSystemFtmPushDelete(d *schema.ResourceData, m interface{}) error {
 	}
 	paradict["device"] = device_name
 
+	obj, err := getObjectSystemFtmPush(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating SystemFtmPush resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteSystemFtmPush(mkey, paradict, wsParams)
+	_, err = c.UpdateSystemFtmPush(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting SystemFtmPush resource: %v", err)
+		return fmt.Errorf("Error clearing SystemFtmPush resource: %v", err)
 	}
 
 	d.SetId("")
@@ -327,7 +333,7 @@ func expandSystemFtmPushStatus(d *schema.ResourceData, v interface{}, pre string
 	return v, nil
 }
 
-func getObjectSystemFtmPush(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectSystemFtmPush(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("interface"); ok || d.HasChange("interface") {

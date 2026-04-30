@@ -121,7 +121,7 @@ func resourceSwitchControllerInitialConfigVlansUpdate(d *schema.ResourceData, m 
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	obj, err := getObjectSwitchControllerInitialConfigVlans(d)
+	obj, err := getObjectSwitchControllerInitialConfigVlans(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating SwitchControllerInitialConfigVlans resource while getting object: %v", err)
 	}
@@ -142,7 +142,6 @@ func resourceSwitchControllerInitialConfigVlansUpdate(d *schema.ResourceData, m 
 
 func resourceSwitchControllerInitialConfigVlansDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -165,11 +164,17 @@ func resourceSwitchControllerInitialConfigVlansDelete(d *schema.ResourceData, m 
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	obj, err := getObjectSwitchControllerInitialConfigVlans(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating SwitchControllerInitialConfigVlans resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteSwitchControllerInitialConfigVlans(mkey, paradict, wsParams)
+	_, err = c.UpdateSwitchControllerInitialConfigVlans(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting SwitchControllerInitialConfigVlans resource: %v", err)
+		return fmt.Errorf("Error clearing SwitchControllerInitialConfigVlans resource: %v", err)
 	}
 
 	d.SetId("")
@@ -384,7 +389,7 @@ func expandSwitchControllerInitialConfigVlansVoice(d *schema.ResourceData, v int
 	return expandStringList(v.(*schema.Set).List()), nil
 }
 
-func getObjectSwitchControllerInitialConfigVlans(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectSwitchControllerInitialConfigVlans(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("default_vlan"); ok || d.HasChange("default_vlan") {

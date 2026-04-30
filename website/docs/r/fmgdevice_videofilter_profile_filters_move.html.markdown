@@ -1,5 +1,5 @@
 ---
-subcategory: "No Category"
+subcategory: "Video Filter"
 layout: "fmgdevice"
 page_title: "FortiManager Device: fmgdevice_videofilter_profile_filters_move"
 description: |-

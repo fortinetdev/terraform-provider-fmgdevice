@@ -1,5 +1,5 @@
 ---
-subcategory: "No Category"
+subcategory: "Wireless Controller"
 layout: "fmgdevice"
 page_title: "FortiManager Device: fmgdevice_wirelesscontroller_global"
 description: |-
@@ -41,6 +41,7 @@ The following arguments are supported:
 * `dfs_lab_test` - Enable/disable DFS certificate lab test mode. Valid values: `disable`, `enable`.
 
 * `discovery_mc_addr` - Multicast IP address for AP discovery (default = 244.0.1.140).
+* `discovery_mc_addr6` - Multicast IPv6 address for AP discovery (default = FF02::18C).
 * `fiapp_eth_type` - Ethernet type for Fortinet Inter-Access Point Protocol (IAPP), or IEEE 802.11f, packets (0 - 65535, default = 5252).
 * `image_download` - Enable/disable WTP image download at join time. Valid values: `disable`, `enable`.
 

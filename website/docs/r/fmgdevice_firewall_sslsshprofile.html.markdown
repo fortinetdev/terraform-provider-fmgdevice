@@ -1,5 +1,5 @@
 ---
-subcategory: "No Category"
+subcategory: "Firewall"
 layout: "fmgdevice"
 page_title: "FortiManager Device: fmgdevice_firewall_sslsshprofile"
 description: |-
@@ -126,6 +126,10 @@ The `ech_outer_sni` block supports:
 
 The `ftps` block supports:
 
+* `client_cert_request` - Action based on client certificate request. Valid values: `bypass`, `inspect`, `block`.
+
+* `invalid_server_cert` - Allow or block the invalid SSL session server certificate. Valid values: `allow`, `block`.
+
 * `cert_validation_failure` - Action based on certificate validation failure. Valid values: `allow`, `block`, `ignore`.
 
 * `cert_validation_timeout` - Action based on certificate validation timeout. Valid values: `allow`, `block`, `ignore`.
@@ -143,6 +147,8 @@ The `ftps` block supports:
 
 * `status` - Configure protocol inspection status. Valid values: `disable`, `deep-inspection`.
 
+* `unsupported_ssl` - Action based on the SSL encryption used being unsupported. Valid values: `bypass`, `inspect`, `block`.
+
 * `unsupported_ssl_cipher` - Action based on the SSL cipher used being unsupported. Valid values: `allow`, `block`.
 
 * `unsupported_ssl_negotiation` - Action based on the SSL negotiation used being unsupported. Valid values: `allow`, `block`.
@@ -153,6 +159,10 @@ The `ftps` block supports:
 
 
 The `https` block supports:
+
+* `client_cert_request` - Action based on client certificate request. Valid values: `bypass`, `inspect`, `block`.
+
+* `invalid_server_cert` - Allow or block the invalid SSL session server certificate. Valid values: `allow`, `block`.
 
 * `cert_probe_failure` - Action based on certificate probe failure. Valid values: `block`, `allow`.
 
@@ -179,6 +189,8 @@ The `https` block supports:
 
 * `status` - Configure protocol inspection status. Valid values: `disable`, `certificate-inspection`, `deep-inspection`.
 
+* `unsupported_ssl` - Action based on the SSL encryption used being unsupported. Valid values: `bypass`, `inspect`, `block`.
+
 * `udp_not_quic` - Action to be taken when matched UDP packet is not QUIC. Valid values: `block`, `allow`.
 
 * `unsupported_ssl_cipher` - Action based on the SSL cipher used being unsupported. Valid values: `allow`, `block`.
@@ -192,6 +204,10 @@ The `https` block supports:
 
 The `imaps` block supports:
 
+* `client_cert_request` - Action based on client certificate request. Valid values: `bypass`, `inspect`, `block`.
+
+* `invalid_server_cert` - Allow or block the invalid SSL session server certificate. Valid values: `allow`, `block`.
+
 * `cert_validation_failure` - Action based on certificate validation failure. Valid values: `allow`, `block`, `ignore`.
 
 * `cert_validation_timeout` - Action based on certificate validation timeout. Valid values: `allow`, `block`, `ignore`.
@@ -210,6 +226,8 @@ The `imaps` block supports:
 * `sni_server_cert_check` - Check the SNI in the client hello message with the CN or SAN fields in the returned server certificate. Valid values: `disable`, `enable`, `strict`.
 
 * `status` - Configure protocol inspection status. Valid values: `disable`, `deep-inspection`.
+
+* `unsupported_ssl` - Action based on the SSL encryption used being unsupported. Valid values: `bypass`, `inspect`, `block`.
 
 * `unsupported_ssl_cipher` - Action based on the SSL cipher used being unsupported. Valid values: `allow`, `block`.
 
@@ -222,6 +240,10 @@ The `imaps` block supports:
 
 The `pop3s` block supports:
 
+* `client_cert_request` - Action based on client certificate request. Valid values: `bypass`, `inspect`, `block`.
+
+* `invalid_server_cert` - Allow or block the invalid SSL session server certificate. Valid values: `allow`, `block`.
+
 * `cert_validation_failure` - Action based on certificate validation failure. Valid values: `allow`, `block`, `ignore`.
 
 * `cert_validation_timeout` - Action based on certificate validation timeout. Valid values: `allow`, `block`, `ignore`.
@@ -240,6 +262,8 @@ The `pop3s` block supports:
 * `sni_server_cert_check` - Check the SNI in the client hello message with the CN or SAN fields in the returned server certificate. Valid values: `disable`, `enable`, `strict`.
 
 * `status` - Configure protocol inspection status. Valid values: `disable`, `deep-inspection`.
+
+* `unsupported_ssl` - Action based on the SSL encryption used being unsupported. Valid values: `bypass`, `inspect`, `block`.
 
 * `unsupported_ssl_cipher` - Action based on the SSL cipher used being unsupported. Valid values: `allow`, `block`.
 
@@ -252,6 +276,10 @@ The `pop3s` block supports:
 
 The `smtps` block supports:
 
+* `client_cert_request` - Action based on client certificate request. Valid values: `bypass`, `inspect`, `block`.
+
+* `invalid_server_cert` - Allow or block the invalid SSL session server certificate. Valid values: `allow`, `block`.
+
 * `cert_validation_failure` - Action based on certificate validation failure. Valid values: `allow`, `block`, `ignore`.
 
 * `cert_validation_timeout` - Action based on certificate validation timeout. Valid values: `allow`, `block`, `ignore`.
@@ -270,6 +298,8 @@ The `smtps` block supports:
 * `sni_server_cert_check` - Check the SNI in the client hello message with the CN or SAN fields in the returned server certificate. Valid values: `disable`, `enable`, `strict`.
 
 * `status` - Configure protocol inspection status. Valid values: `disable`, `deep-inspection`.
+
+* `unsupported_ssl` - Action based on the SSL encryption used being unsupported. Valid values: `bypass`, `inspect`, `block`.
 
 * `unsupported_ssl_cipher` - Action based on the SSL cipher used being unsupported. Valid values: `allow`, `block`.
 
@@ -298,6 +328,8 @@ The `ssh` block supports:
 
 The `ssl` block supports:
 
+* `client_cert_request` - Action based on client certificate request. Valid values: `bypass`, `inspect`, `block`.
+
 * `cert_probe_failure` - Action based on certificate probe failure. Valid values: `block`, `allow`.
 
 * `cert_validation_failure` - Action based on certificate validation failure. Valid values: `allow`, `block`, `ignore`.
@@ -312,11 +344,15 @@ The `ssl` block supports:
 
 * `inspect_all` - Level of SSL inspection. Valid values: `disable`, `certificate-inspection`, `deep-inspection`.
 
+* `invalid_server_cert` - Allow or block the invalid SSL session server certificate. Valid values: `allow`, `block`.
+
 * `min_allowed_ssl_version` - Minimum SSL version to be allowed. Valid values: `ssl-3.0`, `tls-1.0`, `tls-1.1`, `tls-1.2`, `tls-1.3`.
 
 * `revoked_server_cert` - Action based on server certificate is revoked. Valid values: `allow`, `block`, `ignore`.
 
 * `sni_server_cert_check` - Check the SNI in the client hello message with the CN or SAN fields in the returned server certificate. Valid values: `disable`, `enable`, `strict`.
+
+* `unsupported_ssl` - Action based on the SSL encryption used being unsupported. Valid values: `bypass`, `inspect`, `block`.
 
 * `unsupported_ssl_cipher` - Action based on the SSL cipher used being unsupported. Valid values: `allow`, `block`.
 
@@ -342,14 +378,26 @@ The `ssl_exempt` block supports:
 
 The `ssl_server` block supports:
 
+* `ftps_client_cert_request` - Action based on client certificate request during the FTPS handshake. Valid values: `bypass`, `inspect`, `block`.
+
+* `https_client_cert_request` - Action based on client certificate request during the HTTPS handshake. Valid values: `bypass`, `inspect`, `block`.
+
 * `ftps_client_certificate` - Action based on received client certificate during the FTPS handshake. Valid values: `bypass`, `inspect`, `block`.
 
 * `https_client_certificate` - Action based on received client certificate during the HTTPS handshake. Valid values: `bypass`, `inspect`, `block`.
 
 * `id` - SSL server ID.
+* `imaps_client_cert_request` - Action based on client certificate request during the IMAPS handshake. Valid values: `bypass`, `inspect`, `block`.
+
 * `imaps_client_certificate` - Action based on received client certificate during the IMAPS handshake. Valid values: `bypass`, `inspect`, `block`.
 
 * `ip` - IPv4 address of the SSL server.
+* `pop3s_client_cert_request` - Action based on client certificate request during the POP3S handshake. Valid values: `bypass`, `inspect`, `block`.
+
+* `smtps_client_cert_request` - Action based on client certificate request during the SMTPS handshake. Valid values: `bypass`, `inspect`, `block`.
+
+* `ssl_other_client_cert_request` - Action based on client certificate request during an SSL protocol handshake. Valid values: `bypass`, `inspect`, `block`.
+
 * `pop3s_client_certificate` - Action based on received client certificate during the POP3S handshake. Valid values: `bypass`, `inspect`, `block`.
 
 * `smtps_client_certificate` - Action based on received client certificate during the SMTPS handshake. Valid values: `bypass`, `inspect`, `block`.

@@ -92,7 +92,7 @@ func resourceFirewallSslDefaultCertificateUpdate(d *schema.ResourceData, m inter
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	obj, err := getObjectFirewallSslDefaultCertificate(d)
+	obj, err := getObjectFirewallSslDefaultCertificate(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating FirewallSslDefaultCertificate resource while getting object: %v", err)
 	}
@@ -113,7 +113,6 @@ func resourceFirewallSslDefaultCertificateUpdate(d *schema.ResourceData, m inter
 
 func resourceFirewallSslDefaultCertificateDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -136,11 +135,17 @@ func resourceFirewallSslDefaultCertificateDelete(d *schema.ResourceData, m inter
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	obj, err := getObjectFirewallSslDefaultCertificate(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating FirewallSslDefaultCertificate resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteFirewallSslDefaultCertificate(mkey, paradict, wsParams)
+	_, err = c.UpdateFirewallSslDefaultCertificate(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting FirewallSslDefaultCertificate resource: %v", err)
+		return fmt.Errorf("Error clearing FirewallSslDefaultCertificate resource: %v", err)
 	}
 
 	d.SetId("")
@@ -265,7 +270,7 @@ func expandFirewallSslDefaultCertificateDefaultUntrustedCa(d *schema.ResourceDat
 	return expandStringList(v.(*schema.Set).List()), nil
 }
 
-func getObjectFirewallSslDefaultCertificate(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectFirewallSslDefaultCertificate(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("default_ca"); ok || d.HasChange("default_ca") {

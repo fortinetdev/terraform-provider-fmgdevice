@@ -1,5 +1,5 @@
 ---
-subcategory: "No Category"
+subcategory: "ICAP"
 layout: "fmgdevice"
 page_title: "FortiManager Device: fmgdevice_icap_localserver"
 description: |-

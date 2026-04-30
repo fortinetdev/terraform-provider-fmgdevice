@@ -206,7 +206,7 @@ func resourceReportLayoutPageUpdate(d *schema.ResourceData, m interface{}) error
 	paradict["vdom"] = device_vdom
 	paradict["layout"] = layout
 
-	obj, err := getObjectReportLayoutPage(d)
+	obj, err := getObjectReportLayoutPage(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating ReportLayoutPage resource while getting object: %v", err)
 	}
@@ -227,7 +227,6 @@ func resourceReportLayoutPageUpdate(d *schema.ResourceData, m interface{}) error
 
 func resourceReportLayoutPageDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -252,11 +251,17 @@ func resourceReportLayoutPageDelete(d *schema.ResourceData, m interface{}) error
 	paradict["vdom"] = device_vdom
 	paradict["layout"] = layout
 
+	obj, err := getObjectReportLayoutPage(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating ReportLayoutPage resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteReportLayoutPage(mkey, paradict, wsParams)
+	_, err = c.UpdateReportLayoutPage(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting ReportLayoutPage resource: %v", err)
+		return fmt.Errorf("Error clearing ReportLayoutPage resource: %v", err)
 	}
 
 	d.SetId("")
@@ -908,7 +913,7 @@ func expandReportLayoutPagePaper2edl(d *schema.ResourceData, v interface{}, pre 
 	return v, nil
 }
 
-func getObjectReportLayoutPage(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectReportLayoutPage(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("column_break_before"); ok || d.HasChange("column_break_before") {

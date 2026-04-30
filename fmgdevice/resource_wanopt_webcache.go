@@ -49,6 +49,7 @@ func resourceWanoptWebcache() *schema.Resource {
 			"always_revalidate": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"cache_by_default": &schema.Schema{
 				Type:     schema.TypeString,
@@ -157,7 +158,7 @@ func resourceWanoptWebcacheUpdate(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	obj, err := getObjectWanoptWebcache(d)
+	obj, err := getObjectWanoptWebcache(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating WanoptWebcache resource while getting object: %v", err)
 	}
@@ -178,7 +179,6 @@ func resourceWanoptWebcacheUpdate(d *schema.ResourceData, m interface{}) error {
 
 func resourceWanoptWebcacheDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -201,11 +201,17 @@ func resourceWanoptWebcacheDelete(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	obj, err := getObjectWanoptWebcache(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating WanoptWebcache resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteWanoptWebcache(mkey, paradict, wsParams)
+	_, err = c.UpdateWanoptWebcache(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting WanoptWebcache resource: %v", err)
+		return fmt.Errorf("Error clearing WanoptWebcache resource: %v", err)
 	}
 
 	d.SetId("")
@@ -582,7 +588,7 @@ func expandWanoptWebcacheRevalPnc(d *schema.ResourceData, v interface{}, pre str
 	return v, nil
 }
 
-func getObjectWanoptWebcache(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectWanoptWebcache(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("always_revalidate"); ok || d.HasChange("always_revalidate") {

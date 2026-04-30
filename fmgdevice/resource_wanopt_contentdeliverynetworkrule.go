@@ -121,6 +121,7 @@ func resourceWanoptContentDeliveryNetworkRule() *schema.Resource {
 									"start_str": &schema.Schema{
 										Type:     schema.TypeString,
 										Optional: true,
+										Computed: true,
 									},
 									"target": &schema.Schema{
 										Type:     schema.TypeString,

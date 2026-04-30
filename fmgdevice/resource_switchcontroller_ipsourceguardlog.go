@@ -83,7 +83,7 @@ func resourceSwitchControllerIpSourceGuardLogUpdate(d *schema.ResourceData, m in
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	obj, err := getObjectSwitchControllerIpSourceGuardLog(d)
+	obj, err := getObjectSwitchControllerIpSourceGuardLog(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating SwitchControllerIpSourceGuardLog resource while getting object: %v", err)
 	}
@@ -104,7 +104,6 @@ func resourceSwitchControllerIpSourceGuardLogUpdate(d *schema.ResourceData, m in
 
 func resourceSwitchControllerIpSourceGuardLogDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -127,11 +126,17 @@ func resourceSwitchControllerIpSourceGuardLogDelete(d *schema.ResourceData, m in
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	obj, err := getObjectSwitchControllerIpSourceGuardLog(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating SwitchControllerIpSourceGuardLog resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteSwitchControllerIpSourceGuardLog(mkey, paradict, wsParams)
+	_, err = c.UpdateSwitchControllerIpSourceGuardLog(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting SwitchControllerIpSourceGuardLog resource: %v", err)
+		return fmt.Errorf("Error clearing SwitchControllerIpSourceGuardLog resource: %v", err)
 	}
 
 	d.SetId("")
@@ -238,7 +243,7 @@ func expandSwitchControllerIpSourceGuardLogViolationTimer(d *schema.ResourceData
 	return v, nil
 }
 
-func getObjectSwitchControllerIpSourceGuardLog(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectSwitchControllerIpSourceGuardLog(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("log_violations"); ok || d.HasChange("log_violations") {

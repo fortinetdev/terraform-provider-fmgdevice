@@ -1,5 +1,5 @@
 ---
-subcategory: "No Category"
+subcategory: "CASB"
 layout: "fmgdevice"
 page_title: "FortiManager Device: fmgdevice_casb_profile_move"
 description: |-

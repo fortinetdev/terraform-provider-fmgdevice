@@ -1,5 +1,5 @@
 ---
-subcategory: "No Category"
+subcategory: "Web Proxy"
 layout: "fmgdevice"
 page_title: "FortiManager Device: fmgdevice_webproxy_global"
 description: |-
@@ -33,6 +33,7 @@ The following arguments are supported:
 
 * `always_learn_client_ip` - Enable/disable learning the client's IP address from headers for every request. Valid values: `disable`, `enable`.
 
+* `auth_sign_timeout` - Proxy auth query sign timeout in seconds (30 - 3600, default = 120).
 * `fast_policy_match` - Enable/disable fast matching algorithm for explicit and transparent proxy policy. Valid values: `disable`, `enable`.
 
 * `forward_proxy_auth` - Enable/disable forwarding proxy authentication headers. Valid values: `disable`, `enable`.
@@ -58,6 +59,8 @@ The following arguments are supported:
 * `max_request_length` - Maximum length of HTTP request line (2 - 64 Kbytes, default = 8).
 * `max_waf_body_cache_length` - Maximum length of HTTP messages processed by Web Application Firewall (WAF) (10 - 1024 Kbytes, default = 32).
 * `policy_category_deep_inspect` - Enable/disable deep inspection for application level category policy matching. Valid values: `disable`, `enable`.
+
+* `policy_partial_match` - Enable/disable policy partial matching. Valid values: `disable`, `enable`.
 
 * `proxy_fqdn` - Fully Qualified Domain Name (FQDN) that clients connect to (default = default.fqdn) to connect to the explicit web proxy.
 * `proxy_transparent_cert_inspection` - Enable/disable transparent proxy certificate inspection. Valid values: `disable`, `enable`.

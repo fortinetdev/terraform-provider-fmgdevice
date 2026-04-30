@@ -220,6 +220,7 @@ func resourceSystemFortiguard() *schema.Resource {
 			"proxy_server_ip": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"proxy_server_port": &schema.Schema{
 				Type:     schema.TypeInt,
@@ -253,6 +254,7 @@ func resourceSystemFortiguard() *schema.Resource {
 			"sdns_server_port": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"service_account_id": &schema.Schema{
 				Type:     schema.TypeString,
@@ -345,6 +347,7 @@ func resourceSystemFortiguard() *schema.Resource {
 			"antispam_cache_mpercent": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"dlp_expiration": &schema.Schema{
 				Type:     schema.TypeInt,
@@ -365,6 +368,7 @@ func resourceSystemFortiguard() *schema.Resource {
 			"gui_prompt_auto_upgrade": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"ia_expiration": &schema.Schema{
 				Type:     schema.TypeInt,
@@ -377,6 +381,7 @@ func resourceSystemFortiguard() *schema.Resource {
 			"outbreak_prevention_cache_mpercent": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"videofilter_expiration": &schema.Schema{
 				Type:     schema.TypeInt,
@@ -385,6 +390,7 @@ func resourceSystemFortiguard() *schema.Resource {
 			"videofilter_license": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 		},
 	}
@@ -409,7 +415,7 @@ func resourceSystemFortiguardUpdate(d *schema.ResourceData, m interface{}) error
 	}
 	paradict["device"] = device_name
 
-	obj, err := getObjectSystemFortiguard(d)
+	obj, err := getObjectSystemFortiguard(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemFortiguard resource while getting object: %v", err)
 	}
@@ -430,7 +436,6 @@ func resourceSystemFortiguardUpdate(d *schema.ResourceData, m interface{}) error
 
 func resourceSystemFortiguardDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -448,11 +453,17 @@ func resourceSystemFortiguardDelete(d *schema.ResourceData, m interface{}) error
 	}
 	paradict["device"] = device_name
 
+	obj, err := getObjectSystemFortiguard(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating SystemFortiguard resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteSystemFortiguard(mkey, paradict, wsParams)
+	_, err = c.UpdateSystemFortiguard(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting SystemFortiguard resource: %v", err)
+		return fmt.Errorf("Error clearing SystemFortiguard resource: %v", err)
 	}
 
 	d.SetId("")
@@ -1794,7 +1805,7 @@ func expandSystemFortiguardVideofilterLicense(d *schema.ResourceData, v interfac
 	return v, nil
 }
 
-func getObjectSystemFortiguard(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectSystemFortiguard(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("fds_license_expiring_days"); ok || d.HasChange("fds_license_expiring_days") {

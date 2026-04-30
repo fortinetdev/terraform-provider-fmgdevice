@@ -1,5 +1,5 @@
 ---
-subcategory: "No Category"
+subcategory: "Wireless Controller"
 layout: "fmgdevice"
 page_title: "FortiManager Device: fmgdevice_wirelesscontroller_hotspot20_anqpnairealm_nailist_eapmethod_authparam"
 description: |-

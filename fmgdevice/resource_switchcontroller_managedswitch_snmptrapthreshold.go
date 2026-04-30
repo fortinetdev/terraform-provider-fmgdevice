@@ -95,7 +95,7 @@ func resourceSwitchControllerManagedSwitchSnmpTrapThresholdUpdate(d *schema.Reso
 	paradict["vdom"] = device_vdom
 	paradict["managed_switch"] = managed_switch
 
-	obj, err := getObjectSwitchControllerManagedSwitchSnmpTrapThreshold(d)
+	obj, err := getObjectSwitchControllerManagedSwitchSnmpTrapThreshold(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating SwitchControllerManagedSwitchSnmpTrapThreshold resource while getting object: %v", err)
 	}
@@ -116,7 +116,6 @@ func resourceSwitchControllerManagedSwitchSnmpTrapThresholdUpdate(d *schema.Reso
 
 func resourceSwitchControllerManagedSwitchSnmpTrapThresholdDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -141,11 +140,17 @@ func resourceSwitchControllerManagedSwitchSnmpTrapThresholdDelete(d *schema.Reso
 	paradict["vdom"] = device_vdom
 	paradict["managed_switch"] = managed_switch
 
+	obj, err := getObjectSwitchControllerManagedSwitchSnmpTrapThreshold(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating SwitchControllerManagedSwitchSnmpTrapThreshold resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteSwitchControllerManagedSwitchSnmpTrapThreshold(mkey, paradict, wsParams)
+	_, err = c.UpdateSwitchControllerManagedSwitchSnmpTrapThreshold(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting SwitchControllerManagedSwitchSnmpTrapThreshold resource: %v", err)
+		return fmt.Errorf("Error clearing SwitchControllerManagedSwitchSnmpTrapThreshold resource: %v", err)
 	}
 
 	d.SetId("")
@@ -281,7 +286,7 @@ func expandSwitchControllerManagedSwitchSnmpTrapThresholdTrapLowMemoryThreshold2
 	return v, nil
 }
 
-func getObjectSwitchControllerManagedSwitchSnmpTrapThreshold(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectSwitchControllerManagedSwitchSnmpTrapThreshold(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("trap_high_cpu_threshold"); ok || d.HasChange("trap_high_cpu_threshold") {

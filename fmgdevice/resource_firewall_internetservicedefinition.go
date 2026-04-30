@@ -87,6 +87,7 @@ func resourceFirewallInternetServiceDefinition() *schema.Resource {
 						"seq_num": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 					},
 				},

@@ -78,7 +78,7 @@ func resourceApplicationRuleSettingsUpdate(d *schema.ResourceData, m interface{}
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	obj, err := getObjectApplicationRuleSettings(d)
+	obj, err := getObjectApplicationRuleSettings(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating ApplicationRuleSettings resource while getting object: %v", err)
 	}
@@ -99,7 +99,6 @@ func resourceApplicationRuleSettingsUpdate(d *schema.ResourceData, m interface{}
 
 func resourceApplicationRuleSettingsDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -122,11 +121,17 @@ func resourceApplicationRuleSettingsDelete(d *schema.ResourceData, m interface{}
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	obj, err := getObjectApplicationRuleSettings(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating ApplicationRuleSettings resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteApplicationRuleSettings(mkey, paradict, wsParams)
+	_, err = c.UpdateApplicationRuleSettings(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting ApplicationRuleSettings resource: %v", err)
+		return fmt.Errorf("Error clearing ApplicationRuleSettings resource: %v", err)
 	}
 
 	d.SetId("")
@@ -215,7 +220,7 @@ func expandApplicationRuleSettingsId(d *schema.ResourceData, v interface{}, pre 
 	return v, nil
 }
 
-func getObjectApplicationRuleSettings(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectApplicationRuleSettings(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("fosid"); ok || d.HasChange("fosid") {

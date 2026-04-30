@@ -94,18 +94,22 @@ func resourceSystemSettings() *schema.Resource {
 			"bfd_desired_min_tx": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"bfd_detect_mult": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"bfd_dont_enforce_src_port": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"bfd_required_min_rx": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"block_land_attack": &schema.Schema{
 				Type:     schema.TypeString,
@@ -388,6 +392,7 @@ func resourceSystemSettings() *schema.Resource {
 			"gui_fortitelemetry": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"gui_gtp": &schema.Schema{
 				Type:     schema.TypeString,
@@ -441,6 +446,7 @@ func resourceSystemSettings() *schema.Resource {
 			"gui_nat46_64": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"gui_object_colors": &schema.Schema{
 				Type:     schema.TypeString,
@@ -469,6 +475,7 @@ func resourceSystemSettings() *schema.Resource {
 			"gui_replacement_message_groups": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"gui_proxy_inspection": &schema.Schema{
 				Type:     schema.TypeString,
@@ -601,6 +608,7 @@ func resourceSystemSettings() *schema.Resource {
 			"ike_detailed_event_logs": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"ike_dn_format": &schema.Schema{
 				Type:     schema.TypeString,
@@ -666,6 +674,11 @@ func resourceSystemSettings() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
+			"lan_extension_controller_port": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+				Computed: true,
+			},
 			"link_down_access": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -700,6 +713,7 @@ func resourceSystemSettings() *schema.Resource {
 			"manageip6": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"motherboard_traffic_forwarding": &schema.Schema{
 				Type:     schema.TypeSet,
@@ -715,6 +729,7 @@ func resourceSystemSettings() *schema.Resource {
 			"multicast_skip_policy": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"multicast_ttl_notchange": &schema.Schema{
 				Type:     schema.TypeString,
@@ -859,6 +874,7 @@ func resourceSystemSettings() *schema.Resource {
 			"vdom_type": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"vpn_stats_log": &schema.Schema{
 				Type:     schema.TypeSet,
@@ -908,7 +924,7 @@ func resourceSystemSettingsUpdate(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	obj, err := getObjectSystemSettings(d)
+	obj, err := getObjectSystemSettings(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemSettings resource while getting object: %v", err)
 	}
@@ -929,7 +945,6 @@ func resourceSystemSettingsUpdate(d *schema.ResourceData, m interface{}) error {
 
 func resourceSystemSettingsDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -952,11 +967,17 @@ func resourceSystemSettingsDelete(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	obj, err := getObjectSystemSettings(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating SystemSettings resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteSystemSettings(mkey, paradict, wsParams)
+	_, err = c.UpdateSystemSettings(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting SystemSettings resource: %v", err)
+		return fmt.Errorf("Error clearing SystemSettings resource: %v", err)
 	}
 
 	d.SetId("")
@@ -1520,6 +1541,10 @@ func flattenSystemSettingsIp6(v interface{}, d *schema.ResourceData, pre string)
 }
 
 func flattenSystemSettingsLanExtensionControllerAddr(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemSettingsLanExtensionControllerPort(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -2972,6 +2997,16 @@ func refreshObjectSystemSettings(d *schema.ResourceData, o map[string]interface{
 		}
 	}
 
+	if err = d.Set("lan_extension_controller_port", flattenSystemSettingsLanExtensionControllerPort(o["lan-extension-controller-port"], d, "lan_extension_controller_port")); err != nil {
+		if vv, ok := fortiAPIPatch(o["lan-extension-controller-port"], "SystemSettings-LanExtensionControllerPort"); ok {
+			if err = d.Set("lan_extension_controller_port", vv); err != nil {
+				return fmt.Errorf("Error reading lan_extension_controller_port: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading lan_extension_controller_port: %v", err)
+		}
+	}
+
 	if err = d.Set("link_down_access", flattenSystemSettingsLinkDownAccess(o["link-down-access"], d, "link_down_access")); err != nil {
 		if vv, ok := fortiAPIPatch(o["link-down-access"], "SystemSettings-LinkDownAccess"); ok {
 			if err = d.Set("link_down_access", vv); err != nil {
@@ -3929,6 +3964,10 @@ func expandSystemSettingsLanExtensionControllerAddr(d *schema.ResourceData, v in
 	return v, nil
 }
 
+func expandSystemSettingsLanExtensionControllerPort(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandSystemSettingsLinkDownAccess(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -4105,7 +4144,7 @@ func expandSystemSettingsForwardDomain(d *schema.ResourceData, v interface{}, pr
 	return v, nil
 }
 
-func getObjectSystemSettings(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectSystemSettings(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("allow_linkdown_path"); ok || d.HasChange("allow_linkdown_path") {
@@ -5248,6 +5287,15 @@ func getObjectSystemSettings(d *schema.ResourceData) (*map[string]interface{}, e
 			return &obj, err
 		} else if t != nil {
 			obj["lan-extension-controller-addr"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("lan_extension_controller_port"); ok || d.HasChange("lan_extension_controller_port") {
+		t, err := expandSystemSettingsLanExtensionControllerPort(d, v, "lan_extension_controller_port")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["lan-extension-controller-port"] = t
 		}
 	}
 

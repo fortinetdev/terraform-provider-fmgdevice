@@ -43,6 +43,7 @@ func resourceFirewallIpv6EhFilter() *schema.Resource {
 			"auth": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"dest_opt": &schema.Schema{
 				Type:     schema.TypeString,
@@ -104,7 +105,7 @@ func resourceFirewallIpv6EhFilterUpdate(d *schema.ResourceData, m interface{}) e
 	}
 	paradict["device"] = device_name
 
-	obj, err := getObjectFirewallIpv6EhFilter(d)
+	obj, err := getObjectFirewallIpv6EhFilter(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating FirewallIpv6EhFilter resource while getting object: %v", err)
 	}
@@ -125,7 +126,6 @@ func resourceFirewallIpv6EhFilterUpdate(d *schema.ResourceData, m interface{}) e
 
 func resourceFirewallIpv6EhFilterDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -143,11 +143,17 @@ func resourceFirewallIpv6EhFilterDelete(d *schema.ResourceData, m interface{}) e
 	}
 	paradict["device"] = device_name
 
+	obj, err := getObjectFirewallIpv6EhFilter(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating FirewallIpv6EhFilter resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteFirewallIpv6EhFilter(mkey, paradict, wsParams)
+	_, err = c.UpdateFirewallIpv6EhFilter(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting FirewallIpv6EhFilter resource: %v", err)
+		return fmt.Errorf("Error clearing FirewallIpv6EhFilter resource: %v", err)
 	}
 
 	d.SetId("")
@@ -351,7 +357,7 @@ func expandFirewallIpv6EhFilterRoutingType(d *schema.ResourceData, v interface{}
 	return expandIntegerList(v.(*schema.Set).List()), nil
 }
 
-func getObjectFirewallIpv6EhFilter(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectFirewallIpv6EhFilter(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("auth"); ok || d.HasChange("auth") {

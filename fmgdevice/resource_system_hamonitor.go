@@ -43,6 +43,7 @@ func resourceSystemHaMonitor() *schema.Resource {
 			"monitor_vlan": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"vlan_hb_interval": &schema.Schema{
 				Type:     schema.TypeInt,
@@ -77,7 +78,7 @@ func resourceSystemHaMonitorUpdate(d *schema.ResourceData, m interface{}) error 
 	}
 	paradict["device"] = device_name
 
-	obj, err := getObjectSystemHaMonitor(d)
+	obj, err := getObjectSystemHaMonitor(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemHaMonitor resource while getting object: %v", err)
 	}
@@ -98,7 +99,6 @@ func resourceSystemHaMonitorUpdate(d *schema.ResourceData, m interface{}) error 
 
 func resourceSystemHaMonitorDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -116,11 +116,17 @@ func resourceSystemHaMonitorDelete(d *schema.ResourceData, m interface{}) error 
 	}
 	paradict["device"] = device_name
 
+	obj, err := getObjectSystemHaMonitor(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating SystemHaMonitor resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteSystemHaMonitor(mkey, paradict, wsParams)
+	_, err = c.UpdateSystemHaMonitor(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting SystemHaMonitor resource: %v", err)
+		return fmt.Errorf("Error clearing SystemHaMonitor resource: %v", err)
 	}
 
 	d.SetId("")
@@ -234,7 +240,7 @@ func expandSystemHaMonitorVlanHbLostThreshold(d *schema.ResourceData, v interfac
 	return v, nil
 }
 
-func getObjectSystemHaMonitor(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectSystemHaMonitor(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("monitor_vlan"); ok || d.HasChange("monitor_vlan") {

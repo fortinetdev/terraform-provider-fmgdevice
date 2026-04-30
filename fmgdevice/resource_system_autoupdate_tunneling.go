@@ -87,7 +87,7 @@ func resourceSystemAutoupdateTunnelingUpdate(d *schema.ResourceData, m interface
 	}
 	paradict["device"] = device_name
 
-	obj, err := getObjectSystemAutoupdateTunneling(d)
+	obj, err := getObjectSystemAutoupdateTunneling(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemAutoupdateTunneling resource while getting object: %v", err)
 	}
@@ -108,7 +108,6 @@ func resourceSystemAutoupdateTunnelingUpdate(d *schema.ResourceData, m interface
 
 func resourceSystemAutoupdateTunnelingDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -126,11 +125,17 @@ func resourceSystemAutoupdateTunnelingDelete(d *schema.ResourceData, m interface
 	}
 	paradict["device"] = device_name
 
+	obj, err := getObjectSystemAutoupdateTunneling(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating SystemAutoupdateTunneling resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteSystemAutoupdateTunneling(mkey, paradict, wsParams)
+	_, err = c.UpdateSystemAutoupdateTunneling(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting SystemAutoupdateTunneling resource: %v", err)
+		return fmt.Errorf("Error clearing SystemAutoupdateTunneling resource: %v", err)
 	}
 
 	d.SetId("")
@@ -266,7 +271,7 @@ func expandSystemAutoupdateTunnelingUsername(d *schema.ResourceData, v interface
 	return v, nil
 }
 
-func getObjectSystemAutoupdateTunneling(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectSystemAutoupdateTunneling(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("address"); ok || d.HasChange("address") {

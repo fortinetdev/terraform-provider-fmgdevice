@@ -133,7 +133,7 @@ func resourceSwitchControllerManagedSwitchIgmpSnoopingUpdate(d *schema.ResourceD
 	paradict["vdom"] = device_vdom
 	paradict["managed_switch"] = managed_switch
 
-	obj, err := getObjectSwitchControllerManagedSwitchIgmpSnooping(d)
+	obj, err := getObjectSwitchControllerManagedSwitchIgmpSnooping(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating SwitchControllerManagedSwitchIgmpSnooping resource while getting object: %v", err)
 	}
@@ -154,7 +154,6 @@ func resourceSwitchControllerManagedSwitchIgmpSnoopingUpdate(d *schema.ResourceD
 
 func resourceSwitchControllerManagedSwitchIgmpSnoopingDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -179,11 +178,17 @@ func resourceSwitchControllerManagedSwitchIgmpSnoopingDelete(d *schema.ResourceD
 	paradict["vdom"] = device_vdom
 	paradict["managed_switch"] = managed_switch
 
+	obj, err := getObjectSwitchControllerManagedSwitchIgmpSnooping(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating SwitchControllerManagedSwitchIgmpSnooping resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteSwitchControllerManagedSwitchIgmpSnooping(mkey, paradict, wsParams)
+	_, err = c.UpdateSwitchControllerManagedSwitchIgmpSnooping(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting SwitchControllerManagedSwitchIgmpSnooping resource: %v", err)
+		return fmt.Errorf("Error clearing SwitchControllerManagedSwitchIgmpSnooping resource: %v", err)
 	}
 
 	d.SetId("")
@@ -495,7 +500,7 @@ func expandSwitchControllerManagedSwitchIgmpSnoopingVlansVlanName2edl(d *schema.
 	return v, nil
 }
 
-func getObjectSwitchControllerManagedSwitchIgmpSnooping(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectSwitchControllerManagedSwitchIgmpSnooping(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("aging_time"); ok || d.HasChange("aging_time") {
@@ -525,12 +530,16 @@ func getObjectSwitchControllerManagedSwitchIgmpSnooping(d *schema.ResourceData) 
 		}
 	}
 
-	if v, ok := d.GetOk("vlans"); ok || d.HasChange("vlans") {
-		t, err := expandSwitchControllerManagedSwitchIgmpSnoopingVlans2edl(d, v, "vlans")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["vlans"] = t
+	if bemptysontable {
+		obj["vlans"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("vlans"); ok || d.HasChange("vlans") {
+			t, err := expandSwitchControllerManagedSwitchIgmpSnoopingVlans2edl(d, v, "vlans")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["vlans"] = t
+			}
 		}
 	}
 

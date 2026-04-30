@@ -100,7 +100,7 @@ func resourceWafProfileConstraintHostnameUpdate(d *schema.ResourceData, m interf
 	paradict["vdom"] = device_vdom
 	paradict["profile"] = profile
 
-	obj, err := getObjectWafProfileConstraintHostname(d)
+	obj, err := getObjectWafProfileConstraintHostname(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating WafProfileConstraintHostname resource while getting object: %v", err)
 	}
@@ -121,7 +121,6 @@ func resourceWafProfileConstraintHostnameUpdate(d *schema.ResourceData, m interf
 
 func resourceWafProfileConstraintHostnameDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -146,11 +145,17 @@ func resourceWafProfileConstraintHostnameDelete(d *schema.ResourceData, m interf
 	paradict["vdom"] = device_vdom
 	paradict["profile"] = profile
 
+	obj, err := getObjectWafProfileConstraintHostname(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating WafProfileConstraintHostname resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteWafProfileConstraintHostname(mkey, paradict, wsParams)
+	_, err = c.UpdateWafProfileConstraintHostname(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting WafProfileConstraintHostname resource: %v", err)
+		return fmt.Errorf("Error clearing WafProfileConstraintHostname resource: %v", err)
 	}
 
 	d.SetId("")
@@ -304,7 +309,7 @@ func expandWafProfileConstraintHostnameStatus3rdl(d *schema.ResourceData, v inte
 	return v, nil
 }
 
-func getObjectWafProfileConstraintHostname(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectWafProfileConstraintHostname(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("action"); ok || d.HasChange("action") {

@@ -1,5 +1,5 @@
 ---
-subcategory: "No Category"
+subcategory: "System"
 layout: "fmgdevice"
 page_title: "FortiManager Device: fmgdevice_system_accprofile"
 description: |-
@@ -13,6 +13,7 @@ Configure access profiles for system administrators.
 >- `fwgrp_permission`: `fmgdevice_system_accprofile_fwgrppermission`
 >- `loggrp_permission`: `fmgdevice_system_accprofile_loggrppermission`
 >- `netgrp_permission`: `fmgdevice_system_accprofile_netgrppermission`
+>- `secfabgrp_permission`: `fmgdevice_system_accprofile_secfabgrppermission`
 >- `sysgrp_permission`: `fmgdevice_system_accprofile_sysgrppermission`
 >- `utmgrp_permission`: `fmgdevice_system_accprofile_utmgrppermission`
 
@@ -71,6 +72,7 @@ The following arguments are supported:
 
 * `secfabgrp` - Security Fabric. Valid values: `none`, `read`, `read-write`.
 
+* `secfabgrp_permission` - Secfabgrp-Permission. The structure of `secfabgrp_permission` block is documented below.
 * `sysgrp` - System Configuration. Valid values: `none`, `read`, `read-write`, `custom`.
 
 * `sysgrp_permission` - Sysgrp-Permission. The structure of `sysgrp_permission` block is documented below.
@@ -121,6 +123,15 @@ The `netgrp_permission` block supports:
 * `packet_capture` - Packet Capture Configuration. Valid values: `none`, `read`, `read-write`.
 
 * `route_cfg` - Router Configuration. Valid values: `none`, `read`, `read-write`.
+
+
+The `secfabgrp_permission` block supports:
+
+* `csffoo` - Fabric Overlay Orchestrator profiles and settings. Valid values: `none`, `read`, `read-write`.
+
+* `csfsys` - Security Fabric system profiles and settings. Valid values: `none`, `read`, `read-write`.
+
+* `mmsgtp` - UTM permission. Valid values: `none`, `read`, `read-write`.
 
 
 The `sysgrp_permission` block supports:

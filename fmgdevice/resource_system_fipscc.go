@@ -83,7 +83,7 @@ func resourceSystemFipsCcUpdate(d *schema.ResourceData, m interface{}) error {
 	}
 	paradict["device"] = device_name
 
-	obj, err := getObjectSystemFipsCc(d)
+	obj, err := getObjectSystemFipsCc(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemFipsCc resource while getting object: %v", err)
 	}
@@ -104,7 +104,6 @@ func resourceSystemFipsCcUpdate(d *schema.ResourceData, m interface{}) error {
 
 func resourceSystemFipsCcDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -122,11 +121,17 @@ func resourceSystemFipsCcDelete(d *schema.ResourceData, m interface{}) error {
 	}
 	paradict["device"] = device_name
 
+	obj, err := getObjectSystemFipsCc(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating SystemFipsCc resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteSystemFipsCc(mkey, paradict, wsParams)
+	_, err = c.UpdateSystemFipsCc(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting SystemFipsCc resource: %v", err)
+		return fmt.Errorf("Error clearing SystemFipsCc resource: %v", err)
 	}
 
 	d.SetId("")
@@ -258,7 +263,7 @@ func expandSystemFipsCcStatus(d *schema.ResourceData, v interface{}, pre string)
 	return v, nil
 }
 
-func getObjectSystemFipsCc(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectSystemFipsCc(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("entropy_token"); ok || d.HasChange("entropy_token") {

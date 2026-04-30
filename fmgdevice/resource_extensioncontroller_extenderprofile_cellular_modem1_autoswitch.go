@@ -122,7 +122,7 @@ func resourceExtensionControllerExtenderProfileCellularModem1AutoSwitchUpdate(d 
 	paradict["vdom"] = device_vdom
 	paradict["extender_profile"] = extender_profile
 
-	obj, err := getObjectExtensionControllerExtenderProfileCellularModem1AutoSwitch(d)
+	obj, err := getObjectExtensionControllerExtenderProfileCellularModem1AutoSwitch(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating ExtensionControllerExtenderProfileCellularModem1AutoSwitch resource while getting object: %v", err)
 	}
@@ -143,7 +143,6 @@ func resourceExtensionControllerExtenderProfileCellularModem1AutoSwitchUpdate(d 
 
 func resourceExtensionControllerExtenderProfileCellularModem1AutoSwitchDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -168,11 +167,17 @@ func resourceExtensionControllerExtenderProfileCellularModem1AutoSwitchDelete(d 
 	paradict["vdom"] = device_vdom
 	paradict["extender_profile"] = extender_profile
 
+	obj, err := getObjectExtensionControllerExtenderProfileCellularModem1AutoSwitch(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating ExtensionControllerExtenderProfileCellularModem1AutoSwitch resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteExtensionControllerExtenderProfileCellularModem1AutoSwitch(mkey, paradict, wsParams)
+	_, err = c.UpdateExtensionControllerExtenderProfileCellularModem1AutoSwitch(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting ExtensionControllerExtenderProfileCellularModem1AutoSwitch resource: %v", err)
+		return fmt.Errorf("Error clearing ExtensionControllerExtenderProfileCellularModem1AutoSwitch resource: %v", err)
 	}
 
 	d.SetId("")
@@ -398,7 +403,7 @@ func expandExtensionControllerExtenderProfileCellularModem1AutoSwitchSwitchBackT
 	return v, nil
 }
 
-func getObjectExtensionControllerExtenderProfileCellularModem1AutoSwitch(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectExtensionControllerExtenderProfileCellularModem1AutoSwitch(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("dataplan"); ok || d.HasChange("dataplan") {

@@ -1,5 +1,5 @@
 ---
-subcategory: "No Category"
+subcategory: "Firewall"
 layout: "fmgdevice"
 page_title: "FortiManager Device: fmgdevice_firewall_multicastaddress"
 description: |-
@@ -31,6 +31,8 @@ The following arguments are supported:
 * `subnet` - Broadcast address and subnet.
 * `tagging` - Tagging. The structure of `tagging` block is documented below.
 * `type` - Type of address object: multicast IP address range or broadcast IP/mask to be treated as a multicast address. Valid values: `multicastrange`, `broadcastmask`.
+
+* `visibility` - Enable/disable visibility of the multicast address on the GUI. Valid values: `disable`, `enable`.
 
 * `dynamic_sort_subtable` - true or false, set this parameter to true when using dynamic for_each + toset to configure and sort sub-tables, please do not set this parameter when configuring static sub-tables.
 

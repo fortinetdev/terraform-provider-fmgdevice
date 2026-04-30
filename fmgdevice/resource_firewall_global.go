@@ -68,7 +68,7 @@ func resourceFirewallGlobalUpdate(d *schema.ResourceData, m interface{}) error {
 	}
 	paradict["device"] = device_name
 
-	obj, err := getObjectFirewallGlobal(d)
+	obj, err := getObjectFirewallGlobal(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating FirewallGlobal resource while getting object: %v", err)
 	}
@@ -89,7 +89,6 @@ func resourceFirewallGlobalUpdate(d *schema.ResourceData, m interface{}) error {
 
 func resourceFirewallGlobalDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -107,11 +106,17 @@ func resourceFirewallGlobalDelete(d *schema.ResourceData, m interface{}) error {
 	}
 	paradict["device"] = device_name
 
+	obj, err := getObjectFirewallGlobal(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating FirewallGlobal resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteFirewallGlobal(mkey, paradict, wsParams)
+	_, err = c.UpdateFirewallGlobal(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting FirewallGlobal resource: %v", err)
+		return fmt.Errorf("Error clearing FirewallGlobal resource: %v", err)
 	}
 
 	d.SetId("")
@@ -189,7 +194,7 @@ func expandFirewallGlobalBannedIpPersistency(d *schema.ResourceData, v interface
 	return v, nil
 }
 
-func getObjectFirewallGlobal(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectFirewallGlobal(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("banned_ip_persistency"); ok || d.HasChange("banned_ip_persistency") {

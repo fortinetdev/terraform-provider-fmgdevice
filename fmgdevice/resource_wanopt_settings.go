@@ -94,7 +94,7 @@ func resourceWanoptSettingsUpdate(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	obj, err := getObjectWanoptSettings(d)
+	obj, err := getObjectWanoptSettings(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating WanoptSettings resource while getting object: %v", err)
 	}
@@ -115,7 +115,6 @@ func resourceWanoptSettingsUpdate(d *schema.ResourceData, m interface{}) error {
 
 func resourceWanoptSettingsDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -138,11 +137,17 @@ func resourceWanoptSettingsDelete(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	obj, err := getObjectWanoptSettings(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating WanoptSettings resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteWanoptSettings(mkey, paradict, wsParams)
+	_, err = c.UpdateWanoptSettings(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting WanoptSettings resource: %v", err)
+		return fmt.Errorf("Error clearing WanoptSettings resource: %v", err)
 	}
 
 	d.SetId("")
@@ -285,7 +290,7 @@ func expandWanoptSettingsTunnelSslAlgorithm(d *schema.ResourceData, v interface{
 	return v, nil
 }
 
-func getObjectWanoptSettings(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectWanoptSettings(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("auto_detect_algorithm"); ok || d.HasChange("auto_detect_algorithm") {

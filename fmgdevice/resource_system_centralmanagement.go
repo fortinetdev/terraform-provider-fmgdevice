@@ -43,6 +43,7 @@ func resourceSystemCentralManagement() *schema.Resource {
 			"allow_monitor": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"allow_push_configuration": &schema.Schema{
 				Type:     schema.TypeString,
@@ -249,7 +250,7 @@ func resourceSystemCentralManagementUpdate(d *schema.ResourceData, m interface{}
 	}
 	paradict["device"] = device_name
 
-	obj, err := getObjectSystemCentralManagement(d)
+	obj, err := getObjectSystemCentralManagement(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemCentralManagement resource while getting object: %v", err)
 	}
@@ -270,7 +271,6 @@ func resourceSystemCentralManagementUpdate(d *schema.ResourceData, m interface{}
 
 func resourceSystemCentralManagementDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -288,11 +288,17 @@ func resourceSystemCentralManagementDelete(d *schema.ResourceData, m interface{}
 	}
 	paradict["device"] = device_name
 
+	obj, err := getObjectSystemCentralManagement(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating SystemCentralManagement resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteSystemCentralManagement(mkey, paradict, wsParams)
+	_, err = c.UpdateSystemCentralManagement(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting SystemCentralManagement resource: %v", err)
+		return fmt.Errorf("Error clearing SystemCentralManagement resource: %v", err)
 	}
 
 	d.SetId("")
@@ -1087,7 +1093,7 @@ func expandSystemCentralManagementVrfSelect(d *schema.ResourceData, v interface{
 	return v, nil
 }
 
-func getObjectSystemCentralManagement(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectSystemCentralManagement(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("allow_monitor"); ok || d.HasChange("allow_monitor") {
@@ -1324,12 +1330,16 @@ func getObjectSystemCentralManagement(d *schema.ResourceData) (*map[string]inter
 		}
 	}
 
-	if v, ok := d.GetOk("server_list"); ok || d.HasChange("server_list") {
-		t, err := expandSystemCentralManagementServerList(d, v, "server_list")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["server-list"] = t
+	if bemptysontable {
+		obj["server-list"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("server_list"); ok || d.HasChange("server_list") {
+			t, err := expandSystemCentralManagementServerList(d, v, "server_list")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["server-list"] = t
+			}
 		}
 	}
 

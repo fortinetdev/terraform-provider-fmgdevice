@@ -133,7 +133,7 @@ func resourceFirewallProfileProtocolOptionsPop3Update(d *schema.ResourceData, m 
 	paradict["vdom"] = device_vdom
 	paradict["profile_protocol_options"] = profile_protocol_options
 
-	obj, err := getObjectFirewallProfileProtocolOptionsPop3(d)
+	obj, err := getObjectFirewallProfileProtocolOptionsPop3(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating FirewallProfileProtocolOptionsPop3 resource while getting object: %v", err)
 	}
@@ -154,7 +154,6 @@ func resourceFirewallProfileProtocolOptionsPop3Update(d *schema.ResourceData, m 
 
 func resourceFirewallProfileProtocolOptionsPop3Delete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -179,11 +178,17 @@ func resourceFirewallProfileProtocolOptionsPop3Delete(d *schema.ResourceData, m 
 	paradict["vdom"] = device_vdom
 	paradict["profile_protocol_options"] = profile_protocol_options
 
+	obj, err := getObjectFirewallProfileProtocolOptionsPop3(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating FirewallProfileProtocolOptionsPop3 resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteFirewallProfileProtocolOptionsPop3(mkey, paradict, wsParams)
+	_, err = c.UpdateFirewallProfileProtocolOptionsPop3(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting FirewallProfileProtocolOptionsPop3 resource: %v", err)
+		return fmt.Errorf("Error clearing FirewallProfileProtocolOptionsPop3 resource: %v", err)
 	}
 
 	d.SetId("")
@@ -445,7 +450,7 @@ func expandFirewallProfileProtocolOptionsPop3UncompressedOversizeLimit2edl(d *sc
 	return v, nil
 }
 
-func getObjectFirewallProfileProtocolOptionsPop3(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectFirewallProfileProtocolOptionsPop3(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("inspect_all"); ok || d.HasChange("inspect_all") {

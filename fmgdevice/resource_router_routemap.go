@@ -90,6 +90,7 @@ func resourceRouterRouteMap() *schema.Resource {
 						"match_community_exact": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"match_extcommunity": &schema.Schema{
 							Type:     schema.TypeSet,
@@ -150,6 +151,11 @@ func resourceRouterRouteMap() *schema.Resource {
 							Optional: true,
 							Computed: true,
 						},
+						"match_suppress": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+							Computed: true,
+						},
 						"match_tag": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
@@ -192,6 +198,7 @@ func resourceRouterRouteMap() *schema.Resource {
 						"set_community_additive": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"set_community_delete": &schema.Schema{
 							Type:     schema.TypeSet,
@@ -628,6 +635,12 @@ func flattenRouterRouteMapRule(v interface{}, d *schema.ResourceData, pre string
 			tmp["match_route_type"] = fortiAPISubPartPatch(v, "RouterRouteMap-Rule-MatchRouteType")
 		}
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "match_suppress"
+		if _, ok := i["match-suppress"]; ok {
+			v := flattenRouterRouteMapRuleMatchSuppress(i["match-suppress"], d, pre_append)
+			tmp["match_suppress"] = fortiAPISubPartPatch(v, "RouterRouteMap-Rule-MatchSuppress")
+		}
+
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "match_tag"
 		if _, ok := i["match-tag"]; ok {
 			v := flattenRouterRouteMapRuleMatchTag(i["match-tag"], d, pre_append)
@@ -903,6 +916,10 @@ func flattenRouterRouteMapRuleMatchOrigin(v interface{}, d *schema.ResourceData,
 }
 
 func flattenRouterRouteMapRuleMatchRouteType(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenRouterRouteMapRuleMatchSuppress(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -1204,6 +1221,11 @@ func expandRouterRouteMapRule(d *schema.ResourceData, v interface{}, pre string)
 			tmp["match-route-type"], _ = expandRouterRouteMapRuleMatchRouteType(d, i["match_route_type"], pre_append)
 		}
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "match_suppress"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["match-suppress"], _ = expandRouterRouteMapRuleMatchSuppress(d, i["match_suppress"], pre_append)
+		}
+
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "match_tag"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
 			tmp["match-tag"], _ = expandRouterRouteMapRuleMatchTag(d, i["match_tag"], pre_append)
@@ -1445,6 +1467,10 @@ func expandRouterRouteMapRuleMatchOrigin(d *schema.ResourceData, v interface{}, 
 }
 
 func expandRouterRouteMapRuleMatchRouteType(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandRouterRouteMapRuleMatchSuppress(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 

@@ -54,6 +54,7 @@ func resourceFirewallVip() *schema.Resource {
 			"add_nat46_route": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"arp_reply": &schema.Schema{
 				Type:     schema.TypeString,
@@ -593,6 +594,10 @@ func resourceFirewallVip() *schema.Resource {
 							Optional: true,
 							Computed: true,
 						},
+						"vip_id": &schema.Schema{
+							Type:     schema.TypeInt,
+							Optional: true,
+						},
 						"weblogic_server": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
@@ -674,6 +679,7 @@ func resourceFirewallVip() *schema.Resource {
 			"http_cookie_age": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"http_cookie_domain": &schema.Schema{
 				Type:     schema.TypeString,
@@ -682,6 +688,7 @@ func resourceFirewallVip() *schema.Resource {
 			"http_cookie_domain_from_host": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"http_cookie_generation": &schema.Schema{
 				Type:     schema.TypeInt,
@@ -694,10 +701,12 @@ func resourceFirewallVip() *schema.Resource {
 			"http_cookie_share": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"http_ip_header": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"http_ip_header_name": &schema.Schema{
 				Type:     schema.TypeString,
@@ -706,6 +715,7 @@ func resourceFirewallVip() *schema.Resource {
 			"http_multiplex": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"http_multiplex_max_concurrent_request": &schema.Schema{
 				Type:     schema.TypeInt,
@@ -728,6 +738,7 @@ func resourceFirewallVip() *schema.Resource {
 			"https_cookie_secure": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"fosid": &schema.Schema{
 				Type:     schema.TypeInt,
@@ -744,6 +755,7 @@ func resourceFirewallVip() *schema.Resource {
 			"ldb_method": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"mapped_addr": &schema.Schema{
 				Type:     schema.TypeSet,
@@ -764,6 +776,7 @@ func resourceFirewallVip() *schema.Resource {
 			"max_embryonic_connections": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"monitor": &schema.Schema{
 				Type:     schema.TypeSet,
@@ -798,10 +811,12 @@ func resourceFirewallVip() *schema.Resource {
 			"outlook_web_access": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"persistence": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"portforward": &schema.Schema{
 				Type:     schema.TypeString,
@@ -811,10 +826,12 @@ func resourceFirewallVip() *schema.Resource {
 			"portmapping_type": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"protocol": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"quic": &schema.Schema{
 				Type:     schema.TypeList,
@@ -886,10 +903,12 @@ func resourceFirewallVip() *schema.Resource {
 						"healthcheck": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"holddown_interval": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"http_host": &schema.Schema{
 							Type:     schema.TypeString,
@@ -902,6 +921,7 @@ func resourceFirewallVip() *schema.Resource {
 						"ip": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"max_connections": &schema.Schema{
 							Type:     schema.TypeInt,
@@ -920,22 +940,27 @@ func resourceFirewallVip() *schema.Resource {
 						"status": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"translate_host": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"type": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"verify_cert": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"weight": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"health_check_proto": &schema.Schema{
 							Type:     schema.TypeString,
@@ -983,6 +1008,7 @@ func resourceFirewallVip() *schema.Resource {
 			"ssl_algorithm": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"ssl_certificate": &schema.Schema{
 				Type:     schema.TypeSet,
@@ -1029,30 +1055,37 @@ func resourceFirewallVip() *schema.Resource {
 			"ssl_client_renegotiation": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"ssl_client_session_state_max": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"ssl_client_session_state_timeout": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"ssl_client_session_state_type": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"ssl_dh_bits": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"ssl_hpkp": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"ssl_hpkp_age": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"ssl_hpkp_backup": &schema.Schema{
 				Type:     schema.TypeSet,
@@ -1063,6 +1096,7 @@ func resourceFirewallVip() *schema.Resource {
 			"ssl_hpkp_include_subdomains": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"ssl_hpkp_primary": &schema.Schema{
 				Type:     schema.TypeSet,
@@ -1077,42 +1111,52 @@ func resourceFirewallVip() *schema.Resource {
 			"ssl_hsts": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"ssl_hsts_age": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"ssl_hsts_include_subdomains": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"ssl_http_location_conversion": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"ssl_http_match_host": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"ssl_max_version": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"ssl_min_version": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"ssl_mode": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"ssl_pfs": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"ssl_send_empty_frags": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"ssl_server_algorithm": &schema.Schema{
 				Type:     schema.TypeString,
@@ -1160,14 +1204,17 @@ func resourceFirewallVip() *schema.Resource {
 			"ssl_server_session_state_max": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"ssl_server_session_state_timeout": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"ssl_server_session_state_type": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"status": &schema.Schema{
 				Type:     schema.TypeString,
@@ -1189,17 +1236,24 @@ func resourceFirewallVip() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"vip_id": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+			},
 			"weblogic_server": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"websphere_server": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"http_supported_max_version": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"dynamic_sort_subtable": &schema.Schema{
 				Type:     schema.TypeString,
@@ -2009,6 +2063,12 @@ func flattenFirewallVipDynamicMapping(v interface{}, d *schema.ResourceData, pre
 			tmp["uuid"] = fortiAPISubPartPatch(v, "FirewallVip-DynamicMapping-Uuid")
 		}
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "vip_id"
+		if _, ok := i["vip-id"]; ok {
+			v := flattenFirewallVipDynamicMappingVipId(i["vip-id"], d, pre_append)
+			tmp["vip_id"] = fortiAPISubPartPatch(v, "FirewallVip-DynamicMapping-VipId")
+		}
+
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "weblogic_server"
 		if _, ok := i["weblogic-server"]; ok {
 			v := flattenFirewallVipDynamicMappingWeblogicServer(i["weblogic-server"], d, pre_append)
@@ -2709,6 +2769,10 @@ func flattenFirewallVipDynamicMappingUserAgentDetect(v interface{}, d *schema.Re
 }
 
 func flattenFirewallVipDynamicMappingUuid(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenFirewallVipDynamicMappingVipId(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -3518,6 +3582,10 @@ func flattenFirewallVipUserAgentDetect(v interface{}, d *schema.ResourceData, pr
 }
 
 func flattenFirewallVipUuid(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenFirewallVipVipId(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -4594,6 +4662,16 @@ func refreshObjectFirewallVip(d *schema.ResourceData, o map[string]interface{}) 
 		}
 	}
 
+	if err = d.Set("vip_id", flattenFirewallVipVipId(o["vip-id"], d, "vip_id")); err != nil {
+		if vv, ok := fortiAPIPatch(o["vip-id"], "FirewallVip-VipId"); ok {
+			if err = d.Set("vip_id", vv); err != nil {
+				return fmt.Errorf("Error reading vip_id: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading vip_id: %v", err)
+		}
+	}
+
 	if err = d.Set("weblogic_server", flattenFirewallVipWeblogicServer(o["weblogic-server"], d, "weblogic_server")); err != nil {
 		if vv, ok := fortiAPIPatch(o["weblogic-server"], "FirewallVip-WeblogicServer"); ok {
 			if err = d.Set("weblogic_server", vv); err != nil {
@@ -5154,6 +5232,11 @@ func expandFirewallVipDynamicMapping(d *schema.ResourceData, v interface{}, pre 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "uuid"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
 			tmp["uuid"], _ = expandFirewallVipDynamicMappingUuid(d, i["uuid"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "vip_id"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["vip-id"], _ = expandFirewallVipDynamicMappingVipId(d, i["vip_id"], pre_append)
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "weblogic_server"
@@ -5816,6 +5899,10 @@ func expandFirewallVipDynamicMappingUserAgentDetect(d *schema.ResourceData, v in
 }
 
 func expandFirewallVipDynamicMappingUuid(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandFirewallVipDynamicMappingVipId(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -6572,6 +6659,10 @@ func expandFirewallVipUserAgentDetect(d *schema.ResourceData, v interface{}, pre
 }
 
 func expandFirewallVipUuid(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandFirewallVipVipId(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -7460,6 +7551,15 @@ func getObjectFirewallVip(d *schema.ResourceData) (*map[string]interface{}, erro
 			return &obj, err
 		} else if t != nil {
 			obj["uuid"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("vip_id"); ok || d.HasChange("vip_id") {
+		t, err := expandFirewallVipVipId(d, v, "vip_id")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["vip-id"] = t
 		}
 	}
 

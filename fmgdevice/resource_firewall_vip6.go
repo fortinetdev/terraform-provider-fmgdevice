@@ -59,6 +59,7 @@ func resourceFirewallVip6() *schema.Resource {
 			"arp_reply": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"client_cert": &schema.Schema{
 				Type:     schema.TypeString,
@@ -501,6 +502,10 @@ func resourceFirewallVip6() *schema.Resource {
 							Optional: true,
 							Computed: true,
 						},
+						"vip_id": &schema.Schema{
+							Type:     schema.TypeInt,
+							Optional: true,
+						},
 						"weblogic_server": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
@@ -759,6 +764,7 @@ func resourceFirewallVip6() *schema.Resource {
 						"ip": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"max_connections": &schema.Schema{
 							Type:     schema.TypeInt,
@@ -820,6 +826,7 @@ func resourceFirewallVip6() *schema.Resource {
 			"ssl_algorithm": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"ssl_certificate": &schema.Schema{
 				Type:     schema.TypeSet,
@@ -862,30 +869,37 @@ func resourceFirewallVip6() *schema.Resource {
 			"ssl_client_renegotiation": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"ssl_client_session_state_max": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"ssl_client_session_state_timeout": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"ssl_client_session_state_type": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"ssl_dh_bits": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"ssl_hpkp": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"ssl_hpkp_age": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"ssl_hpkp_backup": &schema.Schema{
 				Type:     schema.TypeSet,
@@ -896,6 +910,7 @@ func resourceFirewallVip6() *schema.Resource {
 			"ssl_hpkp_include_subdomains": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"ssl_hpkp_primary": &schema.Schema{
 				Type:     schema.TypeSet,
@@ -930,26 +945,32 @@ func resourceFirewallVip6() *schema.Resource {
 			"ssl_http_match_host": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"ssl_max_version": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"ssl_min_version": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"ssl_mode": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"ssl_pfs": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"ssl_send_empty_frags": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"ssl_server_algorithm": &schema.Schema{
 				Type:     schema.TypeString,
@@ -997,10 +1018,12 @@ func resourceFirewallVip6() *schema.Resource {
 			"ssl_server_session_state_max": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"ssl_server_session_state_timeout": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"ssl_server_session_state_type": &schema.Schema{
 				Type:     schema.TypeString,
@@ -1021,6 +1044,10 @@ func resourceFirewallVip6() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+			},
+			"vip_id": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
 			},
 			"weblogic_server": &schema.Schema{
 				Type:     schema.TypeString,
@@ -1752,6 +1779,12 @@ func flattenFirewallVip6DynamicMapping(v interface{}, d *schema.ResourceData, pr
 			tmp["uuid"] = fortiAPISubPartPatch(v, "FirewallVip6-DynamicMapping-Uuid")
 		}
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "vip_id"
+		if _, ok := i["vip-id"]; ok {
+			v := flattenFirewallVip6DynamicMappingVipId(i["vip-id"], d, pre_append)
+			tmp["vip_id"] = fortiAPISubPartPatch(v, "FirewallVip6-DynamicMapping-VipId")
+		}
+
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "weblogic_server"
 		if _, ok := i["weblogic-server"]; ok {
 			v := flattenFirewallVip6DynamicMappingWeblogicServer(i["weblogic-server"], d, pre_append)
@@ -2346,6 +2379,10 @@ func flattenFirewallVip6DynamicMappingUserAgentDetect(v interface{}, d *schema.R
 }
 
 func flattenFirewallVip6DynamicMappingUuid(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenFirewallVip6DynamicMappingVipId(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -3008,6 +3045,10 @@ func flattenFirewallVip6UserAgentDetect(v interface{}, d *schema.ResourceData, p
 }
 
 func flattenFirewallVip6Uuid(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenFirewallVip6VipId(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -3926,6 +3967,16 @@ func refreshObjectFirewallVip6(d *schema.ResourceData, o map[string]interface{})
 		}
 	}
 
+	if err = d.Set("vip_id", flattenFirewallVip6VipId(o["vip-id"], d, "vip_id")); err != nil {
+		if vv, ok := fortiAPIPatch(o["vip-id"], "FirewallVip6-VipId"); ok {
+			if err = d.Set("vip_id", vv); err != nil {
+				return fmt.Errorf("Error reading vip_id: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading vip_id: %v", err)
+		}
+	}
+
 	if err = d.Set("weblogic_server", flattenFirewallVip6WeblogicServer(o["weblogic-server"], d, "weblogic_server")); err != nil {
 		if vv, ok := fortiAPIPatch(o["weblogic-server"], "FirewallVip6-WeblogicServer"); ok {
 			if err = d.Set("weblogic_server", vv); err != nil {
@@ -4402,6 +4453,11 @@ func expandFirewallVip6DynamicMapping(d *schema.ResourceData, v interface{}, pre
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "uuid"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
 			tmp["uuid"], _ = expandFirewallVip6DynamicMappingUuid(d, i["uuid"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "vip_id"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["vip-id"], _ = expandFirewallVip6DynamicMappingVipId(d, i["vip_id"], pre_append)
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "weblogic_server"
@@ -4963,6 +5019,10 @@ func expandFirewallVip6DynamicMappingUserAgentDetect(d *schema.ResourceData, v i
 }
 
 func expandFirewallVip6DynamicMappingUuid(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandFirewallVip6DynamicMappingVipId(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -5584,6 +5644,10 @@ func expandFirewallVip6UserAgentDetect(d *schema.ResourceData, v interface{}, pr
 }
 
 func expandFirewallVip6Uuid(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandFirewallVip6VipId(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -6342,6 +6406,15 @@ func getObjectFirewallVip6(d *schema.ResourceData) (*map[string]interface{}, err
 			return &obj, err
 		} else if t != nil {
 			obj["uuid"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("vip_id"); ok || d.HasChange("vip_id") {
+		t, err := expandFirewallVip6VipId(d, v, "vip_id")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["vip-id"] = t
 		}
 	}
 

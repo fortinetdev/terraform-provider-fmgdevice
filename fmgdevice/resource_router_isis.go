@@ -49,6 +49,7 @@ func resourceRouterIsis() *schema.Resource {
 			"adjacency_check": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"adjacency_check6": &schema.Schema{
 				Type:     schema.TypeString,
@@ -565,7 +566,7 @@ func resourceRouterIsisUpdate(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	obj, err := getObjectRouterIsis(d)
+	obj, err := getObjectRouterIsis(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating RouterIsis resource while getting object: %v", err)
 	}
@@ -586,7 +587,6 @@ func resourceRouterIsisUpdate(d *schema.ResourceData, m interface{}) error {
 
 func resourceRouterIsisDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -609,11 +609,17 @@ func resourceRouterIsisDelete(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	obj, err := getObjectRouterIsis(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating RouterIsis resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteRouterIsis(mkey, paradict, wsParams)
+	_, err = c.UpdateRouterIsis(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting RouterIsis resource: %v", err)
+		return fmt.Errorf("Error clearing RouterIsis resource: %v", err)
 	}
 
 	d.SetId("")
@@ -2606,7 +2612,7 @@ func expandRouterIsisSummaryAddress6Prefix6(d *schema.ResourceData, v interface{
 	return v, nil
 }
 
-func getObjectRouterIsis(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectRouterIsis(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("adjacency_check"); ok || d.HasChange("adjacency_check") {
@@ -2762,21 +2768,29 @@ func getObjectRouterIsis(d *schema.ResourceData) (*map[string]interface{}, error
 		}
 	}
 
-	if v, ok := d.GetOk("isis_interface"); ok || d.HasChange("isis_interface") {
-		t, err := expandRouterIsisIsisInterface(d, v, "isis_interface")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["isis-interface"] = t
+	if bemptysontable {
+		obj["isis-interface"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("isis_interface"); ok || d.HasChange("isis_interface") {
+			t, err := expandRouterIsisIsisInterface(d, v, "isis_interface")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["isis-interface"] = t
+			}
 		}
 	}
 
-	if v, ok := d.GetOk("isis_net"); ok || d.HasChange("isis_net") {
-		t, err := expandRouterIsisIsisNet(d, v, "isis_net")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["isis-net"] = t
+	if bemptysontable {
+		obj["isis-net"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("isis_net"); ok || d.HasChange("isis_net") {
+			t, err := expandRouterIsisIsisNet(d, v, "isis_net")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["isis-net"] = t
+			}
 		}
 	}
 
@@ -2960,21 +2974,29 @@ func getObjectRouterIsis(d *schema.ResourceData) (*map[string]interface{}, error
 		}
 	}
 
-	if v, ok := d.GetOk("summary_address"); ok || d.HasChange("summary_address") {
-		t, err := expandRouterIsisSummaryAddress(d, v, "summary_address")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["summary-address"] = t
+	if bemptysontable {
+		obj["summary-address"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("summary_address"); ok || d.HasChange("summary_address") {
+			t, err := expandRouterIsisSummaryAddress(d, v, "summary_address")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["summary-address"] = t
+			}
 		}
 	}
 
-	if v, ok := d.GetOk("summary_address6"); ok || d.HasChange("summary_address6") {
-		t, err := expandRouterIsisSummaryAddress6(d, v, "summary_address6")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["summary-address6"] = t
+	if bemptysontable {
+		obj["summary-address6"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("summary_address6"); ok || d.HasChange("summary_address6") {
+			t, err := expandRouterIsisSummaryAddress6(d, v, "summary_address6")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["summary-address6"] = t
+			}
 		}
 	}
 

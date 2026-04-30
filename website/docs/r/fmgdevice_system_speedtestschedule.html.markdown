@@ -1,5 +1,5 @@
 ---
-subcategory: "No Category"
+subcategory: "System"
 layout: "fmgdevice"
 page_title: "FortiManager Device: fmgdevice_system_speedtestschedule"
 description: |-
@@ -35,9 +35,15 @@ The following arguments are supported:
 * `diffserv` - DSCP used for speed test.
 * `dynamic_server` - Enable/disable dynamic server option. Valid values: `disable`, `enable`.
 
+* `expected_inbandwidth_maximum` - Set the maximum inbandwidth threshold for applying speedtest results on shaping-profile.
+* `expected_inbandwidth_minimum` - Set the minimum inbandwidth threshold for applying speedtest results on shaping-profile.
+* `expected_outbandwidth_maximum` - Set the maximum outbandwidth threshold for applying speedtest results on shaping-profile.
+* `expected_outbandwidth_minimum` - Set the minimum outbandwidth threshold for applying speedtest results on shaping-profile.
 * `interface` - Interface name.
 * `mode` - Protocol Auto(default), TCP or UDP used for speed test. Valid values: `UDP`, `TCP`, `Auto`.
 
+* `retries` - Maximum number of times the FortiGate unit will attempt to contact the same server before considering the speed test has failed (1 - 10, default = 5).
+* `retry_pause` - Number of seconds the FortiGate pauses between successive speed tests before trying a different server (60 - 3600, default = 300).
 * `schedules` - Schedules for the interface.
 * `server_name` - Speed test server name.
 * `server_port` - Port of the server to run speed test.
@@ -47,6 +53,8 @@ The following arguments are supported:
 
 * `update_inbandwidth_maximum` - Maximum downloading bandwidth (kbps) to be used in a speed test.
 * `update_inbandwidth_minimum` - Minimum downloading bandwidth (kbps) to be considered effective.
+* `update_interface_shaping` - Enable/disable using the speedtest results as reference for interface shaping (overriding configured in/outbandwidth). Valid values: `disable`, `enable`.
+
 * `update_outbandwidth` - Enable/disable bypassing interface's outbound bandwidth setting. Valid values: `disable`, `enable`.
 
 * `update_outbandwidth_maximum` - Maximum uploading bandwidth (kbps) to be used in a speed test.

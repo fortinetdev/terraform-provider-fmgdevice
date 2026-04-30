@@ -121,7 +121,7 @@ func resourceFirewallVip6QuicUpdate(d *schema.ResourceData, m interface{}) error
 	paradict["vdom"] = device_vdom
 	paradict["vip6"] = vip6
 
-	obj, err := getObjectFirewallVip6Quic(d)
+	obj, err := getObjectFirewallVip6Quic(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating FirewallVip6Quic resource while getting object: %v", err)
 	}
@@ -142,7 +142,6 @@ func resourceFirewallVip6QuicUpdate(d *schema.ResourceData, m interface{}) error
 
 func resourceFirewallVip6QuicDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -167,11 +166,17 @@ func resourceFirewallVip6QuicDelete(d *schema.ResourceData, m interface{}) error
 	paradict["vdom"] = device_vdom
 	paradict["vip6"] = vip6
 
+	obj, err := getObjectFirewallVip6Quic(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating FirewallVip6Quic resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteFirewallVip6Quic(mkey, paradict, wsParams)
+	_, err = c.UpdateFirewallVip6Quic(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting FirewallVip6Quic resource: %v", err)
+		return fmt.Errorf("Error clearing FirewallVip6Quic resource: %v", err)
 	}
 
 	d.SetId("")
@@ -397,7 +402,7 @@ func expandFirewallVip6QuicMaxUdpPayloadSize2edl(d *schema.ResourceData, v inter
 	return v, nil
 }
 
-func getObjectFirewallVip6Quic(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectFirewallVip6Quic(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("ack_delay_exponent"); ok || d.HasChange("ack_delay_exponent") {

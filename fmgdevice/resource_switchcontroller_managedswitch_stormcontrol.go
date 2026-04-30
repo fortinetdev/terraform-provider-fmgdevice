@@ -109,7 +109,7 @@ func resourceSwitchControllerManagedSwitchStormControlUpdate(d *schema.ResourceD
 	paradict["vdom"] = device_vdom
 	paradict["managed_switch"] = managed_switch
 
-	obj, err := getObjectSwitchControllerManagedSwitchStormControl(d)
+	obj, err := getObjectSwitchControllerManagedSwitchStormControl(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating SwitchControllerManagedSwitchStormControl resource while getting object: %v", err)
 	}
@@ -130,7 +130,6 @@ func resourceSwitchControllerManagedSwitchStormControlUpdate(d *schema.ResourceD
 
 func resourceSwitchControllerManagedSwitchStormControlDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -155,11 +154,17 @@ func resourceSwitchControllerManagedSwitchStormControlDelete(d *schema.ResourceD
 	paradict["vdom"] = device_vdom
 	paradict["managed_switch"] = managed_switch
 
+	obj, err := getObjectSwitchControllerManagedSwitchStormControl(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating SwitchControllerManagedSwitchStormControl resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteSwitchControllerManagedSwitchStormControl(mkey, paradict, wsParams)
+	_, err = c.UpdateSwitchControllerManagedSwitchStormControl(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting SwitchControllerManagedSwitchStormControl resource: %v", err)
+		return fmt.Errorf("Error clearing SwitchControllerManagedSwitchStormControl resource: %v", err)
 	}
 
 	d.SetId("")
@@ -349,7 +354,7 @@ func expandSwitchControllerManagedSwitchStormControlUnknownUnicast2edl(d *schema
 	return v, nil
 }
 
-func getObjectSwitchControllerManagedSwitchStormControl(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectSwitchControllerManagedSwitchStormControl(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("broadcast"); ok || d.HasChange("broadcast") {

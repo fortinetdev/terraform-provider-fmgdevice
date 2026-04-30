@@ -1,5 +1,5 @@
 ---
-subcategory: "No Category"
+subcategory: "VPN"
 layout: "fmgdevice"
 page_title: "FortiManager Device: fmgdevice_vpn_l2tp"
 description: |-

@@ -49,6 +49,7 @@ func resourceWebProxyExplicit() *schema.Resource {
 			"client_cert": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"empty_cert_action": &schema.Schema{
 				Type:     schema.TypeString,
@@ -64,6 +65,7 @@ func resourceWebProxyExplicit() *schema.Resource {
 			"ftp_over_http": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"http_connection_mode": &schema.Schema{
 				Type:     schema.TypeString,
@@ -90,6 +92,7 @@ func resourceWebProxyExplicit() *schema.Resource {
 			"incoming_ip": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"incoming_ip6": &schema.Schema{
 				Type:     schema.TypeString,
@@ -136,6 +139,7 @@ func resourceWebProxyExplicit() *schema.Resource {
 			"pac_file_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"pac_file_server_port": &schema.Schema{
 				Type:     schema.TypeSet,
@@ -146,6 +150,7 @@ func resourceWebProxyExplicit() *schema.Resource {
 			"pac_file_server_status": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"pac_file_through_https": &schema.Schema{
 				Type:     schema.TypeString,
@@ -212,10 +217,12 @@ func resourceWebProxyExplicit() *schema.Resource {
 			"realm": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"sec_default_action": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"secure_web_proxy": &schema.Schema{
 				Type:     schema.TypeString,
@@ -231,6 +238,7 @@ func resourceWebProxyExplicit() *schema.Resource {
 			"socks": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"socks_incoming_port": &schema.Schema{
 				Type:     schema.TypeSet,
@@ -266,6 +274,7 @@ func resourceWebProxyExplicit() *schema.Resource {
 			"unknown_http_version": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"user_agent_detect": &schema.Schema{
 				Type:     schema.TypeString,
@@ -275,6 +284,7 @@ func resourceWebProxyExplicit() *schema.Resource {
 			"vrf_select": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"dynamic_sort_subtable": &schema.Schema{
 				Type:     schema.TypeString,
@@ -309,7 +319,7 @@ func resourceWebProxyExplicitUpdate(d *schema.ResourceData, m interface{}) error
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	obj, err := getObjectWebProxyExplicit(d)
+	obj, err := getObjectWebProxyExplicit(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating WebProxyExplicit resource while getting object: %v", err)
 	}
@@ -330,7 +340,6 @@ func resourceWebProxyExplicitUpdate(d *schema.ResourceData, m interface{}) error
 
 func resourceWebProxyExplicitDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -353,11 +362,17 @@ func resourceWebProxyExplicitDelete(d *schema.ResourceData, m interface{}) error
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	obj, err := getObjectWebProxyExplicit(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating WebProxyExplicit resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteWebProxyExplicit(mkey, paradict, wsParams)
+	_, err = c.UpdateWebProxyExplicit(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting WebProxyExplicit resource: %v", err)
+		return fmt.Errorf("Error clearing WebProxyExplicit resource: %v", err)
 	}
 
 	d.SetId("")
@@ -1327,7 +1342,7 @@ func expandWebProxyExplicitVrfSelect(d *schema.ResourceData, v interface{}, pre 
 	return v, nil
 }
 
-func getObjectWebProxyExplicit(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectWebProxyExplicit(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("client_cert"); ok || d.HasChange("client_cert") {
@@ -1528,12 +1543,16 @@ func getObjectWebProxyExplicit(d *schema.ResourceData) (*map[string]interface{},
 		}
 	}
 
-	if v, ok := d.GetOk("pac_policy"); ok || d.HasChange("pac_policy") {
-		t, err := expandWebProxyExplicitPacPolicy(d, v, "pac_policy")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["pac-policy"] = t
+	if bemptysontable {
+		obj["pac-policy"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("pac_policy"); ok || d.HasChange("pac_policy") {
+			t, err := expandWebProxyExplicitPacPolicy(d, v, "pac_policy")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["pac-policy"] = t
+			}
 		}
 	}
 

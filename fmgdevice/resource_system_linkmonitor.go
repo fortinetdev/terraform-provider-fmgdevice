@@ -94,10 +94,12 @@ func resourceSystemLinkMonitor() *schema.Resource {
 			"http_agent": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"http_get": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"http_match": &schema.Schema{
 				Type:     schema.TypeString,

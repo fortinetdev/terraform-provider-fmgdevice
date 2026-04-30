@@ -176,7 +176,7 @@ func resourceLogFortianalyzerCloudOverrideFilterUpdate(d *schema.ResourceData, m
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	obj, err := getObjectLogFortianalyzerCloudOverrideFilter(d)
+	obj, err := getObjectLogFortianalyzerCloudOverrideFilter(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating LogFortianalyzerCloudOverrideFilter resource while getting object: %v", err)
 	}
@@ -197,7 +197,6 @@ func resourceLogFortianalyzerCloudOverrideFilterUpdate(d *schema.ResourceData, m
 
 func resourceLogFortianalyzerCloudOverrideFilterDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -220,11 +219,17 @@ func resourceLogFortianalyzerCloudOverrideFilterDelete(d *schema.ResourceData, m
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	obj, err := getObjectLogFortianalyzerCloudOverrideFilter(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating LogFortianalyzerCloudOverrideFilter resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteLogFortianalyzerCloudOverrideFilter(mkey, paradict, wsParams)
+	_, err = c.UpdateLogFortianalyzerCloudOverrideFilter(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting LogFortianalyzerCloudOverrideFilter resource: %v", err)
+		return fmt.Errorf("Error clearing LogFortianalyzerCloudOverrideFilter resource: %v", err)
 	}
 
 	d.SetId("")
@@ -722,7 +727,7 @@ func expandLogFortianalyzerCloudOverrideFilterZtnaTraffic(d *schema.ResourceData
 	return v, nil
 }
 
-func getObjectLogFortianalyzerCloudOverrideFilter(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectLogFortianalyzerCloudOverrideFilter(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("anomaly"); ok || d.HasChange("anomaly") {
@@ -788,12 +793,16 @@ func getObjectLogFortianalyzerCloudOverrideFilter(d *schema.ResourceData) (*map[
 		}
 	}
 
-	if v, ok := d.GetOk("free_style"); ok || d.HasChange("free_style") {
-		t, err := expandLogFortianalyzerCloudOverrideFilterFreeStyle(d, v, "free_style")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["free-style"] = t
+	if bemptysontable {
+		obj["free-style"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("free_style"); ok || d.HasChange("free_style") {
+			t, err := expandLogFortianalyzerCloudOverrideFilterFreeStyle(d, v, "free_style")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["free-style"] = t
+			}
 		}
 	}
 

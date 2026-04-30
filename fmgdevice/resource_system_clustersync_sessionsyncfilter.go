@@ -129,7 +129,7 @@ func resourceSystemClusterSyncSessionSyncFilterUpdate(d *schema.ResourceData, m 
 	paradict["device"] = device_name
 	paradict["cluster_sync"] = cluster_sync
 
-	obj, err := getObjectSystemClusterSyncSessionSyncFilter(d)
+	obj, err := getObjectSystemClusterSyncSessionSyncFilter(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemClusterSyncSessionSyncFilter resource while getting object: %v", err)
 	}
@@ -150,7 +150,6 @@ func resourceSystemClusterSyncSessionSyncFilterUpdate(d *schema.ResourceData, m 
 
 func resourceSystemClusterSyncSessionSyncFilterDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -170,11 +169,17 @@ func resourceSystemClusterSyncSessionSyncFilterDelete(d *schema.ResourceData, m 
 	paradict["device"] = device_name
 	paradict["cluster_sync"] = cluster_sync
 
+	obj, err := getObjectSystemClusterSyncSessionSyncFilter(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating SystemClusterSyncSessionSyncFilter resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteSystemClusterSyncSessionSyncFilter(mkey, paradict, wsParams)
+	_, err = c.UpdateSystemClusterSyncSessionSyncFilter(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting SystemClusterSyncSessionSyncFilter resource: %v", err)
+		return fmt.Errorf("Error clearing SystemClusterSyncSessionSyncFilter resource: %v", err)
 	}
 
 	d.SetId("")
@@ -491,15 +496,19 @@ func expandSystemClusterSyncSessionSyncFilterSrcintf2edl(d *schema.ResourceData,
 	return convstr2list(v, nil), nil
 }
 
-func getObjectSystemClusterSyncSessionSyncFilter(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectSystemClusterSyncSessionSyncFilter(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
-	if v, ok := d.GetOk("custom_service"); ok || d.HasChange("custom_service") {
-		t, err := expandSystemClusterSyncSessionSyncFilterCustomService2edl(d, v, "custom_service")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["custom-service"] = t
+	if bemptysontable {
+		obj["custom-service"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("custom_service"); ok || d.HasChange("custom_service") {
+			t, err := expandSystemClusterSyncSessionSyncFilterCustomService2edl(d, v, "custom_service")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["custom-service"] = t
+			}
 		}
 	}
 

@@ -1,5 +1,5 @@
 ---
-subcategory: "No Category"
+subcategory: "Firewall"
 layout: "fmgdevice"
 page_title: "FortiManager Device: fmgdevice_firewall_address"
 description: |-
@@ -61,6 +61,8 @@ The following arguments are supported:
 
 * `organization` - Organization domain name (Syntax: organization/domain).
 * `os` - Dynamic address matching operating system.
+* `passive_fqdn_learning` - Enable/disable passive learning of FQDNs.  When enabled, the FortiGate learns, trusts, and saves FQDNs from endpoint DNS queries (default = enable). Valid values: `disable`, `enable`.
+
 * `policy_group` - Policy group name.
 * `route_tag` - route-tag address.
 * `sdn` - SDN.
@@ -83,6 +85,8 @@ The following arguments are supported:
 * `type` - Type of address. Valid values: `ipmask`, `iprange`, `fqdn`, `wildcard`, `geography`, `dynamic`, `interface-subnet`, `mac`, `route-tag`.
 
 * `uuid` - Universally Unique Identifier (UUID; automatically assigned but can be manually reset).
+* `visibility` - Enable/disable address visibility in the GUI. Valid values: `disable`, `enable`.
+
 * `wildcard` - IP address and wildcard netmask.
 * `wildcard_fqdn` - Fully Qualified Domain Name with wildcard characters.
 * `pattern_end` - Pattern-End.
@@ -126,6 +130,8 @@ The `dynamic_mapping` block supports:
 
 * `organization` - Organization domain name (Syntax: organization/domain).
 * `os` - Dynamic address matching operating system.
+* `passive_fqdn_learning` - Enable/disable passive learning of FQDNs.  When enabled, the FortiGate learns, trusts, and saves FQDNs from endpoint DNS queries (default = enable). Valid values: `disable`, `enable`.
+
 * `pattern_end` - Pattern-End.
 * `pattern_start` - Pattern-Start.
 * `policy_group` - Policy group name.

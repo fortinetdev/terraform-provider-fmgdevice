@@ -106,7 +106,7 @@ func resourceWafProfileConstraintMaxHeaderLineUpdate(d *schema.ResourceData, m i
 	paradict["vdom"] = device_vdom
 	paradict["profile"] = profile
 
-	obj, err := getObjectWafProfileConstraintMaxHeaderLine(d)
+	obj, err := getObjectWafProfileConstraintMaxHeaderLine(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating WafProfileConstraintMaxHeaderLine resource while getting object: %v", err)
 	}
@@ -127,7 +127,6 @@ func resourceWafProfileConstraintMaxHeaderLineUpdate(d *schema.ResourceData, m i
 
 func resourceWafProfileConstraintMaxHeaderLineDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -152,11 +151,17 @@ func resourceWafProfileConstraintMaxHeaderLineDelete(d *schema.ResourceData, m i
 	paradict["vdom"] = device_vdom
 	paradict["profile"] = profile
 
+	obj, err := getObjectWafProfileConstraintMaxHeaderLine(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating WafProfileConstraintMaxHeaderLine resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteWafProfileConstraintMaxHeaderLine(mkey, paradict, wsParams)
+	_, err = c.UpdateWafProfileConstraintMaxHeaderLine(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting WafProfileConstraintMaxHeaderLine resource: %v", err)
+		return fmt.Errorf("Error clearing WafProfileConstraintMaxHeaderLine resource: %v", err)
 	}
 
 	d.SetId("")
@@ -328,7 +333,7 @@ func expandWafProfileConstraintMaxHeaderLineStatus3rdl(d *schema.ResourceData, v
 	return v, nil
 }
 
-func getObjectWafProfileConstraintMaxHeaderLine(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectWafProfileConstraintMaxHeaderLine(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("action"); ok || d.HasChange("action") {

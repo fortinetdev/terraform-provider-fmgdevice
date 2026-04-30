@@ -1,5 +1,5 @@
 ---
-subcategory: "No Category"
+subcategory: "Endpoint Control"
 layout: "fmgdevice"
 page_title: "FortiManager Device: fmgdevice_endpointcontrol_fctems"
 description: |-
@@ -16,6 +16,8 @@ The following arguments are supported:
 
 * `device_name` - FortiManager managed device name. This variable is used in the request URL. If not specified, it will inherit the variable `device_name` of the provider.
 
+* `admin_password` - FortiClient EMS admin password.
+* `admin_username` - FortiClient EMS admin username.
 * `call_timeout` - FortiClient EMS call timeout in seconds (1 - 180 seconds, default = 30).
 * `certificate` - FortiClient EMS certificate.
 * `capabilities` - List of EMS capabilities. Valid values: `fabric-auth`, `silent-approval`, `websocket`, `websocket-malware`, `push-ca-certs`, `common-tags-api`, `tenant-id`, `single-vdom-connector`, `client-avatars`, `fgt-sysinfo-api`, `ztna-server-info`, `used-tags`.

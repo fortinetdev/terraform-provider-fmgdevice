@@ -43,6 +43,12 @@ func resourceDpdkGlobal() *schema.Resource {
 			"elasticbuffer": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
+			},
+			"frag_offload": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
 			},
 			"hugepage_percentage": &schema.Schema{
 				Type:     schema.TypeInt,
@@ -82,6 +88,7 @@ func resourceDpdkGlobal() *schema.Resource {
 			"session_table_percentage": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"sleep_on_idle": &schema.Schema{
 				Type:     schema.TypeString,
@@ -116,7 +123,7 @@ func resourceDpdkGlobalUpdate(d *schema.ResourceData, m interface{}) error {
 	}
 	paradict["device"] = device_name
 
-	obj, err := getObjectDpdkGlobal(d)
+	obj, err := getObjectDpdkGlobal(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating DpdkGlobal resource while getting object: %v", err)
 	}
@@ -137,7 +144,6 @@ func resourceDpdkGlobalUpdate(d *schema.ResourceData, m interface{}) error {
 
 func resourceDpdkGlobalDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -155,11 +161,17 @@ func resourceDpdkGlobalDelete(d *schema.ResourceData, m interface{}) error {
 	}
 	paradict["device"] = device_name
 
+	obj, err := getObjectDpdkGlobal(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating DpdkGlobal resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteDpdkGlobal(mkey, paradict, wsParams)
+	_, err = c.UpdateDpdkGlobal(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting DpdkGlobal resource: %v", err)
+		return fmt.Errorf("Error clearing DpdkGlobal resource: %v", err)
 	}
 
 	d.SetId("")
@@ -208,6 +220,10 @@ func resourceDpdkGlobalRead(d *schema.ResourceData, m interface{}) error {
 }
 
 func flattenDpdkGlobalElasticbuffer(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenDpdkGlobalFragOffload(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -261,6 +277,16 @@ func refreshObjectDpdkGlobal(d *schema.ResourceData, o map[string]interface{}) e
 			}
 		} else {
 			return fmt.Errorf("Error reading elasticbuffer: %v", err)
+		}
+	}
+
+	if err = d.Set("frag_offload", flattenDpdkGlobalFragOffload(o["frag-offload"], d, "frag_offload")); err != nil {
+		if vv, ok := fortiAPIPatch(o["frag-offload"], "DpdkGlobal-FragOffload"); ok {
+			if err = d.Set("frag_offload", vv); err != nil {
+				return fmt.Errorf("Error reading frag_offload: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading frag_offload: %v", err)
 		}
 	}
 
@@ -377,6 +403,10 @@ func expandDpdkGlobalElasticbuffer(d *schema.ResourceData, v interface{}, pre st
 	return v, nil
 }
 
+func expandDpdkGlobalFragOffload(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandDpdkGlobalHugepagePercentage(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -417,7 +447,7 @@ func expandDpdkGlobalStatus(d *schema.ResourceData, v interface{}, pre string) (
 	return v, nil
 }
 
-func getObjectDpdkGlobal(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectDpdkGlobal(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("elasticbuffer"); ok || d.HasChange("elasticbuffer") {
@@ -426,6 +456,15 @@ func getObjectDpdkGlobal(d *schema.ResourceData) (*map[string]interface{}, error
 			return &obj, err
 		} else if t != nil {
 			obj["elasticbuffer"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("frag_offload"); ok || d.HasChange("frag_offload") {
+		t, err := expandDpdkGlobalFragOffload(d, v, "frag_offload")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["frag-offload"] = t
 		}
 	}
 

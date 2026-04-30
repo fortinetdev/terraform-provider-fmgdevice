@@ -83,14 +83,17 @@ func resourceCasbUserActivity() *schema.Resource {
 									"action": &schema.Schema{
 										Type:     schema.TypeString,
 										Optional: true,
+										Computed: true,
 									},
 									"case_sensitive": &schema.Schema{
 										Type:     schema.TypeString,
 										Optional: true,
+										Computed: true,
 									},
 									"direction": &schema.Schema{
 										Type:     schema.TypeString,
 										Optional: true,
+										Computed: true,
 									},
 									"header_name": &schema.Schema{
 										Type:     schema.TypeString,
@@ -107,14 +110,17 @@ func resourceCasbUserActivity() *schema.Resource {
 									"search_pattern": &schema.Schema{
 										Type:     schema.TypeString,
 										Optional: true,
+										Computed: true,
 									},
 									"target": &schema.Schema{
 										Type:     schema.TypeString,
 										Optional: true,
+										Computed: true,
 									},
 									"value_from_input": &schema.Schema{
 										Type:     schema.TypeString,
 										Optional: true,
+										Computed: true,
 									},
 									"value_name_from_input": &schema.Schema{
 										Type:     schema.TypeString,
@@ -132,6 +138,7 @@ func resourceCasbUserActivity() *schema.Resource {
 						"status": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 					},
 				},
@@ -232,10 +239,12 @@ func resourceCasbUserActivity() *schema.Resource {
 												"body_type": &schema.Schema{
 													Type:     schema.TypeString,
 													Optional: true,
+													Computed: true,
 												},
 												"direction": &schema.Schema{
 													Type:     schema.TypeString,
 													Optional: true,
+													Computed: true,
 												},
 												"header_name": &schema.Schema{
 													Type:     schema.TypeString,
@@ -248,6 +257,7 @@ func resourceCasbUserActivity() *schema.Resource {
 												"place": &schema.Schema{
 													Type:     schema.TypeString,
 													Optional: true,
+													Computed: true,
 												},
 											},
 										},

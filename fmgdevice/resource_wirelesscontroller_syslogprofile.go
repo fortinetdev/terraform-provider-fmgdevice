@@ -65,6 +65,10 @@ func resourceWirelessControllerSyslogProfile() *schema.Resource {
 				ForceNew: true,
 				Optional: true,
 			},
+			"server": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 			"server_addr_type": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -302,6 +306,10 @@ func flattenWirelessControllerSyslogProfileName(v interface{}, d *schema.Resourc
 	return v
 }
 
+func flattenWirelessControllerSyslogProfileServer(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenWirelessControllerSyslogProfileServerAddrType(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -356,6 +364,16 @@ func refreshObjectWirelessControllerSyslogProfile(d *schema.ResourceData, o map[
 			}
 		} else {
 			return fmt.Errorf("Error reading name: %v", err)
+		}
+	}
+
+	if err = d.Set("server", flattenWirelessControllerSyslogProfileServer(o["server"], d, "server")); err != nil {
+		if vv, ok := fortiAPIPatch(o["server"], "WirelessControllerSyslogProfile-Server"); ok {
+			if err = d.Set("server", vv); err != nil {
+				return fmt.Errorf("Error reading server: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading server: %v", err)
 		}
 	}
 
@@ -440,6 +458,10 @@ func expandWirelessControllerSyslogProfileName(d *schema.ResourceData, v interfa
 	return v, nil
 }
 
+func expandWirelessControllerSyslogProfileServer(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandWirelessControllerSyslogProfileServerAddrType(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -491,6 +513,15 @@ func getObjectWirelessControllerSyslogProfile(d *schema.ResourceData) (*map[stri
 			return &obj, err
 		} else if t != nil {
 			obj["name"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("server"); ok || d.HasChange("server") {
+		t, err := expandWirelessControllerSyslogProfileServer(d, v, "server")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["server"] = t
 		}
 	}
 

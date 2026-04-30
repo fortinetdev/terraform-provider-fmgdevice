@@ -187,7 +187,7 @@ func resourceSystemPcpServerUpdate(d *schema.ResourceData, m interface{}) error 
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	obj, err := getObjectSystemPcpServer(d)
+	obj, err := getObjectSystemPcpServer(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemPcpServer resource while getting object: %v", err)
 	}
@@ -208,7 +208,6 @@ func resourceSystemPcpServerUpdate(d *schema.ResourceData, m interface{}) error 
 
 func resourceSystemPcpServerDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -231,11 +230,17 @@ func resourceSystemPcpServerDelete(d *schema.ResourceData, m interface{}) error 
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	obj, err := getObjectSystemPcpServer(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating SystemPcpServer resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteSystemPcpServer(mkey, paradict, wsParams)
+	_, err = c.UpdateSystemPcpServer(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting SystemPcpServer resource: %v", err)
+		return fmt.Errorf("Error clearing SystemPcpServer resource: %v", err)
 	}
 
 	d.SetId("")
@@ -766,15 +771,19 @@ func expandSystemPcpServerStatus(d *schema.ResourceData, v interface{}, pre stri
 	return v, nil
 }
 
-func getObjectSystemPcpServer(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectSystemPcpServer(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
-	if v, ok := d.GetOk("pools"); ok || d.HasChange("pools") {
-		t, err := expandSystemPcpServerPools(d, v, "pools")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["pools"] = t
+	if bemptysontable {
+		obj["pools"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("pools"); ok || d.HasChange("pools") {
+			t, err := expandSystemPcpServerPools(d, v, "pools")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["pools"] = t
+			}
 		}
 	}
 

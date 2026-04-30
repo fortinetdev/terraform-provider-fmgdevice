@@ -188,7 +188,7 @@ func resourceSystemNtpUpdate(d *schema.ResourceData, m interface{}) error {
 	}
 	paradict["device"] = device_name
 
-	obj, err := getObjectSystemNtp(d)
+	obj, err := getObjectSystemNtp(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemNtp resource while getting object: %v", err)
 	}
@@ -209,7 +209,6 @@ func resourceSystemNtpUpdate(d *schema.ResourceData, m interface{}) error {
 
 func resourceSystemNtpDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -227,11 +226,17 @@ func resourceSystemNtpDelete(d *schema.ResourceData, m interface{}) error {
 	}
 	paradict["device"] = device_name
 
+	obj, err := getObjectSystemNtp(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating SystemNtp resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteSystemNtp(mkey, paradict, wsParams)
+	_, err = c.UpdateSystemNtp(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting SystemNtp resource: %v", err)
+		return fmt.Errorf("Error clearing SystemNtp resource: %v", err)
 	}
 
 	d.SetId("")
@@ -755,7 +760,7 @@ func expandSystemNtpType(d *schema.ResourceData, v interface{}, pre string) (int
 	return v, nil
 }
 
-func getObjectSystemNtp(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectSystemNtp(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("authentication"); ok || d.HasChange("authentication") {
@@ -803,12 +808,16 @@ func getObjectSystemNtp(d *schema.ResourceData) (*map[string]interface{}, error)
 		}
 	}
 
-	if v, ok := d.GetOk("ntpserver"); ok || d.HasChange("ntpserver") {
-		t, err := expandSystemNtpNtpserver(d, v, "ntpserver")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["ntpserver"] = t
+	if bemptysontable {
+		obj["ntpserver"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("ntpserver"); ok || d.HasChange("ntpserver") {
+			t, err := expandSystemNtpNtpserver(d, v, "ntpserver")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["ntpserver"] = t
+			}
 		}
 	}
 

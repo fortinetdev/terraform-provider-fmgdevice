@@ -115,6 +115,7 @@ func resourceDlpProfile() *schema.Resource {
 						"expiry": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"file_size": &schema.Schema{
 							Type:     schema.TypeInt,
@@ -144,6 +145,7 @@ func resourceDlpProfile() *schema.Resource {
 						"match_percentage": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"name": &schema.Schema{
 							Type:     schema.TypeString,

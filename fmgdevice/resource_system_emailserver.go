@@ -43,6 +43,7 @@ func resourceSystemEmailServer() *schema.Resource {
 			"authenticate": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"interface": &schema.Schema{
 				Type:     schema.TypeSet,
@@ -137,7 +138,7 @@ func resourceSystemEmailServerUpdate(d *schema.ResourceData, m interface{}) erro
 	}
 	paradict["device"] = device_name
 
-	obj, err := getObjectSystemEmailServer(d)
+	obj, err := getObjectSystemEmailServer(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemEmailServer resource while getting object: %v", err)
 	}
@@ -158,7 +159,6 @@ func resourceSystemEmailServerUpdate(d *schema.ResourceData, m interface{}) erro
 
 func resourceSystemEmailServerDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -176,11 +176,17 @@ func resourceSystemEmailServerDelete(d *schema.ResourceData, m interface{}) erro
 	}
 	paradict["device"] = device_name
 
+	obj, err := getObjectSystemEmailServer(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating SystemEmailServer resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteSystemEmailServer(mkey, paradict, wsParams)
+	_, err = c.UpdateSystemEmailServer(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting SystemEmailServer resource: %v", err)
+		return fmt.Errorf("Error clearing SystemEmailServer resource: %v", err)
 	}
 
 	d.SetId("")
@@ -496,7 +502,7 @@ func expandSystemEmailServerVrfSelect(d *schema.ResourceData, v interface{}, pre
 	return v, nil
 }
 
-func getObjectSystemEmailServer(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectSystemEmailServer(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("authenticate"); ok || d.HasChange("authenticate") {

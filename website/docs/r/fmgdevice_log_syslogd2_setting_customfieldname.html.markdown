@@ -1,5 +1,5 @@
 ---
-subcategory: "No Category"
+subcategory: "Log"
 layout: "fmgdevice"
 page_title: "FortiManager Device: fmgdevice_log_syslogd2_setting_customfieldname"
 description: |-

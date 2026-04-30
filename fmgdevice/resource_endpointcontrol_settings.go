@@ -95,7 +95,7 @@ func resourceEndpointControlSettingsUpdate(d *schema.ResourceData, m interface{}
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	obj, err := getObjectEndpointControlSettings(d)
+	obj, err := getObjectEndpointControlSettings(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating EndpointControlSettings resource while getting object: %v", err)
 	}
@@ -116,7 +116,6 @@ func resourceEndpointControlSettingsUpdate(d *schema.ResourceData, m interface{}
 
 func resourceEndpointControlSettingsDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -139,11 +138,17 @@ func resourceEndpointControlSettingsDelete(d *schema.ResourceData, m interface{}
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	obj, err := getObjectEndpointControlSettings(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating EndpointControlSettings resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteEndpointControlSettings(mkey, paradict, wsParams)
+	_, err = c.UpdateEndpointControlSettings(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting EndpointControlSettings resource: %v", err)
+		return fmt.Errorf("Error clearing EndpointControlSettings resource: %v", err)
 	}
 
 	d.SetId("")
@@ -304,7 +309,7 @@ func expandEndpointControlSettingsOverride(d *schema.ResourceData, v interface{}
 	return v, nil
 }
 
-func getObjectEndpointControlSettings(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectEndpointControlSettings(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("forticlient_disconnect_unsupported_client"); ok || d.HasChange("forticlient_disconnect_unsupported_client") {

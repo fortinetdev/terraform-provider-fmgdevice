@@ -88,7 +88,7 @@ func resourceIpsGlobalTlsActiveProbeUpdate(d *schema.ResourceData, m interface{}
 	}
 	paradict["device"] = device_name
 
-	obj, err := getObjectIpsGlobalTlsActiveProbe(d)
+	obj, err := getObjectIpsGlobalTlsActiveProbe(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating IpsGlobalTlsActiveProbe resource while getting object: %v", err)
 	}
@@ -109,7 +109,6 @@ func resourceIpsGlobalTlsActiveProbeUpdate(d *schema.ResourceData, m interface{}
 
 func resourceIpsGlobalTlsActiveProbeDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -127,11 +126,17 @@ func resourceIpsGlobalTlsActiveProbeDelete(d *schema.ResourceData, m interface{}
 	}
 	paradict["device"] = device_name
 
+	obj, err := getObjectIpsGlobalTlsActiveProbe(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating IpsGlobalTlsActiveProbe resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteIpsGlobalTlsActiveProbe(mkey, paradict, wsParams)
+	_, err = c.UpdateIpsGlobalTlsActiveProbe(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting IpsGlobalTlsActiveProbe resource: %v", err)
+		return fmt.Errorf("Error clearing IpsGlobalTlsActiveProbe resource: %v", err)
 	}
 
 	d.SetId("")
@@ -281,7 +286,7 @@ func expandIpsGlobalTlsActiveProbeVdom2edl(d *schema.ResourceData, v interface{}
 	return expandStringList(v.(*schema.Set).List()), nil
 }
 
-func getObjectIpsGlobalTlsActiveProbe(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectIpsGlobalTlsActiveProbe(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("interface"); ok || d.HasChange("interface") {

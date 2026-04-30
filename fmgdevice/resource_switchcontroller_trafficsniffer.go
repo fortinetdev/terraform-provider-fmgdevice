@@ -49,6 +49,7 @@ func resourceSwitchControllerTrafficSniffer() *schema.Resource {
 			"erspan_ip": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"mode": &schema.Schema{
 				Type:     schema.TypeString,
@@ -71,6 +72,7 @@ func resourceSwitchControllerTrafficSniffer() *schema.Resource {
 						"ip": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"src_entry_id": &schema.Schema{
 							Type:     schema.TypeInt,
@@ -96,6 +98,7 @@ func resourceSwitchControllerTrafficSniffer() *schema.Resource {
 						"mac": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"src_entry_id": &schema.Schema{
 							Type:     schema.TypeInt,
@@ -166,7 +169,7 @@ func resourceSwitchControllerTrafficSnifferUpdate(d *schema.ResourceData, m inte
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	obj, err := getObjectSwitchControllerTrafficSniffer(d)
+	obj, err := getObjectSwitchControllerTrafficSniffer(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating SwitchControllerTrafficSniffer resource while getting object: %v", err)
 	}
@@ -187,7 +190,6 @@ func resourceSwitchControllerTrafficSnifferUpdate(d *schema.ResourceData, m inte
 
 func resourceSwitchControllerTrafficSnifferDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -210,11 +212,17 @@ func resourceSwitchControllerTrafficSnifferDelete(d *schema.ResourceData, m inte
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	obj, err := getObjectSwitchControllerTrafficSniffer(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating SwitchControllerTrafficSniffer resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteSwitchControllerTrafficSniffer(mkey, paradict, wsParams)
+	_, err = c.UpdateSwitchControllerTrafficSniffer(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting SwitchControllerTrafficSniffer resource: %v", err)
+		return fmt.Errorf("Error clearing SwitchControllerTrafficSniffer resource: %v", err)
 	}
 
 	d.SetId("")
@@ -784,7 +792,7 @@ func expandSwitchControllerTrafficSnifferTargetPortSwitchId(d *schema.ResourceDa
 	return v, nil
 }
 
-func getObjectSwitchControllerTrafficSniffer(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectSwitchControllerTrafficSniffer(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("erspan_ip"); ok || d.HasChange("erspan_ip") {
@@ -805,30 +813,42 @@ func getObjectSwitchControllerTrafficSniffer(d *schema.ResourceData) (*map[strin
 		}
 	}
 
-	if v, ok := d.GetOk("target_ip"); ok || d.HasChange("target_ip") {
-		t, err := expandSwitchControllerTrafficSnifferTargetIp(d, v, "target_ip")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["target-ip"] = t
+	if bemptysontable {
+		obj["target-ip"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("target_ip"); ok || d.HasChange("target_ip") {
+			t, err := expandSwitchControllerTrafficSnifferTargetIp(d, v, "target_ip")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["target-ip"] = t
+			}
 		}
 	}
 
-	if v, ok := d.GetOk("target_mac"); ok || d.HasChange("target_mac") {
-		t, err := expandSwitchControllerTrafficSnifferTargetMac(d, v, "target_mac")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["target-mac"] = t
+	if bemptysontable {
+		obj["target-mac"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("target_mac"); ok || d.HasChange("target_mac") {
+			t, err := expandSwitchControllerTrafficSnifferTargetMac(d, v, "target_mac")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["target-mac"] = t
+			}
 		}
 	}
 
-	if v, ok := d.GetOk("target_port"); ok || d.HasChange("target_port") {
-		t, err := expandSwitchControllerTrafficSnifferTargetPort(d, v, "target_port")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["target-port"] = t
+	if bemptysontable {
+		obj["target-port"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("target_port"); ok || d.HasChange("target_port") {
+			t, err := expandSwitchControllerTrafficSnifferTargetPort(d, v, "target_port")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["target-port"] = t
+			}
 		}
 	}
 

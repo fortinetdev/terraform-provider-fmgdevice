@@ -1,5 +1,5 @@
 ---
-subcategory: "No Category"
+subcategory: "Wireless Controller"
 layout: "fmgdevice"
 page_title: "FortiManager Device: fmgdevice_wirelesscontroller_vap_dynamic_mapping_ip6prefixlist"
 description: |-

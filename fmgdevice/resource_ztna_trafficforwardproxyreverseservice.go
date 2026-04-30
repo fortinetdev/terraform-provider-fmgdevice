@@ -126,7 +126,7 @@ func resourceZtnaTrafficForwardProxyReverseServiceUpdate(d *schema.ResourceData,
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	obj, err := getObjectZtnaTrafficForwardProxyReverseService(d)
+	obj, err := getObjectZtnaTrafficForwardProxyReverseService(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating ZtnaTrafficForwardProxyReverseService resource while getting object: %v", err)
 	}
@@ -147,7 +147,6 @@ func resourceZtnaTrafficForwardProxyReverseServiceUpdate(d *schema.ResourceData,
 
 func resourceZtnaTrafficForwardProxyReverseServiceDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -170,11 +169,17 @@ func resourceZtnaTrafficForwardProxyReverseServiceDelete(d *schema.ResourceData,
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	obj, err := getObjectZtnaTrafficForwardProxyReverseService(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating ZtnaTrafficForwardProxyReverseService resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteZtnaTrafficForwardProxyReverseService(mkey, paradict, wsParams)
+	_, err = c.UpdateZtnaTrafficForwardProxyReverseService(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting ZtnaTrafficForwardProxyReverseService resource: %v", err)
+		return fmt.Errorf("Error clearing ZtnaTrafficForwardProxyReverseService resource: %v", err)
 	}
 
 	d.SetId("")
@@ -478,15 +483,19 @@ func expandZtnaTrafficForwardProxyReverseServiceRemoteServersTrustedServerCa(d *
 	return expandStringList(v.(*schema.Set).List()), nil
 }
 
-func getObjectZtnaTrafficForwardProxyReverseService(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectZtnaTrafficForwardProxyReverseService(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
-	if v, ok := d.GetOk("remote_servers"); ok || d.HasChange("remote_servers") {
-		t, err := expandZtnaTrafficForwardProxyReverseServiceRemoteServers(d, v, "remote_servers")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["remote-servers"] = t
+	if bemptysontable {
+		obj["remote-servers"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("remote_servers"); ok || d.HasChange("remote_servers") {
+			t, err := expandZtnaTrafficForwardProxyReverseServiceRemoteServers(d, v, "remote_servers")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["remote-servers"] = t
+			}
 		}
 	}
 

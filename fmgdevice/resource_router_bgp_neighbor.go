@@ -471,8 +471,9 @@ func resourceRouterBgpNeighbor() *schema.Resource {
 				Computed: true,
 			},
 			"local_as": &schema.Schema{
-				Type:     schema.TypeInt,
+				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"local_as_no_prepend": &schema.Schema{
 				Type:     schema.TypeString,
@@ -650,8 +651,9 @@ func resourceRouterBgpNeighbor() *schema.Resource {
 				Computed: true,
 			},
 			"remote_as": &schema.Schema{
-				Type:     schema.TypeInt,
+				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"remove_private_as": &schema.Schema{
 				Type:     schema.TypeString,
@@ -1537,7 +1539,7 @@ func flattenRouterBgpNeighborLinkDownFailover2edl(v interface{}, d *schema.Resou
 }
 
 func flattenRouterBgpNeighborLocalAs2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
-	return conv2num(v)
+	return conv2str(v)
 }
 
 func flattenRouterBgpNeighborLocalAsNoPrepend2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
@@ -1673,7 +1675,7 @@ func flattenRouterBgpNeighborPrefixListOut62edl(v interface{}, d *schema.Resourc
 }
 
 func flattenRouterBgpNeighborRemoteAs2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
-	return v
+	return conv2str(v)
 }
 
 func flattenRouterBgpNeighborRemovePrivateAs2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {

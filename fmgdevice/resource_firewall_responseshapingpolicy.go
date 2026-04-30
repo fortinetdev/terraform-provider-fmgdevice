@@ -63,6 +63,26 @@ func resourceFirewallResponseShapingPolicy() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
+			"diffserv_forward": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+			"diffserv_reverse": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+			"diffservcode_forward": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+			"diffservcode_rev": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
 			"dstaddr": &schema.Schema{
 				Type:     schema.TypeSet,
 				Elem:     &schema.Schema{Type: schema.TypeString},
@@ -83,6 +103,12 @@ func resourceFirewallResponseShapingPolicy() *schema.Resource {
 			},
 			"ip_version": &schema.Schema{
 				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+			"matched_shaping_policies": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
 				Optional: true,
 				Computed: true,
 			},
@@ -346,6 +372,22 @@ func flattenFirewallResponseShapingPolicyComment(v interface{}, d *schema.Resour
 	return v
 }
 
+func flattenFirewallResponseShapingPolicyDiffservForward(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenFirewallResponseShapingPolicyDiffservReverse(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenFirewallResponseShapingPolicyDiffservcodeForward(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenFirewallResponseShapingPolicyDiffservcodeRev(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenFirewallResponseShapingPolicyDstaddr(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return flattenStringList(v)
 }
@@ -360,6 +402,10 @@ func flattenFirewallResponseShapingPolicyId(v interface{}, d *schema.ResourceDat
 
 func flattenFirewallResponseShapingPolicyIpVersion(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
+}
+
+func flattenFirewallResponseShapingPolicyMatchedShapingPolicies(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
 }
 
 func flattenFirewallResponseShapingPolicyName(v interface{}, d *schema.ResourceData, pre string) interface{} {
@@ -427,6 +473,46 @@ func refreshObjectFirewallResponseShapingPolicy(d *schema.ResourceData, o map[st
 		}
 	}
 
+	if err = d.Set("diffserv_forward", flattenFirewallResponseShapingPolicyDiffservForward(o["diffserv-forward"], d, "diffserv_forward")); err != nil {
+		if vv, ok := fortiAPIPatch(o["diffserv-forward"], "FirewallResponseShapingPolicy-DiffservForward"); ok {
+			if err = d.Set("diffserv_forward", vv); err != nil {
+				return fmt.Errorf("Error reading diffserv_forward: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading diffserv_forward: %v", err)
+		}
+	}
+
+	if err = d.Set("diffserv_reverse", flattenFirewallResponseShapingPolicyDiffservReverse(o["diffserv-reverse"], d, "diffserv_reverse")); err != nil {
+		if vv, ok := fortiAPIPatch(o["diffserv-reverse"], "FirewallResponseShapingPolicy-DiffservReverse"); ok {
+			if err = d.Set("diffserv_reverse", vv); err != nil {
+				return fmt.Errorf("Error reading diffserv_reverse: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading diffserv_reverse: %v", err)
+		}
+	}
+
+	if err = d.Set("diffservcode_forward", flattenFirewallResponseShapingPolicyDiffservcodeForward(o["diffservcode-forward"], d, "diffservcode_forward")); err != nil {
+		if vv, ok := fortiAPIPatch(o["diffservcode-forward"], "FirewallResponseShapingPolicy-DiffservcodeForward"); ok {
+			if err = d.Set("diffservcode_forward", vv); err != nil {
+				return fmt.Errorf("Error reading diffservcode_forward: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading diffservcode_forward: %v", err)
+		}
+	}
+
+	if err = d.Set("diffservcode_rev", flattenFirewallResponseShapingPolicyDiffservcodeRev(o["diffservcode-rev"], d, "diffservcode_rev")); err != nil {
+		if vv, ok := fortiAPIPatch(o["diffservcode-rev"], "FirewallResponseShapingPolicy-DiffservcodeRev"); ok {
+			if err = d.Set("diffservcode_rev", vv); err != nil {
+				return fmt.Errorf("Error reading diffservcode_rev: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading diffservcode_rev: %v", err)
+		}
+	}
+
 	if err = d.Set("dstaddr", flattenFirewallResponseShapingPolicyDstaddr(o["dstaddr"], d, "dstaddr")); err != nil {
 		if vv, ok := fortiAPIPatch(o["dstaddr"], "FirewallResponseShapingPolicy-Dstaddr"); ok {
 			if err = d.Set("dstaddr", vv); err != nil {
@@ -464,6 +550,16 @@ func refreshObjectFirewallResponseShapingPolicy(d *schema.ResourceData, o map[st
 			}
 		} else {
 			return fmt.Errorf("Error reading ip_version: %v", err)
+		}
+	}
+
+	if err = d.Set("matched_shaping_policies", flattenFirewallResponseShapingPolicyMatchedShapingPolicies(o["matched-shaping-policies"], d, "matched_shaping_policies")); err != nil {
+		if vv, ok := fortiAPIPatch(o["matched-shaping-policies"], "FirewallResponseShapingPolicy-MatchedShapingPolicies"); ok {
+			if err = d.Set("matched_shaping_policies", vv); err != nil {
+				return fmt.Errorf("Error reading matched_shaping_policies: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading matched_shaping_policies: %v", err)
 		}
 	}
 
@@ -568,6 +664,22 @@ func expandFirewallResponseShapingPolicyComment(d *schema.ResourceData, v interf
 	return v, nil
 }
 
+func expandFirewallResponseShapingPolicyDiffservForward(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandFirewallResponseShapingPolicyDiffservReverse(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandFirewallResponseShapingPolicyDiffservcodeForward(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandFirewallResponseShapingPolicyDiffservcodeRev(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandFirewallResponseShapingPolicyDstaddr(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return expandStringList(v.(*schema.Set).List()), nil
 }
@@ -582,6 +694,10 @@ func expandFirewallResponseShapingPolicyId(d *schema.ResourceData, v interface{}
 
 func expandFirewallResponseShapingPolicyIpVersion(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
+}
+
+func expandFirewallResponseShapingPolicyMatchedShapingPolicies(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
 }
 
 func expandFirewallResponseShapingPolicyName(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
@@ -646,6 +762,42 @@ func getObjectFirewallResponseShapingPolicy(d *schema.ResourceData) (*map[string
 		}
 	}
 
+	if v, ok := d.GetOk("diffserv_forward"); ok || d.HasChange("diffserv_forward") {
+		t, err := expandFirewallResponseShapingPolicyDiffservForward(d, v, "diffserv_forward")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["diffserv-forward"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("diffserv_reverse"); ok || d.HasChange("diffserv_reverse") {
+		t, err := expandFirewallResponseShapingPolicyDiffservReverse(d, v, "diffserv_reverse")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["diffserv-reverse"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("diffservcode_forward"); ok || d.HasChange("diffservcode_forward") {
+		t, err := expandFirewallResponseShapingPolicyDiffservcodeForward(d, v, "diffservcode_forward")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["diffservcode-forward"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("diffservcode_rev"); ok || d.HasChange("diffservcode_rev") {
+		t, err := expandFirewallResponseShapingPolicyDiffservcodeRev(d, v, "diffservcode_rev")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["diffservcode-rev"] = t
+		}
+	}
+
 	if v, ok := d.GetOk("dstaddr"); ok || d.HasChange("dstaddr") {
 		t, err := expandFirewallResponseShapingPolicyDstaddr(d, v, "dstaddr")
 		if err != nil {
@@ -679,6 +831,15 @@ func getObjectFirewallResponseShapingPolicy(d *schema.ResourceData) (*map[string
 			return &obj, err
 		} else if t != nil {
 			obj["ip-version"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("matched_shaping_policies"); ok || d.HasChange("matched_shaping_policies") {
+		t, err := expandFirewallResponseShapingPolicyMatchedShapingPolicies(d, v, "matched_shaping_policies")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["matched-shaping-policies"] = t
 		}
 	}
 

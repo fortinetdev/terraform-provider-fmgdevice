@@ -176,14 +176,17 @@ func resourceFirewallProfileProtocolOptions() *schema.Resource {
 						"tcp_window_maximum": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"tcp_window_minimum": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"tcp_window_size": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"tcp_window_type": &schema.Schema{
 							Type:     schema.TypeString,
@@ -298,14 +301,17 @@ func resourceFirewallProfileProtocolOptions() *schema.Resource {
 						"tcp_window_maximum": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"tcp_window_minimum": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"tcp_window_size": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"tcp_window_type": &schema.Schema{
 							Type:     schema.TypeString,
@@ -454,14 +460,17 @@ func resourceFirewallProfileProtocolOptions() *schema.Resource {
 						"tcp_window_maximum": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"tcp_window_minimum": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"tcp_window_size": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"tcp_window_type": &schema.Schema{
 							Type:     schema.TypeString,
@@ -896,14 +905,17 @@ func resourceFirewallProfileProtocolOptions() *schema.Resource {
 						"tcp_window_maximum": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"tcp_window_minimum": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"tcp_window_size": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"tcp_window_type": &schema.Schema{
 							Type:     schema.TypeString,

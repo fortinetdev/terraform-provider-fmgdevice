@@ -72,7 +72,7 @@ func resourceNsxtSettingUpdate(d *schema.ResourceData, m interface{}) error {
 	}
 	paradict["device"] = device_name
 
-	obj, err := getObjectNsxtSetting(d)
+	obj, err := getObjectNsxtSetting(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating NsxtSetting resource while getting object: %v", err)
 	}
@@ -93,7 +93,6 @@ func resourceNsxtSettingUpdate(d *schema.ResourceData, m interface{}) error {
 
 func resourceNsxtSettingDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -111,11 +110,17 @@ func resourceNsxtSettingDelete(d *schema.ResourceData, m interface{}) error {
 	}
 	paradict["device"] = device_name
 
+	obj, err := getObjectNsxtSetting(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating NsxtSetting resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteNsxtSetting(mkey, paradict, wsParams)
+	_, err = c.UpdateNsxtSetting(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting NsxtSetting resource: %v", err)
+		return fmt.Errorf("Error clearing NsxtSetting resource: %v", err)
 	}
 
 	d.SetId("")
@@ -211,7 +216,7 @@ func expandNsxtSettingService(d *schema.ResourceData, v interface{}, pre string)
 	return v, nil
 }
 
-func getObjectNsxtSetting(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectNsxtSetting(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("liveness"); ok || d.HasChange("liveness") {

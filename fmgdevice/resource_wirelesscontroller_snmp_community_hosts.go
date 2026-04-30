@@ -60,6 +60,7 @@ func resourceWirelessControllerSnmpCommunityHosts() *schema.Resource {
 				Type:     schema.TypeInt,
 				ForceNew: true,
 				Optional: true,
+				Computed: true,
 			},
 			"ip": &schema.Schema{
 				Type:     schema.TypeString,
@@ -121,11 +122,19 @@ func resourceWirelessControllerSnmpCommunityHostsCreate(d *schema.ResourceData, 
 	}
 
 	if !existing {
-		_, err = c.CreateWirelessControllerSnmpCommunityHosts(obj, paradict, wsParams)
+		v, err := c.CreateWirelessControllerSnmpCommunityHosts(obj, paradict, wsParams)
 		if err != nil {
 			return fmt.Errorf("Error creating WirelessControllerSnmpCommunityHosts resource: %v", err)
 		}
 
+		if v != nil && v["id"] != nil {
+			if vidn, ok := v["id"].(float64); ok {
+				d.SetId(strconv.Itoa(int(vidn)))
+				return resourceWirelessControllerSnmpCommunityHostsRead(d, m)
+			} else {
+				return fmt.Errorf("Error creating WirelessControllerSnmpCommunityHosts resource: %v", err)
+			}
+		}
 	}
 
 	d.SetId(strconv.Itoa(getIntKey(d, "fosid")))

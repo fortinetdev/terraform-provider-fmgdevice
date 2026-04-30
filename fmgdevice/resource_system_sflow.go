@@ -133,7 +133,7 @@ func resourceSystemSflowUpdate(d *schema.ResourceData, m interface{}) error {
 	}
 	paradict["device"] = device_name
 
-	obj, err := getObjectSystemSflow(d)
+	obj, err := getObjectSystemSflow(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemSflow resource while getting object: %v", err)
 	}
@@ -154,7 +154,6 @@ func resourceSystemSflowUpdate(d *schema.ResourceData, m interface{}) error {
 
 func resourceSystemSflowDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -172,11 +171,17 @@ func resourceSystemSflowDelete(d *schema.ResourceData, m interface{}) error {
 	}
 	paradict["device"] = device_name
 
+	obj, err := getObjectSystemSflow(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating SystemSflow resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteSystemSflow(mkey, paradict, wsParams)
+	_, err = c.UpdateSystemSflow(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting SystemSflow resource: %v", err)
+		return fmt.Errorf("Error clearing SystemSflow resource: %v", err)
 	}
 
 	d.SetId("")
@@ -521,7 +526,7 @@ func expandSystemSflowCollectorsSourceIp(d *schema.ResourceData, v interface{}, 
 	return v, nil
 }
 
-func getObjectSystemSflow(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectSystemSflow(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("collector_ip"); ok || d.HasChange("collector_ip") {
@@ -569,12 +574,16 @@ func getObjectSystemSflow(d *schema.ResourceData) (*map[string]interface{}, erro
 		}
 	}
 
-	if v, ok := d.GetOk("collectors"); ok || d.HasChange("collectors") {
-		t, err := expandSystemSflowCollectors(d, v, "collectors")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["collectors"] = t
+	if bemptysontable {
+		obj["collectors"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("collectors"); ok || d.HasChange("collectors") {
+			t, err := expandSystemSflowCollectors(d, v, "collectors")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["collectors"] = t
+			}
 		}
 	}
 

@@ -106,7 +106,7 @@ func resourceWafProfileConstraintLineLengthUpdate(d *schema.ResourceData, m inte
 	paradict["vdom"] = device_vdom
 	paradict["profile"] = profile
 
-	obj, err := getObjectWafProfileConstraintLineLength(d)
+	obj, err := getObjectWafProfileConstraintLineLength(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating WafProfileConstraintLineLength resource while getting object: %v", err)
 	}
@@ -127,7 +127,6 @@ func resourceWafProfileConstraintLineLengthUpdate(d *schema.ResourceData, m inte
 
 func resourceWafProfileConstraintLineLengthDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -152,11 +151,17 @@ func resourceWafProfileConstraintLineLengthDelete(d *schema.ResourceData, m inte
 	paradict["vdom"] = device_vdom
 	paradict["profile"] = profile
 
+	obj, err := getObjectWafProfileConstraintLineLength(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating WafProfileConstraintLineLength resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteWafProfileConstraintLineLength(mkey, paradict, wsParams)
+	_, err = c.UpdateWafProfileConstraintLineLength(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting WafProfileConstraintLineLength resource: %v", err)
+		return fmt.Errorf("Error clearing WafProfileConstraintLineLength resource: %v", err)
 	}
 
 	d.SetId("")
@@ -328,7 +333,7 @@ func expandWafProfileConstraintLineLengthStatus3rdl(d *schema.ResourceData, v in
 	return v, nil
 }
 
-func getObjectWafProfileConstraintLineLength(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectWafProfileConstraintLineLength(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("action"); ok || d.HasChange("action") {

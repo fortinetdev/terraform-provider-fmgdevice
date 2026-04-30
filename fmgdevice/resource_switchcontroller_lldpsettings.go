@@ -99,7 +99,7 @@ func resourceSwitchControllerLldpSettingsUpdate(d *schema.ResourceData, m interf
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	obj, err := getObjectSwitchControllerLldpSettings(d)
+	obj, err := getObjectSwitchControllerLldpSettings(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating SwitchControllerLldpSettings resource while getting object: %v", err)
 	}
@@ -120,7 +120,6 @@ func resourceSwitchControllerLldpSettingsUpdate(d *schema.ResourceData, m interf
 
 func resourceSwitchControllerLldpSettingsDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -143,11 +142,17 @@ func resourceSwitchControllerLldpSettingsDelete(d *schema.ResourceData, m interf
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	obj, err := getObjectSwitchControllerLldpSettings(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating SwitchControllerLldpSettings resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteSwitchControllerLldpSettings(mkey, paradict, wsParams)
+	_, err = c.UpdateSwitchControllerLldpSettings(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting SwitchControllerLldpSettings resource: %v", err)
+		return fmt.Errorf("Error clearing SwitchControllerLldpSettings resource: %v", err)
 	}
 
 	d.SetId("")
@@ -308,7 +313,7 @@ func expandSwitchControllerLldpSettingsTxInterval(d *schema.ResourceData, v inte
 	return v, nil
 }
 
-func getObjectSwitchControllerLldpSettings(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectSwitchControllerLldpSettings(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("device_detection"); ok || d.HasChange("device_detection") {

@@ -124,7 +124,7 @@ func resourceSwitchControllerManagedSwitchStpSettingsUpdate(d *schema.ResourceDa
 	paradict["vdom"] = device_vdom
 	paradict["managed_switch"] = managed_switch
 
-	obj, err := getObjectSwitchControllerManagedSwitchStpSettings(d)
+	obj, err := getObjectSwitchControllerManagedSwitchStpSettings(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating SwitchControllerManagedSwitchStpSettings resource while getting object: %v", err)
 	}
@@ -145,7 +145,6 @@ func resourceSwitchControllerManagedSwitchStpSettingsUpdate(d *schema.ResourceDa
 
 func resourceSwitchControllerManagedSwitchStpSettingsDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -170,11 +169,17 @@ func resourceSwitchControllerManagedSwitchStpSettingsDelete(d *schema.ResourceDa
 	paradict["vdom"] = device_vdom
 	paradict["managed_switch"] = managed_switch
 
+	obj, err := getObjectSwitchControllerManagedSwitchStpSettings(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating SwitchControllerManagedSwitchStpSettings resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteSwitchControllerManagedSwitchStpSettings(mkey, paradict, wsParams)
+	_, err = c.UpdateSwitchControllerManagedSwitchStpSettings(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting SwitchControllerManagedSwitchStpSettings resource: %v", err)
+		return fmt.Errorf("Error clearing SwitchControllerManagedSwitchStpSettings resource: %v", err)
 	}
 
 	d.SetId("")
@@ -418,7 +423,7 @@ func expandSwitchControllerManagedSwitchStpSettingsStatus2edl(d *schema.Resource
 	return v, nil
 }
 
-func getObjectSwitchControllerManagedSwitchStpSettings(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectSwitchControllerManagedSwitchStpSettings(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("forward_time"); ok || d.HasChange("forward_time") {

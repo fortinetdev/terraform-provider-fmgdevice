@@ -99,7 +99,7 @@ func resourceVoipProfileMsrpUpdate(d *schema.ResourceData, m interface{}) error 
 	paradict["vdom"] = device_vdom
 	paradict["profile"] = profile
 
-	obj, err := getObjectVoipProfileMsrp(d)
+	obj, err := getObjectVoipProfileMsrp(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating VoipProfileMsrp resource while getting object: %v", err)
 	}
@@ -120,7 +120,6 @@ func resourceVoipProfileMsrpUpdate(d *schema.ResourceData, m interface{}) error 
 
 func resourceVoipProfileMsrpDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -145,11 +144,17 @@ func resourceVoipProfileMsrpDelete(d *schema.ResourceData, m interface{}) error 
 	paradict["vdom"] = device_vdom
 	paradict["profile"] = profile
 
+	obj, err := getObjectVoipProfileMsrp(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating VoipProfileMsrp resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteVoipProfileMsrp(mkey, paradict, wsParams)
+	_, err = c.UpdateVoipProfileMsrp(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting VoipProfileMsrp resource: %v", err)
+		return fmt.Errorf("Error clearing VoipProfileMsrp resource: %v", err)
 	}
 
 	d.SetId("")
@@ -303,7 +308,7 @@ func expandVoipProfileMsrpStatus2edl(d *schema.ResourceData, v interface{}, pre 
 	return v, nil
 }
 
-func getObjectVoipProfileMsrp(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectVoipProfileMsrp(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("log_violations"); ok || d.HasChange("log_violations") {

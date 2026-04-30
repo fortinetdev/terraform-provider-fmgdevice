@@ -106,7 +106,7 @@ func resourceWafProfileConstraintMaxRangeSegmentUpdate(d *schema.ResourceData, m
 	paradict["vdom"] = device_vdom
 	paradict["profile"] = profile
 
-	obj, err := getObjectWafProfileConstraintMaxRangeSegment(d)
+	obj, err := getObjectWafProfileConstraintMaxRangeSegment(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating WafProfileConstraintMaxRangeSegment resource while getting object: %v", err)
 	}
@@ -127,7 +127,6 @@ func resourceWafProfileConstraintMaxRangeSegmentUpdate(d *schema.ResourceData, m
 
 func resourceWafProfileConstraintMaxRangeSegmentDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -152,11 +151,17 @@ func resourceWafProfileConstraintMaxRangeSegmentDelete(d *schema.ResourceData, m
 	paradict["vdom"] = device_vdom
 	paradict["profile"] = profile
 
+	obj, err := getObjectWafProfileConstraintMaxRangeSegment(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating WafProfileConstraintMaxRangeSegment resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteWafProfileConstraintMaxRangeSegment(mkey, paradict, wsParams)
+	_, err = c.UpdateWafProfileConstraintMaxRangeSegment(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting WafProfileConstraintMaxRangeSegment resource: %v", err)
+		return fmt.Errorf("Error clearing WafProfileConstraintMaxRangeSegment resource: %v", err)
 	}
 
 	d.SetId("")
@@ -328,7 +333,7 @@ func expandWafProfileConstraintMaxRangeSegmentStatus3rdl(d *schema.ResourceData,
 	return v, nil
 }
 
-func getObjectWafProfileConstraintMaxRangeSegment(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectWafProfileConstraintMaxRangeSegment(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("action"); ok || d.HasChange("action") {

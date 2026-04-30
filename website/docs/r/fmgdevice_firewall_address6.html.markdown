@@ -1,5 +1,5 @@
 ---
-subcategory: "No Category"
+subcategory: "Firewall"
 layout: "fmgdevice"
 page_title: "FortiManager Device: fmgdevice_firewall_address6"
 description: |-
@@ -47,6 +47,8 @@ The following arguments are supported:
 * `macaddr` - Multiple MAC address ranges.
 * `name` - Address name.
 * `obj_id` - Object ID for NSX.
+* `passive_fqdn_learning` - Enable/disable passive learning of FQDNs.  When enabled, the FortiGate learns, trusts, and saves FQDNs from endpoint DNS queries (default = enable). Valid values: `disable`, `enable`.
+
 * `route_tag` - route-tag address.
 * `sdn` - SDN.
 * `sdn_addr_type` - Type of addresses to collect. Valid values: `all`, `private`, `public`.
@@ -61,6 +63,8 @@ The following arguments are supported:
 * `type` - Type of IPv6 address object (default = ipprefix). Valid values: `ipprefix`, `iprange`, `dynamic`, `fqdn`, `template`, `mac`, `geography`, `route-tag`, `wildcard`.
 
 * `uuid` - Universally Unique Identifier (UUID; automatically assigned but can be manually reset).
+* `visibility` - Enable/disable the visibility of the object in the GUI. Valid values: `disable`, `enable`.
+
 * `tags` - Tags.
 * `wildcard` - IPv6 address and wildcard netmask.
 * `dynamic_sort_subtable` - true or false, set this parameter to true when using dynamic for_each + toset to configure and sort sub-tables, please do not set this parameter when configuring static sub-tables.
@@ -87,6 +91,8 @@ The `dynamic_mapping` block supports:
 * `ip6` - IPv6 address prefix (format: xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx/xxx).
 * `macaddr` - Multiple MAC address ranges.
 * `obj_id` - Object ID for NSX.
+* `passive_fqdn_learning` - Enable/disable passive learning of FQDNs.  When enabled, the FortiGate learns, trusts, and saves FQDNs from endpoint DNS queries (default = enable). Valid values: `disable`, `enable`.
+
 * `route_tag` - route-tag address.
 * `sdn` - SDN.
 * `sdn_addr_type` - Type of addresses to collect. Valid values: `all`, `private`, `public`.

@@ -63,6 +63,7 @@ func resourceWebfilterContentHeader() *schema.Resource {
 						"action": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"category": &schema.Schema{
 							Type:     schema.TypeSet,

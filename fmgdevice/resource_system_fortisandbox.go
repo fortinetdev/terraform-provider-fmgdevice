@@ -62,14 +62,17 @@ func resourceSystemFortisandbox() *schema.Resource {
 			"enc_algorithm": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"forticloud": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"inline_scan": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"interface": &schema.Schema{
 				Type:     schema.TypeSet,
@@ -93,6 +96,7 @@ func resourceSystemFortisandbox() *schema.Resource {
 			"ssl_min_proto_version": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"status": &schema.Schema{
 				Type:     schema.TypeString,
@@ -134,7 +138,7 @@ func resourceSystemFortisandboxUpdate(d *schema.ResourceData, m interface{}) err
 	}
 	paradict["device"] = device_name
 
-	obj, err := getObjectSystemFortisandbox(d)
+	obj, err := getObjectSystemFortisandbox(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemFortisandbox resource while getting object: %v", err)
 	}
@@ -155,7 +159,6 @@ func resourceSystemFortisandboxUpdate(d *schema.ResourceData, m interface{}) err
 
 func resourceSystemFortisandboxDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -173,11 +176,17 @@ func resourceSystemFortisandboxDelete(d *schema.ResourceData, m interface{}) err
 	}
 	paradict["device"] = device_name
 
+	obj, err := getObjectSystemFortisandbox(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating SystemFortisandbox resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteSystemFortisandbox(mkey, paradict, wsParams)
+	_, err = c.UpdateSystemFortisandbox(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting SystemFortisandbox resource: %v", err)
+		return fmt.Errorf("Error clearing SystemFortisandbox resource: %v", err)
 	}
 
 	d.SetId("")
@@ -525,7 +534,7 @@ func expandSystemFortisandboxHealthCheckInterval(d *schema.ResourceData, v inter
 	return v, nil
 }
 
-func getObjectSystemFortisandbox(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectSystemFortisandbox(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("ca"); ok || d.HasChange("ca") {

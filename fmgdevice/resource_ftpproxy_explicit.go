@@ -49,6 +49,7 @@ func resourceFtpProxyExplicit() *schema.Resource {
 			"incoming_ip": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"incoming_port": &schema.Schema{
 				Type:     schema.TypeSet,
@@ -65,6 +66,7 @@ func resourceFtpProxyExplicit() *schema.Resource {
 			"sec_default_action": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"server_data_mode": &schema.Schema{
 				Type:     schema.TypeString,
@@ -74,10 +76,12 @@ func resourceFtpProxyExplicit() *schema.Resource {
 			"ssl": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"ssl_algorithm": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"ssl_cert": &schema.Schema{
 				Type:     schema.TypeSet,
@@ -88,6 +92,7 @@ func resourceFtpProxyExplicit() *schema.Resource {
 			"ssl_dh_bits": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"status": &schema.Schema{
 				Type:     schema.TypeString,
@@ -134,7 +139,7 @@ func resourceFtpProxyExplicitUpdate(d *schema.ResourceData, m interface{}) error
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	obj, err := getObjectFtpProxyExplicit(d)
+	obj, err := getObjectFtpProxyExplicit(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating FtpProxyExplicit resource while getting object: %v", err)
 	}
@@ -155,7 +160,6 @@ func resourceFtpProxyExplicitUpdate(d *schema.ResourceData, m interface{}) error
 
 func resourceFtpProxyExplicitDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -178,11 +182,17 @@ func resourceFtpProxyExplicitDelete(d *schema.ResourceData, m interface{}) error
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	obj, err := getObjectFtpProxyExplicit(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating FtpProxyExplicit resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteFtpProxyExplicit(mkey, paradict, wsParams)
+	_, err = c.UpdateFtpProxyExplicit(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting FtpProxyExplicit resource: %v", err)
+		return fmt.Errorf("Error clearing FtpProxyExplicit resource: %v", err)
 	}
 
 	d.SetId("")
@@ -487,7 +497,7 @@ func expandFtpProxyExplicitIpv6Status(d *schema.ResourceData, v interface{}, pre
 	return v, nil
 }
 
-func getObjectFtpProxyExplicit(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectFtpProxyExplicit(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("incoming_ip"); ok || d.HasChange("incoming_ip") {

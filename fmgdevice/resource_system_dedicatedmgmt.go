@@ -43,22 +43,27 @@ func resourceSystemDedicatedMgmt() *schema.Resource {
 			"default_gateway": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"dhcp_end_ip": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"dhcp_netmask": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"dhcp_server": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"dhcp_start_ip": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"interface": &schema.Schema{
 				Type:     schema.TypeSet,
@@ -94,7 +99,7 @@ func resourceSystemDedicatedMgmtUpdate(d *schema.ResourceData, m interface{}) er
 	}
 	paradict["device"] = device_name
 
-	obj, err := getObjectSystemDedicatedMgmt(d)
+	obj, err := getObjectSystemDedicatedMgmt(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemDedicatedMgmt resource while getting object: %v", err)
 	}
@@ -115,7 +120,6 @@ func resourceSystemDedicatedMgmtUpdate(d *schema.ResourceData, m interface{}) er
 
 func resourceSystemDedicatedMgmtDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -133,11 +137,17 @@ func resourceSystemDedicatedMgmtDelete(d *schema.ResourceData, m interface{}) er
 	}
 	paradict["device"] = device_name
 
+	obj, err := getObjectSystemDedicatedMgmt(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating SystemDedicatedMgmt resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteSystemDedicatedMgmt(mkey, paradict, wsParams)
+	_, err = c.UpdateSystemDedicatedMgmt(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting SystemDedicatedMgmt resource: %v", err)
+		return fmt.Errorf("Error clearing SystemDedicatedMgmt resource: %v", err)
 	}
 
 	d.SetId("")
@@ -323,7 +333,7 @@ func expandSystemDedicatedMgmtStatus(d *schema.ResourceData, v interface{}, pre 
 	return v, nil
 }
 
-func getObjectSystemDedicatedMgmt(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectSystemDedicatedMgmt(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("default_gateway"); ok || d.HasChange("default_gateway") {

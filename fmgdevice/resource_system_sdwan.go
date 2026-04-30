@@ -159,6 +159,7 @@ func resourceSystemSdwan() *schema.Resource {
 						"agent_probe_timeout": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"bandwidth_weight": &schema.Schema{
 							Type:     schema.TypeInt,
@@ -233,6 +234,7 @@ func resourceSystemSdwan() *schema.Resource {
 						"http_get": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"http_match": &schema.Schema{
 							Type:     schema.TypeString,
@@ -273,6 +275,7 @@ func resourceSystemSdwan() *schema.Resource {
 						"packet_size": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"password": &schema.Schema{
 							Type:      schema.TypeSet,
@@ -318,10 +321,12 @@ func resourceSystemSdwan() *schema.Resource {
 						"remote_probe_timeout": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"security_mode": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"server": &schema.Schema{
 							Type:     schema.TypeSet,
@@ -398,6 +403,7 @@ func resourceSystemSdwan() *schema.Resource {
 						"source6": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"system_dns": &schema.Schema{
 							Type:     schema.TypeString,
@@ -428,6 +434,11 @@ func resourceSystemSdwan() *schema.Resource {
 							Type:     schema.TypeInt,
 							Optional: true,
 						},
+						"update_bgp_route": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+							Computed: true,
+						},
 						"update_cascade_interface": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
@@ -457,6 +468,7 @@ func resourceSystemSdwan() *schema.Resource {
 						"addr_mode": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"class_id": &schema.Schema{
 							Type:     schema.TypeSet,
@@ -467,6 +479,7 @@ func resourceSystemSdwan() *schema.Resource {
 						"detect_mode": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"diffservcode": &schema.Schema{
 							Type:     schema.TypeString,
@@ -475,18 +488,22 @@ func resourceSystemSdwan() *schema.Resource {
 						"dns_match_ip": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"dns_request_domain": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"embed_measured_health": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"failtime": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"ftp_file": &schema.Schema{
 							Type:     schema.TypeString,
@@ -495,18 +512,22 @@ func resourceSystemSdwan() *schema.Resource {
 						"ftp_mode": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"ha_priority": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"http_agent": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"http_get": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"http_match": &schema.Schema{
 							Type:     schema.TypeString,
@@ -515,6 +536,7 @@ func resourceSystemSdwan() *schema.Resource {
 						"interval": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"members": &schema.Schema{
 							Type:     schema.TypeSet,
@@ -525,10 +547,12 @@ func resourceSystemSdwan() *schema.Resource {
 						"mos_codec": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"packet_size": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"password": &schema.Schema{
 							Type:      schema.TypeSet,
@@ -544,30 +568,37 @@ func resourceSystemSdwan() *schema.Resource {
 						"probe_count": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"probe_packets": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"probe_timeout": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"protocol": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"quality_measured_method": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"recoverytime": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"security_mode": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"server": &schema.Schema{
 							Type:     schema.TypeSet,
@@ -587,10 +618,12 @@ func resourceSystemSdwan() *schema.Resource {
 									"jitter_threshold": &schema.Schema{
 										Type:     schema.TypeInt,
 										Optional: true,
+										Computed: true,
 									},
 									"latency_threshold": &schema.Schema{
 										Type:     schema.TypeInt,
 										Optional: true,
+										Computed: true,
 									},
 									"link_cost_factor": &schema.Schema{
 										Type:     schema.TypeSet,
@@ -601,6 +634,7 @@ func resourceSystemSdwan() *schema.Resource {
 									"mos_threshold": &schema.Schema{
 										Type:     schema.TypeString,
 										Optional: true,
+										Computed: true,
 									},
 									"packetloss_threshold": &schema.Schema{
 										Type:     schema.TypeInt,
@@ -632,14 +666,17 @@ func resourceSystemSdwan() *schema.Resource {
 						"source": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"source6": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"system_dns": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"target_name": &schema.Schema{
 							Type:     schema.TypeString,
@@ -672,10 +709,12 @@ func resourceSystemSdwan() *schema.Resource {
 						"update_cascade_interface": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"update_static_route": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"user": &schema.Schema{
 							Type:     schema.TypeString,
@@ -779,10 +818,12 @@ func resourceSystemSdwan() *schema.Resource {
 						"volume_ratio": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"weight": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"zone": &schema.Schema{
 							Type:     schema.TypeSet,
@@ -817,18 +858,22 @@ func resourceSystemSdwan() *schema.Resource {
 						"minimum_sla_meet_members": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"mode": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"role": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"route_metric": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"service_id": &schema.Schema{
 							Type:     schema.TypeSet,
@@ -954,6 +999,7 @@ func resourceSystemSdwan() *schema.Resource {
 						"hash_mode": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"health_check": &schema.Schema{
 							Type:     schema.TypeSet,
@@ -1050,6 +1096,7 @@ func resourceSystemSdwan() *schema.Resource {
 						"link_cost_factor": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"link_cost_threshold": &schema.Schema{
 							Type:     schema.TypeInt,
@@ -1146,6 +1193,7 @@ func resourceSystemSdwan() *schema.Resource {
 						"sla_stickiness": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"src": &schema.Schema{
 							Type:     schema.TypeSet,
@@ -1294,7 +1342,7 @@ func resourceSystemSdwanUpdate(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	obj, err := getObjectSystemSdwan(d)
+	obj, err := getObjectSystemSdwan(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemSdwan resource while getting object: %v", err)
 	}
@@ -1315,7 +1363,6 @@ func resourceSystemSdwanUpdate(d *schema.ResourceData, m interface{}) error {
 
 func resourceSystemSdwanDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -1338,11 +1385,17 @@ func resourceSystemSdwanDelete(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	obj, err := getObjectSystemSdwan(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating SystemSdwan resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteSystemSdwan(mkey, paradict, wsParams)
+	_, err = c.UpdateSystemSdwan(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting SystemSdwan resource: %v", err)
+		return fmt.Errorf("Error clearing SystemSdwan resource: %v", err)
 	}
 
 	d.SetId("")
@@ -1883,6 +1936,12 @@ func flattenSystemSdwanHealthCheck(v interface{}, d *schema.ResourceData, pre st
 			tmp["threshold_warning_packetloss"] = fortiAPISubPartPatch(v, "SystemSdwan-HealthCheck-ThresholdWarningPacketloss")
 		}
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "update_bgp_route"
+		if _, ok := i["update-bgp-route"]; ok {
+			v := flattenSystemSdwanHealthCheckUpdateBgpRoute(i["update-bgp-route"], d, pre_append)
+			tmp["update_bgp_route"] = fortiAPISubPartPatch(v, "SystemSdwan-HealthCheck-UpdateBgpRoute")
+		}
+
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "update_cascade_interface"
 		if _, ok := i["update-cascade-interface"]; ok {
 			v := flattenSystemSdwanHealthCheckUpdateCascadeInterface(i["update-cascade-interface"], d, pre_append)
@@ -2225,6 +2284,10 @@ func flattenSystemSdwanHealthCheckThresholdWarningLatency(v interface{}, d *sche
 }
 
 func flattenSystemSdwanHealthCheckThresholdWarningPacketloss(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemSdwanHealthCheckUpdateBgpRoute(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -4752,6 +4815,11 @@ func expandSystemSdwanHealthCheck(d *schema.ResourceData, v interface{}, pre str
 			tmp["threshold-warning-packetloss"], _ = expandSystemSdwanHealthCheckThresholdWarningPacketloss(d, i["threshold_warning_packetloss"], pre_append)
 		}
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "update_bgp_route"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["update-bgp-route"], _ = expandSystemSdwanHealthCheckUpdateBgpRoute(d, i["update_bgp_route"], pre_append)
+		}
+
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "update_cascade_interface"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
 			tmp["update-cascade-interface"], _ = expandSystemSdwanHealthCheckUpdateCascadeInterface(d, i["update_cascade_interface"], pre_append)
@@ -5080,6 +5148,10 @@ func expandSystemSdwanHealthCheckThresholdWarningLatency(d *schema.ResourceData,
 }
 
 func expandSystemSdwanHealthCheckThresholdWarningPacketloss(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemSdwanHealthCheckUpdateBgpRoute(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -6710,7 +6782,7 @@ func expandSystemSdwanZoneServiceSlaTieBreak(d *schema.ResourceData, v interface
 	return v, nil
 }
 
-func getObjectSystemSdwan(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectSystemSdwan(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("app_perf_log_period"); ok || d.HasChange("app_perf_log_period") {
@@ -6722,12 +6794,16 @@ func getObjectSystemSdwan(d *schema.ResourceData) (*map[string]interface{}, erro
 		}
 	}
 
-	if v, ok := d.GetOk("duplication"); ok || d.HasChange("duplication") {
-		t, err := expandSystemSdwanDuplication(d, v, "duplication")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["duplication"] = t
+	if bemptysontable {
+		obj["duplication"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("duplication"); ok || d.HasChange("duplication") {
+			t, err := expandSystemSdwanDuplication(d, v, "duplication")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["duplication"] = t
+			}
 		}
 	}
 
@@ -6767,21 +6843,29 @@ func getObjectSystemSdwan(d *schema.ResourceData) (*map[string]interface{}, erro
 		}
 	}
 
-	if v, ok := d.GetOk("health_check"); ok || d.HasChange("health_check") {
-		t, err := expandSystemSdwanHealthCheck(d, v, "health_check")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["health-check"] = t
+	if bemptysontable {
+		obj["health-check"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("health_check"); ok || d.HasChange("health_check") {
+			t, err := expandSystemSdwanHealthCheck(d, v, "health_check")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["health-check"] = t
+			}
 		}
 	}
 
-	if v, ok := d.GetOk("health_check_fortiguard"); ok || d.HasChange("health_check_fortiguard") {
-		t, err := expandSystemSdwanHealthCheckFortiguardU(d, v, "health_check_fortiguard")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["health-check-fortiguard"] = t
+	if bemptysontable {
+		obj["health-check-fortiguard"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("health_check_fortiguard"); ok || d.HasChange("health_check_fortiguard") {
+			t, err := expandSystemSdwanHealthCheckFortiguardU(d, v, "health_check_fortiguard")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["health-check-fortiguard"] = t
+			}
 		}
 	}
 
@@ -6794,21 +6878,29 @@ func getObjectSystemSdwan(d *schema.ResourceData) (*map[string]interface{}, erro
 		}
 	}
 
-	if v, ok := d.GetOk("members"); ok || d.HasChange("members") {
-		t, err := expandSystemSdwanMembers(d, v, "members")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["members"] = t
+	if bemptysontable {
+		obj["members"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("members"); ok || d.HasChange("members") {
+			t, err := expandSystemSdwanMembers(d, v, "members")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["members"] = t
+			}
 		}
 	}
 
-	if v, ok := d.GetOk("neighbor"); ok || d.HasChange("neighbor") {
-		t, err := expandSystemSdwanNeighbor(d, v, "neighbor")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["neighbor"] = t
+	if bemptysontable {
+		obj["neighbor"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("neighbor"); ok || d.HasChange("neighbor") {
+			t, err := expandSystemSdwanNeighbor(d, v, "neighbor")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["neighbor"] = t
+			}
 		}
 	}
 
@@ -6848,12 +6940,16 @@ func getObjectSystemSdwan(d *schema.ResourceData) (*map[string]interface{}, erro
 		}
 	}
 
-	if v, ok := d.GetOk("service"); ok || d.HasChange("service") {
-		t, err := expandSystemSdwanService(d, v, "service")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["service"] = t
+	if bemptysontable {
+		obj["service"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("service"); ok || d.HasChange("service") {
+			t, err := expandSystemSdwanService(d, v, "service")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["service"] = t
+			}
 		}
 	}
 
@@ -6875,12 +6971,16 @@ func getObjectSystemSdwan(d *schema.ResourceData) (*map[string]interface{}, erro
 		}
 	}
 
-	if v, ok := d.GetOk("zone"); ok || d.HasChange("zone") {
-		t, err := expandSystemSdwanZone(d, v, "zone")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["zone"] = t
+	if bemptysontable {
+		obj["zone"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("zone"); ok || d.HasChange("zone") {
+			t, err := expandSystemSdwanZone(d, v, "zone")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["zone"] = t
+			}
 		}
 	}
 

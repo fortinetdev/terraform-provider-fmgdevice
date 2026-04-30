@@ -92,7 +92,7 @@ func resourceDlpSettingsUpdate(d *schema.ResourceData, m interface{}) error {
 	}
 	paradict["device"] = device_name
 
-	obj, err := getObjectDlpSettings(d)
+	obj, err := getObjectDlpSettings(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating DlpSettings resource while getting object: %v", err)
 	}
@@ -113,7 +113,6 @@ func resourceDlpSettingsUpdate(d *schema.ResourceData, m interface{}) error {
 
 func resourceDlpSettingsDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -131,11 +130,17 @@ func resourceDlpSettingsDelete(d *schema.ResourceData, m interface{}) error {
 	}
 	paradict["device"] = device_name
 
+	obj, err := getObjectDlpSettings(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating DlpSettings resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteDlpSettings(mkey, paradict, wsParams)
+	_, err = c.UpdateDlpSettings(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting DlpSettings resource: %v", err)
+		return fmt.Errorf("Error clearing DlpSettings resource: %v", err)
 	}
 
 	d.SetId("")
@@ -303,7 +308,7 @@ func expandDlpSettingsStorageDevice(d *schema.ResourceData, v interface{}, pre s
 	return convstr2list(v, nil), nil
 }
 
-func getObjectDlpSettings(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectDlpSettings(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("cache_mem_percent"); ok || d.HasChange("cache_mem_percent") {

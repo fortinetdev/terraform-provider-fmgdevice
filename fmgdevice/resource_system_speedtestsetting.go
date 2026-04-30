@@ -73,7 +73,7 @@ func resourceSystemSpeedTestSettingUpdate(d *schema.ResourceData, m interface{})
 	}
 	paradict["device"] = device_name
 
-	obj, err := getObjectSystemSpeedTestSetting(d)
+	obj, err := getObjectSystemSpeedTestSetting(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemSpeedTestSetting resource while getting object: %v", err)
 	}
@@ -94,7 +94,6 @@ func resourceSystemSpeedTestSettingUpdate(d *schema.ResourceData, m interface{})
 
 func resourceSystemSpeedTestSettingDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -112,11 +111,17 @@ func resourceSystemSpeedTestSettingDelete(d *schema.ResourceData, m interface{})
 	}
 	paradict["device"] = device_name
 
+	obj, err := getObjectSystemSpeedTestSetting(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating SystemSpeedTestSetting resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteSystemSpeedTestSetting(mkey, paradict, wsParams)
+	_, err = c.UpdateSystemSpeedTestSetting(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting SystemSpeedTestSetting resource: %v", err)
+		return fmt.Errorf("Error clearing SystemSpeedTestSetting resource: %v", err)
 	}
 
 	d.SetId("")
@@ -212,7 +217,7 @@ func expandSystemSpeedTestSettingMultipleTcpStream(d *schema.ResourceData, v int
 	return v, nil
 }
 
-func getObjectSystemSpeedTestSetting(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectSystemSpeedTestSetting(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("latency_threshold"); ok || d.HasChange("latency_threshold") {

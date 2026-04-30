@@ -51,6 +51,10 @@ func resourceWirelessControllerWtp() *schema.Resource {
 				Computed: true,
 				ForceNew: true,
 			},
+			"_prefer_img_ver": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 			"admin": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -262,6 +266,7 @@ func resourceWirelessControllerWtp() *schema.Resource {
 			"login_passwd_change": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"mesh_bridge_enable": &schema.Schema{
 				Type:     schema.TypeString,
@@ -310,6 +315,7 @@ func resourceWirelessControllerWtp() *schema.Resource {
 			"override_wan_port_mode": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"purdue_level": &schema.Schema{
 				Type:     schema.TypeString,
@@ -326,14 +332,17 @@ func resourceWirelessControllerWtp() *schema.Resource {
 						"auto_power_high": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"auto_power_level": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"auto_power_low": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"auto_power_target": &schema.Schema{
 							Type:     schema.TypeString,
@@ -384,6 +393,7 @@ func resourceWirelessControllerWtp() *schema.Resource {
 						"power_level": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"power_mode": &schema.Schema{
 							Type:     schema.TypeString,
@@ -393,6 +403,7 @@ func resourceWirelessControllerWtp() *schema.Resource {
 						"power_value": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"radio_id": &schema.Schema{
 							Type:     schema.TypeInt,
@@ -405,6 +416,7 @@ func resourceWirelessControllerWtp() *schema.Resource {
 						"vap_all": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"vap1": &schema.Schema{
 							Type:     schema.TypeString,
@@ -457,14 +469,17 @@ func resourceWirelessControllerWtp() *schema.Resource {
 						"auto_power_high": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"auto_power_level": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"auto_power_low": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"auto_power_target": &schema.Schema{
 							Type:     schema.TypeString,
@@ -486,6 +501,7 @@ func resourceWirelessControllerWtp() *schema.Resource {
 						"drma_manual_mode": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"override_analysis": &schema.Schema{
 							Type:     schema.TypeString,
@@ -514,6 +530,7 @@ func resourceWirelessControllerWtp() *schema.Resource {
 						"power_level": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"power_mode": &schema.Schema{
 							Type:     schema.TypeString,
@@ -523,6 +540,7 @@ func resourceWirelessControllerWtp() *schema.Resource {
 						"power_value": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"radio_id": &schema.Schema{
 							Type:     schema.TypeInt,
@@ -536,6 +554,7 @@ func resourceWirelessControllerWtp() *schema.Resource {
 						"vap_all": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"vap1": &schema.Schema{
 							Type:     schema.TypeString,
@@ -588,14 +607,17 @@ func resourceWirelessControllerWtp() *schema.Resource {
 						"auto_power_high": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"auto_power_level": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"auto_power_low": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"auto_power_target": &schema.Schema{
 							Type:     schema.TypeString,
@@ -617,6 +639,7 @@ func resourceWirelessControllerWtp() *schema.Resource {
 						"drma_manual_mode": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"override_analysis": &schema.Schema{
 							Type:     schema.TypeString,
@@ -645,6 +668,7 @@ func resourceWirelessControllerWtp() *schema.Resource {
 						"power_level": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"power_mode": &schema.Schema{
 							Type:     schema.TypeString,
@@ -668,6 +692,7 @@ func resourceWirelessControllerWtp() *schema.Resource {
 						"vap_all": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"vap1": &schema.Schema{
 							Type:     schema.TypeString,
@@ -720,14 +745,17 @@ func resourceWirelessControllerWtp() *schema.Resource {
 						"auto_power_high": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"auto_power_level": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"auto_power_low": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"auto_power_target": &schema.Schema{
 							Type:     schema.TypeString,
@@ -749,6 +777,7 @@ func resourceWirelessControllerWtp() *schema.Resource {
 						"drma_manual_mode": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"override_analysis": &schema.Schema{
 							Type:     schema.TypeString,
@@ -777,6 +806,7 @@ func resourceWirelessControllerWtp() *schema.Resource {
 						"power_level": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"power_mode": &schema.Schema{
 							Type:     schema.TypeString,
@@ -800,6 +830,7 @@ func resourceWirelessControllerWtp() *schema.Resource {
 						"vap_all": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"vap1": &schema.Schema{
 							Type:     schema.TypeString,
@@ -902,6 +933,7 @@ func resourceWirelessControllerWtp() *schema.Resource {
 			"wan_port_mode": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"wtp_id": &schema.Schema{
 				Type:     schema.TypeString,
@@ -1118,6 +1150,10 @@ func resourceWirelessControllerWtpRead(d *schema.ResourceData, m interface{}) er
 		return fmt.Errorf("Error reading WirelessControllerWtp resource from API: %v", err)
 	}
 	return nil
+}
+
+func flattenWirelessControllerWtpPreferImgVer(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
 }
 
 func flattenWirelessControllerWtpAdmin(v interface{}, d *schema.ResourceData, pre string) interface{} {
@@ -2557,6 +2593,16 @@ func refreshObjectWirelessControllerWtp(d *schema.ResourceData, o map[string]int
 		d.Set("dynamic_sort_subtable", "false")
 	}
 
+	if err = d.Set("_prefer_img_ver", flattenWirelessControllerWtpPreferImgVer(o["_prefer-img-ver"], d, "_prefer_img_ver")); err != nil {
+		if vv, ok := fortiAPIPatch(o["_prefer-img-ver"], "WirelessControllerWtp-PreferImgVer"); ok {
+			if err = d.Set("_prefer_img_ver", vv); err != nil {
+				return fmt.Errorf("Error reading _prefer_img_ver: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading _prefer_img_ver: %v", err)
+		}
+	}
+
 	if err = d.Set("admin", flattenWirelessControllerWtpAdmin(o["admin"], d, "admin")); err != nil {
 		if vv, ok := fortiAPIPatch(o["admin"], "WirelessControllerWtp-Admin"); ok {
 			if err = d.Set("admin", vv); err != nil {
@@ -3118,6 +3164,10 @@ func flattenWirelessControllerWtpFortiTestDebug(d *schema.ResourceData, fosdebug
 	log.Printf(strconv.Itoa(fosdebugsn))
 	e := validation.IntBetween(fosdebugbeg, fosdebugend)
 	log.Printf("ER List: %v", e)
+}
+
+func expandWirelessControllerWtpPreferImgVer(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
 }
 
 func expandWirelessControllerWtpAdmin(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
@@ -4426,6 +4476,15 @@ func expandWirelessControllerWtpWtpProfile(d *schema.ResourceData, v interface{}
 
 func getObjectWirelessControllerWtp(d *schema.ResourceData) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
+
+	if v, ok := d.GetOk("_prefer_img_ver"); ok || d.HasChange("_prefer_img_ver") {
+		t, err := expandWirelessControllerWtpPreferImgVer(d, v, "_prefer_img_ver")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["_prefer-img-ver"] = t
+		}
+	}
 
 	if v, ok := d.GetOk("admin"); ok || d.HasChange("admin") {
 		t, err := expandWirelessControllerWtpAdmin(d, v, "admin")

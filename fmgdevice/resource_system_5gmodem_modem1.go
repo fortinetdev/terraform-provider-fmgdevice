@@ -186,7 +186,7 @@ func resourceSystem5GModemModem1Update(d *schema.ResourceData, m interface{}) er
 	}
 	paradict["device"] = device_name
 
-	obj, err := getObjectSystem5GModemModem1(d)
+	obj, err := getObjectSystem5GModemModem1(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating System5GModemModem1 resource while getting object: %v", err)
 	}
@@ -207,7 +207,6 @@ func resourceSystem5GModemModem1Update(d *schema.ResourceData, m interface{}) er
 
 func resourceSystem5GModemModem1Delete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -225,11 +224,17 @@ func resourceSystem5GModemModem1Delete(d *schema.ResourceData, m interface{}) er
 	}
 	paradict["device"] = device_name
 
+	obj, err := getObjectSystem5GModemModem1(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating System5GModemModem1 resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteSystem5GModemModem1(mkey, paradict, wsParams)
+	_, err = c.UpdateSystem5GModemModem1(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting System5GModemModem1 resource: %v", err)
+		return fmt.Errorf("Error clearing System5GModemModem1 resource: %v", err)
 	}
 
 	d.SetId("")
@@ -704,7 +709,7 @@ func expandSystem5GModemModem1Status2edl(d *schema.ResourceData, v interface{}, 
 	return v, nil
 }
 
-func getObjectSystem5GModemModem1(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectSystem5GModemModem1(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("carrier_config"); ok || d.HasChange("carrier_config") {

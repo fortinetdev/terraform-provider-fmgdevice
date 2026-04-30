@@ -142,6 +142,11 @@ func resourceRouterRouteMapRule() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"match_suppress": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
 			"match_tag": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -578,6 +583,10 @@ func flattenRouterRouteMapRuleMatchRouteType2edl(v interface{}, d *schema.Resour
 	return v
 }
 
+func flattenRouterRouteMapRuleMatchSuppress2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenRouterRouteMapRuleMatchTag2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -874,6 +883,16 @@ func refreshObjectRouterRouteMapRule(d *schema.ResourceData, o map[string]interf
 			}
 		} else {
 			return fmt.Errorf("Error reading match_route_type: %v", err)
+		}
+	}
+
+	if err = d.Set("match_suppress", flattenRouterRouteMapRuleMatchSuppress2edl(o["match-suppress"], d, "match_suppress")); err != nil {
+		if vv, ok := fortiAPIPatch(o["match-suppress"], "RouterRouteMapRule-MatchSuppress"); ok {
+			if err = d.Set("match_suppress", vv); err != nil {
+				return fmt.Errorf("Error reading match_suppress: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading match_suppress: %v", err)
 		}
 	}
 
@@ -1290,6 +1309,10 @@ func expandRouterRouteMapRuleMatchRouteType2edl(d *schema.ResourceData, v interf
 	return v, nil
 }
 
+func expandRouterRouteMapRuleMatchSuppress2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandRouterRouteMapRuleMatchTag2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -1570,6 +1593,15 @@ func getObjectRouterRouteMapRule(d *schema.ResourceData) (*map[string]interface{
 			return &obj, err
 		} else if t != nil {
 			obj["match-route-type"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("match_suppress"); ok || d.HasChange("match_suppress") {
+		t, err := expandRouterRouteMapRuleMatchSuppress2edl(d, v, "match_suppress")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["match-suppress"] = t
 		}
 	}
 

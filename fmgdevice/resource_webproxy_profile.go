@@ -51,6 +51,11 @@ func resourceWebProxyProfile() *schema.Resource {
 				Computed: true,
 				ForceNew: true,
 			},
+			"header_client_cert": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
 			"header_client_ip": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -365,6 +370,10 @@ func resourceWebProxyProfileRead(d *schema.ResourceData, m interface{}) error {
 	return nil
 }
 
+func flattenWebProxyProfileHeaderClientCert(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenWebProxyProfileHeaderClientIp(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -539,6 +548,16 @@ func refreshObjectWebProxyProfile(d *schema.ResourceData, o map[string]interface
 		d.Set("dynamic_sort_subtable", "false")
 	}
 
+	if err = d.Set("header_client_cert", flattenWebProxyProfileHeaderClientCert(o["header-client-cert"], d, "header_client_cert")); err != nil {
+		if vv, ok := fortiAPIPatch(o["header-client-cert"], "WebProxyProfile-HeaderClientCert"); ok {
+			if err = d.Set("header_client_cert", vv); err != nil {
+				return fmt.Errorf("Error reading header_client_cert: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading header_client_cert: %v", err)
+		}
+	}
+
 	if err = d.Set("header_client_ip", flattenWebProxyProfileHeaderClientIp(o["header-client-ip"], d, "header_client_ip")); err != nil {
 		if vv, ok := fortiAPIPatch(o["header-client-ip"], "WebProxyProfile-HeaderClientIp"); ok {
 			if err = d.Set("header_client_ip", vv); err != nil {
@@ -690,6 +709,10 @@ func flattenWebProxyProfileFortiTestDebug(d *schema.ResourceData, fosdebugsn int
 	log.Printf(strconv.Itoa(fosdebugsn))
 	e := validation.IntBetween(fosdebugbeg, fosdebugend)
 	log.Printf("ER List: %v", e)
+}
+
+func expandWebProxyProfileHeaderClientCert(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
 }
 
 func expandWebProxyProfileHeaderClientIp(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
@@ -847,6 +870,15 @@ func expandWebProxyProfileMaxCacheObjectSize(d *schema.ResourceData, v interface
 
 func getObjectWebProxyProfile(d *schema.ResourceData) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
+
+	if v, ok := d.GetOk("header_client_cert"); ok || d.HasChange("header_client_cert") {
+		t, err := expandWebProxyProfileHeaderClientCert(d, v, "header_client_cert")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["header-client-cert"] = t
+		}
+	}
 
 	if v, ok := d.GetOk("header_client_ip"); ok || d.HasChange("header_client_ip") {
 		t, err := expandWebProxyProfileHeaderClientIp(d, v, "header_client_ip")

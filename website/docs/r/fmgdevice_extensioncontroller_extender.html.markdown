@@ -1,5 +1,5 @@
 ---
-subcategory: "No Category"
+subcategory: "Extension Controller"
 layout: "fmgdevice"
 page_title: "FortiManager Device: fmgdevice_extensioncontroller_extender"
 description: |-
@@ -37,6 +37,7 @@ The following arguments are supported:
 * `device_name` - FortiManager managed device name. This variable is used in the request URL. If not specified, it will inherit the variable `device_name` of the provider.
 * `device_vdom` - FortiManager managed device vdom. This variable is used in the request URL. If not specified, it will inherit the variable `device_vdom` of the provider.
 
+* `_prefer_img_ver` - _Prefer-Img-Ver.
 * `allowaccess` - Control management access to the managed extender. Separate entries with a space. Valid values: `https`, `ping`, `ssh`, `snmp`, `http`, `telnet`.
 
 * `authorized` - FortiExtender Administration (enable or disable). Valid values: `disable`, `enable`, `discovered`.

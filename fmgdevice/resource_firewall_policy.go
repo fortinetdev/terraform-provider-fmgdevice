@@ -58,6 +58,7 @@ func resourceFirewallPolicy() *schema.Resource {
 			"action": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"anti_replay": &schema.Schema{
 				Type:     schema.TypeString,
@@ -84,6 +85,7 @@ func resourceFirewallPolicy() *schema.Resource {
 			"auth_path": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"auth_redirect_addr": &schema.Schema{
 				Type:     schema.TypeString,
@@ -99,6 +101,10 @@ func resourceFirewallPolicy() *schema.Resource {
 				Elem:     &schema.Schema{Type: schema.TypeString},
 				Optional: true,
 				Computed: true,
+			},
+			"best_route": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
 			},
 			"block_notification": &schema.Schema{
 				Type:     schema.TypeString,
@@ -289,8 +295,14 @@ func resourceFirewallPolicy() *schema.Resource {
 			"firewall_session_dirty": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"fixedport": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+			"fsso": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 			},
@@ -335,6 +347,7 @@ func resourceFirewallPolicy() *schema.Resource {
 			"http_policy_redirect": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"icap_profile": &schema.Schema{
 				Type:     schema.TypeSet,
@@ -351,6 +364,7 @@ func resourceFirewallPolicy() *schema.Resource {
 			"inbound": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"inspection_mode": &schema.Schema{
 				Type:     schema.TypeString,
@@ -386,6 +400,12 @@ func resourceFirewallPolicy() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"internet_service_id": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Computed: true,
+			},
 			"internet_service_name": &schema.Schema{
 				Type:     schema.TypeSet,
 				Elem:     &schema.Schema{Type: schema.TypeString},
@@ -395,6 +415,7 @@ func resourceFirewallPolicy() *schema.Resource {
 			"internet_service_negate": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"internet_service_src": &schema.Schema{
 				Type:     schema.TypeString,
@@ -425,6 +446,12 @@ func resourceFirewallPolicy() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"internet_service_src_id": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Computed: true,
+			},
 			"internet_service_src_name": &schema.Schema{
 				Type:     schema.TypeSet,
 				Elem:     &schema.Schema{Type: schema.TypeString},
@@ -434,6 +461,7 @@ func resourceFirewallPolicy() *schema.Resource {
 			"internet_service_src_negate": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"internet_service6": &schema.Schema{
 				Type:     schema.TypeString,
@@ -473,6 +501,7 @@ func resourceFirewallPolicy() *schema.Resource {
 			"internet_service6_negate": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"internet_service6_src": &schema.Schema{
 				Type:     schema.TypeString,
@@ -512,6 +541,7 @@ func resourceFirewallPolicy() *schema.Resource {
 			"internet_service6_src_negate": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"ip_version_type": &schema.Schema{
 				Type:     schema.TypeString,
@@ -521,6 +551,7 @@ func resourceFirewallPolicy() *schema.Resource {
 			"ippool": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"ips_sensor": &schema.Schema{
 				Type:     schema.TypeSet,
@@ -556,9 +587,16 @@ func resourceFirewallPolicy() *schema.Resource {
 			"match_vip": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"match_vip_only": &schema.Schema{
 				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+			"mms_profile": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
 				Optional: true,
 				Computed: true,
 			},
@@ -584,6 +622,7 @@ func resourceFirewallPolicy() *schema.Resource {
 			"natinbound": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"natip": &schema.Schema{
 				Type:     schema.TypeList,
@@ -594,6 +633,7 @@ func resourceFirewallPolicy() *schema.Resource {
 			"natoutbound": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"network_service_dynamic": &schema.Schema{
 				Type:     schema.TypeSet,
@@ -610,10 +650,12 @@ func resourceFirewallPolicy() *schema.Resource {
 			"np_acceleration": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"ntlm": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"ntlm_enabled_browsers": &schema.Schema{
 				Type:     schema.TypeSet,
@@ -624,10 +666,12 @@ func resourceFirewallPolicy() *schema.Resource {
 			"ntlm_guest": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"outbound": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"passive_wan_health_measurement": &schema.Schema{
 				Type:     schema.TypeString,
@@ -664,6 +708,7 @@ func resourceFirewallPolicy() *schema.Resource {
 			"permit_stun_host": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"pfcp_profile": &schema.Schema{
 				Type:     schema.TypeSet,
@@ -715,6 +760,7 @@ func resourceFirewallPolicy() *schema.Resource {
 			"port_preserve": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"port_random": &schema.Schema{
 				Type:     schema.TypeString,
@@ -736,6 +782,7 @@ func resourceFirewallPolicy() *schema.Resource {
 			"profile_type": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"radius_ip_auth_bypass": &schema.Schema{
 				Type:     schema.TypeString,
@@ -760,13 +807,19 @@ func resourceFirewallPolicy() *schema.Resource {
 			"reputation_direction": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"reputation_direction6": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"reputation_minimum": &schema.Schema{
 				Type:     schema.TypeInt,
+				Optional: true,
+			},
+			"rsso": &schema.Schema{
+				Type:     schema.TypeString,
 				Optional: true,
 			},
 			"reputation_minimum6": &schema.Schema{
@@ -804,6 +857,7 @@ func resourceFirewallPolicy() *schema.Resource {
 			"scim": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"scim_groups": &schema.Schema{
 				Type:     schema.TypeSet,
@@ -826,6 +880,7 @@ func resourceFirewallPolicy() *schema.Resource {
 			"send_deny_packet": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"service": &schema.Schema{
 				Type:     schema.TypeSet,
@@ -897,6 +952,17 @@ func resourceFirewallPolicy() *schema.Resource {
 			"ssh_policy_redirect": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
+			},
+			"ssl_mirror": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"ssl_mirror_intf": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Computed: true,
 			},
 			"ssl_ssh_profile": &schema.Schema{
 				Type:     schema.TypeSet,
@@ -1035,14 +1101,17 @@ func resourceFirewallPolicy() *schema.Resource {
 			"wanopt": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"wanopt_detection": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"wanopt_passive_opt": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"wanopt_peer": &schema.Schema{
 				Type:     schema.TypeSet,
@@ -1064,6 +1133,7 @@ func resourceFirewallPolicy() *schema.Resource {
 			"webcache": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"webcache_https": &schema.Schema{
 				Type:     schema.TypeString,
@@ -1088,9 +1158,14 @@ func resourceFirewallPolicy() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"wsso": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 			"ztna_device_ownership": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"ztna_ems_tag": &schema.Schema{
 				Type:     schema.TypeSet,
@@ -1118,6 +1193,7 @@ func resourceFirewallPolicy() *schema.Resource {
 			"ztna_policy_redirect": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"ztna_status": &schema.Schema{
 				Type:     schema.TypeString,
@@ -1127,6 +1203,7 @@ func resourceFirewallPolicy() *schema.Resource {
 			"ztna_tags_match_logic": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"access_proxy": &schema.Schema{
 				Type:     schema.TypeSet,
@@ -1209,6 +1286,12 @@ func resourceFirewallPolicy() *schema.Resource {
 				Computed: true,
 			},
 			"isolator_server": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Computed: true,
+			},
+			"llm_profile": &schema.Schema{
 				Type:     schema.TypeSet,
 				Elem:     &schema.Schema{Type: schema.TypeString},
 				Optional: true,
@@ -1512,6 +1595,10 @@ func flattenFirewallPolicyAvProfile(v interface{}, d *schema.ResourceData, pre s
 	return flattenStringList(v)
 }
 
+func flattenFirewallPolicyBestRoute(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenFirewallPolicyBlockNotification(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -1668,6 +1755,10 @@ func flattenFirewallPolicyFixedport(v interface{}, d *schema.ResourceData, pre s
 	return v
 }
 
+func flattenFirewallPolicyFsso(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenFirewallPolicyFssoAgentForNtlm(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return flattenStringList(v)
 }
@@ -1736,6 +1827,10 @@ func flattenFirewallPolicyInternetServiceGroup(v interface{}, d *schema.Resource
 	return flattenStringList(v)
 }
 
+func flattenFirewallPolicyInternetServiceId(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
 func flattenFirewallPolicyInternetServiceName(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return flattenStringList(v)
 }
@@ -1761,6 +1856,10 @@ func flattenFirewallPolicyInternetServiceSrcFortiguard(v interface{}, d *schema.
 }
 
 func flattenFirewallPolicyInternetServiceSrcGroup(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
+func flattenFirewallPolicyInternetServiceSrcId(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return flattenStringList(v)
 }
 
@@ -1866,6 +1965,10 @@ func flattenFirewallPolicyMatchVip(v interface{}, d *schema.ResourceData, pre st
 
 func flattenFirewallPolicyMatchVipOnly(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
+}
+
+func flattenFirewallPolicyMmsProfile(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
 }
 
 func flattenFirewallPolicyName(v interface{}, d *schema.ResourceData, pre string) interface{} {
@@ -2036,6 +2139,10 @@ func flattenFirewallPolicyReputationMinimum(v interface{}, d *schema.ResourceDat
 	return v
 }
 
+func flattenFirewallPolicyRsso(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenFirewallPolicyReputationMinimum6(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -2130,6 +2237,14 @@ func flattenFirewallPolicySshFilterProfile(v interface{}, d *schema.ResourceData
 
 func flattenFirewallPolicySshPolicyRedirect(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
+}
+
+func flattenFirewallPolicySslMirror(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenFirewallPolicySslMirrorIntf(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
 }
 
 func flattenFirewallPolicySslSshProfile(v interface{}, d *schema.ResourceData, pre string) interface{} {
@@ -2276,6 +2391,10 @@ func flattenFirewallPolicyWebproxyProfile(v interface{}, d *schema.ResourceData,
 	return flattenStringList(v)
 }
 
+func flattenFirewallPolicyWsso(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenFirewallPolicyZtnaDeviceOwnership(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -2373,6 +2492,10 @@ func flattenFirewallPolicyIsolatorProfile(v interface{}, d *schema.ResourceData,
 }
 
 func flattenFirewallPolicyIsolatorServer(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
+func flattenFirewallPolicyLlmProfile(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return flattenStringList(v)
 }
 
@@ -2520,6 +2643,16 @@ func refreshObjectFirewallPolicy(d *schema.ResourceData, o map[string]interface{
 			}
 		} else {
 			return fmt.Errorf("Error reading av_profile: %v", err)
+		}
+	}
+
+	if err = d.Set("best_route", flattenFirewallPolicyBestRoute(o["best-route"], d, "best_route")); err != nil {
+		if vv, ok := fortiAPIPatch(o["best-route"], "FirewallPolicy-BestRoute"); ok {
+			if err = d.Set("best_route", vv); err != nil {
+				return fmt.Errorf("Error reading best_route: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading best_route: %v", err)
 		}
 	}
 
@@ -2913,6 +3046,16 @@ func refreshObjectFirewallPolicy(d *schema.ResourceData, o map[string]interface{
 		}
 	}
 
+	if err = d.Set("fsso", flattenFirewallPolicyFsso(o["fsso"], d, "fsso")); err != nil {
+		if vv, ok := fortiAPIPatch(o["fsso"], "FirewallPolicy-Fsso"); ok {
+			if err = d.Set("fsso", vv); err != nil {
+				return fmt.Errorf("Error reading fsso: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading fsso: %v", err)
+		}
+	}
+
 	if err = d.Set("fsso_agent_for_ntlm", flattenFirewallPolicyFssoAgentForNtlm(o["fsso-agent-for-ntlm"], d, "fsso_agent_for_ntlm")); err != nil {
 		if vv, ok := fortiAPIPatch(o["fsso-agent-for-ntlm"], "FirewallPolicy-FssoAgentForNtlm"); ok {
 			if err = d.Set("fsso_agent_for_ntlm", vv); err != nil {
@@ -3083,6 +3226,16 @@ func refreshObjectFirewallPolicy(d *schema.ResourceData, o map[string]interface{
 		}
 	}
 
+	if err = d.Set("internet_service_id", flattenFirewallPolicyInternetServiceId(o["internet-service-id"], d, "internet_service_id")); err != nil {
+		if vv, ok := fortiAPIPatch(o["internet-service-id"], "FirewallPolicy-InternetServiceId"); ok {
+			if err = d.Set("internet_service_id", vv); err != nil {
+				return fmt.Errorf("Error reading internet_service_id: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading internet_service_id: %v", err)
+		}
+	}
+
 	if err = d.Set("internet_service_name", flattenFirewallPolicyInternetServiceName(o["internet-service-name"], d, "internet_service_name")); err != nil {
 		if vv, ok := fortiAPIPatch(o["internet-service-name"], "FirewallPolicy-InternetServiceName"); ok {
 			if err = d.Set("internet_service_name", vv); err != nil {
@@ -3150,6 +3303,16 @@ func refreshObjectFirewallPolicy(d *schema.ResourceData, o map[string]interface{
 			}
 		} else {
 			return fmt.Errorf("Error reading internet_service_src_group: %v", err)
+		}
+	}
+
+	if err = d.Set("internet_service_src_id", flattenFirewallPolicyInternetServiceSrcId(o["internet-service-src-id"], d, "internet_service_src_id")); err != nil {
+		if vv, ok := fortiAPIPatch(o["internet-service-src-id"], "FirewallPolicy-InternetServiceSrcId"); ok {
+			if err = d.Set("internet_service_src_id", vv); err != nil {
+				return fmt.Errorf("Error reading internet_service_src_id: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading internet_service_src_id: %v", err)
 		}
 	}
 
@@ -3410,6 +3573,16 @@ func refreshObjectFirewallPolicy(d *schema.ResourceData, o map[string]interface{
 			}
 		} else {
 			return fmt.Errorf("Error reading match_vip_only: %v", err)
+		}
+	}
+
+	if err = d.Set("mms_profile", flattenFirewallPolicyMmsProfile(o["mms-profile"], d, "mms_profile")); err != nil {
+		if vv, ok := fortiAPIPatch(o["mms-profile"], "FirewallPolicy-MmsProfile"); ok {
+			if err = d.Set("mms_profile", vv); err != nil {
+				return fmt.Errorf("Error reading mms_profile: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading mms_profile: %v", err)
 		}
 	}
 
@@ -3833,6 +4006,16 @@ func refreshObjectFirewallPolicy(d *schema.ResourceData, o map[string]interface{
 		}
 	}
 
+	if err = d.Set("rsso", flattenFirewallPolicyRsso(o["rsso"], d, "rsso")); err != nil {
+		if vv, ok := fortiAPIPatch(o["rsso"], "FirewallPolicy-Rsso"); ok {
+			if err = d.Set("rsso", vv); err != nil {
+				return fmt.Errorf("Error reading rsso: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading rsso: %v", err)
+		}
+	}
+
 	if err = d.Set("reputation_minimum6", flattenFirewallPolicyReputationMinimum6(o["reputation-minimum6"], d, "reputation_minimum6")); err != nil {
 		if vv, ok := fortiAPIPatch(o["reputation-minimum6"], "FirewallPolicy-ReputationMinimum6"); ok {
 			if err = d.Set("reputation_minimum6", vv); err != nil {
@@ -4070,6 +4253,26 @@ func refreshObjectFirewallPolicy(d *schema.ResourceData, o map[string]interface{
 			}
 		} else {
 			return fmt.Errorf("Error reading ssh_policy_redirect: %v", err)
+		}
+	}
+
+	if err = d.Set("ssl_mirror", flattenFirewallPolicySslMirror(o["ssl-mirror"], d, "ssl_mirror")); err != nil {
+		if vv, ok := fortiAPIPatch(o["ssl-mirror"], "FirewallPolicy-SslMirror"); ok {
+			if err = d.Set("ssl_mirror", vv); err != nil {
+				return fmt.Errorf("Error reading ssl_mirror: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading ssl_mirror: %v", err)
+		}
+	}
+
+	if err = d.Set("ssl_mirror_intf", flattenFirewallPolicySslMirrorIntf(o["ssl-mirror-intf"], d, "ssl_mirror_intf")); err != nil {
+		if vv, ok := fortiAPIPatch(o["ssl-mirror-intf"], "FirewallPolicy-SslMirrorIntf"); ok {
+			if err = d.Set("ssl_mirror_intf", vv); err != nil {
+				return fmt.Errorf("Error reading ssl_mirror_intf: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading ssl_mirror_intf: %v", err)
 		}
 	}
 
@@ -4433,6 +4636,16 @@ func refreshObjectFirewallPolicy(d *schema.ResourceData, o map[string]interface{
 		}
 	}
 
+	if err = d.Set("wsso", flattenFirewallPolicyWsso(o["wsso"], d, "wsso")); err != nil {
+		if vv, ok := fortiAPIPatch(o["wsso"], "FirewallPolicy-Wsso"); ok {
+			if err = d.Set("wsso", vv); err != nil {
+				return fmt.Errorf("Error reading wsso: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading wsso: %v", err)
+		}
+	}
+
 	if err = d.Set("ztna_device_ownership", flattenFirewallPolicyZtnaDeviceOwnership(o["ztna-device-ownership"], d, "ztna_device_ownership")); err != nil {
 		if vv, ok := fortiAPIPatch(o["ztna-device-ownership"], "FirewallPolicy-ZtnaDeviceOwnership"); ok {
 			if err = d.Set("ztna_device_ownership", vv); err != nil {
@@ -4683,6 +4896,16 @@ func refreshObjectFirewallPolicy(d *schema.ResourceData, o map[string]interface{
 		}
 	}
 
+	if err = d.Set("llm_profile", flattenFirewallPolicyLlmProfile(o["llm-profile"], d, "llm_profile")); err != nil {
+		if vv, ok := fortiAPIPatch(o["llm-profile"], "FirewallPolicy-LlmProfile"); ok {
+			if err = d.Set("llm_profile", vv); err != nil {
+				return fmt.Errorf("Error reading llm_profile: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading llm_profile: %v", err)
+		}
+	}
+
 	if err = d.Set("max_session_per_user", flattenFirewallPolicyMaxSessionPerUser(o["max-session-per-user"], d, "max_session_per_user")); err != nil {
 		if vv, ok := fortiAPIPatch(o["max-session-per-user"], "FirewallPolicy-MaxSessionPerUser"); ok {
 			if err = d.Set("max_session_per_user", vv); err != nil {
@@ -4842,6 +5065,10 @@ func expandFirewallPolicyAvProfile(d *schema.ResourceData, v interface{}, pre st
 	return expandStringList(v.(*schema.Set).List()), nil
 }
 
+func expandFirewallPolicyBestRoute(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandFirewallPolicyBlockNotification(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -4998,6 +5225,10 @@ func expandFirewallPolicyFixedport(d *schema.ResourceData, v interface{}, pre st
 	return v, nil
 }
 
+func expandFirewallPolicyFsso(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandFirewallPolicyFssoAgentForNtlm(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return expandStringList(v.(*schema.Set).List()), nil
 }
@@ -5066,6 +5297,10 @@ func expandFirewallPolicyInternetServiceGroup(d *schema.ResourceData, v interfac
 	return expandStringList(v.(*schema.Set).List()), nil
 }
 
+func expandFirewallPolicyInternetServiceId(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
 func expandFirewallPolicyInternetServiceName(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return expandStringList(v.(*schema.Set).List()), nil
 }
@@ -5091,6 +5326,10 @@ func expandFirewallPolicyInternetServiceSrcFortiguard(d *schema.ResourceData, v 
 }
 
 func expandFirewallPolicyInternetServiceSrcGroup(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandFirewallPolicyInternetServiceSrcId(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return expandStringList(v.(*schema.Set).List()), nil
 }
 
@@ -5196,6 +5435,10 @@ func expandFirewallPolicyMatchVip(d *schema.ResourceData, v interface{}, pre str
 
 func expandFirewallPolicyMatchVipOnly(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
+}
+
+func expandFirewallPolicyMmsProfile(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
 }
 
 func expandFirewallPolicyName(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
@@ -5366,6 +5609,10 @@ func expandFirewallPolicyReputationMinimum(d *schema.ResourceData, v interface{}
 	return v, nil
 }
 
+func expandFirewallPolicyRsso(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandFirewallPolicyReputationMinimum6(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -5460,6 +5707,14 @@ func expandFirewallPolicySshFilterProfile(d *schema.ResourceData, v interface{},
 
 func expandFirewallPolicySshPolicyRedirect(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
+}
+
+func expandFirewallPolicySslMirror(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandFirewallPolicySslMirrorIntf(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
 }
 
 func expandFirewallPolicySslSshProfile(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
@@ -5606,6 +5861,10 @@ func expandFirewallPolicyWebproxyProfile(d *schema.ResourceData, v interface{}, 
 	return expandStringList(v.(*schema.Set).List()), nil
 }
 
+func expandFirewallPolicyWsso(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandFirewallPolicyZtnaDeviceOwnership(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -5703,6 +5962,10 @@ func expandFirewallPolicyIsolatorProfile(d *schema.ResourceData, v interface{}, 
 }
 
 func expandFirewallPolicyIsolatorServer(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandFirewallPolicyLlmProfile(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return expandStringList(v.(*schema.Set).List()), nil
 }
 
@@ -5840,6 +6103,15 @@ func getObjectFirewallPolicy(d *schema.ResourceData) (*map[string]interface{}, e
 			return &obj, err
 		} else if t != nil {
 			obj["av-profile"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("best_route"); ok || d.HasChange("best_route") {
+		t, err := expandFirewallPolicyBestRoute(d, v, "best_route")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["best-route"] = t
 		}
 	}
 
@@ -6194,6 +6466,15 @@ func getObjectFirewallPolicy(d *schema.ResourceData) (*map[string]interface{}, e
 		}
 	}
 
+	if v, ok := d.GetOk("fsso"); ok || d.HasChange("fsso") {
+		t, err := expandFirewallPolicyFsso(d, v, "fsso")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["fsso"] = t
+		}
+	}
+
 	if v, ok := d.GetOk("fsso_agent_for_ntlm"); ok || d.HasChange("fsso_agent_for_ntlm") {
 		t, err := expandFirewallPolicyFssoAgentForNtlm(d, v, "fsso_agent_for_ntlm")
 		if err != nil {
@@ -6347,6 +6628,15 @@ func getObjectFirewallPolicy(d *schema.ResourceData) (*map[string]interface{}, e
 		}
 	}
 
+	if v, ok := d.GetOk("internet_service_id"); ok || d.HasChange("internet_service_id") {
+		t, err := expandFirewallPolicyInternetServiceId(d, v, "internet_service_id")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["internet-service-id"] = t
+		}
+	}
+
 	if v, ok := d.GetOk("internet_service_name"); ok || d.HasChange("internet_service_name") {
 		t, err := expandFirewallPolicyInternetServiceName(d, v, "internet_service_name")
 		if err != nil {
@@ -6407,6 +6697,15 @@ func getObjectFirewallPolicy(d *schema.ResourceData) (*map[string]interface{}, e
 			return &obj, err
 		} else if t != nil {
 			obj["internet-service-src-group"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("internet_service_src_id"); ok || d.HasChange("internet_service_src_id") {
+		t, err := expandFirewallPolicyInternetServiceSrcId(d, v, "internet_service_src_id")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["internet-service-src-id"] = t
 		}
 	}
 
@@ -6641,6 +6940,15 @@ func getObjectFirewallPolicy(d *schema.ResourceData) (*map[string]interface{}, e
 			return &obj, err
 		} else if t != nil {
 			obj["match-vip-only"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("mms_profile"); ok || d.HasChange("mms_profile") {
+		t, err := expandFirewallPolicyMmsProfile(d, v, "mms_profile")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["mms-profile"] = t
 		}
 	}
 
@@ -7022,6 +7330,15 @@ func getObjectFirewallPolicy(d *schema.ResourceData) (*map[string]interface{}, e
 		}
 	}
 
+	if v, ok := d.GetOk("rsso"); ok || d.HasChange("rsso") {
+		t, err := expandFirewallPolicyRsso(d, v, "rsso")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["rsso"] = t
+		}
+	}
+
 	if v, ok := d.GetOk("reputation_minimum6"); ok || d.HasChange("reputation_minimum6") {
 		t, err := expandFirewallPolicyReputationMinimum6(d, v, "reputation_minimum6")
 		if err != nil {
@@ -7235,6 +7552,24 @@ func getObjectFirewallPolicy(d *schema.ResourceData) (*map[string]interface{}, e
 			return &obj, err
 		} else if t != nil {
 			obj["ssh-policy-redirect"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("ssl_mirror"); ok || d.HasChange("ssl_mirror") {
+		t, err := expandFirewallPolicySslMirror(d, v, "ssl_mirror")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["ssl-mirror"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("ssl_mirror_intf"); ok || d.HasChange("ssl_mirror_intf") {
+		t, err := expandFirewallPolicySslMirrorIntf(d, v, "ssl_mirror_intf")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["ssl-mirror-intf"] = t
 		}
 	}
 
@@ -7562,6 +7897,15 @@ func getObjectFirewallPolicy(d *schema.ResourceData) (*map[string]interface{}, e
 		}
 	}
 
+	if v, ok := d.GetOk("wsso"); ok || d.HasChange("wsso") {
+		t, err := expandFirewallPolicyWsso(d, v, "wsso")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["wsso"] = t
+		}
+	}
+
 	if v, ok := d.GetOk("ztna_device_ownership"); ok || d.HasChange("ztna_device_ownership") {
 		t, err := expandFirewallPolicyZtnaDeviceOwnership(d, v, "ztna_device_ownership")
 		if err != nil {
@@ -7784,6 +8128,15 @@ func getObjectFirewallPolicy(d *schema.ResourceData) (*map[string]interface{}, e
 			return &obj, err
 		} else if t != nil {
 			obj["isolator-server"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("llm_profile"); ok || d.HasChange("llm_profile") {
+		t, err := expandFirewallPolicyLlmProfile(d, v, "llm_profile")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["llm-profile"] = t
 		}
 	}
 

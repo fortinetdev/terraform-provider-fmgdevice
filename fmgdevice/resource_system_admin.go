@@ -54,6 +54,7 @@ func resourceSystemAdmin() *schema.Resource {
 			"accprofile_override": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"allow_remove_admin_session": &schema.Schema{
 				Type:     schema.TypeString,
@@ -71,6 +72,7 @@ func resourceSystemAdmin() *schema.Resource {
 			"force_password_change": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"fortitoken": &schema.Schema{
 				Type:     schema.TypeSet,
@@ -368,6 +370,7 @@ func resourceSystemAdmin() *schema.Resource {
 			"radius_vdom_override": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"remote_auth": &schema.Schema{
 				Type:     schema.TypeString,
@@ -508,6 +511,7 @@ func resourceSystemAdmin() *schema.Resource {
 			"wildcard": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"dynamic_sort_subtable": &schema.Schema{
 				Type:     schema.TypeString,

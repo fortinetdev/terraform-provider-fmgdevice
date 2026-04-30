@@ -475,7 +475,7 @@ func resourceExtensionControllerExtenderProfileCellularUpdate(d *schema.Resource
 	paradict["vdom"] = device_vdom
 	paradict["extender_profile"] = extender_profile
 
-	obj, err := getObjectExtensionControllerExtenderProfileCellular(d)
+	obj, err := getObjectExtensionControllerExtenderProfileCellular(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating ExtensionControllerExtenderProfileCellular resource while getting object: %v", err)
 	}
@@ -496,7 +496,6 @@ func resourceExtensionControllerExtenderProfileCellularUpdate(d *schema.Resource
 
 func resourceExtensionControllerExtenderProfileCellularDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -521,11 +520,17 @@ func resourceExtensionControllerExtenderProfileCellularDelete(d *schema.Resource
 	paradict["vdom"] = device_vdom
 	paradict["extender_profile"] = extender_profile
 
+	obj, err := getObjectExtensionControllerExtenderProfileCellular(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating ExtensionControllerExtenderProfileCellular resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteExtensionControllerExtenderProfileCellular(mkey, paradict, wsParams)
+	_, err = c.UpdateExtensionControllerExtenderProfileCellular(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting ExtensionControllerExtenderProfileCellular resource: %v", err)
+		return fmt.Errorf("Error clearing ExtensionControllerExtenderProfileCellular resource: %v", err)
 	}
 
 	d.SetId("")
@@ -2062,7 +2067,7 @@ func expandExtensionControllerExtenderProfileCellularSmsNotificationStatus2edl(d
 	return v, nil
 }
 
-func getObjectExtensionControllerExtenderProfileCellular(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectExtensionControllerExtenderProfileCellular(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("controller_report"); ok || d.HasChange("controller_report") {

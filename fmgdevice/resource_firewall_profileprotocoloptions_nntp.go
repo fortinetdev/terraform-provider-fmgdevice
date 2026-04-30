@@ -128,7 +128,7 @@ func resourceFirewallProfileProtocolOptionsNntpUpdate(d *schema.ResourceData, m 
 	paradict["vdom"] = device_vdom
 	paradict["profile_protocol_options"] = profile_protocol_options
 
-	obj, err := getObjectFirewallProfileProtocolOptionsNntp(d)
+	obj, err := getObjectFirewallProfileProtocolOptionsNntp(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating FirewallProfileProtocolOptionsNntp resource while getting object: %v", err)
 	}
@@ -149,7 +149,6 @@ func resourceFirewallProfileProtocolOptionsNntpUpdate(d *schema.ResourceData, m 
 
 func resourceFirewallProfileProtocolOptionsNntpDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -174,11 +173,17 @@ func resourceFirewallProfileProtocolOptionsNntpDelete(d *schema.ResourceData, m 
 	paradict["vdom"] = device_vdom
 	paradict["profile_protocol_options"] = profile_protocol_options
 
+	obj, err := getObjectFirewallProfileProtocolOptionsNntp(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating FirewallProfileProtocolOptionsNntp resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteFirewallProfileProtocolOptionsNntp(mkey, paradict, wsParams)
+	_, err = c.UpdateFirewallProfileProtocolOptionsNntp(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting FirewallProfileProtocolOptionsNntp resource: %v", err)
+		return fmt.Errorf("Error clearing FirewallProfileProtocolOptionsNntp resource: %v", err)
 	}
 
 	d.SetId("")
@@ -422,7 +427,7 @@ func expandFirewallProfileProtocolOptionsNntpUncompressedOversizeLimit2edl(d *sc
 	return v, nil
 }
 
-func getObjectFirewallProfileProtocolOptionsNntp(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectFirewallProfileProtocolOptionsNntp(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("inspect_all"); ok || d.HasChange("inspect_all") {

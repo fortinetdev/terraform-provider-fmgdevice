@@ -172,7 +172,7 @@ func resourceLogSyslogd2OverrideFilterUpdate(d *schema.ResourceData, m interface
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	obj, err := getObjectLogSyslogd2OverrideFilter(d)
+	obj, err := getObjectLogSyslogd2OverrideFilter(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating LogSyslogd2OverrideFilter resource while getting object: %v", err)
 	}
@@ -193,7 +193,6 @@ func resourceLogSyslogd2OverrideFilterUpdate(d *schema.ResourceData, m interface
 
 func resourceLogSyslogd2OverrideFilterDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -216,11 +215,17 @@ func resourceLogSyslogd2OverrideFilterDelete(d *schema.ResourceData, m interface
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	obj, err := getObjectLogSyslogd2OverrideFilter(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating LogSyslogd2OverrideFilter resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteLogSyslogd2OverrideFilter(mkey, paradict, wsParams)
+	_, err = c.UpdateLogSyslogd2OverrideFilter(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting LogSyslogd2OverrideFilter resource: %v", err)
+		return fmt.Errorf("Error clearing LogSyslogd2OverrideFilter resource: %v", err)
 	}
 
 	d.SetId("")
@@ -700,7 +705,7 @@ func expandLogSyslogd2OverrideFilterZtnaTraffic(d *schema.ResourceData, v interf
 	return v, nil
 }
 
-func getObjectLogSyslogd2OverrideFilter(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectLogSyslogd2OverrideFilter(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("anomaly"); ok || d.HasChange("anomaly") {
@@ -757,12 +762,16 @@ func getObjectLogSyslogd2OverrideFilter(d *schema.ResourceData) (*map[string]int
 		}
 	}
 
-	if v, ok := d.GetOk("free_style"); ok || d.HasChange("free_style") {
-		t, err := expandLogSyslogd2OverrideFilterFreeStyle(d, v, "free_style")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["free-style"] = t
+	if bemptysontable {
+		obj["free-style"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("free_style"); ok || d.HasChange("free_style") {
+			t, err := expandLogSyslogd2OverrideFilterFreeStyle(d, v, "free_style")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["free-style"] = t
+			}
 		}
 	}
 

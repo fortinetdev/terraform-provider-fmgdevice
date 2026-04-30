@@ -68,7 +68,7 @@ func resourceSystemSovSaseUpdate(d *schema.ResourceData, m interface{}) error {
 	}
 	paradict["device"] = device_name
 
-	obj, err := getObjectSystemSovSase(d)
+	obj, err := getObjectSystemSovSase(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemSovSase resource while getting object: %v", err)
 	}
@@ -89,7 +89,6 @@ func resourceSystemSovSaseUpdate(d *schema.ResourceData, m interface{}) error {
 
 func resourceSystemSovSaseDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -107,11 +106,17 @@ func resourceSystemSovSaseDelete(d *schema.ResourceData, m interface{}) error {
 	}
 	paradict["device"] = device_name
 
+	obj, err := getObjectSystemSovSase(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating SystemSovSase resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteSystemSovSase(mkey, paradict, wsParams)
+	_, err = c.UpdateSystemSovSase(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting SystemSovSase resource: %v", err)
+		return fmt.Errorf("Error clearing SystemSovSase resource: %v", err)
 	}
 
 	d.SetId("")
@@ -189,7 +194,7 @@ func expandSystemSovSaseStatus(d *schema.ResourceData, v interface{}, pre string
 	return v, nil
 }
 
-func getObjectSystemSovSase(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectSystemSovSase(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("status"); ok || d.HasChange("status") {

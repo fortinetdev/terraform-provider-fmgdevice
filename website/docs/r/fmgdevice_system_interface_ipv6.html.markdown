@@ -1,5 +1,5 @@
 ---
-subcategory: "No Category"
+subcategory: "System"
 layout: "fmgdevice"
 page_title: "FortiManager Device: fmgdevice_system_interface_ipv6"
 description: |-
@@ -149,6 +149,8 @@ The `ip6_delegated_prefix_list` block supports:
 * `autonomous_flag` - Enable/disable the autonomous flag. Valid values: `disable`, `enable`.
 
 * `delegated_prefix_iaid` - IAID of obtained delegated-prefix from the upstream interface.
+* `dnssl_service` - Enable/disable use of domain from delegated prefix for DNSSL. Valid values: `disable`, `enable`.
+
 * `onlink_flag` - Enable/disable the onlink flag. Valid values: `disable`, `enable`.
 
 * `prefix_id` - Prefix ID.

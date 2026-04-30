@@ -119,10 +119,12 @@ func resourceAlertemailSetting() *schema.Resource {
 			"critical_interval": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"debug_interval": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"email_interval": &schema.Schema{
 				Type:     schema.TypeInt,
@@ -132,10 +134,12 @@ func resourceAlertemailSetting() *schema.Resource {
 			"emergency_interval": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"error_interval": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"filter_mode": &schema.Schema{
 				Type:     schema.TypeString,
@@ -155,6 +159,7 @@ func resourceAlertemailSetting() *schema.Resource {
 			"information_interval": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"local_disk_usage": &schema.Schema{
 				Type:     schema.TypeInt,
@@ -181,10 +186,12 @@ func resourceAlertemailSetting() *schema.Resource {
 			"notification_interval": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"severity": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"ssh_logs": &schema.Schema{
 				Type:     schema.TypeString,
@@ -208,6 +215,7 @@ func resourceAlertemailSetting() *schema.Resource {
 			"warning_interval": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"webfilter_logs": &schema.Schema{
 				Type:     schema.TypeString,
@@ -246,7 +254,7 @@ func resourceAlertemailSettingUpdate(d *schema.ResourceData, m interface{}) erro
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	obj, err := getObjectAlertemailSetting(d)
+	obj, err := getObjectAlertemailSetting(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating AlertemailSetting resource while getting object: %v", err)
 	}
@@ -267,7 +275,6 @@ func resourceAlertemailSettingUpdate(d *schema.ResourceData, m interface{}) erro
 
 func resourceAlertemailSettingDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -290,11 +297,17 @@ func resourceAlertemailSettingDelete(d *schema.ResourceData, m interface{}) erro
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	obj, err := getObjectAlertemailSetting(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating AlertemailSetting resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteAlertemailSetting(mkey, paradict, wsParams)
+	_, err = c.UpdateAlertemailSetting(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting AlertemailSetting resource: %v", err)
+		return fmt.Errorf("Error clearing AlertemailSetting resource: %v", err)
 	}
 
 	d.SetId("")
@@ -1031,7 +1044,7 @@ func expandAlertemailSettingFpxLicenseLogs(d *schema.ResourceData, v interface{}
 	return v, nil
 }
 
-func getObjectAlertemailSetting(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectAlertemailSetting(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("fds_license_expiring_days"); ok || d.HasChange("fds_license_expiring_days") {

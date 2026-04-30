@@ -82,6 +82,7 @@ func resourceSwitchControllerFortilinkSettings() *schema.Resource {
 						"bounce_nac_port": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"lan_segment": &schema.Schema{
 							Type:     schema.TypeString,

@@ -190,7 +190,7 @@ func resourceSystemFederatedUpgradeUpdate(d *schema.ResourceData, m interface{})
 	}
 	paradict["device"] = device_name
 
-	obj, err := getObjectSystemFederatedUpgrade(d)
+	obj, err := getObjectSystemFederatedUpgrade(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemFederatedUpgrade resource while getting object: %v", err)
 	}
@@ -211,7 +211,6 @@ func resourceSystemFederatedUpgradeUpdate(d *schema.ResourceData, m interface{})
 
 func resourceSystemFederatedUpgradeDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -229,11 +228,17 @@ func resourceSystemFederatedUpgradeDelete(d *schema.ResourceData, m interface{})
 	}
 	paradict["device"] = device_name
 
+	obj, err := getObjectSystemFederatedUpgrade(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating SystemFederatedUpgrade resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteSystemFederatedUpgrade(mkey, paradict, wsParams)
+	_, err = c.UpdateSystemFederatedUpgrade(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting SystemFederatedUpgrade resource: %v", err)
+		return fmt.Errorf("Error clearing SystemFederatedUpgrade resource: %v", err)
 	}
 
 	d.SetId("")
@@ -877,7 +882,7 @@ func expandSystemFederatedUpgradeUpgradeId(d *schema.ResourceData, v interface{}
 	return v, nil
 }
 
-func getObjectSystemFederatedUpgrade(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectSystemFederatedUpgrade(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("dry_run"); ok || d.HasChange("dry_run") {
@@ -934,12 +939,16 @@ func getObjectSystemFederatedUpgrade(d *schema.ResourceData) (*map[string]interf
 		}
 	}
 
-	if v, ok := d.GetOk("known_ha_members"); ok || d.HasChange("known_ha_members") {
-		t, err := expandSystemFederatedUpgradeKnownHaMembers(d, v, "known_ha_members")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["known-ha-members"] = t
+	if bemptysontable {
+		obj["known-ha-members"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("known_ha_members"); ok || d.HasChange("known_ha_members") {
+			t, err := expandSystemFederatedUpgradeKnownHaMembers(d, v, "known_ha_members")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["known-ha-members"] = t
+			}
 		}
 	}
 
@@ -952,12 +961,16 @@ func getObjectSystemFederatedUpgrade(d *schema.ResourceData) (*map[string]interf
 		}
 	}
 
-	if v, ok := d.GetOk("node_list"); ok || d.HasChange("node_list") {
-		t, err := expandSystemFederatedUpgradeNodeList(d, v, "node_list")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["node-list"] = t
+	if bemptysontable {
+		obj["node-list"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("node_list"); ok || d.HasChange("node_list") {
+			t, err := expandSystemFederatedUpgradeNodeList(d, v, "node_list")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["node-list"] = t
+			}
 		}
 	}
 

@@ -363,7 +363,7 @@ func resourceSwitchControllerManagedSwitchSnmpCommunityRead(d *schema.ResourceDa
 }
 
 func flattenSwitchControllerManagedSwitchSnmpCommunityEvents2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
-	return flattenStringList(v)
+	return convstr2list(v, d.Get(pre))
 }
 
 func flattenSwitchControllerManagedSwitchSnmpCommunityHosts2edl(v interface{}, d *schema.ResourceData, pre string) []map[string]interface{} {

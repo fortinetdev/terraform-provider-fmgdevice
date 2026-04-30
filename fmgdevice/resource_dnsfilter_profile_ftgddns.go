@@ -121,7 +121,7 @@ func resourceDnsfilterProfileFtgdDnsUpdate(d *schema.ResourceData, m interface{}
 	paradict["vdom"] = device_vdom
 	paradict["profile"] = profile
 
-	obj, err := getObjectDnsfilterProfileFtgdDns(d)
+	obj, err := getObjectDnsfilterProfileFtgdDns(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating DnsfilterProfileFtgdDns resource while getting object: %v", err)
 	}
@@ -142,7 +142,6 @@ func resourceDnsfilterProfileFtgdDnsUpdate(d *schema.ResourceData, m interface{}
 
 func resourceDnsfilterProfileFtgdDnsDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -167,11 +166,17 @@ func resourceDnsfilterProfileFtgdDnsDelete(d *schema.ResourceData, m interface{}
 	paradict["vdom"] = device_vdom
 	paradict["profile"] = profile
 
+	obj, err := getObjectDnsfilterProfileFtgdDns(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating DnsfilterProfileFtgdDns resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteDnsfilterProfileFtgdDns(mkey, paradict, wsParams)
+	_, err = c.UpdateDnsfilterProfileFtgdDns(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting DnsfilterProfileFtgdDns resource: %v", err)
+		return fmt.Errorf("Error clearing DnsfilterProfileFtgdDns resource: %v", err)
 	}
 
 	d.SetId("")
@@ -428,15 +433,19 @@ func expandDnsfilterProfileFtgdDnsOptions2edl(d *schema.ResourceData, v interfac
 	return expandStringList(v.(*schema.Set).List()), nil
 }
 
-func getObjectDnsfilterProfileFtgdDns(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectDnsfilterProfileFtgdDns(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
-	if v, ok := d.GetOk("filters"); ok || d.HasChange("filters") {
-		t, err := expandDnsfilterProfileFtgdDnsFilters2edl(d, v, "filters")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["filters"] = t
+	if bemptysontable {
+		obj["filters"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("filters"); ok || d.HasChange("filters") {
+			t, err := expandDnsfilterProfileFtgdDnsFilters2edl(d, v, "filters")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["filters"] = t
+			}
 		}
 	}
 

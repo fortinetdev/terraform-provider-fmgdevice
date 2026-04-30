@@ -1,5 +1,5 @@
 ---
-subcategory: "No Category"
+subcategory: "System"
 layout: "fmgdevice"
 page_title: "FortiManager Device: fmgdevice_system_settings"
 description: |-
@@ -263,6 +263,7 @@ The following arguments are supported:
 * `ip` - IP address and netmask.
 * `ip6` - IPv6 address prefix for NAT mode.
 * `lan_extension_controller_addr` - Controller IP address or FQDN to connect.
+* `lan_extension_controller_port` - Controller port to connect.
 * `link_down_access` - Enable/disable link down access traffic. Valid values: `disable`, `enable`.
 
 * `lldp_reception` - Enable/disable Link Layer Discovery Protocol (LLDP) reception for this VDOM or apply global settings to this VDOM. Valid values: `disable`, `enable`, `global`.

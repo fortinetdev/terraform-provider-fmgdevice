@@ -61,6 +61,11 @@ func resourceWirelessControllerWtpProfileRadio1() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"ai_darrp_support": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
 			"airtime_fairness": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -519,7 +524,7 @@ func resourceWirelessControllerWtpProfileRadio1Update(d *schema.ResourceData, m 
 	paradict["vdom"] = device_vdom
 	paradict["wtp_profile"] = wtp_profile
 
-	obj, err := getObjectWirelessControllerWtpProfileRadio1(d)
+	obj, err := getObjectWirelessControllerWtpProfileRadio1(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating WirelessControllerWtpProfileRadio1 resource while getting object: %v", err)
 	}
@@ -540,7 +545,6 @@ func resourceWirelessControllerWtpProfileRadio1Update(d *schema.ResourceData, m 
 
 func resourceWirelessControllerWtpProfileRadio1Delete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -565,11 +569,17 @@ func resourceWirelessControllerWtpProfileRadio1Delete(d *schema.ResourceData, m 
 	paradict["vdom"] = device_vdom
 	paradict["wtp_profile"] = wtp_profile
 
+	obj, err := getObjectWirelessControllerWtpProfileRadio1(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating WirelessControllerWtpProfileRadio1 resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteWirelessControllerWtpProfileRadio1(mkey, paradict, wsParams)
+	_, err = c.UpdateWirelessControllerWtpProfileRadio1(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting WirelessControllerWtpProfileRadio1 resource: %v", err)
+		return fmt.Errorf("Error clearing WirelessControllerWtpProfileRadio1 resource: %v", err)
 	}
 
 	d.SetId("")
@@ -644,6 +654,10 @@ func flattenWirelessControllerWtpProfileRadio180211D2edl(v interface{}, d *schem
 }
 
 func flattenWirelessControllerWtpProfileRadio180211Mc2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWirelessControllerWtpProfileRadio1AiDarrpSupport2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -1015,6 +1029,16 @@ func refreshObjectWirelessControllerWtpProfileRadio1(d *schema.ResourceData, o m
 			}
 		} else {
 			return fmt.Errorf("Error reading n80211mc: %v", err)
+		}
+	}
+
+	if err = d.Set("ai_darrp_support", flattenWirelessControllerWtpProfileRadio1AiDarrpSupport2edl(o["ai-darrp-support"], d, "ai_darrp_support")); err != nil {
+		if vv, ok := fortiAPIPatch(o["ai-darrp-support"], "WirelessControllerWtpProfileRadio1-AiDarrpSupport"); ok {
+			if err = d.Set("ai_darrp_support", vv); err != nil {
+				return fmt.Errorf("Error reading ai_darrp_support: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading ai_darrp_support: %v", err)
 		}
 	}
 
@@ -1905,6 +1929,10 @@ func expandWirelessControllerWtpProfileRadio180211Mc2edl(d *schema.ResourceData,
 	return v, nil
 }
 
+func expandWirelessControllerWtpProfileRadio1AiDarrpSupport2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandWirelessControllerWtpProfileRadio1AirtimeFairness2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -2265,7 +2293,7 @@ func expandWirelessControllerWtpProfileRadio1ZeroWaitDfs2edl(d *schema.ResourceD
 	return v, nil
 }
 
-func getObjectWirelessControllerWtpProfileRadio1(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectWirelessControllerWtpProfileRadio1(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("n80211d"); ok || d.HasChange("n80211d") {
@@ -2283,6 +2311,15 @@ func getObjectWirelessControllerWtpProfileRadio1(d *schema.ResourceData) (*map[s
 			return &obj, err
 		} else if t != nil {
 			obj["80211mc"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("ai_darrp_support"); ok || d.HasChange("ai_darrp_support") {
+		t, err := expandWirelessControllerWtpProfileRadio1AiDarrpSupport2edl(d, v, "ai_darrp_support")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["ai-darrp-support"] = t
 		}
 	}
 

@@ -183,7 +183,7 @@ func resourceRouterBgp() *schema.Resource {
 				Computed: true,
 			},
 			"as": &schema.Schema{
-				Type:     schema.TypeInt,
+				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
 			},
@@ -326,14 +326,17 @@ func resourceRouterBgp() *schema.Resource {
 			"graceful_restart_time": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"graceful_stalepath_time": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"graceful_update_delay": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"holdtime_timer": &schema.Schema{
 				Type:     schema.TypeInt,
@@ -428,6 +431,7 @@ func resourceRouterBgp() *schema.Resource {
 						"adv_additional_path_vpnv6": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"adv_additional_path6": &schema.Schema{
 							Type:     schema.TypeInt,
@@ -442,6 +446,7 @@ func resourceRouterBgp() *schema.Resource {
 						"allowas_in": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"allowas_in_enable": &schema.Schema{
 							Type:     schema.TypeString,
@@ -476,6 +481,7 @@ func resourceRouterBgp() *schema.Resource {
 						"allowas_in_vpnv4": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"allowas_in_vpnv6": &schema.Schema{
 							Type:     schema.TypeInt,
@@ -485,6 +491,7 @@ func resourceRouterBgp() *schema.Resource {
 						"allowas_in6": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"as_override": &schema.Schema{
 							Type:     schema.TypeString,
@@ -714,6 +721,7 @@ func resourceRouterBgp() *schema.Resource {
 						"ebgp_multihop_ttl": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"filter_list_in": &schema.Schema{
 							Type:     schema.TypeSet,
@@ -789,8 +797,9 @@ func resourceRouterBgp() *schema.Resource {
 							Computed: true,
 						},
 						"local_as": &schema.Schema{
-							Type:     schema.TypeInt,
+							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"local_as_no_prepend": &schema.Schema{
 							Type:     schema.TypeString,
@@ -968,8 +977,9 @@ func resourceRouterBgp() *schema.Resource {
 							Computed: true,
 						},
 						"remote_as": &schema.Schema{
-							Type:     schema.TypeInt,
+							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"remove_private_as": &schema.Schema{
 							Type:     schema.TypeString,
@@ -1332,6 +1342,7 @@ func resourceRouterBgp() *schema.Resource {
 						"allowas_in": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"allowas_in_enable": &schema.Schema{
 							Type:     schema.TypeString,
@@ -1366,6 +1377,7 @@ func resourceRouterBgp() *schema.Resource {
 						"allowas_in_vpnv4": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"allowas_in_vpnv6": &schema.Schema{
 							Type:     schema.TypeInt,
@@ -1375,6 +1387,7 @@ func resourceRouterBgp() *schema.Resource {
 						"allowas_in6": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"as_override": &schema.Schema{
 							Type:     schema.TypeString,
@@ -1630,8 +1643,9 @@ func resourceRouterBgp() *schema.Resource {
 							Computed: true,
 						},
 						"local_as": &schema.Schema{
-							Type:     schema.TypeInt,
+							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"local_as_no_prepend": &schema.Schema{
 							Type:     schema.TypeString,
@@ -1813,8 +1827,9 @@ func resourceRouterBgp() *schema.Resource {
 							Computed: true,
 						},
 						"remote_as": &schema.Schema{
-							Type:     schema.TypeInt,
+							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"remote_as_filter": &schema.Schema{
 							Type:     schema.TypeSet,
@@ -2545,7 +2560,7 @@ func resourceRouterBgpUpdate(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	obj, err := getObjectRouterBgp(d)
+	obj, err := getObjectRouterBgp(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating RouterBgp resource while getting object: %v", err)
 	}
@@ -2566,7 +2581,6 @@ func resourceRouterBgpUpdate(d *schema.ResourceData, m interface{}) error {
 
 func resourceRouterBgpDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -2589,11 +2603,17 @@ func resourceRouterBgpDelete(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	obj, err := getObjectRouterBgp(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating RouterBgp resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteRouterBgp(mkey, paradict, wsParams)
+	_, err = c.UpdateRouterBgp(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting RouterBgp resource: %v", err)
+		return fmt.Errorf("Error clearing RouterBgp resource: %v", err)
 	}
 
 	d.SetId("")
@@ -2900,7 +2920,7 @@ func flattenRouterBgpAlwaysCompareMed(v interface{}, d *schema.ResourceData, pre
 }
 
 func flattenRouterBgpAs(v interface{}, d *schema.ResourceData, pre string) interface{} {
-	return conv2num(v)
+	return conv2str(v)
 }
 
 func flattenRouterBgpBestpathAsPathIgnore(v interface{}, d *schema.ResourceData, pre string) interface{} {
@@ -4445,7 +4465,7 @@ func flattenRouterBgpNeighborLinkDownFailover(v interface{}, d *schema.ResourceD
 }
 
 func flattenRouterBgpNeighborLocalAs(v interface{}, d *schema.ResourceData, pre string) interface{} {
-	return conv2num(v)
+	return conv2str(v)
 }
 
 func flattenRouterBgpNeighborLocalAsNoPrepend(v interface{}, d *schema.ResourceData, pre string) interface{} {
@@ -4581,7 +4601,7 @@ func flattenRouterBgpNeighborPrefixListOut6(v interface{}, d *schema.ResourceDat
 }
 
 func flattenRouterBgpNeighborRemoteAs(v interface{}, d *schema.ResourceData, pre string) interface{} {
-	return v
+	return conv2str(v)
 }
 
 func flattenRouterBgpNeighborRemovePrivateAs(v interface{}, d *schema.ResourceData, pre string) interface{} {
@@ -6066,7 +6086,7 @@ func flattenRouterBgpNeighborGroupLinkDownFailover(v interface{}, d *schema.Reso
 }
 
 func flattenRouterBgpNeighborGroupLocalAs(v interface{}, d *schema.ResourceData, pre string) interface{} {
-	return conv2num(v)
+	return conv2str(v)
 }
 
 func flattenRouterBgpNeighborGroupLocalAsNoPrepend(v interface{}, d *schema.ResourceData, pre string) interface{} {
@@ -6206,7 +6226,7 @@ func flattenRouterBgpNeighborGroupPrefixListOut6(v interface{}, d *schema.Resour
 }
 
 func flattenRouterBgpNeighborGroupRemoteAs(v interface{}, d *schema.ResourceData, pre string) interface{} {
-	return v
+	return conv2str(v)
 }
 
 func flattenRouterBgpNeighborGroupRemoteAsFilter(v interface{}, d *schema.ResourceData, pre string) interface{} {
@@ -12599,7 +12619,7 @@ func expandRouterBgpVrf6Vrf(d *schema.ResourceData, v interface{}, pre string) (
 	return v, nil
 }
 
-func getObjectRouterBgp(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectRouterBgp(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("_auto_override"); ok || d.HasChange("_auto_override") {
@@ -12683,30 +12703,42 @@ func getObjectRouterBgp(d *schema.ResourceData) (*map[string]interface{}, error)
 		}
 	}
 
-	if v, ok := d.GetOk("admin_distance"); ok || d.HasChange("admin_distance") {
-		t, err := expandRouterBgpAdminDistance(d, v, "admin_distance")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["admin-distance"] = t
+	if bemptysontable {
+		obj["admin-distance"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("admin_distance"); ok || d.HasChange("admin_distance") {
+			t, err := expandRouterBgpAdminDistance(d, v, "admin_distance")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["admin-distance"] = t
+			}
 		}
 	}
 
-	if v, ok := d.GetOk("aggregate_address"); ok || d.HasChange("aggregate_address") {
-		t, err := expandRouterBgpAggregateAddress(d, v, "aggregate_address")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["aggregate-address"] = t
+	if bemptysontable {
+		obj["aggregate-address"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("aggregate_address"); ok || d.HasChange("aggregate_address") {
+			t, err := expandRouterBgpAggregateAddress(d, v, "aggregate_address")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["aggregate-address"] = t
+			}
 		}
 	}
 
-	if v, ok := d.GetOk("aggregate_address6"); ok || d.HasChange("aggregate_address6") {
-		t, err := expandRouterBgpAggregateAddress6(d, v, "aggregate_address6")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["aggregate-address6"] = t
+	if bemptysontable {
+		obj["aggregate-address6"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("aggregate_address6"); ok || d.HasChange("aggregate_address6") {
+			t, err := expandRouterBgpAggregateAddress6(d, v, "aggregate_address6")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["aggregate-address6"] = t
+			}
 		}
 	}
 
@@ -13052,48 +13084,68 @@ func getObjectRouterBgp(d *schema.ResourceData) (*map[string]interface{}, error)
 		}
 	}
 
-	if v, ok := d.GetOk("neighbor"); ok || d.HasChange("neighbor") {
-		t, err := expandRouterBgpNeighbor(d, v, "neighbor")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["neighbor"] = t
+	if bemptysontable {
+		obj["neighbor"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("neighbor"); ok || d.HasChange("neighbor") {
+			t, err := expandRouterBgpNeighbor(d, v, "neighbor")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["neighbor"] = t
+			}
 		}
 	}
 
-	if v, ok := d.GetOk("neighbor_group"); ok || d.HasChange("neighbor_group") {
-		t, err := expandRouterBgpNeighborGroup(d, v, "neighbor_group")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["neighbor-group"] = t
+	if bemptysontable {
+		obj["neighbor-group"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("neighbor_group"); ok || d.HasChange("neighbor_group") {
+			t, err := expandRouterBgpNeighborGroup(d, v, "neighbor_group")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["neighbor-group"] = t
+			}
 		}
 	}
 
-	if v, ok := d.GetOk("neighbor_range"); ok || d.HasChange("neighbor_range") {
-		t, err := expandRouterBgpNeighborRange(d, v, "neighbor_range")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["neighbor-range"] = t
+	if bemptysontable {
+		obj["neighbor-range"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("neighbor_range"); ok || d.HasChange("neighbor_range") {
+			t, err := expandRouterBgpNeighborRange(d, v, "neighbor_range")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["neighbor-range"] = t
+			}
 		}
 	}
 
-	if v, ok := d.GetOk("neighbor_range6"); ok || d.HasChange("neighbor_range6") {
-		t, err := expandRouterBgpNeighborRange6(d, v, "neighbor_range6")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["neighbor-range6"] = t
+	if bemptysontable {
+		obj["neighbor-range6"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("neighbor_range6"); ok || d.HasChange("neighbor_range6") {
+			t, err := expandRouterBgpNeighborRange6(d, v, "neighbor_range6")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["neighbor-range6"] = t
+			}
 		}
 	}
 
-	if v, ok := d.GetOk("network"); ok || d.HasChange("network") {
-		t, err := expandRouterBgpNetwork(d, v, "network")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["network"] = t
+	if bemptysontable {
+		obj["network"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("network"); ok || d.HasChange("network") {
+			t, err := expandRouterBgpNetwork(d, v, "network")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["network"] = t
+			}
 		}
 	}
 
@@ -13106,12 +13158,16 @@ func getObjectRouterBgp(d *schema.ResourceData) (*map[string]interface{}, error)
 		}
 	}
 
-	if v, ok := d.GetOk("network6"); ok || d.HasChange("network6") {
-		t, err := expandRouterBgpNetwork6(d, v, "network6")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["network6"] = t
+	if bemptysontable {
+		obj["network6"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("network6"); ok || d.HasChange("network6") {
+			t, err := expandRouterBgpNetwork6(d, v, "network6")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["network6"] = t
+			}
 		}
 	}
 
@@ -13133,21 +13189,29 @@ func getObjectRouterBgp(d *schema.ResourceData) (*map[string]interface{}, error)
 		}
 	}
 
-	if v, ok := d.GetOk("redistribute"); ok || d.HasChange("redistribute") {
-		t, err := expandRouterBgpRedistribute(d, v, "redistribute")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["redistribute"] = t
+	if bemptysontable {
+		obj["redistribute"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("redistribute"); ok || d.HasChange("redistribute") {
+			t, err := expandRouterBgpRedistribute(d, v, "redistribute")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["redistribute"] = t
+			}
 		}
 	}
 
-	if v, ok := d.GetOk("redistribute6"); ok || d.HasChange("redistribute6") {
-		t, err := expandRouterBgpRedistribute6(d, v, "redistribute6")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["redistribute6"] = t
+	if bemptysontable {
+		obj["redistribute6"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("redistribute6"); ok || d.HasChange("redistribute6") {
+			t, err := expandRouterBgpRedistribute6(d, v, "redistribute6")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["redistribute6"] = t
+			}
 		}
 	}
 
@@ -13187,39 +13251,55 @@ func getObjectRouterBgp(d *schema.ResourceData) (*map[string]interface{}, error)
 		}
 	}
 
-	if v, ok := d.GetOk("vrf_leak"); ok || d.HasChange("vrf_leak") {
-		t, err := expandRouterBgpVrfLeak(d, v, "vrf_leak")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["vrf-leak"] = t
+	if bemptysontable {
+		obj["vrf-leak"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("vrf_leak"); ok || d.HasChange("vrf_leak") {
+			t, err := expandRouterBgpVrfLeak(d, v, "vrf_leak")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["vrf-leak"] = t
+			}
 		}
 	}
 
-	if v, ok := d.GetOk("vrf_leak6"); ok || d.HasChange("vrf_leak6") {
-		t, err := expandRouterBgpVrfLeak6(d, v, "vrf_leak6")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["vrf-leak6"] = t
+	if bemptysontable {
+		obj["vrf-leak6"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("vrf_leak6"); ok || d.HasChange("vrf_leak6") {
+			t, err := expandRouterBgpVrfLeak6(d, v, "vrf_leak6")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["vrf-leak6"] = t
+			}
 		}
 	}
 
-	if v, ok := d.GetOk("vrf"); ok || d.HasChange("vrf") {
-		t, err := expandRouterBgpVrf(d, v, "vrf")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["vrf"] = t
+	if bemptysontable {
+		obj["vrf"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("vrf"); ok || d.HasChange("vrf") {
+			t, err := expandRouterBgpVrf(d, v, "vrf")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["vrf"] = t
+			}
 		}
 	}
 
-	if v, ok := d.GetOk("vrf6"); ok || d.HasChange("vrf6") {
-		t, err := expandRouterBgpVrf6(d, v, "vrf6")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["vrf6"] = t
+	if bemptysontable {
+		obj["vrf6"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("vrf6"); ok || d.HasChange("vrf6") {
+			t, err := expandRouterBgpVrf6(d, v, "vrf6")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["vrf6"] = t
+			}
 		}
 	}
 

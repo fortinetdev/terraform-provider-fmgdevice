@@ -49,6 +49,7 @@ func resourceVpnL2Tp() *schema.Resource {
 			"compress": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"eip": &schema.Schema{
 				Type:     schema.TypeString,
@@ -119,7 +120,7 @@ func resourceVpnL2TpUpdate(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	obj, err := getObjectVpnL2Tp(d)
+	obj, err := getObjectVpnL2Tp(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating VpnL2Tp resource while getting object: %v", err)
 	}
@@ -140,7 +141,6 @@ func resourceVpnL2TpUpdate(d *schema.ResourceData, m interface{}) error {
 
 func resourceVpnL2TpDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -163,11 +163,17 @@ func resourceVpnL2TpDelete(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	obj, err := getObjectVpnL2Tp(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating VpnL2Tp resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteVpnL2Tp(mkey, paradict, wsParams)
+	_, err = c.UpdateVpnL2Tp(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting VpnL2Tp resource: %v", err)
+		return fmt.Errorf("Error clearing VpnL2Tp resource: %v", err)
 	}
 
 	d.SetId("")
@@ -400,7 +406,7 @@ func expandVpnL2TpUsrgrp(d *schema.ResourceData, v interface{}, pre string) (int
 	return expandStringList(v.(*schema.Set).List()), nil
 }
 
-func getObjectVpnL2Tp(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectVpnL2Tp(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("compress"); ok || d.HasChange("compress") {

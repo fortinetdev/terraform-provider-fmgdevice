@@ -329,6 +329,10 @@ func resourceSystemSdwanHealthCheck() *schema.Resource {
 				Type:     schema.TypeInt,
 				Optional: true,
 			},
+			"update_bgp_route": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 			"update_cascade_interface": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -859,6 +863,10 @@ func flattenSystemSdwanHealthCheckThresholdWarningPacketloss2edl(v interface{}, 
 	return v
 }
 
+func flattenSystemSdwanHealthCheckUpdateBgpRoute2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenSystemSdwanHealthCheckUpdateCascadeInterface2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -1386,6 +1394,16 @@ func refreshObjectSystemSdwanHealthCheck(d *schema.ResourceData, o map[string]in
 		}
 	}
 
+	if err = d.Set("update_bgp_route", flattenSystemSdwanHealthCheckUpdateBgpRoute2edl(o["update-bgp-route"], d, "update_bgp_route")); err != nil {
+		if vv, ok := fortiAPIPatch(o["update-bgp-route"], "SystemSdwanHealthCheck-UpdateBgpRoute"); ok {
+			if err = d.Set("update_bgp_route", vv); err != nil {
+				return fmt.Errorf("Error reading update_bgp_route: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading update_bgp_route: %v", err)
+		}
+	}
+
 	if err = d.Set("update_cascade_interface", flattenSystemSdwanHealthCheckUpdateCascadeInterface2edl(o["update-cascade-interface"], d, "update_cascade_interface")); err != nil {
 		if vv, ok := fortiAPIPatch(o["update-cascade-interface"], "SystemSdwanHealthCheck-UpdateCascadeInterface"); ok {
 			if err = d.Set("update_cascade_interface", vv); err != nil {
@@ -1733,6 +1751,10 @@ func expandSystemSdwanHealthCheckThresholdWarningLatency2edl(d *schema.ResourceD
 }
 
 func expandSystemSdwanHealthCheckThresholdWarningPacketloss2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemSdwanHealthCheckUpdateBgpRoute2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -2202,6 +2224,15 @@ func getObjectSystemSdwanHealthCheck(d *schema.ResourceData) (*map[string]interf
 			return &obj, err
 		} else if t != nil {
 			obj["threshold-warning-packetloss"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("update_bgp_route"); ok || d.HasChange("update_bgp_route") {
+		t, err := expandSystemSdwanHealthCheckUpdateBgpRoute2edl(d, v, "update_bgp_route")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["update-bgp-route"] = t
 		}
 	}
 

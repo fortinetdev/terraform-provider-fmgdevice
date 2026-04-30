@@ -53,6 +53,7 @@ func resourceRouterSetting() *schema.Resource {
 			"kernel_route_distance": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"show_filter": &schema.Schema{
 				Type:     schema.TypeSet,
@@ -88,7 +89,7 @@ func resourceRouterSettingUpdate(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	obj, err := getObjectRouterSetting(d)
+	obj, err := getObjectRouterSetting(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating RouterSetting resource while getting object: %v", err)
 	}
@@ -109,7 +110,6 @@ func resourceRouterSettingUpdate(d *schema.ResourceData, m interface{}) error {
 
 func resourceRouterSettingDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -132,11 +132,17 @@ func resourceRouterSettingDelete(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	obj, err := getObjectRouterSetting(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating RouterSetting resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteRouterSetting(mkey, paradict, wsParams)
+	_, err = c.UpdateRouterSetting(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting RouterSetting resource: %v", err)
+		return fmt.Errorf("Error clearing RouterSetting resource: %v", err)
 	}
 
 	d.SetId("")
@@ -261,7 +267,7 @@ func expandRouterSettingShowFilter(d *schema.ResourceData, v interface{}, pre st
 	return expandStringList(v.(*schema.Set).List()), nil
 }
 
-func getObjectRouterSetting(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectRouterSetting(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("hostname"); ok || d.HasChange("hostname") {

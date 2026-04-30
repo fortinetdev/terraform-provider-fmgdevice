@@ -127,7 +127,7 @@ func resourceReportLayoutPageFooterUpdate(d *schema.ResourceData, m interface{})
 	paradict["vdom"] = device_vdom
 	paradict["layout"] = layout
 
-	obj, err := getObjectReportLayoutPageFooter(d)
+	obj, err := getObjectReportLayoutPageFooter(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating ReportLayoutPageFooter resource while getting object: %v", err)
 	}
@@ -148,7 +148,6 @@ func resourceReportLayoutPageFooterUpdate(d *schema.ResourceData, m interface{})
 
 func resourceReportLayoutPageFooterDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -173,11 +172,17 @@ func resourceReportLayoutPageFooterDelete(d *schema.ResourceData, m interface{})
 	paradict["vdom"] = device_vdom
 	paradict["layout"] = layout
 
+	obj, err := getObjectReportLayoutPageFooter(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating ReportLayoutPageFooter resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteReportLayoutPageFooter(mkey, paradict, wsParams)
+	_, err = c.UpdateReportLayoutPageFooter(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting ReportLayoutPageFooter resource: %v", err)
+		return fmt.Errorf("Error clearing ReportLayoutPageFooter resource: %v", err)
 	}
 
 	d.SetId("")
@@ -472,15 +477,19 @@ func expandReportLayoutPageFooterStyle3rdl(d *schema.ResourceData, v interface{}
 	return expandStringList(v.(*schema.Set).List()), nil
 }
 
-func getObjectReportLayoutPageFooter(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectReportLayoutPageFooter(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
-	if v, ok := d.GetOk("footer_item"); ok || d.HasChange("footer_item") {
-		t, err := expandReportLayoutPageFooterFooterItem3rdl(d, v, "footer_item")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["footer-item"] = t
+	if bemptysontable {
+		obj["footer-item"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("footer_item"); ok || d.HasChange("footer_item") {
+			t, err := expandReportLayoutPageFooterFooterItem3rdl(d, v, "footer_item")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["footer-item"] = t
+			}
 		}
 	}
 

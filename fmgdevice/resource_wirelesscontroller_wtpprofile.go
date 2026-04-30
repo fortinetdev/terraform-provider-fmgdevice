@@ -83,6 +83,104 @@ func resourceWirelessControllerWtpProfile() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"apcfg_auto_cert": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+			"apcfg_auto_cert_auto_regen_days": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+				Computed: true,
+			},
+			"apcfg_auto_cert_crypto_algo": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+			"apcfg_auto_cert_enroll_protocol": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+			"apcfg_auto_cert_est_ca_id": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"apcfg_auto_cert_est_http_password": &schema.Schema{
+				Type:      schema.TypeSet,
+				Elem:      &schema.Schema{Type: schema.TypeString},
+				Optional:  true,
+				Sensitive: true,
+				Computed:  true,
+			},
+			"apcfg_auto_cert_est_http_username": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"apcfg_auto_cert_est_https_ca": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Computed: true,
+			},
+			"apcfg_auto_cert_est_server": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"apcfg_auto_cert_est_subject": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+			"apcfg_auto_cert_est_subject_alt_name": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"apcfg_auto_cert_scep_ca_id": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"apcfg_auto_cert_scep_ec_name": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+			"apcfg_auto_cert_scep_https_ca": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Computed: true,
+			},
+			"apcfg_auto_cert_scep_keysize": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+			"apcfg_auto_cert_scep_keytype": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+			"apcfg_auto_cert_scep_password": &schema.Schema{
+				Type:      schema.TypeSet,
+				Elem:      &schema.Schema{Type: schema.TypeString},
+				Optional:  true,
+				Sensitive: true,
+				Computed:  true,
+			},
+			"apcfg_auto_cert_scep_sub_fully_dn": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"apcfg_auto_cert_scep_subject_alt_name": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"apcfg_auto_cert_scep_url": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 			"apcfg_mesh": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -169,6 +267,7 @@ func resourceWirelessControllerWtpProfile() *schema.Resource {
 			"dtls_in_kernel": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"dtls_policy": &schema.Schema{
 				Type:     schema.TypeSet,
@@ -290,6 +389,7 @@ func resourceWirelessControllerWtpProfile() *schema.Resource {
 						"port_esl_mode": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"port_esl_ssid": &schema.Schema{
 							Type:     schema.TypeSet,
@@ -300,6 +400,7 @@ func resourceWirelessControllerWtpProfile() *schema.Resource {
 						"port_mode": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"port_ssid": &schema.Schema{
 							Type:     schema.TypeSet,
@@ -310,6 +411,7 @@ func resourceWirelessControllerWtpProfile() *schema.Resource {
 						"port1_mode": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"port1_ssid": &schema.Schema{
 							Type:     schema.TypeSet,
@@ -320,6 +422,7 @@ func resourceWirelessControllerWtpProfile() *schema.Resource {
 						"port2_mode": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"port2_ssid": &schema.Schema{
 							Type:     schema.TypeSet,
@@ -330,6 +433,7 @@ func resourceWirelessControllerWtpProfile() *schema.Resource {
 						"port3_mode": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"port3_ssid": &schema.Schema{
 							Type:     schema.TypeSet,
@@ -340,6 +444,7 @@ func resourceWirelessControllerWtpProfile() *schema.Resource {
 						"port4_mode": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"port4_ssid": &schema.Schema{
 							Type:     schema.TypeSet,
@@ -350,6 +455,7 @@ func resourceWirelessControllerWtpProfile() *schema.Resource {
 						"port5_mode": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"port5_ssid": &schema.Schema{
 							Type:     schema.TypeSet,
@@ -360,6 +466,7 @@ func resourceWirelessControllerWtpProfile() *schema.Resource {
 						"port6_mode": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"port6_ssid": &schema.Schema{
 							Type:     schema.TypeSet,
@@ -370,6 +477,7 @@ func resourceWirelessControllerWtpProfile() *schema.Resource {
 						"port7_mode": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"port7_ssid": &schema.Schema{
 							Type:     schema.TypeSet,
@@ -380,6 +488,7 @@ func resourceWirelessControllerWtpProfile() *schema.Resource {
 						"port8_mode": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"port8_ssid": &schema.Schema{
 							Type:     schema.TypeSet,
@@ -405,26 +514,32 @@ func resourceWirelessControllerWtpProfile() *schema.Resource {
 						"aeroscout_ap_mac": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"aeroscout_mmu_report": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"aeroscout_mu": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"aeroscout_mu_factor": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"aeroscout_mu_timeout": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"aeroscout_server_ip": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"aeroscout_server_port": &schema.Schema{
 							Type:     schema.TypeInt,
@@ -522,18 +637,22 @@ func resourceWirelessControllerWtpProfile() *schema.Resource {
 						"fortipresence_frequency": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"fortipresence_port": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"fortipresence_project": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"fortipresence_rogue": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"fortipresence_secret": &schema.Schema{
 							Type:      schema.TypeSet,
@@ -545,10 +664,12 @@ func resourceWirelessControllerWtpProfile() *schema.Resource {
 						"fortipresence_server": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"fortipresence_server_addr_type": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"fortipresence_server_fqdn": &schema.Schema{
 							Type:     schema.TypeString,
@@ -557,6 +678,7 @@ func resourceWirelessControllerWtpProfile() *schema.Resource {
 						"fortipresence_unassoc": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"polestar": &schema.Schema{
 							Type:     schema.TypeString,
@@ -655,6 +777,12 @@ func resourceWirelessControllerWtpProfile() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"lw_profile": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Computed: true,
+			},
 			"max_clients": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
@@ -678,10 +806,12 @@ func resourceWirelessControllerWtpProfile() *schema.Resource {
 						"ddscan": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"mode": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"type": &schema.Schema{
 							Type:     schema.TypeString,
@@ -713,6 +843,11 @@ func resourceWirelessControllerWtpProfile() *schema.Resource {
 							Optional: true,
 							Computed: true,
 						},
+						"ai_darrp_support": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+							Computed: true,
+						},
 						"airtime_fairness": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
@@ -740,6 +875,7 @@ func resourceWirelessControllerWtpProfile() *schema.Resource {
 						"ap_sniffer_chan": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"ap_sniffer_chan_width": &schema.Schema{
 							Type:     schema.TypeString,
@@ -780,6 +916,7 @@ func resourceWirelessControllerWtpProfile() *schema.Resource {
 						"auto_power_high": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"auto_power_level": &schema.Schema{
 							Type:     schema.TypeString,
@@ -789,6 +926,7 @@ func resourceWirelessControllerWtpProfile() *schema.Resource {
 						"auto_power_low": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"auto_power_target": &schema.Schema{
 							Type:     schema.TypeString,
@@ -898,10 +1036,12 @@ func resourceWirelessControllerWtpProfile() *schema.Resource {
 						"iperf_protocol": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"iperf_server_port": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"max_clients": &schema.Schema{
 							Type:     schema.TypeInt,
@@ -914,6 +1054,7 @@ func resourceWirelessControllerWtpProfile() *schema.Resource {
 						"mimo_mode": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"mode": &schema.Schema{
 							Type:     schema.TypeString,
@@ -943,6 +1084,7 @@ func resourceWirelessControllerWtpProfile() *schema.Resource {
 						"power_value": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"powersave_optimize": &schema.Schema{
 							Type:     schema.TypeSet,
@@ -967,6 +1109,7 @@ func resourceWirelessControllerWtpProfile() *schema.Resource {
 						"sam_bssid": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"sam_ca_certificate": &schema.Schema{
 							Type:     schema.TypeSet,
@@ -977,6 +1120,7 @@ func resourceWirelessControllerWtpProfile() *schema.Resource {
 						"sam_captive_portal": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"sam_client_certificate": &schema.Schema{
 							Type:     schema.TypeSet,
@@ -1043,6 +1187,7 @@ func resourceWirelessControllerWtpProfile() *schema.Resource {
 						"sam_security_type": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"sam_server": &schema.Schema{
 							Type:     schema.TypeString,
@@ -1055,10 +1200,12 @@ func resourceWirelessControllerWtpProfile() *schema.Resource {
 						"sam_server_ip": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"sam_server_type": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"sam_ssid": &schema.Schema{
 							Type:     schema.TypeString,
@@ -1067,6 +1214,7 @@ func resourceWirelessControllerWtpProfile() *schema.Resource {
 						"sam_test": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"sam_username": &schema.Schema{
 							Type:     schema.TypeString,
@@ -1161,6 +1309,11 @@ func resourceWirelessControllerWtpProfile() *schema.Resource {
 							Optional: true,
 							Computed: true,
 						},
+						"ai_darrp_support": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+							Computed: true,
+						},
 						"airtime_fairness": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
@@ -1183,10 +1336,12 @@ func resourceWirelessControllerWtpProfile() *schema.Resource {
 						"ap_sniffer_bufsize": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"ap_sniffer_chan": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"ap_sniffer_chan_width": &schema.Schema{
 							Type:     schema.TypeString,
@@ -1227,6 +1382,7 @@ func resourceWirelessControllerWtpProfile() *schema.Resource {
 						"auto_power_high": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"auto_power_level": &schema.Schema{
 							Type:     schema.TypeString,
@@ -1236,6 +1392,7 @@ func resourceWirelessControllerWtpProfile() *schema.Resource {
 						"auto_power_low": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"auto_power_target": &schema.Schema{
 							Type:     schema.TypeString,
@@ -1345,10 +1502,12 @@ func resourceWirelessControllerWtpProfile() *schema.Resource {
 						"iperf_protocol": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"iperf_server_port": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"max_clients": &schema.Schema{
 							Type:     schema.TypeInt,
@@ -1361,6 +1520,7 @@ func resourceWirelessControllerWtpProfile() *schema.Resource {
 						"mimo_mode": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"mode": &schema.Schema{
 							Type:     schema.TypeString,
@@ -1390,6 +1550,7 @@ func resourceWirelessControllerWtpProfile() *schema.Resource {
 						"power_value": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"powersave_optimize": &schema.Schema{
 							Type:     schema.TypeSet,
@@ -1415,6 +1576,7 @@ func resourceWirelessControllerWtpProfile() *schema.Resource {
 						"sam_bssid": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"sam_ca_certificate": &schema.Schema{
 							Type:     schema.TypeSet,
@@ -1425,6 +1587,7 @@ func resourceWirelessControllerWtpProfile() *schema.Resource {
 						"sam_captive_portal": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"sam_client_certificate": &schema.Schema{
 							Type:     schema.TypeSet,
@@ -1491,6 +1654,7 @@ func resourceWirelessControllerWtpProfile() *schema.Resource {
 						"sam_security_type": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"sam_server": &schema.Schema{
 							Type:     schema.TypeString,
@@ -1503,10 +1667,12 @@ func resourceWirelessControllerWtpProfile() *schema.Resource {
 						"sam_server_ip": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"sam_server_type": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"sam_ssid": &schema.Schema{
 							Type:     schema.TypeString,
@@ -1515,6 +1681,7 @@ func resourceWirelessControllerWtpProfile() *schema.Resource {
 						"sam_test": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"sam_username": &schema.Schema{
 							Type:     schema.TypeString,
@@ -1602,18 +1769,27 @@ func resourceWirelessControllerWtpProfile() *schema.Resource {
 						"n80211d": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"n80211mc": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
+						},
+						"ai_darrp_support": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+							Computed: true,
 						},
 						"airtime_fairness": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"amsdu": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"ap_handoff": &schema.Schema{
 							Type:     schema.TypeString,
@@ -1622,38 +1798,47 @@ func resourceWirelessControllerWtpProfile() *schema.Resource {
 						"ap_sniffer_addr": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"ap_sniffer_bufsize": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"ap_sniffer_chan": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"ap_sniffer_chan_width": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"ap_sniffer_ctl": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"ap_sniffer_data": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"ap_sniffer_mgmt_beacon": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"ap_sniffer_mgmt_other": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"ap_sniffer_mgmt_probe": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"arrp_profile": &schema.Schema{
 							Type:     schema.TypeSet,
@@ -1664,18 +1849,22 @@ func resourceWirelessControllerWtpProfile() *schema.Resource {
 						"auto_power_high": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"auto_power_level": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"auto_power_low": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"auto_power_target": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"band": &schema.Schema{
 							Type:     schema.TypeSet,
@@ -1686,18 +1875,22 @@ func resourceWirelessControllerWtpProfile() *schema.Resource {
 						"band_5g_type": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"bandwidth_admission_control": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"bandwidth_capacity": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"beacon_interval": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"bss_color": &schema.Schema{
 							Type:     schema.TypeInt,
@@ -1706,14 +1899,17 @@ func resourceWirelessControllerWtpProfile() *schema.Resource {
 						"bss_color_mode": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"call_admission_control": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"call_capacity": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"channel": &schema.Schema{
 							Type:     schema.TypeSet,
@@ -1724,38 +1920,47 @@ func resourceWirelessControllerWtpProfile() *schema.Resource {
 						"channel_bonding": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"channel_bonding_ext": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"channel_utilization": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"coexistence": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"darrp": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"drma": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"drma_sensitivity": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"dtim": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"frag_threshold": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"frequency_handoff": &schema.Schema{
 							Type:     schema.TypeString,
@@ -1764,10 +1969,12 @@ func resourceWirelessControllerWtpProfile() *schema.Resource {
 						"iperf_protocol": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"iperf_server_port": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"max_clients": &schema.Schema{
 							Type:     schema.TypeInt,
@@ -1780,30 +1987,37 @@ func resourceWirelessControllerWtpProfile() *schema.Resource {
 						"mimo_mode": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"mode": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"optional_antenna": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"optional_antenna_gain": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"power_level": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"power_mode": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"power_value": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"powersave_optimize": &schema.Schema{
 							Type:     schema.TypeSet,
@@ -1814,6 +2028,7 @@ func resourceWirelessControllerWtpProfile() *schema.Resource {
 						"protection_mode": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"radio_id": &schema.Schema{
 							Type:     schema.TypeInt,
@@ -1822,10 +2037,12 @@ func resourceWirelessControllerWtpProfile() *schema.Resource {
 						"rts_threshold": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"sam_bssid": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"sam_ca_certificate": &schema.Schema{
 							Type:     schema.TypeSet,
@@ -1836,6 +2053,7 @@ func resourceWirelessControllerWtpProfile() *schema.Resource {
 						"sam_captive_portal": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"sam_client_certificate": &schema.Schema{
 							Type:     schema.TypeSet,
@@ -1873,6 +2091,7 @@ func resourceWirelessControllerWtpProfile() *schema.Resource {
 						"sam_eap_method": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"sam_password": &schema.Schema{
 							Type:      schema.TypeSet,
@@ -1901,6 +2120,7 @@ func resourceWirelessControllerWtpProfile() *schema.Resource {
 						"sam_security_type": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"sam_server": &schema.Schema{
 							Type:     schema.TypeString,
@@ -1913,10 +2133,12 @@ func resourceWirelessControllerWtpProfile() *schema.Resource {
 						"sam_server_ip": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"sam_server_type": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"sam_ssid": &schema.Schema{
 							Type:     schema.TypeString,
@@ -1925,6 +2147,7 @@ func resourceWirelessControllerWtpProfile() *schema.Resource {
 						"sam_test": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"sam_username": &schema.Schema{
 							Type:     schema.TypeString,
@@ -1933,6 +2156,7 @@ func resourceWirelessControllerWtpProfile() *schema.Resource {
 						"short_guard_interval": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"spectrum_analysis": &schema.Schema{
 							Type:     schema.TypeString,
@@ -1947,6 +2171,7 @@ func resourceWirelessControllerWtpProfile() *schema.Resource {
 						"vap_all": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"vap1": &schema.Schema{
 							Type:     schema.TypeString,
@@ -1995,6 +2220,7 @@ func resourceWirelessControllerWtpProfile() *schema.Resource {
 						"zero_wait_dfs": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 					},
 				},
@@ -2009,18 +2235,27 @@ func resourceWirelessControllerWtpProfile() *schema.Resource {
 						"n80211d": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"n80211mc": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
+						},
+						"ai_darrp_support": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+							Computed: true,
 						},
 						"airtime_fairness": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"amsdu": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"ap_handoff": &schema.Schema{
 							Type:     schema.TypeString,
@@ -2029,38 +2264,47 @@ func resourceWirelessControllerWtpProfile() *schema.Resource {
 						"ap_sniffer_addr": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"ap_sniffer_bufsize": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"ap_sniffer_chan": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"ap_sniffer_chan_width": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"ap_sniffer_ctl": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"ap_sniffer_data": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"ap_sniffer_mgmt_beacon": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"ap_sniffer_mgmt_other": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"ap_sniffer_mgmt_probe": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"arrp_profile": &schema.Schema{
 							Type:     schema.TypeSet,
@@ -2071,18 +2315,22 @@ func resourceWirelessControllerWtpProfile() *schema.Resource {
 						"auto_power_high": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"auto_power_level": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"auto_power_low": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"auto_power_target": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"band": &schema.Schema{
 							Type:     schema.TypeSet,
@@ -2093,18 +2341,22 @@ func resourceWirelessControllerWtpProfile() *schema.Resource {
 						"band_5g_type": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"bandwidth_admission_control": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"bandwidth_capacity": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"beacon_interval": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"bss_color": &schema.Schema{
 							Type:     schema.TypeInt,
@@ -2113,14 +2365,17 @@ func resourceWirelessControllerWtpProfile() *schema.Resource {
 						"bss_color_mode": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"call_admission_control": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"call_capacity": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"channel": &schema.Schema{
 							Type:     schema.TypeSet,
@@ -2131,38 +2386,47 @@ func resourceWirelessControllerWtpProfile() *schema.Resource {
 						"channel_bonding": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"channel_bonding_ext": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"channel_utilization": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"coexistence": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"darrp": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"drma": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"drma_sensitivity": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"dtim": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"frag_threshold": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"frequency_handoff": &schema.Schema{
 							Type:     schema.TypeString,
@@ -2171,10 +2435,12 @@ func resourceWirelessControllerWtpProfile() *schema.Resource {
 						"iperf_protocol": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"iperf_server_port": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"max_clients": &schema.Schema{
 							Type:     schema.TypeInt,
@@ -2187,30 +2453,37 @@ func resourceWirelessControllerWtpProfile() *schema.Resource {
 						"mimo_mode": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"mode": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"optional_antenna": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"optional_antenna_gain": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"power_level": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"power_mode": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"power_value": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"powersave_optimize": &schema.Schema{
 							Type:     schema.TypeSet,
@@ -2221,6 +2494,7 @@ func resourceWirelessControllerWtpProfile() *schema.Resource {
 						"protection_mode": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"radio_id": &schema.Schema{
 							Type:     schema.TypeInt,
@@ -2229,10 +2503,12 @@ func resourceWirelessControllerWtpProfile() *schema.Resource {
 						"rts_threshold": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"sam_bssid": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"sam_ca_certificate": &schema.Schema{
 							Type:     schema.TypeSet,
@@ -2243,6 +2519,7 @@ func resourceWirelessControllerWtpProfile() *schema.Resource {
 						"sam_captive_portal": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"sam_client_certificate": &schema.Schema{
 							Type:     schema.TypeSet,
@@ -2280,6 +2557,7 @@ func resourceWirelessControllerWtpProfile() *schema.Resource {
 						"sam_eap_method": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"sam_password": &schema.Schema{
 							Type:      schema.TypeSet,
@@ -2308,6 +2586,7 @@ func resourceWirelessControllerWtpProfile() *schema.Resource {
 						"sam_security_type": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"sam_server": &schema.Schema{
 							Type:     schema.TypeString,
@@ -2320,10 +2599,12 @@ func resourceWirelessControllerWtpProfile() *schema.Resource {
 						"sam_server_ip": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"sam_server_type": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"sam_ssid": &schema.Schema{
 							Type:     schema.TypeString,
@@ -2332,6 +2613,7 @@ func resourceWirelessControllerWtpProfile() *schema.Resource {
 						"sam_test": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"sam_username": &schema.Schema{
 							Type:     schema.TypeString,
@@ -2340,6 +2622,7 @@ func resourceWirelessControllerWtpProfile() *schema.Resource {
 						"short_guard_interval": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"spectrum_analysis": &schema.Schema{
 							Type:     schema.TypeString,
@@ -2354,6 +2637,7 @@ func resourceWirelessControllerWtpProfile() *schema.Resource {
 						"vap_all": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"vap1": &schema.Schema{
 							Type:     schema.TypeString,
@@ -2402,6 +2686,7 @@ func resourceWirelessControllerWtpProfile() *schema.Resource {
 						"zero_wait_dfs": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 					},
 				},
@@ -2466,6 +2751,7 @@ func resourceWirelessControllerWtpProfile() *schema.Resource {
 			"wan_port_auth_macsec": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"wan_port_auth_methods": &schema.Schema{
 				Type:     schema.TypeString,
@@ -2486,6 +2772,7 @@ func resourceWirelessControllerWtpProfile() *schema.Resource {
 			"wan_port_mode": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"dynamic_sort_subtable": &schema.Schema{
 				Type:     schema.TypeString,
@@ -2709,6 +2996,78 @@ func flattenWirelessControllerWtpProfileApCountry(v interface{}, d *schema.Resou
 }
 
 func flattenWirelessControllerWtpProfileApHandoff(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWirelessControllerWtpProfileApcfgAutoCert(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWirelessControllerWtpProfileApcfgAutoCertAutoRegenDays(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWirelessControllerWtpProfileApcfgAutoCertCryptoAlgo(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWirelessControllerWtpProfileApcfgAutoCertEnrollProtocol(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWirelessControllerWtpProfileApcfgAutoCertEstCaId(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWirelessControllerWtpProfileApcfgAutoCertEstHttpUsername(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWirelessControllerWtpProfileApcfgAutoCertEstHttpsCa(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
+func flattenWirelessControllerWtpProfileApcfgAutoCertEstServer(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWirelessControllerWtpProfileApcfgAutoCertEstSubject(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWirelessControllerWtpProfileApcfgAutoCertEstSubjectAltName(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWirelessControllerWtpProfileApcfgAutoCertScepCaId(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWirelessControllerWtpProfileApcfgAutoCertScepEcName(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWirelessControllerWtpProfileApcfgAutoCertScepHttpsCa(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
+func flattenWirelessControllerWtpProfileApcfgAutoCertScepKeysize(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWirelessControllerWtpProfileApcfgAutoCertScepKeytype(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWirelessControllerWtpProfileApcfgAutoCertScepSubFullyDn(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWirelessControllerWtpProfileApcfgAutoCertScepSubjectAltName(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWirelessControllerWtpProfileApcfgAutoCertScepUrl(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -3620,6 +3979,10 @@ func flattenWirelessControllerWtpProfileLoginPasswdChange(v interface{}, d *sche
 	return v
 }
 
+func flattenWirelessControllerWtpProfileLwProfile(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
 func flattenWirelessControllerWtpProfileMaxClients(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -3698,6 +4061,11 @@ func flattenWirelessControllerWtpProfileRadio1(v interface{}, d *schema.Resource
 	pre_append = pre + ".0." + "n80211mc"
 	if _, ok := i["80211mc"]; ok {
 		result["n80211mc"] = flattenWirelessControllerWtpProfileRadio180211Mc(i["80211mc"], d, pre_append)
+	}
+
+	pre_append = pre + ".0." + "ai_darrp_support"
+	if _, ok := i["ai-darrp-support"]; ok {
+		result["ai_darrp_support"] = flattenWirelessControllerWtpProfileRadio1AiDarrpSupport(i["ai-darrp-support"], d, pre_append)
 	}
 
 	pre_append = pre + ".0." + "airtime_fairness"
@@ -4147,6 +4515,10 @@ func flattenWirelessControllerWtpProfileRadio180211Mc(v interface{}, d *schema.R
 	return v
 }
 
+func flattenWirelessControllerWtpProfileRadio1AiDarrpSupport(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenWirelessControllerWtpProfileRadio1AirtimeFairness(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -4512,6 +4884,11 @@ func flattenWirelessControllerWtpProfileRadio2(v interface{}, d *schema.Resource
 	pre_append = pre + ".0." + "n80211mc"
 	if _, ok := i["80211mc"]; ok {
 		result["n80211mc"] = flattenWirelessControllerWtpProfileRadio280211Mc(i["80211mc"], d, pre_append)
+	}
+
+	pre_append = pre + ".0." + "ai_darrp_support"
+	if _, ok := i["ai-darrp-support"]; ok {
+		result["ai_darrp_support"] = flattenWirelessControllerWtpProfileRadio2AiDarrpSupport(i["ai-darrp-support"], d, pre_append)
 	}
 
 	pre_append = pre + ".0." + "airtime_fairness"
@@ -4961,6 +5338,10 @@ func flattenWirelessControllerWtpProfileRadio280211Mc(v interface{}, d *schema.R
 	return v
 }
 
+func flattenWirelessControllerWtpProfileRadio2AiDarrpSupport(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenWirelessControllerWtpProfileRadio2AirtimeFairness(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -5326,6 +5707,11 @@ func flattenWirelessControllerWtpProfileRadio3(v interface{}, d *schema.Resource
 	pre_append = pre + ".0." + "n80211mc"
 	if _, ok := i["80211mc"]; ok {
 		result["n80211mc"] = flattenWirelessControllerWtpProfileRadio380211Mc(i["80211mc"], d, pre_append)
+	}
+
+	pre_append = pre + ".0." + "ai_darrp_support"
+	if _, ok := i["ai-darrp-support"]; ok {
+		result["ai_darrp_support"] = flattenWirelessControllerWtpProfileRadio3AiDarrpSupport(i["ai-darrp-support"], d, pre_append)
 	}
 
 	pre_append = pre + ".0." + "airtime_fairness"
@@ -5775,6 +6161,10 @@ func flattenWirelessControllerWtpProfileRadio380211Mc(v interface{}, d *schema.R
 	return v
 }
 
+func flattenWirelessControllerWtpProfileRadio3AiDarrpSupport(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenWirelessControllerWtpProfileRadio3AirtimeFairness(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -6140,6 +6530,11 @@ func flattenWirelessControllerWtpProfileRadio4(v interface{}, d *schema.Resource
 	pre_append = pre + ".0." + "n80211mc"
 	if _, ok := i["80211mc"]; ok {
 		result["n80211mc"] = flattenWirelessControllerWtpProfileRadio480211Mc(i["80211mc"], d, pre_append)
+	}
+
+	pre_append = pre + ".0." + "ai_darrp_support"
+	if _, ok := i["ai-darrp-support"]; ok {
+		result["ai_darrp_support"] = flattenWirelessControllerWtpProfileRadio4AiDarrpSupport(i["ai-darrp-support"], d, pre_append)
 	}
 
 	pre_append = pre + ".0." + "airtime_fairness"
@@ -6586,6 +6981,10 @@ func flattenWirelessControllerWtpProfileRadio480211D(v interface{}, d *schema.Re
 }
 
 func flattenWirelessControllerWtpProfileRadio480211Mc(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWirelessControllerWtpProfileRadio4AiDarrpSupport(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -7101,6 +7500,186 @@ func refreshObjectWirelessControllerWtpProfile(d *schema.ResourceData, o map[str
 		}
 	}
 
+	if err = d.Set("apcfg_auto_cert", flattenWirelessControllerWtpProfileApcfgAutoCert(o["apcfg-auto-cert"], d, "apcfg_auto_cert")); err != nil {
+		if vv, ok := fortiAPIPatch(o["apcfg-auto-cert"], "WirelessControllerWtpProfile-ApcfgAutoCert"); ok {
+			if err = d.Set("apcfg_auto_cert", vv); err != nil {
+				return fmt.Errorf("Error reading apcfg_auto_cert: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading apcfg_auto_cert: %v", err)
+		}
+	}
+
+	if err = d.Set("apcfg_auto_cert_auto_regen_days", flattenWirelessControllerWtpProfileApcfgAutoCertAutoRegenDays(o["apcfg-auto-cert-auto-regen-days"], d, "apcfg_auto_cert_auto_regen_days")); err != nil {
+		if vv, ok := fortiAPIPatch(o["apcfg-auto-cert-auto-regen-days"], "WirelessControllerWtpProfile-ApcfgAutoCertAutoRegenDays"); ok {
+			if err = d.Set("apcfg_auto_cert_auto_regen_days", vv); err != nil {
+				return fmt.Errorf("Error reading apcfg_auto_cert_auto_regen_days: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading apcfg_auto_cert_auto_regen_days: %v", err)
+		}
+	}
+
+	if err = d.Set("apcfg_auto_cert_crypto_algo", flattenWirelessControllerWtpProfileApcfgAutoCertCryptoAlgo(o["apcfg-auto-cert-crypto-algo"], d, "apcfg_auto_cert_crypto_algo")); err != nil {
+		if vv, ok := fortiAPIPatch(o["apcfg-auto-cert-crypto-algo"], "WirelessControllerWtpProfile-ApcfgAutoCertCryptoAlgo"); ok {
+			if err = d.Set("apcfg_auto_cert_crypto_algo", vv); err != nil {
+				return fmt.Errorf("Error reading apcfg_auto_cert_crypto_algo: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading apcfg_auto_cert_crypto_algo: %v", err)
+		}
+	}
+
+	if err = d.Set("apcfg_auto_cert_enroll_protocol", flattenWirelessControllerWtpProfileApcfgAutoCertEnrollProtocol(o["apcfg-auto-cert-enroll-protocol"], d, "apcfg_auto_cert_enroll_protocol")); err != nil {
+		if vv, ok := fortiAPIPatch(o["apcfg-auto-cert-enroll-protocol"], "WirelessControllerWtpProfile-ApcfgAutoCertEnrollProtocol"); ok {
+			if err = d.Set("apcfg_auto_cert_enroll_protocol", vv); err != nil {
+				return fmt.Errorf("Error reading apcfg_auto_cert_enroll_protocol: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading apcfg_auto_cert_enroll_protocol: %v", err)
+		}
+	}
+
+	if err = d.Set("apcfg_auto_cert_est_ca_id", flattenWirelessControllerWtpProfileApcfgAutoCertEstCaId(o["apcfg-auto-cert-est-ca-id"], d, "apcfg_auto_cert_est_ca_id")); err != nil {
+		if vv, ok := fortiAPIPatch(o["apcfg-auto-cert-est-ca-id"], "WirelessControllerWtpProfile-ApcfgAutoCertEstCaId"); ok {
+			if err = d.Set("apcfg_auto_cert_est_ca_id", vv); err != nil {
+				return fmt.Errorf("Error reading apcfg_auto_cert_est_ca_id: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading apcfg_auto_cert_est_ca_id: %v", err)
+		}
+	}
+
+	if err = d.Set("apcfg_auto_cert_est_http_username", flattenWirelessControllerWtpProfileApcfgAutoCertEstHttpUsername(o["apcfg-auto-cert-est-http-username"], d, "apcfg_auto_cert_est_http_username")); err != nil {
+		if vv, ok := fortiAPIPatch(o["apcfg-auto-cert-est-http-username"], "WirelessControllerWtpProfile-ApcfgAutoCertEstHttpUsername"); ok {
+			if err = d.Set("apcfg_auto_cert_est_http_username", vv); err != nil {
+				return fmt.Errorf("Error reading apcfg_auto_cert_est_http_username: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading apcfg_auto_cert_est_http_username: %v", err)
+		}
+	}
+
+	if err = d.Set("apcfg_auto_cert_est_https_ca", flattenWirelessControllerWtpProfileApcfgAutoCertEstHttpsCa(o["apcfg-auto-cert-est-https-ca"], d, "apcfg_auto_cert_est_https_ca")); err != nil {
+		if vv, ok := fortiAPIPatch(o["apcfg-auto-cert-est-https-ca"], "WirelessControllerWtpProfile-ApcfgAutoCertEstHttpsCa"); ok {
+			if err = d.Set("apcfg_auto_cert_est_https_ca", vv); err != nil {
+				return fmt.Errorf("Error reading apcfg_auto_cert_est_https_ca: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading apcfg_auto_cert_est_https_ca: %v", err)
+		}
+	}
+
+	if err = d.Set("apcfg_auto_cert_est_server", flattenWirelessControllerWtpProfileApcfgAutoCertEstServer(o["apcfg-auto-cert-est-server"], d, "apcfg_auto_cert_est_server")); err != nil {
+		if vv, ok := fortiAPIPatch(o["apcfg-auto-cert-est-server"], "WirelessControllerWtpProfile-ApcfgAutoCertEstServer"); ok {
+			if err = d.Set("apcfg_auto_cert_est_server", vv); err != nil {
+				return fmt.Errorf("Error reading apcfg_auto_cert_est_server: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading apcfg_auto_cert_est_server: %v", err)
+		}
+	}
+
+	if err = d.Set("apcfg_auto_cert_est_subject", flattenWirelessControllerWtpProfileApcfgAutoCertEstSubject(o["apcfg-auto-cert-est-subject"], d, "apcfg_auto_cert_est_subject")); err != nil {
+		if vv, ok := fortiAPIPatch(o["apcfg-auto-cert-est-subject"], "WirelessControllerWtpProfile-ApcfgAutoCertEstSubject"); ok {
+			if err = d.Set("apcfg_auto_cert_est_subject", vv); err != nil {
+				return fmt.Errorf("Error reading apcfg_auto_cert_est_subject: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading apcfg_auto_cert_est_subject: %v", err)
+		}
+	}
+
+	if err = d.Set("apcfg_auto_cert_est_subject_alt_name", flattenWirelessControllerWtpProfileApcfgAutoCertEstSubjectAltName(o["apcfg-auto-cert-est-subject-alt-name"], d, "apcfg_auto_cert_est_subject_alt_name")); err != nil {
+		if vv, ok := fortiAPIPatch(o["apcfg-auto-cert-est-subject-alt-name"], "WirelessControllerWtpProfile-ApcfgAutoCertEstSubjectAltName"); ok {
+			if err = d.Set("apcfg_auto_cert_est_subject_alt_name", vv); err != nil {
+				return fmt.Errorf("Error reading apcfg_auto_cert_est_subject_alt_name: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading apcfg_auto_cert_est_subject_alt_name: %v", err)
+		}
+	}
+
+	if err = d.Set("apcfg_auto_cert_scep_ca_id", flattenWirelessControllerWtpProfileApcfgAutoCertScepCaId(o["apcfg-auto-cert-scep-ca-id"], d, "apcfg_auto_cert_scep_ca_id")); err != nil {
+		if vv, ok := fortiAPIPatch(o["apcfg-auto-cert-scep-ca-id"], "WirelessControllerWtpProfile-ApcfgAutoCertScepCaId"); ok {
+			if err = d.Set("apcfg_auto_cert_scep_ca_id", vv); err != nil {
+				return fmt.Errorf("Error reading apcfg_auto_cert_scep_ca_id: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading apcfg_auto_cert_scep_ca_id: %v", err)
+		}
+	}
+
+	if err = d.Set("apcfg_auto_cert_scep_ec_name", flattenWirelessControllerWtpProfileApcfgAutoCertScepEcName(o["apcfg-auto-cert-scep-ec-name"], d, "apcfg_auto_cert_scep_ec_name")); err != nil {
+		if vv, ok := fortiAPIPatch(o["apcfg-auto-cert-scep-ec-name"], "WirelessControllerWtpProfile-ApcfgAutoCertScepEcName"); ok {
+			if err = d.Set("apcfg_auto_cert_scep_ec_name", vv); err != nil {
+				return fmt.Errorf("Error reading apcfg_auto_cert_scep_ec_name: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading apcfg_auto_cert_scep_ec_name: %v", err)
+		}
+	}
+
+	if err = d.Set("apcfg_auto_cert_scep_https_ca", flattenWirelessControllerWtpProfileApcfgAutoCertScepHttpsCa(o["apcfg-auto-cert-scep-https-ca"], d, "apcfg_auto_cert_scep_https_ca")); err != nil {
+		if vv, ok := fortiAPIPatch(o["apcfg-auto-cert-scep-https-ca"], "WirelessControllerWtpProfile-ApcfgAutoCertScepHttpsCa"); ok {
+			if err = d.Set("apcfg_auto_cert_scep_https_ca", vv); err != nil {
+				return fmt.Errorf("Error reading apcfg_auto_cert_scep_https_ca: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading apcfg_auto_cert_scep_https_ca: %v", err)
+		}
+	}
+
+	if err = d.Set("apcfg_auto_cert_scep_keysize", flattenWirelessControllerWtpProfileApcfgAutoCertScepKeysize(o["apcfg-auto-cert-scep-keysize"], d, "apcfg_auto_cert_scep_keysize")); err != nil {
+		if vv, ok := fortiAPIPatch(o["apcfg-auto-cert-scep-keysize"], "WirelessControllerWtpProfile-ApcfgAutoCertScepKeysize"); ok {
+			if err = d.Set("apcfg_auto_cert_scep_keysize", vv); err != nil {
+				return fmt.Errorf("Error reading apcfg_auto_cert_scep_keysize: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading apcfg_auto_cert_scep_keysize: %v", err)
+		}
+	}
+
+	if err = d.Set("apcfg_auto_cert_scep_keytype", flattenWirelessControllerWtpProfileApcfgAutoCertScepKeytype(o["apcfg-auto-cert-scep-keytype"], d, "apcfg_auto_cert_scep_keytype")); err != nil {
+		if vv, ok := fortiAPIPatch(o["apcfg-auto-cert-scep-keytype"], "WirelessControllerWtpProfile-ApcfgAutoCertScepKeytype"); ok {
+			if err = d.Set("apcfg_auto_cert_scep_keytype", vv); err != nil {
+				return fmt.Errorf("Error reading apcfg_auto_cert_scep_keytype: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading apcfg_auto_cert_scep_keytype: %v", err)
+		}
+	}
+
+	if err = d.Set("apcfg_auto_cert_scep_sub_fully_dn", flattenWirelessControllerWtpProfileApcfgAutoCertScepSubFullyDn(o["apcfg-auto-cert-scep-sub-fully-dn"], d, "apcfg_auto_cert_scep_sub_fully_dn")); err != nil {
+		if vv, ok := fortiAPIPatch(o["apcfg-auto-cert-scep-sub-fully-dn"], "WirelessControllerWtpProfile-ApcfgAutoCertScepSubFullyDn"); ok {
+			if err = d.Set("apcfg_auto_cert_scep_sub_fully_dn", vv); err != nil {
+				return fmt.Errorf("Error reading apcfg_auto_cert_scep_sub_fully_dn: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading apcfg_auto_cert_scep_sub_fully_dn: %v", err)
+		}
+	}
+
+	if err = d.Set("apcfg_auto_cert_scep_subject_alt_name", flattenWirelessControllerWtpProfileApcfgAutoCertScepSubjectAltName(o["apcfg-auto-cert-scep-subject-alt-name"], d, "apcfg_auto_cert_scep_subject_alt_name")); err != nil {
+		if vv, ok := fortiAPIPatch(o["apcfg-auto-cert-scep-subject-alt-name"], "WirelessControllerWtpProfile-ApcfgAutoCertScepSubjectAltName"); ok {
+			if err = d.Set("apcfg_auto_cert_scep_subject_alt_name", vv); err != nil {
+				return fmt.Errorf("Error reading apcfg_auto_cert_scep_subject_alt_name: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading apcfg_auto_cert_scep_subject_alt_name: %v", err)
+		}
+	}
+
+	if err = d.Set("apcfg_auto_cert_scep_url", flattenWirelessControllerWtpProfileApcfgAutoCertScepUrl(o["apcfg-auto-cert-scep-url"], d, "apcfg_auto_cert_scep_url")); err != nil {
+		if vv, ok := fortiAPIPatch(o["apcfg-auto-cert-scep-url"], "WirelessControllerWtpProfile-ApcfgAutoCertScepUrl"); ok {
+			if err = d.Set("apcfg_auto_cert_scep_url", vv); err != nil {
+				return fmt.Errorf("Error reading apcfg_auto_cert_scep_url: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading apcfg_auto_cert_scep_url: %v", err)
+		}
+	}
+
 	if err = d.Set("apcfg_mesh", flattenWirelessControllerWtpProfileApcfgMesh(o["apcfg-mesh"], d, "apcfg_mesh")); err != nil {
 		if vv, ok := fortiAPIPatch(o["apcfg-mesh"], "WirelessControllerWtpProfile-ApcfgMesh"); ok {
 			if err = d.Set("apcfg_mesh", vv); err != nil {
@@ -7447,6 +8026,16 @@ func refreshObjectWirelessControllerWtpProfile(d *schema.ResourceData, o map[str
 		}
 	}
 
+	if err = d.Set("lw_profile", flattenWirelessControllerWtpProfileLwProfile(o["lw-profile"], d, "lw_profile")); err != nil {
+		if vv, ok := fortiAPIPatch(o["lw-profile"], "WirelessControllerWtpProfile-LwProfile"); ok {
+			if err = d.Set("lw_profile", vv); err != nil {
+				return fmt.Errorf("Error reading lw_profile: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading lw_profile: %v", err)
+		}
+	}
+
 	if err = d.Set("max_clients", flattenWirelessControllerWtpProfileMaxClients(o["max-clients"], d, "max_clients")); err != nil {
 		if vv, ok := fortiAPIPatch(o["max-clients"], "WirelessControllerWtpProfile-MaxClients"); ok {
 			if err = d.Set("max_clients", vv); err != nil {
@@ -7771,6 +8360,86 @@ func expandWirelessControllerWtpProfileApCountry(d *schema.ResourceData, v inter
 }
 
 func expandWirelessControllerWtpProfileApHandoff(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWirelessControllerWtpProfileApcfgAutoCert(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWirelessControllerWtpProfileApcfgAutoCertAutoRegenDays(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWirelessControllerWtpProfileApcfgAutoCertCryptoAlgo(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWirelessControllerWtpProfileApcfgAutoCertEnrollProtocol(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWirelessControllerWtpProfileApcfgAutoCertEstCaId(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWirelessControllerWtpProfileApcfgAutoCertEstHttpPassword(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandWirelessControllerWtpProfileApcfgAutoCertEstHttpUsername(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWirelessControllerWtpProfileApcfgAutoCertEstHttpsCa(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandWirelessControllerWtpProfileApcfgAutoCertEstServer(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWirelessControllerWtpProfileApcfgAutoCertEstSubject(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWirelessControllerWtpProfileApcfgAutoCertEstSubjectAltName(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWirelessControllerWtpProfileApcfgAutoCertScepCaId(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWirelessControllerWtpProfileApcfgAutoCertScepEcName(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWirelessControllerWtpProfileApcfgAutoCertScepHttpsCa(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandWirelessControllerWtpProfileApcfgAutoCertScepKeysize(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWirelessControllerWtpProfileApcfgAutoCertScepKeytype(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWirelessControllerWtpProfileApcfgAutoCertScepPassword(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandWirelessControllerWtpProfileApcfgAutoCertScepSubFullyDn(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWirelessControllerWtpProfileApcfgAutoCertScepSubjectAltName(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWirelessControllerWtpProfileApcfgAutoCertScepUrl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -8614,6 +9283,10 @@ func expandWirelessControllerWtpProfileLoginPasswdChange(d *schema.ResourceData,
 	return v, nil
 }
 
+func expandWirelessControllerWtpProfileLwProfile(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
 func expandWirelessControllerWtpProfileMaxClients(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -8689,6 +9362,10 @@ func expandWirelessControllerWtpProfileRadio1(d *schema.ResourceData, v interfac
 	pre_append = pre + ".0." + "n80211mc"
 	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
 		result["80211mc"], _ = expandWirelessControllerWtpProfileRadio180211Mc(d, i["n80211mc"], pre_append)
+	}
+	pre_append = pre + ".0." + "ai_darrp_support"
+	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+		result["ai-darrp-support"], _ = expandWirelessControllerWtpProfileRadio1AiDarrpSupport(d, i["ai_darrp_support"], pre_append)
 	}
 	pre_append = pre + ".0." + "airtime_fairness"
 	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
@@ -9059,6 +9736,10 @@ func expandWirelessControllerWtpProfileRadio180211D(d *schema.ResourceData, v in
 }
 
 func expandWirelessControllerWtpProfileRadio180211Mc(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWirelessControllerWtpProfileRadio1AiDarrpSupport(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -9440,6 +10121,10 @@ func expandWirelessControllerWtpProfileRadio2(d *schema.ResourceData, v interfac
 	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
 		result["80211mc"], _ = expandWirelessControllerWtpProfileRadio280211Mc(d, i["n80211mc"], pre_append)
 	}
+	pre_append = pre + ".0." + "ai_darrp_support"
+	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+		result["ai-darrp-support"], _ = expandWirelessControllerWtpProfileRadio2AiDarrpSupport(d, i["ai_darrp_support"], pre_append)
+	}
 	pre_append = pre + ".0." + "airtime_fairness"
 	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
 		result["airtime-fairness"], _ = expandWirelessControllerWtpProfileRadio2AirtimeFairness(d, i["airtime_fairness"], pre_append)
@@ -9809,6 +10494,10 @@ func expandWirelessControllerWtpProfileRadio280211D(d *schema.ResourceData, v in
 }
 
 func expandWirelessControllerWtpProfileRadio280211Mc(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWirelessControllerWtpProfileRadio2AiDarrpSupport(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -10190,6 +10879,10 @@ func expandWirelessControllerWtpProfileRadio3(d *schema.ResourceData, v interfac
 	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
 		result["80211mc"], _ = expandWirelessControllerWtpProfileRadio380211Mc(d, i["n80211mc"], pre_append)
 	}
+	pre_append = pre + ".0." + "ai_darrp_support"
+	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+		result["ai-darrp-support"], _ = expandWirelessControllerWtpProfileRadio3AiDarrpSupport(d, i["ai_darrp_support"], pre_append)
+	}
 	pre_append = pre + ".0." + "airtime_fairness"
 	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
 		result["airtime-fairness"], _ = expandWirelessControllerWtpProfileRadio3AirtimeFairness(d, i["airtime_fairness"], pre_append)
@@ -10559,6 +11252,10 @@ func expandWirelessControllerWtpProfileRadio380211D(d *schema.ResourceData, v in
 }
 
 func expandWirelessControllerWtpProfileRadio380211Mc(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWirelessControllerWtpProfileRadio3AiDarrpSupport(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -10940,6 +11637,10 @@ func expandWirelessControllerWtpProfileRadio4(d *schema.ResourceData, v interfac
 	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
 		result["80211mc"], _ = expandWirelessControllerWtpProfileRadio480211Mc(d, i["n80211mc"], pre_append)
 	}
+	pre_append = pre + ".0." + "ai_darrp_support"
+	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+		result["ai-darrp-support"], _ = expandWirelessControllerWtpProfileRadio4AiDarrpSupport(d, i["ai_darrp_support"], pre_append)
+	}
 	pre_append = pre + ".0." + "airtime_fairness"
 	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
 		result["airtime-fairness"], _ = expandWirelessControllerWtpProfileRadio4AirtimeFairness(d, i["airtime_fairness"], pre_append)
@@ -11309,6 +12010,10 @@ func expandWirelessControllerWtpProfileRadio480211D(d *schema.ResourceData, v in
 }
 
 func expandWirelessControllerWtpProfileRadio480211Mc(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWirelessControllerWtpProfileRadio4AiDarrpSupport(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -11823,6 +12528,186 @@ func getObjectWirelessControllerWtpProfile(d *schema.ResourceData) (*map[string]
 		}
 	}
 
+	if v, ok := d.GetOk("apcfg_auto_cert"); ok || d.HasChange("apcfg_auto_cert") {
+		t, err := expandWirelessControllerWtpProfileApcfgAutoCert(d, v, "apcfg_auto_cert")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["apcfg-auto-cert"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("apcfg_auto_cert_auto_regen_days"); ok || d.HasChange("apcfg_auto_cert_auto_regen_days") {
+		t, err := expandWirelessControllerWtpProfileApcfgAutoCertAutoRegenDays(d, v, "apcfg_auto_cert_auto_regen_days")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["apcfg-auto-cert-auto-regen-days"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("apcfg_auto_cert_crypto_algo"); ok || d.HasChange("apcfg_auto_cert_crypto_algo") {
+		t, err := expandWirelessControllerWtpProfileApcfgAutoCertCryptoAlgo(d, v, "apcfg_auto_cert_crypto_algo")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["apcfg-auto-cert-crypto-algo"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("apcfg_auto_cert_enroll_protocol"); ok || d.HasChange("apcfg_auto_cert_enroll_protocol") {
+		t, err := expandWirelessControllerWtpProfileApcfgAutoCertEnrollProtocol(d, v, "apcfg_auto_cert_enroll_protocol")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["apcfg-auto-cert-enroll-protocol"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("apcfg_auto_cert_est_ca_id"); ok || d.HasChange("apcfg_auto_cert_est_ca_id") {
+		t, err := expandWirelessControllerWtpProfileApcfgAutoCertEstCaId(d, v, "apcfg_auto_cert_est_ca_id")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["apcfg-auto-cert-est-ca-id"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("apcfg_auto_cert_est_http_password"); ok || d.HasChange("apcfg_auto_cert_est_http_password") {
+		t, err := expandWirelessControllerWtpProfileApcfgAutoCertEstHttpPassword(d, v, "apcfg_auto_cert_est_http_password")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["apcfg-auto-cert-est-http-password"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("apcfg_auto_cert_est_http_username"); ok || d.HasChange("apcfg_auto_cert_est_http_username") {
+		t, err := expandWirelessControllerWtpProfileApcfgAutoCertEstHttpUsername(d, v, "apcfg_auto_cert_est_http_username")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["apcfg-auto-cert-est-http-username"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("apcfg_auto_cert_est_https_ca"); ok || d.HasChange("apcfg_auto_cert_est_https_ca") {
+		t, err := expandWirelessControllerWtpProfileApcfgAutoCertEstHttpsCa(d, v, "apcfg_auto_cert_est_https_ca")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["apcfg-auto-cert-est-https-ca"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("apcfg_auto_cert_est_server"); ok || d.HasChange("apcfg_auto_cert_est_server") {
+		t, err := expandWirelessControllerWtpProfileApcfgAutoCertEstServer(d, v, "apcfg_auto_cert_est_server")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["apcfg-auto-cert-est-server"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("apcfg_auto_cert_est_subject"); ok || d.HasChange("apcfg_auto_cert_est_subject") {
+		t, err := expandWirelessControllerWtpProfileApcfgAutoCertEstSubject(d, v, "apcfg_auto_cert_est_subject")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["apcfg-auto-cert-est-subject"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("apcfg_auto_cert_est_subject_alt_name"); ok || d.HasChange("apcfg_auto_cert_est_subject_alt_name") {
+		t, err := expandWirelessControllerWtpProfileApcfgAutoCertEstSubjectAltName(d, v, "apcfg_auto_cert_est_subject_alt_name")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["apcfg-auto-cert-est-subject-alt-name"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("apcfg_auto_cert_scep_ca_id"); ok || d.HasChange("apcfg_auto_cert_scep_ca_id") {
+		t, err := expandWirelessControllerWtpProfileApcfgAutoCertScepCaId(d, v, "apcfg_auto_cert_scep_ca_id")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["apcfg-auto-cert-scep-ca-id"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("apcfg_auto_cert_scep_ec_name"); ok || d.HasChange("apcfg_auto_cert_scep_ec_name") {
+		t, err := expandWirelessControllerWtpProfileApcfgAutoCertScepEcName(d, v, "apcfg_auto_cert_scep_ec_name")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["apcfg-auto-cert-scep-ec-name"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("apcfg_auto_cert_scep_https_ca"); ok || d.HasChange("apcfg_auto_cert_scep_https_ca") {
+		t, err := expandWirelessControllerWtpProfileApcfgAutoCertScepHttpsCa(d, v, "apcfg_auto_cert_scep_https_ca")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["apcfg-auto-cert-scep-https-ca"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("apcfg_auto_cert_scep_keysize"); ok || d.HasChange("apcfg_auto_cert_scep_keysize") {
+		t, err := expandWirelessControllerWtpProfileApcfgAutoCertScepKeysize(d, v, "apcfg_auto_cert_scep_keysize")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["apcfg-auto-cert-scep-keysize"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("apcfg_auto_cert_scep_keytype"); ok || d.HasChange("apcfg_auto_cert_scep_keytype") {
+		t, err := expandWirelessControllerWtpProfileApcfgAutoCertScepKeytype(d, v, "apcfg_auto_cert_scep_keytype")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["apcfg-auto-cert-scep-keytype"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("apcfg_auto_cert_scep_password"); ok || d.HasChange("apcfg_auto_cert_scep_password") {
+		t, err := expandWirelessControllerWtpProfileApcfgAutoCertScepPassword(d, v, "apcfg_auto_cert_scep_password")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["apcfg-auto-cert-scep-password"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("apcfg_auto_cert_scep_sub_fully_dn"); ok || d.HasChange("apcfg_auto_cert_scep_sub_fully_dn") {
+		t, err := expandWirelessControllerWtpProfileApcfgAutoCertScepSubFullyDn(d, v, "apcfg_auto_cert_scep_sub_fully_dn")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["apcfg-auto-cert-scep-sub-fully-dn"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("apcfg_auto_cert_scep_subject_alt_name"); ok || d.HasChange("apcfg_auto_cert_scep_subject_alt_name") {
+		t, err := expandWirelessControllerWtpProfileApcfgAutoCertScepSubjectAltName(d, v, "apcfg_auto_cert_scep_subject_alt_name")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["apcfg-auto-cert-scep-subject-alt-name"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("apcfg_auto_cert_scep_url"); ok || d.HasChange("apcfg_auto_cert_scep_url") {
+		t, err := expandWirelessControllerWtpProfileApcfgAutoCertScepUrl(d, v, "apcfg_auto_cert_scep_url")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["apcfg-auto-cert-scep-url"] = t
+		}
+	}
+
 	if v, ok := d.GetOk("apcfg_mesh"); ok || d.HasChange("apcfg_mesh") {
 		t, err := expandWirelessControllerWtpProfileApcfgMesh(d, v, "apcfg_mesh")
 		if err != nil {
@@ -12099,6 +12984,15 @@ func getObjectWirelessControllerWtpProfile(d *schema.ResourceData) (*map[string]
 			return &obj, err
 		} else if t != nil {
 			obj["login-passwd-change"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("lw_profile"); ok || d.HasChange("lw_profile") {
+		t, err := expandWirelessControllerWtpProfileLwProfile(d, v, "lw_profile")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["lw-profile"] = t
 		}
 	}
 

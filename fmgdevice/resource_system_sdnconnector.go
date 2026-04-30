@@ -68,6 +68,7 @@ func resourceSystemSdnConnector() *schema.Resource {
 			"azure_region": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"client_id": &schema.Schema{
 				Type:     schema.TypeString,
@@ -95,6 +96,7 @@ func resourceSystemSdnConnector() *schema.Resource {
 			"compute_generation": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"domain": &schema.Schema{
 				Type:     schema.TypeString,
@@ -179,6 +181,7 @@ func resourceSystemSdnConnector() *schema.Resource {
 			"ha_status": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"ibm_region": &schema.Schema{
 				Type:     schema.TypeString,
@@ -285,6 +288,11 @@ func resourceSystemSdnConnector() *schema.Resource {
 				},
 			},
 			"oci_region_type": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+			"par_id": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 			},
@@ -442,14 +450,17 @@ func resourceSystemSdnConnector() *schema.Resource {
 			"type": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"update_interval": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"use_metadata_iam": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"user_id": &schema.Schema{
 				Type:     schema.TypeString,
@@ -483,6 +494,7 @@ func resourceSystemSdnConnector() *schema.Resource {
 			"verify_certificate": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"vmx_image_url": &schema.Schema{
 				Type:     schema.TypeString,
@@ -1161,6 +1173,10 @@ func flattenSystemSdnConnectorOciRegionType(v interface{}, d *schema.ResourceDat
 	return v
 }
 
+func flattenSystemSdnConnectorParId(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenSystemSdnConnectorPrivateKey(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -1824,6 +1840,16 @@ func refreshObjectSystemSdnConnector(d *schema.ResourceData, o map[string]interf
 			}
 		} else {
 			return fmt.Errorf("Error reading oci_region_type: %v", err)
+		}
+	}
+
+	if err = d.Set("par_id", flattenSystemSdnConnectorParId(o["par-id"], d, "par_id")); err != nil {
+		if vv, ok := fortiAPIPatch(o["par-id"], "SystemSdnConnector-ParId"); ok {
+			if err = d.Set("par_id", vv); err != nil {
+				return fmt.Errorf("Error reading par_id: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading par_id: %v", err)
 		}
 	}
 
@@ -2646,6 +2672,10 @@ func expandSystemSdnConnectorOciRegionType(d *schema.ResourceData, v interface{}
 	return v, nil
 }
 
+func expandSystemSdnConnectorParId(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandSystemSdnConnectorPassword(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return expandStringList(v.(*schema.Set).List()), nil
 }
@@ -3205,6 +3235,15 @@ func getObjectSystemSdnConnector(d *schema.ResourceData) (*map[string]interface{
 			return &obj, err
 		} else if t != nil {
 			obj["oci-region-type"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("par_id"); ok || d.HasChange("par_id") {
+		t, err := expandSystemSdnConnectorParId(d, v, "par_id")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["par-id"] = t
 		}
 	}
 

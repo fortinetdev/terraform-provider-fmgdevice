@@ -100,7 +100,7 @@ func resourceWebProxyDynamicBypassUpdate(d *schema.ResourceData, m interface{}) 
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	obj, err := getObjectWebProxyDynamicBypass(d)
+	obj, err := getObjectWebProxyDynamicBypass(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating WebProxyDynamicBypass resource while getting object: %v", err)
 	}
@@ -121,7 +121,6 @@ func resourceWebProxyDynamicBypassUpdate(d *schema.ResourceData, m interface{}) 
 
 func resourceWebProxyDynamicBypassDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -144,11 +143,17 @@ func resourceWebProxyDynamicBypassDelete(d *schema.ResourceData, m interface{}) 
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	obj, err := getObjectWebProxyDynamicBypass(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating WebProxyDynamicBypass resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteWebProxyDynamicBypass(mkey, paradict, wsParams)
+	_, err = c.UpdateWebProxyDynamicBypass(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting WebProxyDynamicBypass resource: %v", err)
+		return fmt.Errorf("Error clearing WebProxyDynamicBypass resource: %v", err)
 	}
 
 	d.SetId("")
@@ -309,7 +314,7 @@ func expandWebProxyDynamicBypassTotalMax(d *schema.ResourceData, v interface{}, 
 	return v, nil
 }
 
-func getObjectWebProxyDynamicBypass(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectWebProxyDynamicBypass(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("errors"); ok || d.HasChange("errors") {

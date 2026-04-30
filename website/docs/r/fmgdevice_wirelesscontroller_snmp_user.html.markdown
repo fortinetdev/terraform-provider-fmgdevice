@@ -1,5 +1,5 @@
 ---
-subcategory: "No Category"
+subcategory: "Wireless Controller"
 layout: "fmgdevice"
 page_title: "FortiManager Device: fmgdevice_wirelesscontroller_snmp_user"
 description: |-
@@ -40,6 +40,7 @@ The following arguments are supported:
 * `auth_pwd` - Password for authentication protocol.
 * `name` - SNMP user name.
 * `notify_hosts` - Configure SNMP User Notify Hosts.
+* `notify_hosts6` - Configure IPv6 SNMP User Notify Hosts.
 * `priv_proto` - Privacy (encryption) protocol. Valid values: `aes`, `des`, `aes256`, `aes256cisco`.
 
 * `priv_pwd` - Password for privacy (encryption) protocol.

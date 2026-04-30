@@ -1,5 +1,5 @@
 ---
-subcategory: "No Category"
+subcategory: "Extender Controller"
 layout: "fmgdevice"
 page_title: "FortiManager Device: fmgdevice_extendercontroller_extender_wanextension"
 description: |-

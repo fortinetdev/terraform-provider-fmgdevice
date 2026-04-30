@@ -223,7 +223,7 @@ func resourceLogFortianalyzer3OverrideSettingUpdate(d *schema.ResourceData, m in
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	obj, err := getObjectLogFortianalyzer3OverrideSetting(d)
+	obj, err := getObjectLogFortianalyzer3OverrideSetting(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating LogFortianalyzer3OverrideSetting resource while getting object: %v", err)
 	}
@@ -244,7 +244,6 @@ func resourceLogFortianalyzer3OverrideSettingUpdate(d *schema.ResourceData, m in
 
 func resourceLogFortianalyzer3OverrideSettingDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -267,11 +266,17 @@ func resourceLogFortianalyzer3OverrideSettingDelete(d *schema.ResourceData, m in
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	obj, err := getObjectLogFortianalyzer3OverrideSetting(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating LogFortianalyzer3OverrideSetting resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteLogFortianalyzer3OverrideSetting(mkey, paradict, wsParams)
+	_, err = c.UpdateLogFortianalyzer3OverrideSetting(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting LogFortianalyzer3OverrideSetting resource: %v", err)
+		return fmt.Errorf("Error clearing LogFortianalyzer3OverrideSetting resource: %v", err)
 	}
 
 	d.SetId("")
@@ -900,7 +905,7 @@ func expandLogFortianalyzer3OverrideSettingVrfSelect(d *schema.ResourceData, v i
 	return v, nil
 }
 
-func getObjectLogFortianalyzer3OverrideSetting(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectLogFortianalyzer3OverrideSetting(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("__change_ip"); ok || d.HasChange("__change_ip") {

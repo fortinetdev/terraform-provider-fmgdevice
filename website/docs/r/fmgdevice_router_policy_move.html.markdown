@@ -1,5 +1,5 @@
 ---
-subcategory: "No Category"
+subcategory: "Router"
 layout: "fmgdevice"
 page_title: "FortiManager Device: fmgdevice_router_policy_move"
 description: |-

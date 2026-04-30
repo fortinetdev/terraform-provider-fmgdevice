@@ -1,5 +1,5 @@
 ---
-subcategory: "No Category"
+subcategory: "Antivirus"
 layout: "fmgdevice"
 page_title: "FortiManager Device: fmgdevice_antivirus_profile_cifs"
 description: |-

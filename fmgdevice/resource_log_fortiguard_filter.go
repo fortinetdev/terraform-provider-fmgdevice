@@ -160,7 +160,7 @@ func resourceLogFortiguardFilterUpdate(d *schema.ResourceData, m interface{}) er
 	}
 	paradict["device"] = device_name
 
-	obj, err := getObjectLogFortiguardFilter(d)
+	obj, err := getObjectLogFortiguardFilter(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating LogFortiguardFilter resource while getting object: %v", err)
 	}
@@ -181,7 +181,6 @@ func resourceLogFortiguardFilterUpdate(d *schema.ResourceData, m interface{}) er
 
 func resourceLogFortiguardFilterDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -199,11 +198,17 @@ func resourceLogFortiguardFilterDelete(d *schema.ResourceData, m interface{}) er
 	}
 	paradict["device"] = device_name
 
+	obj, err := getObjectLogFortiguardFilter(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating LogFortiguardFilter resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteLogFortiguardFilter(mkey, paradict, wsParams)
+	_, err = c.UpdateLogFortiguardFilter(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting LogFortiguardFilter resource: %v", err)
+		return fmt.Errorf("Error clearing LogFortiguardFilter resource: %v", err)
 	}
 
 	d.SetId("")
@@ -672,7 +677,7 @@ func expandLogFortiguardFilterZtnaTraffic(d *schema.ResourceData, v interface{},
 	return v, nil
 }
 
-func getObjectLogFortiguardFilter(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectLogFortiguardFilter(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("anomaly"); ok || d.HasChange("anomaly") {
@@ -729,12 +734,16 @@ func getObjectLogFortiguardFilter(d *schema.ResourceData) (*map[string]interface
 		}
 	}
 
-	if v, ok := d.GetOk("free_style"); ok || d.HasChange("free_style") {
-		t, err := expandLogFortiguardFilterFreeStyle(d, v, "free_style")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["free-style"] = t
+	if bemptysontable {
+		obj["free-style"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("free_style"); ok || d.HasChange("free_style") {
+			t, err := expandLogFortiguardFilterFreeStyle(d, v, "free_style")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["free-style"] = t
+			}
 		}
 	}
 

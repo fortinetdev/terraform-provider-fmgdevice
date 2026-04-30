@@ -398,7 +398,7 @@ func resourceSystemSnmpCommunityRead(d *schema.ResourceData, m interface{}) erro
 }
 
 func flattenSystemSnmpCommunityEvents(v interface{}, d *schema.ResourceData, pre string) interface{} {
-	return flattenStringList(v)
+	return convstr2list(v, d.Get(pre))
 }
 
 func flattenSystemSnmpCommunityHosts(v interface{}, d *schema.ResourceData, pre string) []map[string]interface{} {

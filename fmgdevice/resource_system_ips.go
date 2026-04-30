@@ -49,6 +49,7 @@ func resourceSystemIps() *schema.Resource {
 			"override_signature_hold_by_id": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"signature_hold_time": &schema.Schema{
 				Type:     schema.TypeString,
@@ -83,7 +84,7 @@ func resourceSystemIpsUpdate(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	obj, err := getObjectSystemIps(d)
+	obj, err := getObjectSystemIps(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemIps resource while getting object: %v", err)
 	}
@@ -104,7 +105,6 @@ func resourceSystemIpsUpdate(d *schema.ResourceData, m interface{}) error {
 
 func resourceSystemIpsDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -127,11 +127,17 @@ func resourceSystemIpsDelete(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	obj, err := getObjectSystemIps(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating SystemIps resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteSystemIps(mkey, paradict, wsParams)
+	_, err = c.UpdateSystemIps(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting SystemIps resource: %v", err)
+		return fmt.Errorf("Error clearing SystemIps resource: %v", err)
 	}
 
 	d.SetId("")
@@ -238,7 +244,7 @@ func expandSystemIpsSignatureHoldTime(d *schema.ResourceData, v interface{}, pre
 	return v, nil
 }
 
-func getObjectSystemIps(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectSystemIps(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("override_signature_hold_by_id"); ok || d.HasChange("override_signature_hold_by_id") {

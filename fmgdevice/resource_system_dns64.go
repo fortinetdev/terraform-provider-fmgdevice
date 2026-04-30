@@ -89,7 +89,7 @@ func resourceSystemDns64Update(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	obj, err := getObjectSystemDns64(d)
+	obj, err := getObjectSystemDns64(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemDns64 resource while getting object: %v", err)
 	}
@@ -110,7 +110,6 @@ func resourceSystemDns64Update(d *schema.ResourceData, m interface{}) error {
 
 func resourceSystemDns64Delete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -133,11 +132,17 @@ func resourceSystemDns64Delete(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	obj, err := getObjectSystemDns64(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating SystemDns64 resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteSystemDns64(mkey, paradict, wsParams)
+	_, err = c.UpdateSystemDns64(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting SystemDns64 resource: %v", err)
+		return fmt.Errorf("Error clearing SystemDns64 resource: %v", err)
 	}
 
 	d.SetId("")
@@ -262,7 +267,7 @@ func expandSystemDns64Status(d *schema.ResourceData, v interface{}, pre string) 
 	return v, nil
 }
 
-func getObjectSystemDns64(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectSystemDns64(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("always_synthesize_aaaa_record"); ok || d.HasChange("always_synthesize_aaaa_record") {

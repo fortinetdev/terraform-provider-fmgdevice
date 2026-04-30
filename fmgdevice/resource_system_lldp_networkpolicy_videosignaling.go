@@ -104,7 +104,7 @@ func resourceSystemLldpNetworkPolicyVideoSignalingUpdate(d *schema.ResourceData,
 	paradict["vdom"] = device_vdom
 	paradict["network_policy"] = network_policy
 
-	obj, err := getObjectSystemLldpNetworkPolicyVideoSignaling(d)
+	obj, err := getObjectSystemLldpNetworkPolicyVideoSignaling(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemLldpNetworkPolicyVideoSignaling resource while getting object: %v", err)
 	}
@@ -125,7 +125,6 @@ func resourceSystemLldpNetworkPolicyVideoSignalingUpdate(d *schema.ResourceData,
 
 func resourceSystemLldpNetworkPolicyVideoSignalingDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -150,11 +149,17 @@ func resourceSystemLldpNetworkPolicyVideoSignalingDelete(d *schema.ResourceData,
 	paradict["vdom"] = device_vdom
 	paradict["network_policy"] = network_policy
 
+	obj, err := getObjectSystemLldpNetworkPolicyVideoSignaling(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating SystemLldpNetworkPolicyVideoSignaling resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteSystemLldpNetworkPolicyVideoSignaling(mkey, paradict, wsParams)
+	_, err = c.UpdateSystemLldpNetworkPolicyVideoSignaling(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting SystemLldpNetworkPolicyVideoSignaling resource: %v", err)
+		return fmt.Errorf("Error clearing SystemLldpNetworkPolicyVideoSignaling resource: %v", err)
 	}
 
 	d.SetId("")
@@ -326,7 +331,7 @@ func expandSystemLldpNetworkPolicyVideoSignalingVlan2edl(d *schema.ResourceData,
 	return v, nil
 }
 
-func getObjectSystemLldpNetworkPolicyVideoSignaling(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectSystemLldpNetworkPolicyVideoSignaling(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("dscp"); ok || d.HasChange("dscp") {

@@ -218,7 +218,7 @@ func resourceUserSettingUpdate(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	obj, err := getObjectUserSetting(d)
+	obj, err := getObjectUserSetting(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating UserSetting resource while getting object: %v", err)
 	}
@@ -239,7 +239,6 @@ func resourceUserSettingUpdate(d *schema.ResourceData, m interface{}) error {
 
 func resourceUserSettingDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -262,11 +261,17 @@ func resourceUserSettingDelete(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	obj, err := getObjectUserSetting(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating UserSetting resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteUserSetting(mkey, paradict, wsParams)
+	_, err = c.UpdateUserSetting(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting UserSetting resource: %v", err)
+		return fmt.Errorf("Error clearing UserSetting resource: %v", err)
 	}
 
 	d.SetId("")
@@ -889,7 +894,7 @@ func expandUserSettingRadiusSesTimeoutAct(d *schema.ResourceData, v interface{},
 	return v, nil
 }
 
-func getObjectUserSetting(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectUserSetting(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("auth_blackout_time"); ok || d.HasChange("auth_blackout_time") {
@@ -973,12 +978,16 @@ func getObjectUserSetting(d *schema.ResourceData) (*map[string]interface{}, erro
 		}
 	}
 
-	if v, ok := d.GetOk("auth_ports"); ok || d.HasChange("auth_ports") {
-		t, err := expandUserSettingAuthPorts(d, v, "auth_ports")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["auth-ports"] = t
+	if bemptysontable {
+		obj["auth-ports"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("auth_ports"); ok || d.HasChange("auth_ports") {
+			t, err := expandUserSettingAuthPorts(d, v, "auth_ports")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["auth-ports"] = t
+			}
 		}
 	}
 

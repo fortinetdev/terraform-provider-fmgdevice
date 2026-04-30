@@ -49,10 +49,12 @@ func resourceSystemVdomNetflow() *schema.Resource {
 			"collector_ip": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"collector_port": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"collectors": &schema.Schema{
 				Type:     schema.TypeList,
@@ -114,6 +116,7 @@ func resourceSystemVdomNetflow() *schema.Resource {
 			"source_ip": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"vdom_netflow": &schema.Schema{
 				Type:     schema.TypeString,
@@ -153,7 +156,7 @@ func resourceSystemVdomNetflowUpdate(d *schema.ResourceData, m interface{}) erro
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	obj, err := getObjectSystemVdomNetflow(d)
+	obj, err := getObjectSystemVdomNetflow(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemVdomNetflow resource while getting object: %v", err)
 	}
@@ -174,7 +177,6 @@ func resourceSystemVdomNetflowUpdate(d *schema.ResourceData, m interface{}) erro
 
 func resourceSystemVdomNetflowDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -197,11 +199,17 @@ func resourceSystemVdomNetflowDelete(d *schema.ResourceData, m interface{}) erro
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	obj, err := getObjectSystemVdomNetflow(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating SystemVdomNetflow resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteSystemVdomNetflow(mkey, paradict, wsParams)
+	_, err = c.UpdateSystemVdomNetflow(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting SystemVdomNetflow resource: %v", err)
+		return fmt.Errorf("Error clearing SystemVdomNetflow resource: %v", err)
 	}
 
 	d.SetId("")
@@ -613,7 +621,7 @@ func expandSystemVdomNetflowVdomNetflow(d *schema.ResourceData, v interface{}, p
 	return v, nil
 }
 
-func getObjectSystemVdomNetflow(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectSystemVdomNetflow(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("collector_ip"); ok || d.HasChange("collector_ip") {
@@ -634,12 +642,16 @@ func getObjectSystemVdomNetflow(d *schema.ResourceData) (*map[string]interface{}
 		}
 	}
 
-	if v, ok := d.GetOk("collectors"); ok || d.HasChange("collectors") {
-		t, err := expandSystemVdomNetflowCollectors(d, v, "collectors")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["collectors"] = t
+	if bemptysontable {
+		obj["collectors"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("collectors"); ok || d.HasChange("collectors") {
+			t, err := expandSystemVdomNetflowCollectors(d, v, "collectors")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["collectors"] = t
+			}
 		}
 	}
 

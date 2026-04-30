@@ -60,6 +60,12 @@ func resourceWanoptProfileHttp() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
+			"port": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeInt},
+				Optional: true,
+				Computed: true,
+			},
 			"prefer_chunking": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -80,7 +86,17 @@ func resourceWanoptProfileHttp() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"ssl_port": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeInt},
+				Optional: true,
+				Computed: true,
+			},
 			"status": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"tunnel_non_http": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 			},
@@ -88,6 +104,10 @@ func resourceWanoptProfileHttp() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+			},
+			"unknown_http_version": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
 			},
 		},
 	}
@@ -119,7 +139,7 @@ func resourceWanoptProfileHttpUpdate(d *schema.ResourceData, m interface{}) erro
 	paradict["vdom"] = device_vdom
 	paradict["profile"] = profile
 
-	obj, err := getObjectWanoptProfileHttp(d)
+	obj, err := getObjectWanoptProfileHttp(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating WanoptProfileHttp resource while getting object: %v", err)
 	}
@@ -140,7 +160,6 @@ func resourceWanoptProfileHttpUpdate(d *schema.ResourceData, m interface{}) erro
 
 func resourceWanoptProfileHttpDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -165,11 +184,17 @@ func resourceWanoptProfileHttpDelete(d *schema.ResourceData, m interface{}) erro
 	paradict["vdom"] = device_vdom
 	paradict["profile"] = profile
 
+	obj, err := getObjectWanoptProfileHttp(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating WanoptProfileHttp resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteWanoptProfileHttp(mkey, paradict, wsParams)
+	_, err = c.UpdateWanoptProfileHttp(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting WanoptProfileHttp resource: %v", err)
+		return fmt.Errorf("Error clearing WanoptProfileHttp resource: %v", err)
 	}
 
 	d.SetId("")
@@ -247,6 +272,10 @@ func flattenWanoptProfileHttpLogTraffic2edl(v interface{}, d *schema.ResourceDat
 	return v
 }
 
+func flattenWanoptProfileHttpPort2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenIntegerList(v)
+}
+
 func flattenWanoptProfileHttpPreferChunking2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -263,11 +292,23 @@ func flattenWanoptProfileHttpSsl2edl(v interface{}, d *schema.ResourceData, pre 
 	return v
 }
 
+func flattenWanoptProfileHttpSslPort2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenIntegerList(v)
+}
+
 func flattenWanoptProfileHttpStatus2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
+func flattenWanoptProfileHttpTunnelNonHttp2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenWanoptProfileHttpTunnelSharing2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWanoptProfileHttpUnknownHttpVersion2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -291,6 +332,16 @@ func refreshObjectWanoptProfileHttp(d *schema.ResourceData, o map[string]interfa
 			}
 		} else {
 			return fmt.Errorf("Error reading log_traffic: %v", err)
+		}
+	}
+
+	if err = d.Set("port", flattenWanoptProfileHttpPort2edl(o["port"], d, "port")); err != nil {
+		if vv, ok := fortiAPIPatch(o["port"], "WanoptProfileHttp-Port"); ok {
+			if err = d.Set("port", vv); err != nil {
+				return fmt.Errorf("Error reading port: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading port: %v", err)
 		}
 	}
 
@@ -334,6 +385,16 @@ func refreshObjectWanoptProfileHttp(d *schema.ResourceData, o map[string]interfa
 		}
 	}
 
+	if err = d.Set("ssl_port", flattenWanoptProfileHttpSslPort2edl(o["ssl-port"], d, "ssl_port")); err != nil {
+		if vv, ok := fortiAPIPatch(o["ssl-port"], "WanoptProfileHttp-SslPort"); ok {
+			if err = d.Set("ssl_port", vv); err != nil {
+				return fmt.Errorf("Error reading ssl_port: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading ssl_port: %v", err)
+		}
+	}
+
 	if err = d.Set("status", flattenWanoptProfileHttpStatus2edl(o["status"], d, "status")); err != nil {
 		if vv, ok := fortiAPIPatch(o["status"], "WanoptProfileHttp-Status"); ok {
 			if err = d.Set("status", vv); err != nil {
@@ -344,6 +405,16 @@ func refreshObjectWanoptProfileHttp(d *schema.ResourceData, o map[string]interfa
 		}
 	}
 
+	if err = d.Set("tunnel_non_http", flattenWanoptProfileHttpTunnelNonHttp2edl(o["tunnel-non-http"], d, "tunnel_non_http")); err != nil {
+		if vv, ok := fortiAPIPatch(o["tunnel-non-http"], "WanoptProfileHttp-TunnelNonHttp"); ok {
+			if err = d.Set("tunnel_non_http", vv); err != nil {
+				return fmt.Errorf("Error reading tunnel_non_http: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading tunnel_non_http: %v", err)
+		}
+	}
+
 	if err = d.Set("tunnel_sharing", flattenWanoptProfileHttpTunnelSharing2edl(o["tunnel-sharing"], d, "tunnel_sharing")); err != nil {
 		if vv, ok := fortiAPIPatch(o["tunnel-sharing"], "WanoptProfileHttp-TunnelSharing"); ok {
 			if err = d.Set("tunnel_sharing", vv); err != nil {
@@ -351,6 +422,16 @@ func refreshObjectWanoptProfileHttp(d *schema.ResourceData, o map[string]interfa
 			}
 		} else {
 			return fmt.Errorf("Error reading tunnel_sharing: %v", err)
+		}
+	}
+
+	if err = d.Set("unknown_http_version", flattenWanoptProfileHttpUnknownHttpVersion2edl(o["unknown-http-version"], d, "unknown_http_version")); err != nil {
+		if vv, ok := fortiAPIPatch(o["unknown-http-version"], "WanoptProfileHttp-UnknownHttpVersion"); ok {
+			if err = d.Set("unknown_http_version", vv); err != nil {
+				return fmt.Errorf("Error reading unknown_http_version: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading unknown_http_version: %v", err)
 		}
 	}
 
@@ -371,6 +452,10 @@ func expandWanoptProfileHttpLogTraffic2edl(d *schema.ResourceData, v interface{}
 	return v, nil
 }
 
+func expandWanoptProfileHttpPort2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandIntegerList(v.(*schema.Set).List()), nil
+}
+
 func expandWanoptProfileHttpPreferChunking2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -387,7 +472,15 @@ func expandWanoptProfileHttpSsl2edl(d *schema.ResourceData, v interface{}, pre s
 	return v, nil
 }
 
+func expandWanoptProfileHttpSslPort2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandIntegerList(v.(*schema.Set).List()), nil
+}
+
 func expandWanoptProfileHttpStatus2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWanoptProfileHttpTunnelNonHttp2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -395,7 +488,11 @@ func expandWanoptProfileHttpTunnelSharing2edl(d *schema.ResourceData, v interfac
 	return v, nil
 }
 
-func getObjectWanoptProfileHttp(d *schema.ResourceData) (*map[string]interface{}, error) {
+func expandWanoptProfileHttpUnknownHttpVersion2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func getObjectWanoptProfileHttp(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("byte_caching"); ok || d.HasChange("byte_caching") {
@@ -413,6 +510,15 @@ func getObjectWanoptProfileHttp(d *schema.ResourceData) (*map[string]interface{}
 			return &obj, err
 		} else if t != nil {
 			obj["log-traffic"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("port"); ok || d.HasChange("port") {
+		t, err := expandWanoptProfileHttpPort2edl(d, v, "port")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["port"] = t
 		}
 	}
 
@@ -452,6 +558,15 @@ func getObjectWanoptProfileHttp(d *schema.ResourceData) (*map[string]interface{}
 		}
 	}
 
+	if v, ok := d.GetOk("ssl_port"); ok || d.HasChange("ssl_port") {
+		t, err := expandWanoptProfileHttpSslPort2edl(d, v, "ssl_port")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["ssl-port"] = t
+		}
+	}
+
 	if v, ok := d.GetOk("status"); ok || d.HasChange("status") {
 		t, err := expandWanoptProfileHttpStatus2edl(d, v, "status")
 		if err != nil {
@@ -461,12 +576,30 @@ func getObjectWanoptProfileHttp(d *schema.ResourceData) (*map[string]interface{}
 		}
 	}
 
+	if v, ok := d.GetOk("tunnel_non_http"); ok || d.HasChange("tunnel_non_http") {
+		t, err := expandWanoptProfileHttpTunnelNonHttp2edl(d, v, "tunnel_non_http")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["tunnel-non-http"] = t
+		}
+	}
+
 	if v, ok := d.GetOk("tunnel_sharing"); ok || d.HasChange("tunnel_sharing") {
 		t, err := expandWanoptProfileHttpTunnelSharing2edl(d, v, "tunnel_sharing")
 		if err != nil {
 			return &obj, err
 		} else if t != nil {
 			obj["tunnel-sharing"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("unknown_http_version"); ok || d.HasChange("unknown_http_version") {
+		t, err := expandWanoptProfileHttpUnknownHttpVersion2edl(d, v, "unknown_http_version")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["unknown-http-version"] = t
 		}
 	}
 

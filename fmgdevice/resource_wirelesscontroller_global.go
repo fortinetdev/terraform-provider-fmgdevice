@@ -79,6 +79,11 @@ func resourceWirelessControllerGlobal() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"discovery_mc_addr6": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
 			"fiapp_eth_type": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
@@ -222,7 +227,7 @@ func resourceWirelessControllerGlobalUpdate(d *schema.ResourceData, m interface{
 	}
 	paradict["device"] = device_name
 
-	obj, err := getObjectWirelessControllerGlobal(d)
+	obj, err := getObjectWirelessControllerGlobal(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating WirelessControllerGlobal resource while getting object: %v", err)
 	}
@@ -243,7 +248,6 @@ func resourceWirelessControllerGlobalUpdate(d *schema.ResourceData, m interface{
 
 func resourceWirelessControllerGlobalDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -261,11 +265,17 @@ func resourceWirelessControllerGlobalDelete(d *schema.ResourceData, m interface{
 	}
 	paradict["device"] = device_name
 
+	obj, err := getObjectWirelessControllerGlobal(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating WirelessControllerGlobal resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteWirelessControllerGlobal(mkey, paradict, wsParams)
+	_, err = c.UpdateWirelessControllerGlobal(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting WirelessControllerGlobal resource: %v", err)
+		return fmt.Errorf("Error clearing WirelessControllerGlobal resource: %v", err)
 	}
 
 	d.SetId("")
@@ -342,6 +352,10 @@ func flattenWirelessControllerGlobalDfsLabTest(v interface{}, d *schema.Resource
 }
 
 func flattenWirelessControllerGlobalDiscoveryMcAddr(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWirelessControllerGlobalDiscoveryMcAddr6(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -529,6 +543,16 @@ func refreshObjectWirelessControllerGlobal(d *schema.ResourceData, o map[string]
 			}
 		} else {
 			return fmt.Errorf("Error reading discovery_mc_addr: %v", err)
+		}
+	}
+
+	if err = d.Set("discovery_mc_addr6", flattenWirelessControllerGlobalDiscoveryMcAddr6(o["discovery-mc-addr6"], d, "discovery_mc_addr6")); err != nil {
+		if vv, ok := fortiAPIPatch(o["discovery-mc-addr6"], "WirelessControllerGlobal-DiscoveryMcAddr6"); ok {
+			if err = d.Set("discovery_mc_addr6", vv); err != nil {
+				return fmt.Errorf("Error reading discovery_mc_addr6: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading discovery_mc_addr6: %v", err)
 		}
 	}
 
@@ -833,6 +857,10 @@ func expandWirelessControllerGlobalDiscoveryMcAddr(d *schema.ResourceData, v int
 	return v, nil
 }
 
+func expandWirelessControllerGlobalDiscoveryMcAddr6(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandWirelessControllerGlobalFiappEthType(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -937,7 +965,7 @@ func expandWirelessControllerGlobalWtpShare(d *schema.ResourceData, v interface{
 	return v, nil
 }
 
-func getObjectWirelessControllerGlobal(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectWirelessControllerGlobal(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("acd_process_count"); ok || d.HasChange("acd_process_count") {
@@ -1009,6 +1037,15 @@ func getObjectWirelessControllerGlobal(d *schema.ResourceData) (*map[string]inte
 			return &obj, err
 		} else if t != nil {
 			obj["discovery-mc-addr"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("discovery_mc_addr6"); ok || d.HasChange("discovery_mc_addr6") {
+		t, err := expandWirelessControllerGlobalDiscoveryMcAddr6(d, v, "discovery_mc_addr6")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["discovery-mc-addr6"] = t
 		}
 	}
 

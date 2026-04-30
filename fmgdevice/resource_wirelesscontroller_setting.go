@@ -172,7 +172,7 @@ func resourceWirelessControllerSettingUpdate(d *schema.ResourceData, m interface
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	obj, err := getObjectWirelessControllerSetting(d)
+	obj, err := getObjectWirelessControllerSetting(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating WirelessControllerSetting resource while getting object: %v", err)
 	}
@@ -193,7 +193,6 @@ func resourceWirelessControllerSettingUpdate(d *schema.ResourceData, m interface
 
 func resourceWirelessControllerSettingDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -216,11 +215,17 @@ func resourceWirelessControllerSettingDelete(d *schema.ResourceData, m interface
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	obj, err := getObjectWirelessControllerSetting(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating WirelessControllerSetting resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteWirelessControllerSetting(mkey, paradict, wsParams)
+	_, err = c.UpdateWirelessControllerSetting(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting WirelessControllerSetting resource: %v", err)
+		return fmt.Errorf("Error clearing WirelessControllerSetting resource: %v", err)
 	}
 
 	d.SetId("")
@@ -681,7 +686,7 @@ func expandWirelessControllerSettingWfaCompatibility(d *schema.ResourceData, v i
 	return v, nil
 }
 
-func getObjectWirelessControllerSetting(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectWirelessControllerSetting(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("account_id"); ok || d.HasChange("account_id") {
@@ -783,12 +788,16 @@ func getObjectWirelessControllerSetting(d *schema.ResourceData) (*map[string]int
 		}
 	}
 
-	if v, ok := d.GetOk("offending_ssid"); ok || d.HasChange("offending_ssid") {
-		t, err := expandWirelessControllerSettingOffendingSsid(d, v, "offending_ssid")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["offending-ssid"] = t
+	if bemptysontable {
+		obj["offending-ssid"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("offending_ssid"); ok || d.HasChange("offending_ssid") {
+			t, err := expandWirelessControllerSettingOffendingSsid(d, v, "offending_ssid")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["offending-ssid"] = t
+			}
 		}
 	}
 

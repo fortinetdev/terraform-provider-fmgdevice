@@ -110,14 +110,17 @@ func resourceFirewallProfileProtocolOptionsFtp() *schema.Resource {
 			"tcp_window_maximum": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"tcp_window_minimum": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"tcp_window_size": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"tcp_window_type": &schema.Schema{
 				Type:     schema.TypeString,
@@ -164,7 +167,7 @@ func resourceFirewallProfileProtocolOptionsFtpUpdate(d *schema.ResourceData, m i
 	paradict["vdom"] = device_vdom
 	paradict["profile_protocol_options"] = profile_protocol_options
 
-	obj, err := getObjectFirewallProfileProtocolOptionsFtp(d)
+	obj, err := getObjectFirewallProfileProtocolOptionsFtp(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating FirewallProfileProtocolOptionsFtp resource while getting object: %v", err)
 	}
@@ -185,7 +188,6 @@ func resourceFirewallProfileProtocolOptionsFtpUpdate(d *schema.ResourceData, m i
 
 func resourceFirewallProfileProtocolOptionsFtpDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -210,11 +212,17 @@ func resourceFirewallProfileProtocolOptionsFtpDelete(d *schema.ResourceData, m i
 	paradict["vdom"] = device_vdom
 	paradict["profile_protocol_options"] = profile_protocol_options
 
+	obj, err := getObjectFirewallProfileProtocolOptionsFtp(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating FirewallProfileProtocolOptionsFtp resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteFirewallProfileProtocolOptionsFtp(mkey, paradict, wsParams)
+	_, err = c.UpdateFirewallProfileProtocolOptionsFtp(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting FirewallProfileProtocolOptionsFtp resource: %v", err)
+		return fmt.Errorf("Error clearing FirewallProfileProtocolOptionsFtp resource: %v", err)
 	}
 
 	d.SetId("")
@@ -602,7 +610,7 @@ func expandFirewallProfileProtocolOptionsFtpUncompressedOversizeLimit2edl(d *sch
 	return v, nil
 }
 
-func getObjectFirewallProfileProtocolOptionsFtp(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectFirewallProfileProtocolOptionsFtp(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("comfort_amount"); ok || d.HasChange("comfort_amount") {

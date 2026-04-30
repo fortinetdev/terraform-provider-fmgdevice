@@ -104,7 +104,7 @@ func resourceSystemLldpNetworkPolicyVideoConferencingUpdate(d *schema.ResourceDa
 	paradict["vdom"] = device_vdom
 	paradict["network_policy"] = network_policy
 
-	obj, err := getObjectSystemLldpNetworkPolicyVideoConferencing(d)
+	obj, err := getObjectSystemLldpNetworkPolicyVideoConferencing(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemLldpNetworkPolicyVideoConferencing resource while getting object: %v", err)
 	}
@@ -125,7 +125,6 @@ func resourceSystemLldpNetworkPolicyVideoConferencingUpdate(d *schema.ResourceDa
 
 func resourceSystemLldpNetworkPolicyVideoConferencingDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -150,11 +149,17 @@ func resourceSystemLldpNetworkPolicyVideoConferencingDelete(d *schema.ResourceDa
 	paradict["vdom"] = device_vdom
 	paradict["network_policy"] = network_policy
 
+	obj, err := getObjectSystemLldpNetworkPolicyVideoConferencing(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating SystemLldpNetworkPolicyVideoConferencing resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteSystemLldpNetworkPolicyVideoConferencing(mkey, paradict, wsParams)
+	_, err = c.UpdateSystemLldpNetworkPolicyVideoConferencing(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting SystemLldpNetworkPolicyVideoConferencing resource: %v", err)
+		return fmt.Errorf("Error clearing SystemLldpNetworkPolicyVideoConferencing resource: %v", err)
 	}
 
 	d.SetId("")
@@ -326,7 +331,7 @@ func expandSystemLldpNetworkPolicyVideoConferencingVlan2edl(d *schema.ResourceDa
 	return v, nil
 }
 
-func getObjectSystemLldpNetworkPolicyVideoConferencing(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectSystemLldpNetworkPolicyVideoConferencing(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("dscp"); ok || d.HasChange("dscp") {

@@ -1,5 +1,5 @@
 ---
-subcategory: "No Category"
+subcategory: "Firewall"
 layout: "fmgdevice"
 page_title: "FortiManager Device: fmgdevice_firewall_proxypolicy"
 description: |-
@@ -60,6 +60,7 @@ The following arguments are supported:
 * `internet_service_custom_group` - Custom Internet Service group name.
 * `internet_service_fortiguard` - FortiGuard Internet Service name.
 * `internet_service_group` - Internet Service group name.
+* `internet_service_id` - Internet Service ID.
 * `internet_service_name` - Internet Service name.
 * `internet_service_negate` - When enabled, Internet Services match against any internet service EXCEPT the selected Internet Service. Valid values: `disable`, `enable`.
 
@@ -82,9 +83,11 @@ The following arguments are supported:
 
 * `logtraffic_start` - Enable/disable policy log traffic start. Valid values: `disable`, `enable`.
 
+* `mms_profile` - Name of an existing MMS profile.
 * `name` - Policy name.
 * `policyid` - Policy ID.
 * `poolname` - Name of IP pool object.
+* `poolname6` - Name of IPv6 pool object.
 * `profile_group` - Name of profile group.
 * `profile_protocol_options` - Name of an existing Protocol options profile.
 * `profile_type` - Determine whether the firewall policy allows security profile groups or single profiles only. Valid values: `single`, `group`.

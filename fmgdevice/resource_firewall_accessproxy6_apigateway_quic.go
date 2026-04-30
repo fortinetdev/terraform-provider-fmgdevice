@@ -128,7 +128,7 @@ func resourceFirewallAccessProxy6ApiGatewayQuicUpdate(d *schema.ResourceData, m 
 	paradict["access_proxy6"] = access_proxy6
 	paradict["api_gateway"] = api_gateway
 
-	obj, err := getObjectFirewallAccessProxy6ApiGatewayQuic(d)
+	obj, err := getObjectFirewallAccessProxy6ApiGatewayQuic(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating FirewallAccessProxy6ApiGatewayQuic resource while getting object: %v", err)
 	}
@@ -149,7 +149,6 @@ func resourceFirewallAccessProxy6ApiGatewayQuicUpdate(d *schema.ResourceData, m 
 
 func resourceFirewallAccessProxy6ApiGatewayQuicDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -176,11 +175,17 @@ func resourceFirewallAccessProxy6ApiGatewayQuicDelete(d *schema.ResourceData, m 
 	paradict["access_proxy6"] = access_proxy6
 	paradict["api_gateway"] = api_gateway
 
+	obj, err := getObjectFirewallAccessProxy6ApiGatewayQuic(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating FirewallAccessProxy6ApiGatewayQuic resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteFirewallAccessProxy6ApiGatewayQuic(mkey, paradict, wsParams)
+	_, err = c.UpdateFirewallAccessProxy6ApiGatewayQuic(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting FirewallAccessProxy6ApiGatewayQuic resource: %v", err)
+		return fmt.Errorf("Error clearing FirewallAccessProxy6ApiGatewayQuic resource: %v", err)
 	}
 
 	d.SetId("")
@@ -417,7 +422,7 @@ func expandFirewallAccessProxy6ApiGatewayQuicMaxUdpPayloadSize3rdl(d *schema.Res
 	return v, nil
 }
 
-func getObjectFirewallAccessProxy6ApiGatewayQuic(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectFirewallAccessProxy6ApiGatewayQuic(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("ack_delay_exponent"); ok || d.HasChange("ack_delay_exponent") {

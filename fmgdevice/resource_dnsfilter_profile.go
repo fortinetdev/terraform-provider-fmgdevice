@@ -234,6 +234,7 @@ func resourceDnsfilterProfile() *schema.Resource {
 			"youtube_restrict": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"dynamic_sort_subtable": &schema.Schema{
 				Type:     schema.TypeString,

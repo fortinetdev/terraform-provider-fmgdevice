@@ -1,5 +1,5 @@
 ---
-subcategory: "No Category"
+subcategory: "Web Filter"
 layout: "fmgdevice"
 page_title: "FortiManager Device: fmgdevice_webfilter_profile"
 description: |-
@@ -11,6 +11,7 @@ description: |-
 
 ~> The following variables have sub resource. Avoid using them together, otherwise conflicts and overwrites may occur.
 >- `antiphish`: `fmgdevice_webfilter_profile_antiphish`
+>- `file_filter`: `fmgdevice_webfilter_profile_filefilter`
 >- `ftgd_wf`: `fmgdevice_webfilter_profile_ftgdwf`
 >- `override`: `fmgdevice_webfilter_profile_override`
 >- `url_extraction`: `fmgdevice_webfilter_profile_urlextraction`
@@ -31,6 +32,7 @@ The following arguments are supported:
 * `comment` - Optional comments.
 * `extended_log` - Enable/disable extended logging for web filtering. Valid values: `disable`, `enable`.
 
+* `file_filter` - File-Filter. The structure of `file_filter` block is documented below.
 * `feature_set` - Flow/proxy feature set. Valid values: `proxy`, `flow`.
 
 * `ftgd_wf` - Ftgd-Wf. The structure of `ftgd_wf` block is documented below.
@@ -131,6 +133,30 @@ The `inspection_entries` block supports:
 
 * `fortiguard_category` - FortiGuard category to match.
 * `name` - Inspection target name.
+
+The `file_filter` block supports:
+
+* `entries` - Entries. The structure of `entries` block is documented below.
+* `log` - Enable/disable file filter logging. Valid values: `disable`, `enable`.
+
+* `scan_archive_contents` - Enable/disable file filter archive contents scan. Valid values: `disable`, `enable`.
+
+* `status` - Enable/disable file filter. Valid values: `disable`, `enable`.
+
+
+The `entries` block supports:
+
+* `action` - Action taken for matched file. Valid values: `log`, `block`.
+
+* `comment` - Comment.
+* `direction` - Match files transmitted in the session's originating or reply direction. Valid values: `any`, `incoming`, `outgoing`.
+
+* `file_type` - Select file type.
+* `filter` - Add a file filter.
+* `password_protected` - Match password-protected files. Valid values: `any`, `yes`.
+
+* `protocol` - Protocols to apply with. Valid values: `http`, `ftp`.
+
 
 The `ftgd_wf` block supports:
 

@@ -66,6 +66,22 @@ func resourceSystemSpeedTestSchedule() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"expected_inbandwidth_maximum": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+			},
+			"expected_inbandwidth_minimum": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+			},
+			"expected_outbandwidth_maximum": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+			},
+			"expected_outbandwidth_minimum": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+			},
 			"interface": &schema.Schema{
 				Type:     schema.TypeString,
 				ForceNew: true,
@@ -73,6 +89,16 @@ func resourceSystemSpeedTestSchedule() *schema.Resource {
 			},
 			"mode": &schema.Schema{
 				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+			"retries": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+				Computed: true,
+			},
+			"retry_pause": &schema.Schema{
+				Type:     schema.TypeInt,
 				Optional: true,
 				Computed: true,
 			},
@@ -108,6 +134,11 @@ func resourceSystemSpeedTestSchedule() *schema.Resource {
 			"update_inbandwidth_minimum": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+			},
+			"update_interface_shaping": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
 			},
 			"update_outbandwidth": &schema.Schema{
 				Type:     schema.TypeString,
@@ -335,6 +366,22 @@ func flattenSystemSpeedTestScheduleDynamicServer(v interface{}, d *schema.Resour
 	return v
 }
 
+func flattenSystemSpeedTestScheduleExpectedInbandwidthMaximum(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemSpeedTestScheduleExpectedInbandwidthMinimum(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemSpeedTestScheduleExpectedOutbandwidthMaximum(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemSpeedTestScheduleExpectedOutbandwidthMinimum(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenSystemSpeedTestScheduleInterface(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return conv2str(v)
 }
@@ -343,12 +390,20 @@ func flattenSystemSpeedTestScheduleMode(v interface{}, d *schema.ResourceData, p
 	return v
 }
 
+func flattenSystemSpeedTestScheduleRetries(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemSpeedTestScheduleRetryPause(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenSystemSpeedTestScheduleSchedules(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return flattenStringList(v)
 }
 
 func flattenSystemSpeedTestScheduleServerName(v interface{}, d *schema.ResourceData, pre string) interface{} {
-	return v
+	return convintflist2str(v, d.Get(pre))
 }
 
 func flattenSystemSpeedTestScheduleServerPort(v interface{}, d *schema.ResourceData, pre string) interface{} {
@@ -368,6 +423,10 @@ func flattenSystemSpeedTestScheduleUpdateInbandwidthMaximum(v interface{}, d *sc
 }
 
 func flattenSystemSpeedTestScheduleUpdateInbandwidthMinimum(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemSpeedTestScheduleUpdateInterfaceShaping(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -420,6 +479,46 @@ func refreshObjectSystemSpeedTestSchedule(d *schema.ResourceData, o map[string]i
 		}
 	}
 
+	if err = d.Set("expected_inbandwidth_maximum", flattenSystemSpeedTestScheduleExpectedInbandwidthMaximum(o["expected-inbandwidth-maximum"], d, "expected_inbandwidth_maximum")); err != nil {
+		if vv, ok := fortiAPIPatch(o["expected-inbandwidth-maximum"], "SystemSpeedTestSchedule-ExpectedInbandwidthMaximum"); ok {
+			if err = d.Set("expected_inbandwidth_maximum", vv); err != nil {
+				return fmt.Errorf("Error reading expected_inbandwidth_maximum: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading expected_inbandwidth_maximum: %v", err)
+		}
+	}
+
+	if err = d.Set("expected_inbandwidth_minimum", flattenSystemSpeedTestScheduleExpectedInbandwidthMinimum(o["expected-inbandwidth-minimum"], d, "expected_inbandwidth_minimum")); err != nil {
+		if vv, ok := fortiAPIPatch(o["expected-inbandwidth-minimum"], "SystemSpeedTestSchedule-ExpectedInbandwidthMinimum"); ok {
+			if err = d.Set("expected_inbandwidth_minimum", vv); err != nil {
+				return fmt.Errorf("Error reading expected_inbandwidth_minimum: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading expected_inbandwidth_minimum: %v", err)
+		}
+	}
+
+	if err = d.Set("expected_outbandwidth_maximum", flattenSystemSpeedTestScheduleExpectedOutbandwidthMaximum(o["expected-outbandwidth-maximum"], d, "expected_outbandwidth_maximum")); err != nil {
+		if vv, ok := fortiAPIPatch(o["expected-outbandwidth-maximum"], "SystemSpeedTestSchedule-ExpectedOutbandwidthMaximum"); ok {
+			if err = d.Set("expected_outbandwidth_maximum", vv); err != nil {
+				return fmt.Errorf("Error reading expected_outbandwidth_maximum: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading expected_outbandwidth_maximum: %v", err)
+		}
+	}
+
+	if err = d.Set("expected_outbandwidth_minimum", flattenSystemSpeedTestScheduleExpectedOutbandwidthMinimum(o["expected-outbandwidth-minimum"], d, "expected_outbandwidth_minimum")); err != nil {
+		if vv, ok := fortiAPIPatch(o["expected-outbandwidth-minimum"], "SystemSpeedTestSchedule-ExpectedOutbandwidthMinimum"); ok {
+			if err = d.Set("expected_outbandwidth_minimum", vv); err != nil {
+				return fmt.Errorf("Error reading expected_outbandwidth_minimum: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading expected_outbandwidth_minimum: %v", err)
+		}
+	}
+
 	if err = d.Set("interface", flattenSystemSpeedTestScheduleInterface(o["interface"], d, "interface")); err != nil {
 		if vv, ok := fortiAPIPatch(o["interface"], "SystemSpeedTestSchedule-Interface"); ok {
 			if err = d.Set("interface", vv); err != nil {
@@ -437,6 +536,26 @@ func refreshObjectSystemSpeedTestSchedule(d *schema.ResourceData, o map[string]i
 			}
 		} else {
 			return fmt.Errorf("Error reading mode: %v", err)
+		}
+	}
+
+	if err = d.Set("retries", flattenSystemSpeedTestScheduleRetries(o["retries"], d, "retries")); err != nil {
+		if vv, ok := fortiAPIPatch(o["retries"], "SystemSpeedTestSchedule-Retries"); ok {
+			if err = d.Set("retries", vv); err != nil {
+				return fmt.Errorf("Error reading retries: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading retries: %v", err)
+		}
+	}
+
+	if err = d.Set("retry_pause", flattenSystemSpeedTestScheduleRetryPause(o["retry-pause"], d, "retry_pause")); err != nil {
+		if vv, ok := fortiAPIPatch(o["retry-pause"], "SystemSpeedTestSchedule-RetryPause"); ok {
+			if err = d.Set("retry_pause", vv); err != nil {
+				return fmt.Errorf("Error reading retry_pause: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading retry_pause: %v", err)
 		}
 	}
 
@@ -510,6 +629,16 @@ func refreshObjectSystemSpeedTestSchedule(d *schema.ResourceData, o map[string]i
 		}
 	}
 
+	if err = d.Set("update_interface_shaping", flattenSystemSpeedTestScheduleUpdateInterfaceShaping(o["update-interface-shaping"], d, "update_interface_shaping")); err != nil {
+		if vv, ok := fortiAPIPatch(o["update-interface-shaping"], "SystemSpeedTestSchedule-UpdateInterfaceShaping"); ok {
+			if err = d.Set("update_interface_shaping", vv); err != nil {
+				return fmt.Errorf("Error reading update_interface_shaping: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading update_interface_shaping: %v", err)
+		}
+	}
+
 	if err = d.Set("update_outbandwidth", flattenSystemSpeedTestScheduleUpdateOutbandwidth(o["update-outbandwidth"], d, "update_outbandwidth")); err != nil {
 		if vv, ok := fortiAPIPatch(o["update-outbandwidth"], "SystemSpeedTestSchedule-UpdateOutbandwidth"); ok {
 			if err = d.Set("update_outbandwidth", vv); err != nil {
@@ -571,6 +700,22 @@ func expandSystemSpeedTestScheduleDynamicServer(d *schema.ResourceData, v interf
 	return v, nil
 }
 
+func expandSystemSpeedTestScheduleExpectedInbandwidthMaximum(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemSpeedTestScheduleExpectedInbandwidthMinimum(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemSpeedTestScheduleExpectedOutbandwidthMaximum(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemSpeedTestScheduleExpectedOutbandwidthMinimum(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandSystemSpeedTestScheduleInterface(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -579,12 +724,20 @@ func expandSystemSpeedTestScheduleMode(d *schema.ResourceData, v interface{}, pr
 	return v, nil
 }
 
+func expandSystemSpeedTestScheduleRetries(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemSpeedTestScheduleRetryPause(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandSystemSpeedTestScheduleSchedules(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return expandStringList(v.(*schema.Set).List()), nil
 }
 
 func expandSystemSpeedTestScheduleServerName(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
-	return v, nil
+	return convstr2list(v, nil), nil
 }
 
 func expandSystemSpeedTestScheduleServerPort(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
@@ -604,6 +757,10 @@ func expandSystemSpeedTestScheduleUpdateInbandwidthMaximum(d *schema.ResourceDat
 }
 
 func expandSystemSpeedTestScheduleUpdateInbandwidthMinimum(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemSpeedTestScheduleUpdateInterfaceShaping(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -653,6 +810,42 @@ func getObjectSystemSpeedTestSchedule(d *schema.ResourceData) (*map[string]inter
 		}
 	}
 
+	if v, ok := d.GetOk("expected_inbandwidth_maximum"); ok || d.HasChange("expected_inbandwidth_maximum") {
+		t, err := expandSystemSpeedTestScheduleExpectedInbandwidthMaximum(d, v, "expected_inbandwidth_maximum")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["expected-inbandwidth-maximum"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("expected_inbandwidth_minimum"); ok || d.HasChange("expected_inbandwidth_minimum") {
+		t, err := expandSystemSpeedTestScheduleExpectedInbandwidthMinimum(d, v, "expected_inbandwidth_minimum")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["expected-inbandwidth-minimum"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("expected_outbandwidth_maximum"); ok || d.HasChange("expected_outbandwidth_maximum") {
+		t, err := expandSystemSpeedTestScheduleExpectedOutbandwidthMaximum(d, v, "expected_outbandwidth_maximum")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["expected-outbandwidth-maximum"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("expected_outbandwidth_minimum"); ok || d.HasChange("expected_outbandwidth_minimum") {
+		t, err := expandSystemSpeedTestScheduleExpectedOutbandwidthMinimum(d, v, "expected_outbandwidth_minimum")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["expected-outbandwidth-minimum"] = t
+		}
+	}
+
 	if v, ok := d.GetOk("interface"); ok || d.HasChange("interface") {
 		t, err := expandSystemSpeedTestScheduleInterface(d, v, "interface")
 		if err != nil {
@@ -668,6 +861,24 @@ func getObjectSystemSpeedTestSchedule(d *schema.ResourceData) (*map[string]inter
 			return &obj, err
 		} else if t != nil {
 			obj["mode"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("retries"); ok || d.HasChange("retries") {
+		t, err := expandSystemSpeedTestScheduleRetries(d, v, "retries")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["retries"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("retry_pause"); ok || d.HasChange("retry_pause") {
+		t, err := expandSystemSpeedTestScheduleRetryPause(d, v, "retry_pause")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["retry-pause"] = t
 		}
 	}
 
@@ -731,6 +942,15 @@ func getObjectSystemSpeedTestSchedule(d *schema.ResourceData) (*map[string]inter
 			return &obj, err
 		} else if t != nil {
 			obj["update-inbandwidth-minimum"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("update_interface_shaping"); ok || d.HasChange("update_interface_shaping") {
+		t, err := expandSystemSpeedTestScheduleUpdateInterfaceShaping(d, v, "update_interface_shaping")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["update-interface-shaping"] = t
 		}
 	}
 

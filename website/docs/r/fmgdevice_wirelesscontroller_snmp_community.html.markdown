@@ -1,5 +1,5 @@
 ---
-subcategory: "No Category"
+subcategory: "Wireless Controller"
 layout: "fmgdevice"
 page_title: "FortiManager Device: fmgdevice_wirelesscontroller_snmp_community"
 description: |-
@@ -12,6 +12,7 @@ SNMP Community Configuration.
 ~> This resource is a sub resource for variable `community` of resource `fmgdevice_wirelesscontroller_snmp`. Conflict and overwrite may occur if use both of them.
 The following variables have sub resource. Avoid using them together, otherwise conflicts and overwrites may occur.
 >- `hosts`: `fmgdevice_wirelesscontroller_snmp_community_hosts`
+>- `hosts6`: `fmgdevice_wirelesscontroller_snmp_community_hosts6`
 
 
 
@@ -42,6 +43,7 @@ The following arguments are supported:
 * `device_vdom` - FortiManager managed device vdom. This variable is used in the request URL. If not specified, it will inherit the variable `device_vdom` of the provider.
 
 * `hosts` - Hosts. The structure of `hosts` block is documented below.
+* `hosts6` - Hosts6. The structure of `hosts6` block is documented below.
 * `fosid` - Community ID.
 * `name` - Community name.
 * `query_v1_status` - Enable/disable SNMP v1 queries. Valid values: `disable`, `enable`.
@@ -60,6 +62,11 @@ The `hosts` block supports:
 
 * `id` - Host entry ID.
 * `ip` - IPv4 address of the SNMP manager (host).
+
+The `hosts6` block supports:
+
+* `id` - Host6 entry ID.
+* `ipv6` - IPv6 address of the SNMP manager (host).
 
 
 ## Attribute Reference

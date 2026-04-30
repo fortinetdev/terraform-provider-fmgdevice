@@ -1,5 +1,5 @@
 ---
-subcategory: "No Category"
+subcategory: "System"
 layout: "fmgdevice"
 page_title: "FortiManager Device: fmgdevice_system_pppoeinterface"
 description: |-
@@ -45,6 +45,9 @@ The following arguments are supported:
 
 * `lcp_echo_interval` - Time in seconds between PPPoE Link Control Protocol (LCP) echo requests.
 * `lcp_max_echo_fails` - Maximum missed LCP echo messages before disconnect.
+* `mrru` - PPP MRRU (296 - 65535, default = 1500).
+* `multilink` - Enable/disable PPP multilink support. Valid values: `disable`, `enable`.
+
 * `name` - Name of the PPPoE interface.
 * `padt_retry_timeout` - PPPoE terminate timeout value in (0-4294967295 sec).
 * `password` - Enter the password.

@@ -82,7 +82,7 @@ func resourceSystemAutoupdateScheduleUpdate(d *schema.ResourceData, m interface{
 	}
 	paradict["device"] = device_name
 
-	obj, err := getObjectSystemAutoupdateSchedule(d)
+	obj, err := getObjectSystemAutoupdateSchedule(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemAutoupdateSchedule resource while getting object: %v", err)
 	}
@@ -103,7 +103,6 @@ func resourceSystemAutoupdateScheduleUpdate(d *schema.ResourceData, m interface{
 
 func resourceSystemAutoupdateScheduleDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -121,11 +120,17 @@ func resourceSystemAutoupdateScheduleDelete(d *schema.ResourceData, m interface{
 	}
 	paradict["device"] = device_name
 
+	obj, err := getObjectSystemAutoupdateSchedule(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating SystemAutoupdateSchedule resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteSystemAutoupdateSchedule(mkey, paradict, wsParams)
+	_, err = c.UpdateSystemAutoupdateSchedule(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting SystemAutoupdateSchedule resource: %v", err)
+		return fmt.Errorf("Error clearing SystemAutoupdateSchedule resource: %v", err)
 	}
 
 	d.SetId("")
@@ -257,7 +262,7 @@ func expandSystemAutoupdateScheduleTime(d *schema.ResourceData, v interface{}, p
 	return v, nil
 }
 
-func getObjectSystemAutoupdateSchedule(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectSystemAutoupdateSchedule(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("day"); ok || d.HasChange("day") {

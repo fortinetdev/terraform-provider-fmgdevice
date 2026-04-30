@@ -1,5 +1,5 @@
 ---
-subcategory: "No Category"
+subcategory: "Log"
 layout: "fmgdevice"
 page_title: "FortiManager Device: fmgdevice_log_eventfilter"
 description: |-
@@ -62,6 +62,8 @@ The following arguments are supported:
 * `vpn` - Enable/disable VPN event logging. Valid values: `disable`, `enable`.
 
 * `wan_opt` - Enable/disable WAN optimization event logging. Valid values: `disable`, `enable`.
+
+* `web_svc` - Enable/disable web-svc performance logging. Valid values: `disable`, `enable`.
 
 * `webproxy` - Enable/disable web proxy event logging. Valid values: `disable`, `enable`.
 

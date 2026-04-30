@@ -109,7 +109,7 @@ func resourceLogTacacsAccounting2SettingUpdate(d *schema.ResourceData, m interfa
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	obj, err := getObjectLogTacacsAccounting2Setting(d)
+	obj, err := getObjectLogTacacsAccounting2Setting(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating LogTacacsAccounting2Setting resource while getting object: %v", err)
 	}
@@ -130,7 +130,6 @@ func resourceLogTacacsAccounting2SettingUpdate(d *schema.ResourceData, m interfa
 
 func resourceLogTacacsAccounting2SettingDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -153,11 +152,17 @@ func resourceLogTacacsAccounting2SettingDelete(d *schema.ResourceData, m interfa
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	obj, err := getObjectLogTacacsAccounting2Setting(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating LogTacacsAccounting2Setting resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteLogTacacsAccounting2Setting(mkey, paradict, wsParams)
+	_, err = c.UpdateLogTacacsAccounting2Setting(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting LogTacacsAccounting2Setting resource: %v", err)
+		return fmt.Errorf("Error clearing LogTacacsAccounting2Setting resource: %v", err)
 	}
 
 	d.SetId("")
@@ -340,7 +345,7 @@ func expandLogTacacsAccounting2SettingVrfSelect(d *schema.ResourceData, v interf
 	return v, nil
 }
 
-func getObjectLogTacacsAccounting2Setting(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectLogTacacsAccounting2Setting(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("interface"); ok || d.HasChange("interface") {

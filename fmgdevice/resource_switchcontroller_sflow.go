@@ -49,6 +49,7 @@ func resourceSwitchControllerSflow() *schema.Resource {
 			"collector_ip": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"collector_port": &schema.Schema{
 				Type:     schema.TypeInt,
@@ -83,7 +84,7 @@ func resourceSwitchControllerSflowUpdate(d *schema.ResourceData, m interface{}) 
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	obj, err := getObjectSwitchControllerSflow(d)
+	obj, err := getObjectSwitchControllerSflow(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating SwitchControllerSflow resource while getting object: %v", err)
 	}
@@ -104,7 +105,6 @@ func resourceSwitchControllerSflowUpdate(d *schema.ResourceData, m interface{}) 
 
 func resourceSwitchControllerSflowDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -127,11 +127,17 @@ func resourceSwitchControllerSflowDelete(d *schema.ResourceData, m interface{}) 
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	obj, err := getObjectSwitchControllerSflow(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating SwitchControllerSflow resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteSwitchControllerSflow(mkey, paradict, wsParams)
+	_, err = c.UpdateSwitchControllerSflow(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting SwitchControllerSflow resource: %v", err)
+		return fmt.Errorf("Error clearing SwitchControllerSflow resource: %v", err)
 	}
 
 	d.SetId("")
@@ -238,7 +244,7 @@ func expandSwitchControllerSflowCollectorPort(d *schema.ResourceData, v interfac
 	return v, nil
 }
 
-func getObjectSwitchControllerSflow(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectSwitchControllerSflow(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("collector_ip"); ok || d.HasChange("collector_ip") {

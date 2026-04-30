@@ -1,5 +1,5 @@
 ---
-subcategory: "No Category"
+subcategory: "Web Proxy"
 layout: "fmgdevice"
 page_title: "FortiManager Device: fmgdevice_webproxy_urllist_entries"
 description: |-

@@ -49,6 +49,7 @@ func resourceSystemVneTunnel() *schema.Resource {
 			"auto_asic_offload": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"bmr_hostname": &schema.Schema{
 				Type:      schema.TypeSet,
@@ -133,7 +134,7 @@ func resourceSystemVneTunnelUpdate(d *schema.ResourceData, m interface{}) error 
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	obj, err := getObjectSystemVneTunnel(d)
+	obj, err := getObjectSystemVneTunnel(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemVneTunnel resource while getting object: %v", err)
 	}
@@ -154,7 +155,6 @@ func resourceSystemVneTunnelUpdate(d *schema.ResourceData, m interface{}) error 
 
 func resourceSystemVneTunnelDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -177,11 +177,17 @@ func resourceSystemVneTunnelDelete(d *schema.ResourceData, m interface{}) error 
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	obj, err := getObjectSystemVneTunnel(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating SystemVneTunnel resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteSystemVneTunnel(mkey, paradict, wsParams)
+	_, err = c.UpdateSystemVneTunnel(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting SystemVneTunnel resource: %v", err)
+		return fmt.Errorf("Error clearing SystemVneTunnel resource: %v", err)
 	}
 
 	d.SetId("")
@@ -422,7 +428,7 @@ func expandSystemVneTunnelUpdateUrl(d *schema.ResourceData, v interface{}, pre s
 	return v, nil
 }
 
-func getObjectSystemVneTunnel(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectSystemVneTunnel(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("auto_asic_offload"); ok || d.HasChange("auto_asic_offload") {

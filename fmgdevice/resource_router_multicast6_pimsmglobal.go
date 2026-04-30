@@ -105,7 +105,7 @@ func resourceRouterMulticast6PimSmGlobalUpdate(d *schema.ResourceData, m interfa
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	obj, err := getObjectRouterMulticast6PimSmGlobal(d)
+	obj, err := getObjectRouterMulticast6PimSmGlobal(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating RouterMulticast6PimSmGlobal resource while getting object: %v", err)
 	}
@@ -126,7 +126,6 @@ func resourceRouterMulticast6PimSmGlobalUpdate(d *schema.ResourceData, m interfa
 
 func resourceRouterMulticast6PimSmGlobalDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -149,11 +148,17 @@ func resourceRouterMulticast6PimSmGlobalDelete(d *schema.ResourceData, m interfa
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	obj, err := getObjectRouterMulticast6PimSmGlobal(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating RouterMulticast6PimSmGlobal resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteRouterMulticast6PimSmGlobal(mkey, paradict, wsParams)
+	_, err = c.UpdateRouterMulticast6PimSmGlobal(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting RouterMulticast6PimSmGlobal resource: %v", err)
+		return fmt.Errorf("Error clearing RouterMulticast6PimSmGlobal resource: %v", err)
 	}
 
 	d.SetId("")
@@ -379,7 +384,7 @@ func expandRouterMulticast6PimSmGlobalRpAddressIp6Address2edl(d *schema.Resource
 	return v, nil
 }
 
-func getObjectRouterMulticast6PimSmGlobal(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectRouterMulticast6PimSmGlobal(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("pim_use_sdwan"); ok || d.HasChange("pim_use_sdwan") {
@@ -400,12 +405,16 @@ func getObjectRouterMulticast6PimSmGlobal(d *schema.ResourceData) (*map[string]i
 		}
 	}
 
-	if v, ok := d.GetOk("rp_address"); ok || d.HasChange("rp_address") {
-		t, err := expandRouterMulticast6PimSmGlobalRpAddress2edl(d, v, "rp_address")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["rp-address"] = t
+	if bemptysontable {
+		obj["rp-address"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("rp_address"); ok || d.HasChange("rp_address") {
+			t, err := expandRouterMulticast6PimSmGlobalRpAddress2edl(d, v, "rp_address")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["rp-address"] = t
+			}
 		}
 	}
 

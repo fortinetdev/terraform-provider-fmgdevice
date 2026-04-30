@@ -53,6 +53,7 @@ func resourceSystemDdns() *schema.Resource {
 			"bound_ip": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"clear_text": &schema.Schema{
 				Type:     schema.TypeString,
@@ -142,6 +143,7 @@ func resourceSystemDdns() *schema.Resource {
 			"update_interval": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"use_public_ip": &schema.Schema{
 				Type:     schema.TypeString,

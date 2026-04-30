@@ -63,6 +63,7 @@ func resourceFirewallInternetServiceExtension() *schema.Resource {
 						"addr_mode": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"id": &schema.Schema{
 							Type:     schema.TypeInt,
@@ -76,6 +77,7 @@ func resourceFirewallInternetServiceExtension() *schema.Resource {
 									"end_ip": &schema.Schema{
 										Type:     schema.TypeString,
 										Optional: true,
+										Computed: true,
 									},
 									"id": &schema.Schema{
 										Type:     schema.TypeInt,
@@ -84,6 +86,7 @@ func resourceFirewallInternetServiceExtension() *schema.Resource {
 									"start_ip": &schema.Schema{
 										Type:     schema.TypeString,
 										Optional: true,
+										Computed: true,
 									},
 								},
 							},
@@ -96,6 +99,7 @@ func resourceFirewallInternetServiceExtension() *schema.Resource {
 									"end_ip6": &schema.Schema{
 										Type:     schema.TypeString,
 										Optional: true,
+										Computed: true,
 									},
 									"id": &schema.Schema{
 										Type:     schema.TypeInt,
@@ -104,6 +108,7 @@ func resourceFirewallInternetServiceExtension() *schema.Resource {
 									"start_ip6": &schema.Schema{
 										Type:     schema.TypeString,
 										Optional: true,
+										Computed: true,
 									},
 								},
 							},
@@ -116,6 +121,7 @@ func resourceFirewallInternetServiceExtension() *schema.Resource {
 									"end_port": &schema.Schema{
 										Type:     schema.TypeInt,
 										Optional: true,
+										Computed: true,
 									},
 									"id": &schema.Schema{
 										Type:     schema.TypeInt,
@@ -124,6 +130,7 @@ func resourceFirewallInternetServiceExtension() *schema.Resource {
 									"start_port": &schema.Schema{
 										Type:     schema.TypeInt,
 										Optional: true,
+										Computed: true,
 									},
 								},
 							},

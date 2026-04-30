@@ -84,6 +84,7 @@ func resourceVoipProfile() *schema.Resource {
 						"status": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 					},
 				},
@@ -122,6 +123,7 @@ func resourceVoipProfile() *schema.Resource {
 						"status": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"verify_header": &schema.Schema{
 							Type:     schema.TypeString,
@@ -608,6 +610,7 @@ func resourceVoipProfile() *schema.Resource {
 						"ssl_algorithm": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"ssl_auth_client": &schema.Schema{
 							Type:     schema.TypeSet,
@@ -630,14 +633,17 @@ func resourceVoipProfile() *schema.Resource {
 						"ssl_client_renegotiation": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"ssl_max_version": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"ssl_min_version": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"ssl_mode": &schema.Schema{
 							Type:     schema.TypeString,
@@ -652,6 +658,7 @@ func resourceVoipProfile() *schema.Resource {
 						"ssl_send_empty_frags": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"ssl_server_certificate": &schema.Schema{
 							Type:     schema.TypeSet,
@@ -662,6 +669,7 @@ func resourceVoipProfile() *schema.Resource {
 						"status": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"strict_register": &schema.Schema{
 							Type:     schema.TypeString,

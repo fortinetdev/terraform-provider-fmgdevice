@@ -1,5 +1,5 @@
 ---
-subcategory: "No Category"
+subcategory: "VPN"
 layout: "fmgdevice"
 page_title: "FortiManager Device: fmgdevice_vpn_ssl_web_portal"
 description: |-
@@ -136,6 +136,8 @@ The following arguments are supported:
 * `split_tunneling_routing_negate` - Split-Tunneling-Routing-Negate. Valid values: `disable`, `enable`.
 
 * `theme` - Web portal color scheme. Valid values: `melongene`, `mariner`, `neutrino`, `jade`, `graphite`, `dark-matter`, `onyx`, `eclipse`, `jet-stream`, `security-fabric`.
+
+* `transform_backward_slashes` - Transform backward slashes to forward slashes in URLs. Valid values: `disable`, `enable`.
 
 * `tunnel_mode` - Tunnel-Mode. Valid values: `disable`, `enable`.
 

@@ -634,7 +634,7 @@ func resourceVoipProfileSipUpdate(d *schema.ResourceData, m interface{}) error {
 	paradict["vdom"] = device_vdom
 	paradict["profile"] = profile
 
-	obj, err := getObjectVoipProfileSip(d)
+	obj, err := getObjectVoipProfileSip(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating VoipProfileSip resource while getting object: %v", err)
 	}
@@ -655,7 +655,6 @@ func resourceVoipProfileSipUpdate(d *schema.ResourceData, m interface{}) error {
 
 func resourceVoipProfileSipDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -680,11 +679,17 @@ func resourceVoipProfileSipDelete(d *schema.ResourceData, m interface{}) error {
 	paradict["vdom"] = device_vdom
 	paradict["profile"] = profile
 
+	obj, err := getObjectVoipProfileSip(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating VoipProfileSip resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteVoipProfileSip(mkey, paradict, wsParams)
+	_, err = c.UpdateVoipProfileSip(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting VoipProfileSip resource: %v", err)
+		return fmt.Errorf("Error clearing VoipProfileSip resource: %v", err)
 	}
 
 	d.SetId("")
@@ -2836,7 +2841,7 @@ func expandVoipProfileSipUpdateRateTrack2edl(d *schema.ResourceData, v interface
 	return v, nil
 }
 
-func getObjectVoipProfileSip(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectVoipProfileSip(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("ack_rate"); ok || d.HasChange("ack_rate") {

@@ -151,6 +151,7 @@ func resourceSwitchControllerLldpProfile() *schema.Resource {
 						"status": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"sys_location_id": &schema.Schema{
 							Type:     schema.TypeSet,
@@ -169,6 +170,7 @@ func resourceSwitchControllerLldpProfile() *schema.Resource {
 						"assign_vlan": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"dscp": &schema.Schema{
 							Type:     schema.TypeInt,
@@ -185,6 +187,7 @@ func resourceSwitchControllerLldpProfile() *schema.Resource {
 						"status": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"vlan": &schema.Schema{
 							Type:     schema.TypeInt,

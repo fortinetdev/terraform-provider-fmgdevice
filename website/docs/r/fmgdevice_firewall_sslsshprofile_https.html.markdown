@@ -1,5 +1,5 @@
 ---
-subcategory: "No Category"
+subcategory: "Firewall"
 layout: "fmgdevice"
 page_title: "FortiManager Device: fmgdevice_firewall_sslsshprofile_https"
 description: |-
@@ -21,6 +21,10 @@ The following arguments are supported:
 * `device_name` - FortiManager managed device name. This variable is used in the request URL. If not specified, it will inherit the variable `device_name` of the provider.
 * `device_vdom` - FortiManager managed device vdom. This variable is used in the request URL. If not specified, it will inherit the variable `device_vdom` of the provider.
 * `ssl_ssh_profile` - Ssl Ssh Profile.
+
+* `client_cert_request` - Action based on client certificate request. Valid values: `bypass`, `inspect`, `block`.
+
+* `invalid_server_cert` - Allow or block the invalid SSL session server certificate. Valid values: `allow`, `block`.
 
 * `cert_probe_failure` - Action based on certificate probe failure. Valid values: `block`, `allow`.
 
@@ -46,6 +50,8 @@ The following arguments are supported:
 * `sni_server_cert_check` - Check the SNI in the client hello message with the CN or SAN fields in the returned server certificate. Valid values: `disable`, `enable`, `strict`.
 
 * `status` - Configure protocol inspection status. Valid values: `disable`, `certificate-inspection`, `deep-inspection`.
+
+* `unsupported_ssl` - Action based on the SSL encryption used being unsupported. Valid values: `bypass`, `inspect`, `block`.
 
 * `udp_not_quic` - Action to be taken when matched UDP packet is not QUIC. Valid values: `block`, `allow`.
 

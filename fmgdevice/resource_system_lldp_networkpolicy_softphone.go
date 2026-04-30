@@ -104,7 +104,7 @@ func resourceSystemLldpNetworkPolicySoftphoneUpdate(d *schema.ResourceData, m in
 	paradict["vdom"] = device_vdom
 	paradict["network_policy"] = network_policy
 
-	obj, err := getObjectSystemLldpNetworkPolicySoftphone(d)
+	obj, err := getObjectSystemLldpNetworkPolicySoftphone(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemLldpNetworkPolicySoftphone resource while getting object: %v", err)
 	}
@@ -125,7 +125,6 @@ func resourceSystemLldpNetworkPolicySoftphoneUpdate(d *schema.ResourceData, m in
 
 func resourceSystemLldpNetworkPolicySoftphoneDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -150,11 +149,17 @@ func resourceSystemLldpNetworkPolicySoftphoneDelete(d *schema.ResourceData, m in
 	paradict["vdom"] = device_vdom
 	paradict["network_policy"] = network_policy
 
+	obj, err := getObjectSystemLldpNetworkPolicySoftphone(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating SystemLldpNetworkPolicySoftphone resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteSystemLldpNetworkPolicySoftphone(mkey, paradict, wsParams)
+	_, err = c.UpdateSystemLldpNetworkPolicySoftphone(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting SystemLldpNetworkPolicySoftphone resource: %v", err)
+		return fmt.Errorf("Error clearing SystemLldpNetworkPolicySoftphone resource: %v", err)
 	}
 
 	d.SetId("")
@@ -326,7 +331,7 @@ func expandSystemLldpNetworkPolicySoftphoneVlan2edl(d *schema.ResourceData, v in
 	return v, nil
 }
 
-func getObjectSystemLldpNetworkPolicySoftphone(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectSystemLldpNetworkPolicySoftphone(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("dscp"); ok || d.HasChange("dscp") {

@@ -1,5 +1,5 @@
 ---
-subcategory: "No Category"
+subcategory: "Firewall"
 layout: "fmgdevice"
 page_title: "FortiManager Device: fmgdevice_firewall_securitypolicy"
 description: |-
@@ -32,6 +32,7 @@ The following arguments are supported:
 * `diameter_filter_profile` - Name of an existing Diameter filter profile.
 * `dlp_profile` - Name of an existing DLP profile.
 * `dnsfilter_profile` - Name of an existing DNS filter profile.
+* `dstaddr4` - Destination IPv4 address name and address group names.
 * `dstaddr` - Destination IPv4 address name and address group names.
 * `dstaddr_negate` - When enabled dstaddr specifies what the destination address must NOT be. Valid values: `disable`, `enable`.
 
@@ -53,6 +54,7 @@ The following arguments are supported:
 * `internet_service_custom_group` - Custom Internet Service group name.
 * `internet_service_fortiguard` - Internet-Service-Fortiguard.
 * `internet_service_group` - Internet Service group name.
+* `internet_service_id` - Internet Service ID.
 * `internet_service_name` - Internet Service name.
 * `internet_service_negate` - When enabled internet-service specifies what the service must NOT be. Valid values: `disable`, `enable`.
 
@@ -62,6 +64,7 @@ The following arguments are supported:
 * `internet_service_src_custom_group` - Custom Internet Service source group name.
 * `internet_service_src_fortiguard` - Internet-Service-Src-Fortiguard.
 * `internet_service_src_group` - Internet Service source group name.
+* `internet_service_src_id` - Internet Service source ID.
 * `internet_service_src_name` - Internet Service source name.
 * `internet_service_src_negate` - When enabled internet-service-src specifies what the service must NOT be. Valid values: `disable`, `enable`.
 
@@ -89,6 +92,9 @@ The following arguments are supported:
 
 * `logtraffic` - Enable or disable logging. Log all sessions or security profile sessions. Valid values: `disable`, `all`, `utm`.
 
+* `logtraffic_start` - Record logs when a session starts. Valid values: `disable`, `enable`.
+
+* `mms_profile` - Name of an existing MMS profile.
 * `name` - Policy name.
 * `nat46` - Enable/disable NAT46. Valid values: `disable`, `enable`.
 
@@ -106,6 +112,7 @@ The following arguments are supported:
 * `service` - Service and service group names.
 * `service_negate` - When enabled service specifies what the service must NOT be. Valid values: `disable`, `enable`.
 
+* `srcaddr4` - Source IPv4 address name and address group names.
 * `srcaddr` - Source IPv4 address name and address group names.
 * `srcaddr_negate` - When enabled srcaddr specifies what the source address must NOT be. Valid values: `disable`, `enable`.
 

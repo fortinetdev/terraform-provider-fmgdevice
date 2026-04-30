@@ -80,14 +80,17 @@ func resourceRouterPolicy() *schema.Resource {
 			"end_port": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"end_source_port": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"gateway": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"groups": &schema.Schema{
 				Type:     schema.TypeSet,

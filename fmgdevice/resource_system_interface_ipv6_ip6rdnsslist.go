@@ -58,6 +58,7 @@ func resourceSystemInterfaceIpv6Ip6RdnssList() *schema.Resource {
 			"rdnss_life_time": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 		},
 	}

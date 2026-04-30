@@ -51,6 +51,10 @@ func resourceExtensionControllerExtender() *schema.Resource {
 				Computed: true,
 				ForceNew: true,
 			},
+			"_prefer_img_ver": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 			"allowaccess": &schema.Schema{
 				Type:     schema.TypeSet,
 				Elem:     &schema.Schema{Type: schema.TypeString},
@@ -407,6 +411,10 @@ func resourceExtensionControllerExtenderRead(d *schema.ResourceData, m interface
 	return nil
 }
 
+func flattenExtensionControllerExtenderPreferImgVer(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenExtensionControllerExtenderAllowaccess(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return flattenStringList(v)
 }
@@ -580,6 +588,16 @@ func flattenExtensionControllerExtenderWanExtensionModem2Pdn4Interface(v interfa
 
 func refreshObjectExtensionControllerExtender(d *schema.ResourceData, o map[string]interface{}) error {
 	var err error
+
+	if err = d.Set("_prefer_img_ver", flattenExtensionControllerExtenderPreferImgVer(o["_prefer-img-ver"], d, "_prefer_img_ver")); err != nil {
+		if vv, ok := fortiAPIPatch(o["_prefer-img-ver"], "ExtensionControllerExtender-PreferImgVer"); ok {
+			if err = d.Set("_prefer_img_ver", vv); err != nil {
+				return fmt.Errorf("Error reading _prefer_img_ver: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading _prefer_img_ver: %v", err)
+		}
+	}
 
 	if err = d.Set("allowaccess", flattenExtensionControllerExtenderAllowaccess(o["allowaccess"], d, "allowaccess")); err != nil {
 		if vv, ok := fortiAPIPatch(o["allowaccess"], "ExtensionControllerExtender-Allowaccess"); ok {
@@ -784,6 +802,10 @@ func flattenExtensionControllerExtenderFortiTestDebug(d *schema.ResourceData, fo
 	log.Printf("ER List: %v", e)
 }
 
+func expandExtensionControllerExtenderPreferImgVer(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandExtensionControllerExtenderAllowaccess(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return expandStringList(v.(*schema.Set).List()), nil
 }
@@ -952,6 +974,15 @@ func expandExtensionControllerExtenderWanExtensionModem2Pdn4Interface(d *schema.
 
 func getObjectExtensionControllerExtender(d *schema.ResourceData) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
+
+	if v, ok := d.GetOk("_prefer_img_ver"); ok || d.HasChange("_prefer_img_ver") {
+		t, err := expandExtensionControllerExtenderPreferImgVer(d, v, "_prefer_img_ver")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["_prefer-img-ver"] = t
+		}
+	}
 
 	if v, ok := d.GetOk("allowaccess"); ok || d.HasChange("allowaccess") {
 		t, err := expandExtensionControllerExtenderAllowaccess(d, v, "allowaccess")

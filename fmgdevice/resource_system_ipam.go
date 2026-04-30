@@ -193,7 +193,7 @@ func resourceSystemIpamUpdate(d *schema.ResourceData, m interface{}) error {
 	}
 	paradict["device"] = device_name
 
-	obj, err := getObjectSystemIpam(d)
+	obj, err := getObjectSystemIpam(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemIpam resource while getting object: %v", err)
 	}
@@ -214,7 +214,6 @@ func resourceSystemIpamUpdate(d *schema.ResourceData, m interface{}) error {
 
 func resourceSystemIpamDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -232,11 +231,17 @@ func resourceSystemIpamDelete(d *schema.ResourceData, m interface{}) error {
 	}
 	paradict["device"] = device_name
 
+	obj, err := getObjectSystemIpam(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating SystemIpam resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteSystemIpam(mkey, paradict, wsParams)
+	_, err = c.UpdateSystemIpam(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting SystemIpam resource: %v", err)
+		return fmt.Errorf("Error clearing SystemIpam resource: %v", err)
 	}
 
 	d.SetId("")
@@ -895,7 +900,7 @@ func expandSystemIpamStatus(d *schema.ResourceData, v interface{}, pre string) (
 	return v, nil
 }
 
-func getObjectSystemIpam(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectSystemIpam(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("pool_subnet"); ok || d.HasChange("pool_subnet") {
@@ -943,12 +948,16 @@ func getObjectSystemIpam(d *schema.ResourceData) (*map[string]interface{}, error
 		}
 	}
 
-	if v, ok := d.GetOk("pools"); ok || d.HasChange("pools") {
-		t, err := expandSystemIpamPools(d, v, "pools")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["pools"] = t
+	if bemptysontable {
+		obj["pools"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("pools"); ok || d.HasChange("pools") {
+			t, err := expandSystemIpamPools(d, v, "pools")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["pools"] = t
+			}
 		}
 	}
 
@@ -961,12 +970,16 @@ func getObjectSystemIpam(d *schema.ResourceData) (*map[string]interface{}, error
 		}
 	}
 
-	if v, ok := d.GetOk("rules"); ok || d.HasChange("rules") {
-		t, err := expandSystemIpamRules(d, v, "rules")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["rules"] = t
+	if bemptysontable {
+		obj["rules"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("rules"); ok || d.HasChange("rules") {
+			t, err := expandSystemIpamRules(d, v, "rules")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["rules"] = t
+			}
 		}
 	}
 

@@ -66,6 +66,7 @@ func resourceAntivirusProfile() *schema.Resource {
 			"analytics_db": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"analytics_ignore_filetype": &schema.Schema{
 				Type:     schema.TypeSet,
@@ -121,14 +122,17 @@ func resourceAntivirusProfile() *schema.Resource {
 						"fortiai": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"fortindr": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"fortisandbox": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"malware_stream": &schema.Schema{
 							Type:     schema.TypeString,
@@ -162,82 +166,102 @@ func resourceAntivirusProfile() *schema.Resource {
 						"analytics_suspicious": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"cover_page": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"detect_only": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"error_action": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"office_action": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"office_dde": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"office_embed": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"office_hylink": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"office_linked": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"office_macro": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"original_file_destination": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"pdf_act_form": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"pdf_act_gotor": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"pdf_act_java": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"pdf_act_launch": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"pdf_act_movie": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"pdf_act_sound": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"pdf_embedfile": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"pdf_hyperlink": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"pdf_javacode": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 					},
 				},
@@ -275,34 +299,47 @@ func resourceAntivirusProfile() *schema.Resource {
 			"fortiai_error_action": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"fortiai_timeout_action": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"fortindr_error_action": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"fortindr_timeout_action": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"fortisandbox_error_action": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"fortisandbox_max_upload": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"fortisandbox_mode": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
+			},
+			"fortisandbox_scan_timeout": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+				Computed: true,
 			},
 			"fortisandbox_timeout_action": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"ftp": &schema.Schema{
 				Type:     schema.TypeList,
@@ -347,14 +384,17 @@ func resourceAntivirusProfile() *schema.Resource {
 						"fortiai": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"fortindr": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"fortisandbox": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"malware_stream": &schema.Schema{
 							Type:     schema.TypeString,
@@ -393,6 +433,10 @@ func resourceAntivirusProfile() *schema.Resource {
 							Optional: true,
 							Computed: true,
 						},
+						"av_optimize": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
 						"av_scan": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
@@ -401,6 +445,7 @@ func resourceAntivirusProfile() *schema.Resource {
 						"content_disarm": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"emulator": &schema.Schema{
 							Type:     schema.TypeString,
@@ -421,14 +466,17 @@ func resourceAntivirusProfile() *schema.Resource {
 						"fortiai": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"fortindr": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"fortisandbox": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"malware_stream": &schema.Schema{
 							Type:     schema.TypeString,
@@ -448,6 +496,7 @@ func resourceAntivirusProfile() *schema.Resource {
 						"unknown_content_encoding": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 					},
 				},
@@ -479,6 +528,7 @@ func resourceAntivirusProfile() *schema.Resource {
 						"content_disarm": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"emulator": &schema.Schema{
 							Type:     schema.TypeString,
@@ -488,6 +538,7 @@ func resourceAntivirusProfile() *schema.Resource {
 						"executables": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"options": &schema.Schema{
 							Type:     schema.TypeSet,
@@ -503,14 +554,17 @@ func resourceAntivirusProfile() *schema.Resource {
 						"fortiai": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"fortindr": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"fortisandbox": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"malware_stream": &schema.Schema{
 							Type:     schema.TypeString,
@@ -552,14 +606,17 @@ func resourceAntivirusProfile() *schema.Resource {
 						"av_scan": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"emulator": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"executables": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"options": &schema.Schema{
 							Type:     schema.TypeSet,
@@ -570,30 +627,37 @@ func resourceAntivirusProfile() *schema.Resource {
 						"external_blocklist": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"fortiai": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"fortindr": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"fortisandbox": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"malware_stream": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"outbreak_prevention": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"quarantine": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 					},
 				},
@@ -676,14 +740,17 @@ func resourceAntivirusProfile() *schema.Resource {
 						"fortiai": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"fortindr": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"fortisandbox": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"malware_stream": &schema.Schema{
 							Type:     schema.TypeString,
@@ -713,10 +780,12 @@ func resourceAntivirusProfile() *schema.Resource {
 						"external_blocklist": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"ftgd_service": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 					},
 				},
@@ -753,6 +822,7 @@ func resourceAntivirusProfile() *schema.Resource {
 						"content_disarm": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"emulator": &schema.Schema{
 							Type:     schema.TypeString,
@@ -762,6 +832,7 @@ func resourceAntivirusProfile() *schema.Resource {
 						"executables": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"options": &schema.Schema{
 							Type:     schema.TypeSet,
@@ -777,14 +848,17 @@ func resourceAntivirusProfile() *schema.Resource {
 						"fortiai": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"fortindr": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"fortisandbox": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"malware_stream": &schema.Schema{
 							Type:     schema.TypeString,
@@ -813,6 +887,7 @@ func resourceAntivirusProfile() *schema.Resource {
 			"scan_mode": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"smtp": &schema.Schema{
 				Type:     schema.TypeList,
@@ -841,6 +916,7 @@ func resourceAntivirusProfile() *schema.Resource {
 						"content_disarm": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"emulator": &schema.Schema{
 							Type:     schema.TypeString,
@@ -850,6 +926,7 @@ func resourceAntivirusProfile() *schema.Resource {
 						"executables": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"options": &schema.Schema{
 							Type:     schema.TypeSet,
@@ -865,14 +942,17 @@ func resourceAntivirusProfile() *schema.Resource {
 						"fortiai": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"fortindr": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"fortisandbox": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"malware_stream": &schema.Schema{
 							Type:     schema.TypeString,
@@ -914,10 +994,12 @@ func resourceAntivirusProfile() *schema.Resource {
 						"av_scan": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"emulator": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"options": &schema.Schema{
 							Type:     schema.TypeSet,
@@ -928,30 +1010,37 @@ func resourceAntivirusProfile() *schema.Resource {
 						"external_blocklist": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"fortiai": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"fortindr": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"fortisandbox": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"malware_stream": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"outbreak_prevention": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"quarantine": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 					},
 				},
@@ -959,6 +1048,7 @@ func resourceAntivirusProfile() *schema.Resource {
 			"analytics_max_upload": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"analytics_wl_filetype": &schema.Schema{
 				Type:     schema.TypeSet,
@@ -969,10 +1059,12 @@ func resourceAntivirusProfile() *schema.Resource {
 			"ftgd_analytics": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"av_block_log": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 		},
 	}
@@ -1560,6 +1652,10 @@ func flattenAntivirusProfileFortisandboxMode(v interface{}, d *schema.ResourceDa
 	return v
 }
 
+func flattenAntivirusProfileFortisandboxScanTimeout(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenAntivirusProfileFortisandboxTimeoutAction(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -1704,6 +1800,11 @@ func flattenAntivirusProfileHttp(v interface{}, d *schema.ResourceData, pre stri
 		result["archive_log"] = flattenAntivirusProfileHttpArchiveLog(i["archive-log"], d, pre_append)
 	}
 
+	pre_append = pre + ".0." + "av_optimize"
+	if _, ok := i["av-optimize"]; ok {
+		result["av_optimize"] = flattenAntivirusProfileHttpAvOptimize(i["av-optimize"], d, pre_append)
+	}
+
 	pre_append = pre + ".0." + "av_scan"
 	if _, ok := i["av-scan"]; ok {
 		result["av_scan"] = flattenAntivirusProfileHttpAvScan(i["av-scan"], d, pre_append)
@@ -1774,6 +1875,10 @@ func flattenAntivirusProfileHttpArchiveBlock(v interface{}, d *schema.ResourceDa
 
 func flattenAntivirusProfileHttpArchiveLog(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return flattenStringList(v)
+}
+
+func flattenAntivirusProfileHttpAvOptimize(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
 }
 
 func flattenAntivirusProfileHttpAvScan(v interface{}, d *schema.ResourceData, pre string) interface{} {
@@ -2961,6 +3066,16 @@ func refreshObjectAntivirusProfile(d *schema.ResourceData, o map[string]interfac
 		}
 	}
 
+	if err = d.Set("fortisandbox_scan_timeout", flattenAntivirusProfileFortisandboxScanTimeout(o["fortisandbox-scan-timeout"], d, "fortisandbox_scan_timeout")); err != nil {
+		if vv, ok := fortiAPIPatch(o["fortisandbox-scan-timeout"], "AntivirusProfile-FortisandboxScanTimeout"); ok {
+			if err = d.Set("fortisandbox_scan_timeout", vv); err != nil {
+				return fmt.Errorf("Error reading fortisandbox_scan_timeout: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading fortisandbox_scan_timeout: %v", err)
+		}
+	}
+
 	if err = d.Set("fortisandbox_timeout_action", flattenAntivirusProfileFortisandboxTimeoutAction(o["fortisandbox-timeout-action"], d, "fortisandbox_timeout_action")); err != nil {
 		if vv, ok := fortiAPIPatch(o["fortisandbox-timeout-action"], "AntivirusProfile-FortisandboxTimeoutAction"); ok {
 			if err = d.Set("fortisandbox_timeout_action", vv); err != nil {
@@ -3670,6 +3785,10 @@ func expandAntivirusProfileFortisandboxMode(d *schema.ResourceData, v interface{
 	return v, nil
 }
 
+func expandAntivirusProfileFortisandboxScanTimeout(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandAntivirusProfileFortisandboxTimeoutAction(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -3802,6 +3921,10 @@ func expandAntivirusProfileHttp(d *schema.ResourceData, v interface{}, pre strin
 	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
 		result["archive-log"], _ = expandAntivirusProfileHttpArchiveLog(d, i["archive_log"], pre_append)
 	}
+	pre_append = pre + ".0." + "av_optimize"
+	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+		result["av-optimize"], _ = expandAntivirusProfileHttpAvOptimize(d, i["av_optimize"], pre_append)
+	}
 	pre_append = pre + ".0." + "av_scan"
 	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
 		result["av-scan"], _ = expandAntivirusProfileHttpAvScan(d, i["av_scan"], pre_append)
@@ -3860,6 +3983,10 @@ func expandAntivirusProfileHttpArchiveBlock(d *schema.ResourceData, v interface{
 
 func expandAntivirusProfileHttpArchiveLog(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandAntivirusProfileHttpAvOptimize(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
 }
 
 func expandAntivirusProfileHttpAvScan(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
@@ -4919,6 +5046,15 @@ func getObjectAntivirusProfile(d *schema.ResourceData) (*map[string]interface{},
 			return &obj, err
 		} else if t != nil {
 			obj["fortisandbox-mode"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("fortisandbox_scan_timeout"); ok || d.HasChange("fortisandbox_scan_timeout") {
+		t, err := expandAntivirusProfileFortisandboxScanTimeout(d, v, "fortisandbox_scan_timeout")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["fortisandbox-scan-timeout"] = t
 		}
 	}
 

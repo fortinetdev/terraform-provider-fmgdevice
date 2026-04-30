@@ -235,7 +235,7 @@ func resourceRouterMulticastPimSmGlobalUpdate(d *schema.ResourceData, m interfac
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	obj, err := getObjectRouterMulticastPimSmGlobal(d)
+	obj, err := getObjectRouterMulticastPimSmGlobal(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating RouterMulticastPimSmGlobal resource while getting object: %v", err)
 	}
@@ -256,7 +256,6 @@ func resourceRouterMulticastPimSmGlobalUpdate(d *schema.ResourceData, m interfac
 
 func resourceRouterMulticastPimSmGlobalDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -279,11 +278,17 @@ func resourceRouterMulticastPimSmGlobalDelete(d *schema.ResourceData, m interfac
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	obj, err := getObjectRouterMulticastPimSmGlobal(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating RouterMulticastPimSmGlobal resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteRouterMulticastPimSmGlobal(mkey, paradict, wsParams)
+	_, err = c.UpdateRouterMulticastPimSmGlobal(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting RouterMulticastPimSmGlobal resource: %v", err)
+		return fmt.Errorf("Error clearing RouterMulticastPimSmGlobal resource: %v", err)
 	}
 
 	d.SetId("")
@@ -960,7 +965,7 @@ func expandRouterMulticastPimSmGlobalSsmRange2edl(d *schema.ResourceData, v inte
 	return expandStringList(v.(*schema.Set).List()), nil
 }
 
-func getObjectRouterMulticastPimSmGlobal(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectRouterMulticastPimSmGlobal(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("accept_register_list"); ok || d.HasChange("accept_register_list") {
@@ -1152,12 +1157,16 @@ func getObjectRouterMulticastPimSmGlobal(d *schema.ResourceData) (*map[string]in
 		}
 	}
 
-	if v, ok := d.GetOk("rp_address"); ok || d.HasChange("rp_address") {
-		t, err := expandRouterMulticastPimSmGlobalRpAddress2edl(d, v, "rp_address")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["rp-address"] = t
+	if bemptysontable {
+		obj["rp-address"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("rp_address"); ok || d.HasChange("rp_address") {
+			t, err := expandRouterMulticastPimSmGlobalRpAddress2edl(d, v, "rp_address")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["rp-address"] = t
+			}
 		}
 	}
 

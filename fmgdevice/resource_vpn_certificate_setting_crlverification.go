@@ -89,7 +89,7 @@ func resourceVpnCertificateSettingCrlVerificationUpdate(d *schema.ResourceData, 
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	obj, err := getObjectVpnCertificateSettingCrlVerification(d)
+	obj, err := getObjectVpnCertificateSettingCrlVerification(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating VpnCertificateSettingCrlVerification resource while getting object: %v", err)
 	}
@@ -110,7 +110,6 @@ func resourceVpnCertificateSettingCrlVerificationUpdate(d *schema.ResourceData, 
 
 func resourceVpnCertificateSettingCrlVerificationDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -133,11 +132,17 @@ func resourceVpnCertificateSettingCrlVerificationDelete(d *schema.ResourceData, 
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	obj, err := getObjectVpnCertificateSettingCrlVerification(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating VpnCertificateSettingCrlVerification resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteVpnCertificateSettingCrlVerification(mkey, paradict, wsParams)
+	_, err = c.UpdateVpnCertificateSettingCrlVerification(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting VpnCertificateSettingCrlVerification resource: %v", err)
+		return fmt.Errorf("Error clearing VpnCertificateSettingCrlVerification resource: %v", err)
 	}
 
 	d.SetId("")
@@ -262,7 +267,7 @@ func expandVpnCertificateSettingCrlVerificationLeafCrlAbsence2edl(d *schema.Reso
 	return v, nil
 }
 
-func getObjectVpnCertificateSettingCrlVerification(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectVpnCertificateSettingCrlVerification(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("chain_crl_absence"); ok || d.HasChange("chain_crl_absence") {

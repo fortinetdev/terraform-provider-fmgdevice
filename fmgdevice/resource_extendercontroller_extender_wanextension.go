@@ -93,7 +93,7 @@ func resourceExtenderControllerExtenderWanExtensionUpdate(d *schema.ResourceData
 	paradict["vdom"] = device_vdom
 	paradict["extender"] = extender
 
-	obj, err := getObjectExtenderControllerExtenderWanExtension(d)
+	obj, err := getObjectExtenderControllerExtenderWanExtension(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating ExtenderControllerExtenderWanExtension resource while getting object: %v", err)
 	}
@@ -114,7 +114,6 @@ func resourceExtenderControllerExtenderWanExtensionUpdate(d *schema.ResourceData
 
 func resourceExtenderControllerExtenderWanExtensionDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -139,11 +138,17 @@ func resourceExtenderControllerExtenderWanExtensionDelete(d *schema.ResourceData
 	paradict["vdom"] = device_vdom
 	paradict["extender"] = extender
 
+	obj, err := getObjectExtenderControllerExtenderWanExtension(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating ExtenderControllerExtenderWanExtension resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteExtenderControllerExtenderWanExtension(mkey, paradict, wsParams)
+	_, err = c.UpdateExtenderControllerExtenderWanExtension(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting ExtenderControllerExtenderWanExtension resource: %v", err)
+		return fmt.Errorf("Error clearing ExtenderControllerExtenderWanExtension resource: %v", err)
 	}
 
 	d.SetId("")
@@ -261,7 +266,7 @@ func expandExtenderControllerExtenderWanExtensionModem2Extension2edl(d *schema.R
 	return expandStringList(v.(*schema.Set).List()), nil
 }
 
-func getObjectExtenderControllerExtenderWanExtension(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectExtenderControllerExtenderWanExtension(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("modem1_extension"); ok || d.HasChange("modem1_extension") {

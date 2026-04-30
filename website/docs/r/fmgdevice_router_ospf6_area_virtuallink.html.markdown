@@ -1,5 +1,5 @@
 ---
-subcategory: "No Category"
+subcategory: "Router"
 layout: "fmgdevice"
 page_title: "FortiManager Device: fmgdevice_router_ospf6_area_virtuallink"
 description: |-

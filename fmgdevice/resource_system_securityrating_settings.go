@@ -68,7 +68,7 @@ func resourceSystemSecurityRatingSettingsUpdate(d *schema.ResourceData, m interf
 	}
 	paradict["device"] = device_name
 
-	obj, err := getObjectSystemSecurityRatingSettings(d)
+	obj, err := getObjectSystemSecurityRatingSettings(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemSecurityRatingSettings resource while getting object: %v", err)
 	}
@@ -89,7 +89,6 @@ func resourceSystemSecurityRatingSettingsUpdate(d *schema.ResourceData, m interf
 
 func resourceSystemSecurityRatingSettingsDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -107,11 +106,17 @@ func resourceSystemSecurityRatingSettingsDelete(d *schema.ResourceData, m interf
 	}
 	paradict["device"] = device_name
 
+	obj, err := getObjectSystemSecurityRatingSettings(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating SystemSecurityRatingSettings resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteSystemSecurityRatingSettings(mkey, paradict, wsParams)
+	_, err = c.UpdateSystemSecurityRatingSettings(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting SystemSecurityRatingSettings resource: %v", err)
+		return fmt.Errorf("Error clearing SystemSecurityRatingSettings resource: %v", err)
 	}
 
 	d.SetId("")
@@ -189,7 +194,7 @@ func expandSystemSecurityRatingSettingsOverrideSync(d *schema.ResourceData, v in
 	return v, nil
 }
 
-func getObjectSystemSecurityRatingSettings(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectSystemSecurityRatingSettings(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("override_sync"); ok || d.HasChange("override_sync") {

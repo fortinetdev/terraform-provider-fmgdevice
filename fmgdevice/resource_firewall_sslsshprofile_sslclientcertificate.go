@@ -104,7 +104,7 @@ func resourceFirewallSslSshProfileSslClientCertificateUpdate(d *schema.ResourceD
 	paradict["vdom"] = device_vdom
 	paradict["ssl_ssh_profile"] = ssl_ssh_profile
 
-	obj, err := getObjectFirewallSslSshProfileSslClientCertificate(d)
+	obj, err := getObjectFirewallSslSshProfileSslClientCertificate(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating FirewallSslSshProfileSslClientCertificate resource while getting object: %v", err)
 	}
@@ -125,7 +125,6 @@ func resourceFirewallSslSshProfileSslClientCertificateUpdate(d *schema.ResourceD
 
 func resourceFirewallSslSshProfileSslClientCertificateDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -150,11 +149,17 @@ func resourceFirewallSslSshProfileSslClientCertificateDelete(d *schema.ResourceD
 	paradict["vdom"] = device_vdom
 	paradict["ssl_ssh_profile"] = ssl_ssh_profile
 
+	obj, err := getObjectFirewallSslSshProfileSslClientCertificate(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating FirewallSslSshProfileSslClientCertificate resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteFirewallSslSshProfileSslClientCertificate(mkey, paradict, wsParams)
+	_, err = c.UpdateFirewallSslSshProfileSslClientCertificate(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting FirewallSslSshProfileSslClientCertificate resource: %v", err)
+		return fmt.Errorf("Error clearing FirewallSslSshProfileSslClientCertificate resource: %v", err)
 	}
 
 	d.SetId("")
@@ -308,7 +313,7 @@ func expandFirewallSslSshProfileSslClientCertificateStatus2edl(d *schema.Resourc
 	return v, nil
 }
 
-func getObjectFirewallSslSshProfileSslClientCertificate(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectFirewallSslSshProfileSslClientCertificate(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("caname"); ok || d.HasChange("caname") {

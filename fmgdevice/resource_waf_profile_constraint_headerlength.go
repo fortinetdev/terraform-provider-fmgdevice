@@ -106,7 +106,7 @@ func resourceWafProfileConstraintHeaderLengthUpdate(d *schema.ResourceData, m in
 	paradict["vdom"] = device_vdom
 	paradict["profile"] = profile
 
-	obj, err := getObjectWafProfileConstraintHeaderLength(d)
+	obj, err := getObjectWafProfileConstraintHeaderLength(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating WafProfileConstraintHeaderLength resource while getting object: %v", err)
 	}
@@ -127,7 +127,6 @@ func resourceWafProfileConstraintHeaderLengthUpdate(d *schema.ResourceData, m in
 
 func resourceWafProfileConstraintHeaderLengthDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -152,11 +151,17 @@ func resourceWafProfileConstraintHeaderLengthDelete(d *schema.ResourceData, m in
 	paradict["vdom"] = device_vdom
 	paradict["profile"] = profile
 
+	obj, err := getObjectWafProfileConstraintHeaderLength(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating WafProfileConstraintHeaderLength resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteWafProfileConstraintHeaderLength(mkey, paradict, wsParams)
+	_, err = c.UpdateWafProfileConstraintHeaderLength(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting WafProfileConstraintHeaderLength resource: %v", err)
+		return fmt.Errorf("Error clearing WafProfileConstraintHeaderLength resource: %v", err)
 	}
 
 	d.SetId("")
@@ -328,7 +333,7 @@ func expandWafProfileConstraintHeaderLengthStatus3rdl(d *schema.ResourceData, v 
 	return v, nil
 }
 
-func getObjectWafProfileConstraintHeaderLength(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectWafProfileConstraintHeaderLength(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("action"); ok || d.HasChange("action") {

@@ -43,6 +43,7 @@ func resourceWanoptCacheService() *schema.Resource {
 			"acceptable_connections": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"collaboration": &schema.Schema{
 				Type:     schema.TypeString,
@@ -147,7 +148,7 @@ func resourceWanoptCacheServiceUpdate(d *schema.ResourceData, m interface{}) err
 	}
 	paradict["device"] = device_name
 
-	obj, err := getObjectWanoptCacheService(d)
+	obj, err := getObjectWanoptCacheService(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating WanoptCacheService resource while getting object: %v", err)
 	}
@@ -168,7 +169,6 @@ func resourceWanoptCacheServiceUpdate(d *schema.ResourceData, m interface{}) err
 
 func resourceWanoptCacheServiceDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -186,11 +186,17 @@ func resourceWanoptCacheServiceDelete(d *schema.ResourceData, m interface{}) err
 	}
 	paradict["device"] = device_name
 
+	obj, err := getObjectWanoptCacheService(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating WanoptCacheService resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteWanoptCacheService(mkey, paradict, wsParams)
+	_, err = c.UpdateWanoptCacheService(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting WanoptCacheService resource: %v", err)
+		return fmt.Errorf("Error clearing WanoptCacheService resource: %v", err)
 	}
 
 	d.SetId("")
@@ -670,7 +676,7 @@ func expandWanoptCacheServiceSrcPeerPriority(d *schema.ResourceData, v interface
 	return v, nil
 }
 
-func getObjectWanoptCacheService(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectWanoptCacheService(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("acceptable_connections"); ok || d.HasChange("acceptable_connections") {
@@ -700,12 +706,16 @@ func getObjectWanoptCacheService(d *schema.ResourceData) (*map[string]interface{
 		}
 	}
 
-	if v, ok := d.GetOk("dst_peer"); ok || d.HasChange("dst_peer") {
-		t, err := expandWanoptCacheServiceDstPeer(d, v, "dst_peer")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["dst-peer"] = t
+	if bemptysontable {
+		obj["dst-peer"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("dst_peer"); ok || d.HasChange("dst_peer") {
+			t, err := expandWanoptCacheServiceDstPeer(d, v, "dst_peer")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["dst-peer"] = t
+			}
 		}
 	}
 
@@ -718,12 +728,16 @@ func getObjectWanoptCacheService(d *schema.ResourceData) (*map[string]interface{
 		}
 	}
 
-	if v, ok := d.GetOk("src_peer"); ok || d.HasChange("src_peer") {
-		t, err := expandWanoptCacheServiceSrcPeer(d, v, "src_peer")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["src-peer"] = t
+	if bemptysontable {
+		obj["src-peer"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("src_peer"); ok || d.HasChange("src_peer") {
+			t, err := expandWanoptCacheServiceSrcPeer(d, v, "src_peer")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["src-peer"] = t
+			}
 		}
 	}
 

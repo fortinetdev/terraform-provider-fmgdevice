@@ -131,7 +131,7 @@ func resourceLogFortiguardSettingUpdate(d *schema.ResourceData, m interface{}) e
 	}
 	paradict["device"] = device_name
 
-	obj, err := getObjectLogFortiguardSetting(d)
+	obj, err := getObjectLogFortiguardSetting(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating LogFortiguardSetting resource while getting object: %v", err)
 	}
@@ -152,7 +152,6 @@ func resourceLogFortiguardSettingUpdate(d *schema.ResourceData, m interface{}) e
 
 func resourceLogFortiguardSettingDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -170,11 +169,17 @@ func resourceLogFortiguardSettingDelete(d *schema.ResourceData, m interface{}) e
 	}
 	paradict["device"] = device_name
 
+	obj, err := getObjectLogFortiguardSetting(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating LogFortiguardSetting resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteLogFortiguardSetting(mkey, paradict, wsParams)
+	_, err = c.UpdateLogFortiguardSetting(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting LogFortiguardSetting resource: %v", err)
+		return fmt.Errorf("Error clearing LogFortiguardSetting resource: %v", err)
 	}
 
 	d.SetId("")
@@ -504,7 +509,7 @@ func expandLogFortiguardSettingVrfSelect(d *schema.ResourceData, v interface{}, 
 	return v, nil
 }
 
-func getObjectLogFortiguardSetting(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectLogFortiguardSetting(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("access_config"); ok || d.HasChange("access_config") {

@@ -126,6 +126,10 @@ func createFMGClient(fClient *FortiClient, c *Config) error {
 		config.InsecureSkipVerify = b
 	} else {
 		config.InsecureSkipVerify = *c.Insecure
+		// if insecure is true, allow GODEBUG=x509negativeserial=1 to avoid the negative serial number error
+		if *c.Insecure {
+			os.Setenv("GODEBUG", "x509negativeserial=1")
+		}
 	}
 
 	if config.InsecureSkipVerify == false && auth.CABundle == "" {

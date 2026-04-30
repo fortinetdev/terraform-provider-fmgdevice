@@ -59,6 +59,7 @@ func resourceSystemStorage() *schema.Resource {
 				Type:     schema.TypeString,
 				ForceNew: true,
 				Optional: true,
+				Computed: true,
 			},
 			"order": &schema.Schema{
 				Type:     schema.TypeInt,

@@ -58,6 +58,7 @@ func resourceSystemFortidata() *schema.Resource {
 			"status": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"vrf_select": &schema.Schema{
 				Type:     schema.TypeInt,
@@ -86,7 +87,7 @@ func resourceSystemFortidataUpdate(d *schema.ResourceData, m interface{}) error 
 	}
 	paradict["device"] = device_name
 
-	obj, err := getObjectSystemFortidata(d)
+	obj, err := getObjectSystemFortidata(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemFortidata resource while getting object: %v", err)
 	}
@@ -107,7 +108,6 @@ func resourceSystemFortidataUpdate(d *schema.ResourceData, m interface{}) error 
 
 func resourceSystemFortidataDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -125,11 +125,17 @@ func resourceSystemFortidataDelete(d *schema.ResourceData, m interface{}) error 
 	}
 	paradict["device"] = device_name
 
+	obj, err := getObjectSystemFortidata(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating SystemFortidata resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteSystemFortidata(mkey, paradict, wsParams)
+	_, err = c.UpdateSystemFortidata(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting SystemFortidata resource: %v", err)
+		return fmt.Errorf("Error clearing SystemFortidata resource: %v", err)
 	}
 
 	d.SetId("")
@@ -279,7 +285,7 @@ func expandSystemFortidataVrfSelect(d *schema.ResourceData, v interface{}, pre s
 	return v, nil
 }
 
-func getObjectSystemFortidata(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectSystemFortidata(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("interface"); ok || d.HasChange("interface") {

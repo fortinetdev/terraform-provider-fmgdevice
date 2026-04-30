@@ -43,6 +43,7 @@ func resourceIpsGlobal() *schema.Resource {
 			"anomaly_mode": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"av_mem_limit": &schema.Schema{
 				Type:     schema.TypeInt,
@@ -51,6 +52,7 @@ func resourceIpsGlobal() *schema.Resource {
 			"cp_accel_mode": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"database": &schema.Schema{
 				Type:     schema.TypeString,
@@ -86,6 +88,7 @@ func resourceIpsGlobal() *schema.Resource {
 			"ips_reserve_cpu": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"machine_learning_detection": &schema.Schema{
 				Type:     schema.TypeString,
@@ -100,6 +103,7 @@ func resourceIpsGlobal() *schema.Resource {
 			"np_accel_mode": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"packet_log_queue_depth": &schema.Schema{
 				Type:     schema.TypeInt,
@@ -146,10 +150,12 @@ func resourceIpsGlobal() *schema.Resource {
 						"source_ip": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"source_ip6": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"vdom": &schema.Schema{
 							Type:     schema.TypeSet,
@@ -188,7 +194,7 @@ func resourceIpsGlobalUpdate(d *schema.ResourceData, m interface{}) error {
 	}
 	paradict["device"] = device_name
 
-	obj, err := getObjectIpsGlobal(d)
+	obj, err := getObjectIpsGlobal(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating IpsGlobal resource while getting object: %v", err)
 	}
@@ -209,7 +215,6 @@ func resourceIpsGlobalUpdate(d *schema.ResourceData, m interface{}) error {
 
 func resourceIpsGlobalDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -227,11 +232,17 @@ func resourceIpsGlobalDelete(d *schema.ResourceData, m interface{}) error {
 	}
 	paradict["device"] = device_name
 
+	obj, err := getObjectIpsGlobal(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating IpsGlobal resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteIpsGlobal(mkey, paradict, wsParams)
+	_, err = c.UpdateIpsGlobal(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting IpsGlobal resource: %v", err)
+		return fmt.Errorf("Error clearing IpsGlobal resource: %v", err)
 	}
 
 	d.SetId("")
@@ -787,7 +798,7 @@ func expandIpsGlobalTrafficSubmit(d *schema.ResourceData, v interface{}, pre str
 	return v, nil
 }
 
-func getObjectIpsGlobal(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectIpsGlobal(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("anomaly_mode"); ok || d.HasChange("anomaly_mode") {

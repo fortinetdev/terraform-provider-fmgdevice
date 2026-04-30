@@ -100,7 +100,7 @@ func resourceWafProfileConstraintMalformedUpdate(d *schema.ResourceData, m inter
 	paradict["vdom"] = device_vdom
 	paradict["profile"] = profile
 
-	obj, err := getObjectWafProfileConstraintMalformed(d)
+	obj, err := getObjectWafProfileConstraintMalformed(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating WafProfileConstraintMalformed resource while getting object: %v", err)
 	}
@@ -121,7 +121,6 @@ func resourceWafProfileConstraintMalformedUpdate(d *schema.ResourceData, m inter
 
 func resourceWafProfileConstraintMalformedDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -146,11 +145,17 @@ func resourceWafProfileConstraintMalformedDelete(d *schema.ResourceData, m inter
 	paradict["vdom"] = device_vdom
 	paradict["profile"] = profile
 
+	obj, err := getObjectWafProfileConstraintMalformed(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating WafProfileConstraintMalformed resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteWafProfileConstraintMalformed(mkey, paradict, wsParams)
+	_, err = c.UpdateWafProfileConstraintMalformed(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting WafProfileConstraintMalformed resource: %v", err)
+		return fmt.Errorf("Error clearing WafProfileConstraintMalformed resource: %v", err)
 	}
 
 	d.SetId("")
@@ -304,7 +309,7 @@ func expandWafProfileConstraintMalformedStatus3rdl(d *schema.ResourceData, v int
 	return v, nil
 }
 
-func getObjectWafProfileConstraintMalformed(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectWafProfileConstraintMalformed(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("action"); ok || d.HasChange("action") {

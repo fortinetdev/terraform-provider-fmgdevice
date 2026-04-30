@@ -49,6 +49,7 @@ func resourceSystemNetworkVisibility() *schema.Resource {
 			"destination_hostname_visibility": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"destination_location": &schema.Schema{
 				Type:     schema.TypeString,
@@ -103,7 +104,7 @@ func resourceSystemNetworkVisibilityUpdate(d *schema.ResourceData, m interface{}
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	obj, err := getObjectSystemNetworkVisibility(d)
+	obj, err := getObjectSystemNetworkVisibility(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemNetworkVisibility resource while getting object: %v", err)
 	}
@@ -124,7 +125,6 @@ func resourceSystemNetworkVisibilityUpdate(d *schema.ResourceData, m interface{}
 
 func resourceSystemNetworkVisibilityDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -147,11 +147,17 @@ func resourceSystemNetworkVisibilityDelete(d *schema.ResourceData, m interface{}
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	obj, err := getObjectSystemNetworkVisibility(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating SystemNetworkVisibility resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteSystemNetworkVisibility(mkey, paradict, wsParams)
+	_, err = c.UpdateSystemNetworkVisibility(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting SystemNetworkVisibility resource: %v", err)
+		return fmt.Errorf("Error clearing SystemNetworkVisibility resource: %v", err)
 	}
 
 	d.SetId("")
@@ -330,7 +336,7 @@ func expandSystemNetworkVisibilitySourceLocation(d *schema.ResourceData, v inter
 	return v, nil
 }
 
-func getObjectSystemNetworkVisibility(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectSystemNetworkVisibility(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("destination_hostname_visibility"); ok || d.HasChange("destination_hostname_visibility") {

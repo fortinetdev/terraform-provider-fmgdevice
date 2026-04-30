@@ -65,10 +65,12 @@ func resourceCasbAttributeMatch() *schema.Resource {
 						"case_sensitive": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"match_pattern": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"match_value": &schema.Schema{
 							Type:     schema.TypeString,
@@ -81,6 +83,7 @@ func resourceCasbAttributeMatch() *schema.Resource {
 						"negate": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 					},
 				},

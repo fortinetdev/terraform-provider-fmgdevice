@@ -98,7 +98,7 @@ func resourceSwitchControllerStormControlUpdate(d *schema.ResourceData, m interf
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	obj, err := getObjectSwitchControllerStormControl(d)
+	obj, err := getObjectSwitchControllerStormControl(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating SwitchControllerStormControl resource while getting object: %v", err)
 	}
@@ -119,7 +119,6 @@ func resourceSwitchControllerStormControlUpdate(d *schema.ResourceData, m interf
 
 func resourceSwitchControllerStormControlDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -142,11 +141,17 @@ func resourceSwitchControllerStormControlDelete(d *schema.ResourceData, m interf
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	obj, err := getObjectSwitchControllerStormControl(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating SwitchControllerStormControl resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteSwitchControllerStormControl(mkey, paradict, wsParams)
+	_, err = c.UpdateSwitchControllerStormControl(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting SwitchControllerStormControl resource: %v", err)
+		return fmt.Errorf("Error clearing SwitchControllerStormControl resource: %v", err)
 	}
 
 	d.SetId("")
@@ -307,7 +312,7 @@ func expandSwitchControllerStormControlUnknownUnicast(d *schema.ResourceData, v 
 	return v, nil
 }
 
-func getObjectSwitchControllerStormControl(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectSwitchControllerStormControl(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("broadcast"); ok || d.HasChange("broadcast") {

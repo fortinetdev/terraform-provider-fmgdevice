@@ -121,7 +121,7 @@ func resourceZtnaTrafficForwardProxyQuicUpdate(d *schema.ResourceData, m interfa
 	paradict["vdom"] = device_vdom
 	paradict["traffic_forward_proxy"] = traffic_forward_proxy
 
-	obj, err := getObjectZtnaTrafficForwardProxyQuic(d)
+	obj, err := getObjectZtnaTrafficForwardProxyQuic(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating ZtnaTrafficForwardProxyQuic resource while getting object: %v", err)
 	}
@@ -142,7 +142,6 @@ func resourceZtnaTrafficForwardProxyQuicUpdate(d *schema.ResourceData, m interfa
 
 func resourceZtnaTrafficForwardProxyQuicDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -167,11 +166,17 @@ func resourceZtnaTrafficForwardProxyQuicDelete(d *schema.ResourceData, m interfa
 	paradict["vdom"] = device_vdom
 	paradict["traffic_forward_proxy"] = traffic_forward_proxy
 
+	obj, err := getObjectZtnaTrafficForwardProxyQuic(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating ZtnaTrafficForwardProxyQuic resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteZtnaTrafficForwardProxyQuic(mkey, paradict, wsParams)
+	_, err = c.UpdateZtnaTrafficForwardProxyQuic(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting ZtnaTrafficForwardProxyQuic resource: %v", err)
+		return fmt.Errorf("Error clearing ZtnaTrafficForwardProxyQuic resource: %v", err)
 	}
 
 	d.SetId("")
@@ -397,7 +402,7 @@ func expandZtnaTrafficForwardProxyQuicMaxUdpPayloadSize2edl(d *schema.ResourceDa
 	return v, nil
 }
 
-func getObjectZtnaTrafficForwardProxyQuic(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectZtnaTrafficForwardProxyQuic(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("ack_delay_exponent"); ok || d.HasChange("ack_delay_exponent") {

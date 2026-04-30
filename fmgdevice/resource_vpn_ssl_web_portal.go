@@ -230,6 +230,7 @@ func resourceVpnSslWebPortal() *schema.Resource {
 			"client_src_range": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"clipboard": &schema.Schema{
 				Type:     schema.TypeString,
@@ -244,6 +245,7 @@ func resourceVpnSslWebPortal() *schema.Resource {
 			"customize_forticlient_download_url": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"default_protocol": &schema.Schema{
 				Type:     schema.TypeString,
@@ -265,6 +267,7 @@ func resourceVpnSslWebPortal() *schema.Resource {
 			"dhcp_ra_giaddr": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"dhcp_reservation": &schema.Schema{
 				Type:     schema.TypeString,
@@ -273,6 +276,7 @@ func resourceVpnSslWebPortal() *schema.Resource {
 			"dhcp6_ra_linkaddr": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"display_bookmark": &schema.Schema{
 				Type:     schema.TypeString,
@@ -305,6 +309,7 @@ func resourceVpnSslWebPortal() *schema.Resource {
 			"exclusive_routing": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"focus_bookmark": &schema.Schema{
 				Type:     schema.TypeString,
@@ -314,10 +319,12 @@ func resourceVpnSslWebPortal() *schema.Resource {
 			"forticlient_download": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"forticlient_download_method": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"heading": &schema.Schema{
 				Type:     schema.TypeString,
@@ -362,6 +369,7 @@ func resourceVpnSslWebPortal() *schema.Resource {
 			"ipv6_exclusive_routing": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"ipv6_pools": &schema.Schema{
 				Type:     schema.TypeSet,
@@ -372,6 +380,7 @@ func resourceVpnSslWebPortal() *schema.Resource {
 			"ipv6_service_restriction": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"ipv6_split_tunneling": &schema.Schema{
 				Type:     schema.TypeString,
@@ -386,10 +395,12 @@ func resourceVpnSslWebPortal() *schema.Resource {
 			"ipv6_split_tunneling_routing_negate": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"ipv6_tunnel_mode": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"ipv6_wins_server1": &schema.Schema{
 				Type:     schema.TypeString,
@@ -558,6 +569,7 @@ func resourceVpnSslWebPortal() *schema.Resource {
 			"service_restriction": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"skip_check_for_browser": &schema.Schema{
 				Type:     schema.TypeString,
@@ -625,14 +637,20 @@ func resourceVpnSslWebPortal() *schema.Resource {
 			"split_tunneling_routing_negate": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"theme": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"transform_backward_slashes": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 			},
 			"tunnel_mode": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"use_sdwan": &schema.Schema{
 				Type:     schema.TypeString,
@@ -1848,6 +1866,10 @@ func flattenVpnSslWebPortalTheme(v interface{}, d *schema.ResourceData, pre stri
 	return v
 }
 
+func flattenVpnSslWebPortalTransformBackwardSlashes(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenVpnSslWebPortalTunnelMode(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -2644,6 +2666,16 @@ func refreshObjectVpnSslWebPortal(d *schema.ResourceData, o map[string]interface
 			}
 		} else {
 			return fmt.Errorf("Error reading theme: %v", err)
+		}
+	}
+
+	if err = d.Set("transform_backward_slashes", flattenVpnSslWebPortalTransformBackwardSlashes(o["transform-backward-slashes"], d, "transform_backward_slashes")); err != nil {
+		if vv, ok := fortiAPIPatch(o["transform-backward-slashes"], "VpnSslWebPortal-TransformBackwardSlashes"); ok {
+			if err = d.Set("transform_backward_slashes", vv); err != nil {
+				return fmt.Errorf("Error reading transform_backward_slashes: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading transform_backward_slashes: %v", err)
 		}
 	}
 
@@ -3678,6 +3710,10 @@ func expandVpnSslWebPortalTheme(d *schema.ResourceData, v interface{}, pre strin
 	return v, nil
 }
 
+func expandVpnSslWebPortalTransformBackwardSlashes(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandVpnSslWebPortalTunnelMode(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -4331,6 +4367,15 @@ func getObjectVpnSslWebPortal(d *schema.ResourceData) (*map[string]interface{}, 
 			return &obj, err
 		} else if t != nil {
 			obj["theme"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("transform_backward_slashes"); ok || d.HasChange("transform_backward_slashes") {
+		t, err := expandVpnSslWebPortalTransformBackwardSlashes(d, v, "transform_backward_slashes")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["transform-backward-slashes"] = t
 		}
 	}
 

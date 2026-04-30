@@ -1,5 +1,5 @@
 ---
-subcategory: "No Category"
+subcategory: "DPDK"
 layout: "fmgdevice"
 page_title: "FortiManager Device: fmgdevice_dpdk_cpus"
 description: |-

@@ -390,6 +390,13 @@ func flattenRouterPrefixListRuleLe(v interface{}, d *schema.ResourceData, pre st
 }
 
 func flattenRouterPrefixListRulePrefix(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	if v1, ok := d.GetOkExists(pre); ok && v != nil {
+		if s, ok := v1.(string); ok {
+			v = validateConvIPMask2CIDR(s, conv2str(v).(string))
+			return v
+		}
+	}
+
 	return conv2str(v)
 }
 

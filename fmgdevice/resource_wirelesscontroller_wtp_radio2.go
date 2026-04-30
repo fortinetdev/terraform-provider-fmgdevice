@@ -202,7 +202,7 @@ func resourceWirelessControllerWtpRadio2Update(d *schema.ResourceData, m interfa
 	paradict["vdom"] = device_vdom
 	paradict["wtp"] = wtp
 
-	obj, err := getObjectWirelessControllerWtpRadio2(d)
+	obj, err := getObjectWirelessControllerWtpRadio2(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating WirelessControllerWtpRadio2 resource while getting object: %v", err)
 	}
@@ -223,7 +223,6 @@ func resourceWirelessControllerWtpRadio2Update(d *schema.ResourceData, m interfa
 
 func resourceWirelessControllerWtpRadio2Delete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -248,11 +247,17 @@ func resourceWirelessControllerWtpRadio2Delete(d *schema.ResourceData, m interfa
 	paradict["vdom"] = device_vdom
 	paradict["wtp"] = wtp
 
+	obj, err := getObjectWirelessControllerWtpRadio2(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating WirelessControllerWtpRadio2 resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteWirelessControllerWtpRadio2(mkey, paradict, wsParams)
+	_, err = c.UpdateWirelessControllerWtpRadio2(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting WirelessControllerWtpRadio2 resource: %v", err)
+		return fmt.Errorf("Error clearing WirelessControllerWtpRadio2 resource: %v", err)
 	}
 
 	d.SetId("")
@@ -820,7 +825,7 @@ func expandWirelessControllerWtpRadio2Vaps2edl(d *schema.ResourceData, v interfa
 	return expandStringList(v.(*schema.Set).List()), nil
 }
 
-func getObjectWirelessControllerWtpRadio2(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectWirelessControllerWtpRadio2(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("auto_power_high"); ok || d.HasChange("auto_power_high") {

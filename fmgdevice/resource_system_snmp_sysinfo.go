@@ -123,7 +123,7 @@ func resourceSystemSnmpSysinfoUpdate(d *schema.ResourceData, m interface{}) erro
 	}
 	paradict["device"] = device_name
 
-	obj, err := getObjectSystemSnmpSysinfo(d)
+	obj, err := getObjectSystemSnmpSysinfo(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemSnmpSysinfo resource while getting object: %v", err)
 	}
@@ -144,7 +144,6 @@ func resourceSystemSnmpSysinfoUpdate(d *schema.ResourceData, m interface{}) erro
 
 func resourceSystemSnmpSysinfoDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -162,11 +161,17 @@ func resourceSystemSnmpSysinfoDelete(d *schema.ResourceData, m interface{}) erro
 	}
 	paradict["device"] = device_name
 
+	obj, err := getObjectSystemSnmpSysinfo(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating SystemSnmpSysinfo resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteSystemSnmpSysinfo(mkey, paradict, wsParams)
+	_, err = c.UpdateSystemSnmpSysinfo(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting SystemSnmpSysinfo resource: %v", err)
+		return fmt.Errorf("Error clearing SystemSnmpSysinfo resource: %v", err)
 	}
 
 	d.SetId("")
@@ -460,7 +465,7 @@ func expandSystemSnmpSysinfoTrapLowMemoryThreshold(d *schema.ResourceData, v int
 	return v, nil
 }
 
-func getObjectSystemSnmpSysinfo(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectSystemSnmpSysinfo(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("append_index"); ok || d.HasChange("append_index") {

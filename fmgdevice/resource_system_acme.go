@@ -139,7 +139,7 @@ func resourceSystemAcmeUpdate(d *schema.ResourceData, m interface{}) error {
 	}
 	paradict["device"] = device_name
 
-	obj, err := getObjectSystemAcme(d)
+	obj, err := getObjectSystemAcme(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemAcme resource while getting object: %v", err)
 	}
@@ -160,7 +160,6 @@ func resourceSystemAcmeUpdate(d *schema.ResourceData, m interface{}) error {
 
 func resourceSystemAcmeDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -178,11 +177,17 @@ func resourceSystemAcmeDelete(d *schema.ResourceData, m interface{}) error {
 	}
 	paradict["device"] = device_name
 
+	obj, err := getObjectSystemAcme(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating SystemAcme resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteSystemAcme(mkey, paradict, wsParams)
+	_, err = c.UpdateSystemAcme(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting SystemAcme resource: %v", err)
+		return fmt.Errorf("Error clearing SystemAcme resource: %v", err)
 	}
 
 	d.SetId("")
@@ -541,15 +546,19 @@ func expandSystemAcmeUseHaDirect(d *schema.ResourceData, v interface{}, pre stri
 	return v, nil
 }
 
-func getObjectSystemAcme(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectSystemAcme(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
-	if v, ok := d.GetOk("accounts"); ok || d.HasChange("accounts") {
-		t, err := expandSystemAcmeAccounts(d, v, "accounts")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["accounts"] = t
+	if bemptysontable {
+		obj["accounts"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("accounts"); ok || d.HasChange("accounts") {
+			t, err := expandSystemAcmeAccounts(d, v, "accounts")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["accounts"] = t
+			}
 		}
 	}
 

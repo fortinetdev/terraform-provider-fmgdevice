@@ -573,7 +573,7 @@ func resourceSystemIkeUpdate(d *schema.ResourceData, m interface{}) error {
 	}
 	paradict["device"] = device_name
 
-	obj, err := getObjectSystemIke(d)
+	obj, err := getObjectSystemIke(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemIke resource while getting object: %v", err)
 	}
@@ -594,7 +594,6 @@ func resourceSystemIkeUpdate(d *schema.ResourceData, m interface{}) error {
 
 func resourceSystemIkeDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -612,11 +611,17 @@ func resourceSystemIkeDelete(d *schema.ResourceData, m interface{}) error {
 	}
 	paradict["device"] = device_name
 
+	obj, err := getObjectSystemIke(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating SystemIke resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteSystemIke(mkey, paradict, wsParams)
+	_, err = c.UpdateSystemIke(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting SystemIke resource: %v", err)
+		return fmt.Errorf("Error clearing SystemIke resource: %v", err)
 	}
 
 	d.SetId("")
@@ -2825,7 +2830,7 @@ func expandSystemIkeEmbryonicLimit(d *schema.ResourceData, v interface{}, pre st
 	return v, nil
 }
 
-func getObjectSystemIke(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectSystemIke(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("dh_group_1"); ok || d.HasChange("dh_group_1") {

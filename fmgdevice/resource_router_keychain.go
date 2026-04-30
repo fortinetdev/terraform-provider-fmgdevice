@@ -63,6 +63,7 @@ func resourceRouterKeyChain() *schema.Resource {
 						"algorithm": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"id": &schema.Schema{
 							Type:     schema.TypeString,

@@ -1,5 +1,5 @@
 ---
-subcategory: "No Category"
+subcategory: "Isolator"
 layout: "fmgdevice"
 page_title: "FortiManager Device: fmgdevice_isolator_profile"
 description: |-

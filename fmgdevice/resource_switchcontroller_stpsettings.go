@@ -112,7 +112,7 @@ func resourceSwitchControllerStpSettingsUpdate(d *schema.ResourceData, m interfa
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	obj, err := getObjectSwitchControllerStpSettings(d)
+	obj, err := getObjectSwitchControllerStpSettings(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating SwitchControllerStpSettings resource while getting object: %v", err)
 	}
@@ -133,7 +133,6 @@ func resourceSwitchControllerStpSettingsUpdate(d *schema.ResourceData, m interfa
 
 func resourceSwitchControllerStpSettingsDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -156,11 +155,17 @@ func resourceSwitchControllerStpSettingsDelete(d *schema.ResourceData, m interfa
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	obj, err := getObjectSwitchControllerStpSettings(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating SwitchControllerStpSettings resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteSwitchControllerStpSettings(mkey, paradict, wsParams)
+	_, err = c.UpdateSwitchControllerStpSettings(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting SwitchControllerStpSettings resource: %v", err)
+		return fmt.Errorf("Error clearing SwitchControllerStpSettings resource: %v", err)
 	}
 
 	d.SetId("")
@@ -375,7 +380,7 @@ func expandSwitchControllerStpSettingsStatus(d *schema.ResourceData, v interface
 	return v, nil
 }
 
-func getObjectSwitchControllerStpSettings(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectSwitchControllerStpSettings(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("forward_time"); ok || d.HasChange("forward_time") {

@@ -107,7 +107,7 @@ func resourceZtnaConnectorServiceEdgeUpdate(d *schema.ResourceData, m interface{
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	obj, err := getObjectZtnaConnectorServiceEdge(d)
+	obj, err := getObjectZtnaConnectorServiceEdge(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating ZtnaConnectorServiceEdge resource while getting object: %v", err)
 	}
@@ -128,7 +128,6 @@ func resourceZtnaConnectorServiceEdgeUpdate(d *schema.ResourceData, m interface{
 
 func resourceZtnaConnectorServiceEdgeDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -151,11 +150,17 @@ func resourceZtnaConnectorServiceEdgeDelete(d *schema.ResourceData, m interface{
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	obj, err := getObjectZtnaConnectorServiceEdge(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating ZtnaConnectorServiceEdge resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteZtnaConnectorServiceEdge(mkey, paradict, wsParams)
+	_, err = c.UpdateZtnaConnectorServiceEdge(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting ZtnaConnectorServiceEdge resource: %v", err)
+		return fmt.Errorf("Error clearing ZtnaConnectorServiceEdge resource: %v", err)
 	}
 
 	d.SetId("")
@@ -334,7 +339,7 @@ func expandZtnaConnectorServiceEdgeTrustedClientCa(d *schema.ResourceData, v int
 	return expandStringList(v.(*schema.Set).List()), nil
 }
 
-func getObjectZtnaConnectorServiceEdge(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectZtnaConnectorServiceEdge(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("interface"); ok || d.HasChange("interface") {

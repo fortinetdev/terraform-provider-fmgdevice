@@ -100,7 +100,7 @@ func resourceWafProfileConstraintMethodUpdate(d *schema.ResourceData, m interfac
 	paradict["vdom"] = device_vdom
 	paradict["profile"] = profile
 
-	obj, err := getObjectWafProfileConstraintMethod(d)
+	obj, err := getObjectWafProfileConstraintMethod(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating WafProfileConstraintMethod resource while getting object: %v", err)
 	}
@@ -121,7 +121,6 @@ func resourceWafProfileConstraintMethodUpdate(d *schema.ResourceData, m interfac
 
 func resourceWafProfileConstraintMethodDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -146,11 +145,17 @@ func resourceWafProfileConstraintMethodDelete(d *schema.ResourceData, m interfac
 	paradict["vdom"] = device_vdom
 	paradict["profile"] = profile
 
+	obj, err := getObjectWafProfileConstraintMethod(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating WafProfileConstraintMethod resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteWafProfileConstraintMethod(mkey, paradict, wsParams)
+	_, err = c.UpdateWafProfileConstraintMethod(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting WafProfileConstraintMethod resource: %v", err)
+		return fmt.Errorf("Error clearing WafProfileConstraintMethod resource: %v", err)
 	}
 
 	d.SetId("")
@@ -304,7 +309,7 @@ func expandWafProfileConstraintMethodStatus3rdl(d *schema.ResourceData, v interf
 	return v, nil
 }
 
-func getObjectWafProfileConstraintMethod(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectWafProfileConstraintMethod(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("action"); ok || d.HasChange("action") {

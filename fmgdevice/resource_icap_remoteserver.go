@@ -56,6 +56,12 @@ func resourceIcapRemoteServer() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"ca_cert": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Computed: true,
+			},
 			"fqdn": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -309,6 +315,10 @@ func flattenIcapRemoteServerAddrType(v interface{}, d *schema.ResourceData, pre 
 	return v
 }
 
+func flattenIcapRemoteServerCaCert(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
 func flattenIcapRemoteServerFqdn(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -363,6 +373,16 @@ func refreshObjectIcapRemoteServer(d *schema.ResourceData, o map[string]interfac
 			}
 		} else {
 			return fmt.Errorf("Error reading addr_type: %v", err)
+		}
+	}
+
+	if err = d.Set("ca_cert", flattenIcapRemoteServerCaCert(o["ca-cert"], d, "ca_cert")); err != nil {
+		if vv, ok := fortiAPIPatch(o["ca-cert"], "IcapRemoteServer-CaCert"); ok {
+			if err = d.Set("ca_cert", vv); err != nil {
+				return fmt.Errorf("Error reading ca_cert: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading ca_cert: %v", err)
 		}
 	}
 
@@ -489,6 +509,10 @@ func expandIcapRemoteServerAddrType(d *schema.ResourceData, v interface{}, pre s
 	return v, nil
 }
 
+func expandIcapRemoteServerCaCert(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
 func expandIcapRemoteServerFqdn(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -542,6 +566,15 @@ func getObjectIcapRemoteServer(d *schema.ResourceData) (*map[string]interface{},
 			return &obj, err
 		} else if t != nil {
 			obj["addr-type"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("ca_cert"); ok || d.HasChange("ca_cert") {
+		t, err := expandIcapRemoteServerCaCert(d, v, "ca_cert")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["ca-cert"] = t
 		}
 	}
 

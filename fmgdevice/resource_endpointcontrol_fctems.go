@@ -45,6 +45,17 @@ func resourceEndpointControlFctems() *schema.Resource {
 				Computed: true,
 				ForceNew: true,
 			},
+			"admin_password": &schema.Schema{
+				Type:      schema.TypeSet,
+				Elem:      &schema.Schema{Type: schema.TypeString},
+				Optional:  true,
+				Sensitive: true,
+				Computed:  true,
+			},
+			"admin_username": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 			"call_timeout": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
@@ -159,6 +170,7 @@ func resourceEndpointControlFctems() *schema.Resource {
 			"status_check_interval": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"status": &schema.Schema{
 				Type:     schema.TypeString,
@@ -196,10 +208,12 @@ func resourceEndpointControlFctems() *schema.Resource {
 			"cloud_server_type": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"preserve_ssl_session": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 		},
 	}
@@ -371,6 +385,10 @@ func resourceEndpointControlFctemsRead(d *schema.ResourceData, m interface{}) er
 	return nil
 }
 
+func flattenEndpointControlFctemsAdminUsername(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenEndpointControlFctemsCallTimeout(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -497,6 +515,16 @@ func flattenEndpointControlFctemsPreserveSslSession(v interface{}, d *schema.Res
 
 func refreshObjectEndpointControlFctems(d *schema.ResourceData, o map[string]interface{}) error {
 	var err error
+
+	if err = d.Set("admin_username", flattenEndpointControlFctemsAdminUsername(o["admin-username"], d, "admin_username")); err != nil {
+		if vv, ok := fortiAPIPatch(o["admin-username"], "EndpointControlFctems-AdminUsername"); ok {
+			if err = d.Set("admin_username", vv); err != nil {
+				return fmt.Errorf("Error reading admin_username: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading admin_username: %v", err)
+		}
+	}
 
 	if err = d.Set("call_timeout", flattenEndpointControlFctemsCallTimeout(o["call-timeout"], d, "call_timeout")); err != nil {
 		if vv, ok := fortiAPIPatch(o["call-timeout"], "EndpointControlFctems-CallTimeout"); ok {
@@ -817,6 +845,14 @@ func flattenEndpointControlFctemsFortiTestDebug(d *schema.ResourceData, fosdebug
 	log.Printf("ER List: %v", e)
 }
 
+func expandEndpointControlFctemsAdminPassword(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandEndpointControlFctemsAdminUsername(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandEndpointControlFctemsCallTimeout(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -947,6 +983,24 @@ func expandEndpointControlFctemsPreserveSslSession(d *schema.ResourceData, v int
 
 func getObjectEndpointControlFctems(d *schema.ResourceData) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
+
+	if v, ok := d.GetOk("admin_password"); ok || d.HasChange("admin_password") {
+		t, err := expandEndpointControlFctemsAdminPassword(d, v, "admin_password")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["admin-password"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("admin_username"); ok || d.HasChange("admin_username") {
+		t, err := expandEndpointControlFctemsAdminUsername(d, v, "admin_username")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["admin-username"] = t
+		}
+	}
 
 	if v, ok := d.GetOk("call_timeout"); ok || d.HasChange("call_timeout") {
 		t, err := expandEndpointControlFctemsCallTimeout(d, v, "call_timeout")

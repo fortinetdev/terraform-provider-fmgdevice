@@ -1,5 +1,5 @@
 ---
-subcategory: "No Category"
+subcategory: "Log"
 layout: "fmgdevice"
 page_title: "FortiManager Device: fmgdevice_log_setting"
 description: |-
@@ -81,11 +81,15 @@ The following arguments are supported:
 
 * `rest_api_get` - Enable/disable REST API GET request logging. Valid values: `disable`, `enable`.
 
+* `rest_api_performance` - Enable/disable REST API memory and performance stats in rest-api-get/set logs. Valid values: `disable`, `enable`.
+
 * `rest_api_set` - Enable/disable REST API POST/PUT/DELETE request logging. Valid values: `disable`, `enable`.
 
 * `syslog_override` - Enable/disable override Syslog settings. Valid values: `disable`, `enable`.
 
 * `user_anonymize` - Enable/disable anonymizing user names in log messages. Valid values: `disable`, `enable`.
+
+* `web_svc_perf` - Enable/disable web-svc performance logging. Valid values: `disable`, `enable`.
 
 * `zone_name` - Enable/disable zone name logging. Valid values: `disable`, `enable`.
 

@@ -106,6 +106,7 @@ func resourceSystemGreTunnel() *schema.Resource {
 			"local_gw": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"local_gw6": &schema.Schema{
 				Type:     schema.TypeString,
@@ -124,6 +125,7 @@ func resourceSystemGreTunnel() *schema.Resource {
 			"remote_gw": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"remote_gw6": &schema.Schema{
 				Type:     schema.TypeString,

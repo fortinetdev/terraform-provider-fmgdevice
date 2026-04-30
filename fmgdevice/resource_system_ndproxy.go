@@ -85,7 +85,7 @@ func resourceSystemNdProxyUpdate(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	obj, err := getObjectSystemNdProxy(d)
+	obj, err := getObjectSystemNdProxy(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemNdProxy resource while getting object: %v", err)
 	}
@@ -106,7 +106,6 @@ func resourceSystemNdProxyUpdate(d *schema.ResourceData, m interface{}) error {
 
 func resourceSystemNdProxyDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -129,11 +128,17 @@ func resourceSystemNdProxyDelete(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	obj, err := getObjectSystemNdProxy(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating SystemNdProxy resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteSystemNdProxy(mkey, paradict, wsParams)
+	_, err = c.UpdateSystemNdProxy(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting SystemNdProxy resource: %v", err)
+		return fmt.Errorf("Error clearing SystemNdProxy resource: %v", err)
 	}
 
 	d.SetId("")
@@ -240,7 +245,7 @@ func expandSystemNdProxyStatus(d *schema.ResourceData, v interface{}, pre string
 	return v, nil
 }
 
-func getObjectSystemNdProxy(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectSystemNdProxy(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("member"); ok || d.HasChange("member") {

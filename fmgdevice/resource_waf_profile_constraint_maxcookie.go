@@ -106,7 +106,7 @@ func resourceWafProfileConstraintMaxCookieUpdate(d *schema.ResourceData, m inter
 	paradict["vdom"] = device_vdom
 	paradict["profile"] = profile
 
-	obj, err := getObjectWafProfileConstraintMaxCookie(d)
+	obj, err := getObjectWafProfileConstraintMaxCookie(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating WafProfileConstraintMaxCookie resource while getting object: %v", err)
 	}
@@ -127,7 +127,6 @@ func resourceWafProfileConstraintMaxCookieUpdate(d *schema.ResourceData, m inter
 
 func resourceWafProfileConstraintMaxCookieDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -152,11 +151,17 @@ func resourceWafProfileConstraintMaxCookieDelete(d *schema.ResourceData, m inter
 	paradict["vdom"] = device_vdom
 	paradict["profile"] = profile
 
+	obj, err := getObjectWafProfileConstraintMaxCookie(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating WafProfileConstraintMaxCookie resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteWafProfileConstraintMaxCookie(mkey, paradict, wsParams)
+	_, err = c.UpdateWafProfileConstraintMaxCookie(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting WafProfileConstraintMaxCookie resource: %v", err)
+		return fmt.Errorf("Error clearing WafProfileConstraintMaxCookie resource: %v", err)
 	}
 
 	d.SetId("")
@@ -328,7 +333,7 @@ func expandWafProfileConstraintMaxCookieStatus3rdl(d *schema.ResourceData, v int
 	return v, nil
 }
 
-func getObjectWafProfileConstraintMaxCookie(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectWafProfileConstraintMaxCookie(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("action"); ok || d.HasChange("action") {

@@ -1,5 +1,5 @@
 ---
-subcategory: "No Category"
+subcategory: "Wireless Controller"
 layout: "fmgdevice"
 page_title: "FortiManager Device: fmgdevice_wirelesscontroller_vap"
 description: |-
@@ -239,6 +239,8 @@ The following arguments are supported:
 
 * `me_disable_thresh` - Disable multicast enhancement when this many clients are receiving multicast traffic.
 * `mesh_backhaul` - Enable/disable using this VAP as a WiFi mesh backhaul (default = disable). This entry is only available when security is set to a WPA type or open. Valid values: `disable`, `enable`.
+
+* `mlo` - Enable/disable WiFi7 Multi-Link-Operation (default = disable). Valid values: `disable`, `enable`.
 
 * `mpsk` - Mpsk. Valid values: `disable`, `enable`.
 
@@ -582,6 +584,8 @@ The `dynamic_mapping` block supports:
 
 * `me_disable_thresh` - Disable multicast enhancement when this many clients are receiving multicast traffic.
 * `mesh_backhaul` - Enable/disable using this VAP as a WiFi mesh backhaul (default = disable). This entry is only available when security is set to a WPA type or open. Valid values: `disable`, `enable`.
+
+* `mlo` - Enable/disable WiFi7 Multi-Link-Operation (default = disable). Valid values: `disable`, `enable`.
 
 * `mpsk` - Mpsk. Valid values: `disable`, `enable`.
 

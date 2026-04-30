@@ -140,7 +140,7 @@ func resourceWafProfileMethodUpdate(d *schema.ResourceData, m interface{}) error
 	paradict["vdom"] = device_vdom
 	paradict["profile"] = profile
 
-	obj, err := getObjectWafProfileMethod(d)
+	obj, err := getObjectWafProfileMethod(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating WafProfileMethod resource while getting object: %v", err)
 	}
@@ -161,7 +161,6 @@ func resourceWafProfileMethodUpdate(d *schema.ResourceData, m interface{}) error
 
 func resourceWafProfileMethodDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -186,11 +185,17 @@ func resourceWafProfileMethodDelete(d *schema.ResourceData, m interface{}) error
 	paradict["vdom"] = device_vdom
 	paradict["profile"] = profile
 
+	obj, err := getObjectWafProfileMethod(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating WafProfileMethod resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteWafProfileMethod(mkey, paradict, wsParams)
+	_, err = c.UpdateWafProfileMethod(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting WafProfileMethod resource: %v", err)
+		return fmt.Errorf("Error clearing WafProfileMethod resource: %v", err)
 	}
 
 	d.SetId("")
@@ -520,7 +525,7 @@ func expandWafProfileMethodStatus2edl(d *schema.ResourceData, v interface{}, pre
 	return v, nil
 }
 
-func getObjectWafProfileMethod(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectWafProfileMethod(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("default_allowed_methods"); ok || d.HasChange("default_allowed_methods") {
@@ -541,12 +546,16 @@ func getObjectWafProfileMethod(d *schema.ResourceData) (*map[string]interface{},
 		}
 	}
 
-	if v, ok := d.GetOk("method_policy"); ok || d.HasChange("method_policy") {
-		t, err := expandWafProfileMethodMethodPolicy2edl(d, v, "method_policy")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["method-policy"] = t
+	if bemptysontable {
+		obj["method-policy"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("method_policy"); ok || d.HasChange("method_policy") {
+			t, err := expandWafProfileMethodMethodPolicy2edl(d, v, "method_policy")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["method-policy"] = t
+			}
 		}
 	}
 

@@ -172,7 +172,7 @@ func resourceWebcacheSettingsUpdate(d *schema.ResourceData, m interface{}) error
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	obj, err := getObjectWebcacheSettings(d)
+	obj, err := getObjectWebcacheSettings(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating WebcacheSettings resource while getting object: %v", err)
 	}
@@ -193,7 +193,6 @@ func resourceWebcacheSettingsUpdate(d *schema.ResourceData, m interface{}) error
 
 func resourceWebcacheSettingsDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -216,11 +215,17 @@ func resourceWebcacheSettingsDelete(d *schema.ResourceData, m interface{}) error
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	obj, err := getObjectWebcacheSettings(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating WebcacheSettings resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteWebcacheSettings(mkey, paradict, wsParams)
+	_, err = c.UpdateWebcacheSettings(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting WebcacheSettings resource: %v", err)
+		return fmt.Errorf("Error clearing WebcacheSettings resource: %v", err)
 	}
 
 	d.SetId("")
@@ -651,7 +656,7 @@ func expandWebcacheSettingsXCacheMessage(d *schema.ResourceData, v interface{}, 
 	return v, nil
 }
 
-func getObjectWebcacheSettings(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectWebcacheSettings(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("add_x_cache"); ok || d.HasChange("add_x_cache") {

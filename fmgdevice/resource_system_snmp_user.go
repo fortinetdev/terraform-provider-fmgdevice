@@ -342,7 +342,7 @@ func flattenSystemSnmpUserAuthProto(v interface{}, d *schema.ResourceData, pre s
 }
 
 func flattenSystemSnmpUserEvents(v interface{}, d *schema.ResourceData, pre string) interface{} {
-	return flattenStringList(v)
+	return convstr2list(v, d.Get(pre))
 }
 
 func flattenSystemSnmpUserHaDirect(v interface{}, d *schema.ResourceData, pre string) interface{} {

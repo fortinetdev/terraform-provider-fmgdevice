@@ -66,10 +66,12 @@ func resourceAuthenticationSetting() *schema.Resource {
 			"captive_portal_ip": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"captive_portal_ip6": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"captive_portal_port": &schema.Schema{
 				Type:     schema.TypeInt,
@@ -192,7 +194,7 @@ func resourceAuthenticationSettingUpdate(d *schema.ResourceData, m interface{}) 
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	obj, err := getObjectAuthenticationSetting(d)
+	obj, err := getObjectAuthenticationSetting(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating AuthenticationSetting resource while getting object: %v", err)
 	}
@@ -213,7 +215,6 @@ func resourceAuthenticationSettingUpdate(d *schema.ResourceData, m interface{}) 
 
 func resourceAuthenticationSettingDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -236,11 +237,17 @@ func resourceAuthenticationSettingDelete(d *schema.ResourceData, m interface{}) 
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	obj, err := getObjectAuthenticationSetting(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating AuthenticationSetting resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteAuthenticationSetting(mkey, paradict, wsParams)
+	_, err = c.UpdateAuthenticationSetting(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting AuthenticationSetting resource: %v", err)
+		return fmt.Errorf("Error clearing AuthenticationSetting resource: %v", err)
 	}
 
 	d.SetId("")
@@ -725,7 +732,7 @@ func expandAuthenticationSettingRewriteHttpsPort(d *schema.ResourceData, v inter
 	return v, nil
 }
 
-func getObjectAuthenticationSetting(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectAuthenticationSetting(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("active_auth_scheme"); ok || d.HasChange("active_auth_scheme") {

@@ -82,8 +82,9 @@ func resourceSystemFabricVpn() *schema.Resource {
 				},
 			},
 			"bgp_as": &schema.Schema{
-				Type:     schema.TypeInt,
+				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"branch_name": &schema.Schema{
 				Type:     schema.TypeString,
@@ -259,7 +260,7 @@ func resourceSystemFabricVpnUpdate(d *schema.ResourceData, m interface{}) error 
 	}
 	paradict["device"] = device_name
 
-	obj, err := getObjectSystemFabricVpn(d)
+	obj, err := getObjectSystemFabricVpn(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemFabricVpn resource while getting object: %v", err)
 	}
@@ -280,7 +281,6 @@ func resourceSystemFabricVpnUpdate(d *schema.ResourceData, m interface{}) error 
 
 func resourceSystemFabricVpnDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -298,11 +298,17 @@ func resourceSystemFabricVpnDelete(d *schema.ResourceData, m interface{}) error 
 	}
 	paradict["device"] = device_name
 
+	obj, err := getObjectSystemFabricVpn(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating SystemFabricVpn resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteSystemFabricVpn(mkey, paradict, wsParams)
+	_, err = c.UpdateSystemFabricVpn(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting SystemFabricVpn resource: %v", err)
+		return fmt.Errorf("Error clearing SystemFabricVpn resource: %v", err)
 	}
 
 	d.SetId("")
@@ -440,7 +446,7 @@ func flattenSystemFabricVpnAdvertisedSubnetsPrefix(v interface{}, d *schema.Reso
 }
 
 func flattenSystemFabricVpnBgpAs(v interface{}, d *schema.ResourceData, pre string) interface{} {
-	return v
+	return conv2str(v)
 }
 
 func flattenSystemFabricVpnBranchName(v interface{}, d *schema.ResourceData, pre string) interface{} {
@@ -1101,15 +1107,19 @@ func expandSystemFabricVpnVpnRole(d *schema.ResourceData, v interface{}, pre str
 	return v, nil
 }
 
-func getObjectSystemFabricVpn(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectSystemFabricVpn(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
-	if v, ok := d.GetOk("advertised_subnets"); ok || d.HasChange("advertised_subnets") {
-		t, err := expandSystemFabricVpnAdvertisedSubnets(d, v, "advertised_subnets")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["advertised-subnets"] = t
+	if bemptysontable {
+		obj["advertised-subnets"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("advertised_subnets"); ok || d.HasChange("advertised_subnets") {
+			t, err := expandSystemFabricVpnAdvertisedSubnets(d, v, "advertised_subnets")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["advertised-subnets"] = t
+			}
 		}
 	}
 
@@ -1167,12 +1177,16 @@ func getObjectSystemFabricVpn(d *schema.ResourceData) (*map[string]interface{}, 
 		}
 	}
 
-	if v, ok := d.GetOk("overlays"); ok || d.HasChange("overlays") {
-		t, err := expandSystemFabricVpnOverlays(d, v, "overlays")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["overlays"] = t
+	if bemptysontable {
+		obj["overlays"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("overlays"); ok || d.HasChange("overlays") {
+			t, err := expandSystemFabricVpnOverlays(d, v, "overlays")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["overlays"] = t
+			}
 		}
 	}
 

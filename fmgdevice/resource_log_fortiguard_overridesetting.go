@@ -113,7 +113,7 @@ func resourceLogFortiguardOverrideSettingUpdate(d *schema.ResourceData, m interf
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	obj, err := getObjectLogFortiguardOverrideSetting(d)
+	obj, err := getObjectLogFortiguardOverrideSetting(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating LogFortiguardOverrideSetting resource while getting object: %v", err)
 	}
@@ -134,7 +134,6 @@ func resourceLogFortiguardOverrideSettingUpdate(d *schema.ResourceData, m interf
 
 func resourceLogFortiguardOverrideSettingDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -157,11 +156,17 @@ func resourceLogFortiguardOverrideSettingDelete(d *schema.ResourceData, m interf
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	obj, err := getObjectLogFortiguardOverrideSetting(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating LogFortiguardOverrideSetting resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteLogFortiguardOverrideSetting(mkey, paradict, wsParams)
+	_, err = c.UpdateLogFortiguardOverrideSetting(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting LogFortiguardOverrideSetting resource: %v", err)
+		return fmt.Errorf("Error clearing LogFortiguardOverrideSetting resource: %v", err)
 	}
 
 	d.SetId("")
@@ -394,7 +399,7 @@ func expandLogFortiguardOverrideSettingUploadTime(d *schema.ResourceData, v inte
 	return v, nil
 }
 
-func getObjectLogFortiguardOverrideSetting(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectLogFortiguardOverrideSetting(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("access_config"); ok || d.HasChange("access_config") {

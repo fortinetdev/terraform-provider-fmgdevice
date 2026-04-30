@@ -188,6 +188,7 @@ func resourceSystemExternalResource() *schema.Resource {
 			"user_agent": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"username": &schema.Schema{
 				Type:     schema.TypeString,

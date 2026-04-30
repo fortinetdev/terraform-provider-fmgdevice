@@ -1,5 +1,5 @@
 ---
-subcategory: "No Category"
+subcategory: "Report"
 layout: "fmgdevice"
 page_title: "FortiManager Device: fmgdevice_report_layout_bodyitem_parameters"
 description: |-

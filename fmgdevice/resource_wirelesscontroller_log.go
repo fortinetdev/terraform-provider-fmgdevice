@@ -49,6 +49,7 @@ func resourceWirelessControllerLog() *schema.Resource {
 			"addrgrp_log": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"ble_log": &schema.Schema{
 				Type:     schema.TypeString,
@@ -138,7 +139,7 @@ func resourceWirelessControllerLogUpdate(d *schema.ResourceData, m interface{}) 
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	obj, err := getObjectWirelessControllerLog(d)
+	obj, err := getObjectWirelessControllerLog(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating WirelessControllerLog resource while getting object: %v", err)
 	}
@@ -159,7 +160,6 @@ func resourceWirelessControllerLogUpdate(d *schema.ResourceData, m interface{}) 
 
 func resourceWirelessControllerLogDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -182,11 +182,17 @@ func resourceWirelessControllerLogDelete(d *schema.ResourceData, m interface{}) 
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	obj, err := getObjectWirelessControllerLog(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating WirelessControllerLog resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteWirelessControllerLog(mkey, paradict, wsParams)
+	_, err = c.UpdateWirelessControllerLog(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting WirelessControllerLog resource: %v", err)
+		return fmt.Errorf("Error clearing WirelessControllerLog resource: %v", err)
 	}
 
 	d.SetId("")
@@ -491,7 +497,7 @@ func expandWirelessControllerLogWtpFipsEventLog(d *schema.ResourceData, v interf
 	return v, nil
 }
 
-func getObjectWirelessControllerLog(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectWirelessControllerLog(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("addrgrp_log"); ok || d.HasChange("addrgrp_log") {

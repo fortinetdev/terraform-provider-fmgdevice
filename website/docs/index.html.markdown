@@ -25,7 +25,7 @@ provider "fmgdevice" {
   device_vdom  = "root"
 }
 
-# Create a firewall vip object
+# Create a static router
 resource "fmgdevice_router_static" "labelname" {
   device = "terraform-test"
   vdom = "root"

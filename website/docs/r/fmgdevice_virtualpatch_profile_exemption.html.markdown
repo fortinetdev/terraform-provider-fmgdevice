@@ -1,5 +1,5 @@
 ---
-subcategory: "No Category"
+subcategory: "Virtual Patch"
 layout: "fmgdevice"
 page_title: "FortiManager Device: fmgdevice_virtualpatch_profile_exemption"
 description: |-

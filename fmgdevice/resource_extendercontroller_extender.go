@@ -57,6 +57,10 @@ func resourceExtenderControllerExtender() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"_prefer_img_ver": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 			"_template": &schema.Schema{
 				Type:     schema.TypeSet,
 				Elem:     &schema.Schema{Type: schema.TypeString},
@@ -128,14 +132,17 @@ func resourceExtenderControllerExtender() *schema.Resource {
 						"interval": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"signal_threshold": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"status": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 					},
 				},
@@ -241,22 +248,27 @@ func resourceExtenderControllerExtender() *schema.Resource {
 									"dataplan": &schema.Schema{
 										Type:     schema.TypeString,
 										Optional: true,
+										Computed: true,
 									},
 									"disconnect": &schema.Schema{
 										Type:     schema.TypeString,
 										Optional: true,
+										Computed: true,
 									},
 									"disconnect_period": &schema.Schema{
 										Type:     schema.TypeInt,
 										Optional: true,
+										Computed: true,
 									},
 									"disconnect_threshold": &schema.Schema{
 										Type:     schema.TypeInt,
 										Optional: true,
+										Computed: true,
 									},
 									"signal": &schema.Schema{
 										Type:     schema.TypeString,
 										Optional: true,
+										Computed: true,
 									},
 									"status": &schema.Schema{
 										Type:     schema.TypeString,
@@ -271,10 +283,12 @@ func resourceExtenderControllerExtender() *schema.Resource {
 									"switch_back_time": &schema.Schema{
 										Type:     schema.TypeString,
 										Optional: true,
+										Computed: true,
 									},
 									"switch_back_timer": &schema.Schema{
 										Type:     schema.TypeInt,
 										Optional: true,
+										Computed: true,
 									},
 								},
 							},
@@ -286,10 +300,12 @@ func resourceExtenderControllerExtender() *schema.Resource {
 						"default_sim": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"gps": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"ifname": &schema.Schema{
 							Type:     schema.TypeSet,
@@ -312,10 +328,12 @@ func resourceExtenderControllerExtender() *schema.Resource {
 						"redundant_mode": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"sim1_pin": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"sim1_pin_code": &schema.Schema{
 							Type:      schema.TypeSet,
@@ -327,6 +345,7 @@ func resourceExtenderControllerExtender() *schema.Resource {
 						"sim2_pin": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"sim2_pin_code": &schema.Schema{
 							Type:      schema.TypeSet,
@@ -365,22 +384,27 @@ func resourceExtenderControllerExtender() *schema.Resource {
 									"dataplan": &schema.Schema{
 										Type:     schema.TypeString,
 										Optional: true,
+										Computed: true,
 									},
 									"disconnect": &schema.Schema{
 										Type:     schema.TypeString,
 										Optional: true,
+										Computed: true,
 									},
 									"disconnect_period": &schema.Schema{
 										Type:     schema.TypeInt,
 										Optional: true,
+										Computed: true,
 									},
 									"disconnect_threshold": &schema.Schema{
 										Type:     schema.TypeInt,
 										Optional: true,
+										Computed: true,
 									},
 									"signal": &schema.Schema{
 										Type:     schema.TypeString,
 										Optional: true,
+										Computed: true,
 									},
 									"status": &schema.Schema{
 										Type:     schema.TypeString,
@@ -395,10 +419,12 @@ func resourceExtenderControllerExtender() *schema.Resource {
 									"switch_back_time": &schema.Schema{
 										Type:     schema.TypeString,
 										Optional: true,
+										Computed: true,
 									},
 									"switch_back_timer": &schema.Schema{
 										Type:     schema.TypeInt,
 										Optional: true,
+										Computed: true,
 									},
 								},
 							},
@@ -410,10 +436,12 @@ func resourceExtenderControllerExtender() *schema.Resource {
 						"default_sim": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"gps": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"ifname": &schema.Schema{
 							Type:     schema.TypeSet,
@@ -436,10 +464,12 @@ func resourceExtenderControllerExtender() *schema.Resource {
 						"redundant_mode": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"sim1_pin": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"sim1_pin_code": &schema.Schema{
 							Type:      schema.TypeSet,
@@ -451,6 +481,7 @@ func resourceExtenderControllerExtender() *schema.Resource {
 						"sim2_pin": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"sim2_pin_code": &schema.Schema{
 							Type:      schema.TypeSet,
@@ -786,6 +817,10 @@ func resourceExtenderControllerExtenderRead(d *schema.ResourceData, m interface{
 
 func flattenExtenderControllerExtenderDataplan(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return flattenStringList(v)
+}
+
+func flattenExtenderControllerExtenderPreferImgVer(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
 }
 
 func flattenExtenderControllerExtenderTemplate(v interface{}, d *schema.ResourceData, pre string) interface{} {
@@ -1492,6 +1527,16 @@ func refreshObjectExtenderControllerExtender(d *schema.ResourceData, o map[strin
 		}
 	}
 
+	if err = d.Set("_prefer_img_ver", flattenExtenderControllerExtenderPreferImgVer(o["_prefer-img-ver"], d, "_prefer_img_ver")); err != nil {
+		if vv, ok := fortiAPIPatch(o["_prefer-img-ver"], "ExtenderControllerExtender-PreferImgVer"); ok {
+			if err = d.Set("_prefer_img_ver", vv); err != nil {
+				return fmt.Errorf("Error reading _prefer_img_ver: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading _prefer_img_ver: %v", err)
+		}
+	}
+
 	if err = d.Set("_template", flattenExtenderControllerExtenderTemplate(o["_template"], d, "_template")); err != nil {
 		if vv, ok := fortiAPIPatch(o["_template"], "ExtenderControllerExtender-Template"); ok {
 			if err = d.Set("_template", vv); err != nil {
@@ -2049,6 +2094,10 @@ func flattenExtenderControllerExtenderFortiTestDebug(d *schema.ResourceData, fos
 
 func expandExtenderControllerExtenderDataplan(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandExtenderControllerExtenderPreferImgVer(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
 }
 
 func expandExtenderControllerExtenderTemplate(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
@@ -2774,6 +2823,15 @@ func getObjectExtenderControllerExtender(d *schema.ResourceData) (*map[string]in
 			return &obj, err
 		} else if t != nil {
 			obj["_dataplan"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("_prefer_img_ver"); ok || d.HasChange("_prefer_img_ver") {
+		t, err := expandExtenderControllerExtenderPreferImgVer(d, v, "_prefer_img_ver")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["_prefer-img-ver"] = t
 		}
 	}
 

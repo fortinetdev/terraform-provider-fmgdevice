@@ -92,7 +92,7 @@ func resourceFirewallProfileProtocolOptionsDnsUpdate(d *schema.ResourceData, m i
 	paradict["vdom"] = device_vdom
 	paradict["profile_protocol_options"] = profile_protocol_options
 
-	obj, err := getObjectFirewallProfileProtocolOptionsDns(d)
+	obj, err := getObjectFirewallProfileProtocolOptionsDns(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating FirewallProfileProtocolOptionsDns resource while getting object: %v", err)
 	}
@@ -113,7 +113,6 @@ func resourceFirewallProfileProtocolOptionsDnsUpdate(d *schema.ResourceData, m i
 
 func resourceFirewallProfileProtocolOptionsDnsDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -138,11 +137,17 @@ func resourceFirewallProfileProtocolOptionsDnsDelete(d *schema.ResourceData, m i
 	paradict["vdom"] = device_vdom
 	paradict["profile_protocol_options"] = profile_protocol_options
 
+	obj, err := getObjectFirewallProfileProtocolOptionsDns(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating FirewallProfileProtocolOptionsDns resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteFirewallProfileProtocolOptionsDns(mkey, paradict, wsParams)
+	_, err = c.UpdateFirewallProfileProtocolOptionsDns(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting FirewallProfileProtocolOptionsDns resource: %v", err)
+		return fmt.Errorf("Error clearing FirewallProfileProtocolOptionsDns resource: %v", err)
 	}
 
 	d.SetId("")
@@ -260,7 +265,7 @@ func expandFirewallProfileProtocolOptionsDnsStatus2edl(d *schema.ResourceData, v
 	return v, nil
 }
 
-func getObjectFirewallProfileProtocolOptionsDns(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectFirewallProfileProtocolOptionsDns(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("ports"); ok || d.HasChange("ports") {

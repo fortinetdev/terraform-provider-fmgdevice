@@ -144,6 +144,10 @@ func resourceFirewallAddress6DynamicMapping() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
+			"passive_fqdn_learning": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 			"route_tag": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
@@ -561,6 +565,10 @@ func flattenFirewallAddress6DynamicMappingObjId2edl(v interface{}, d *schema.Res
 	return v
 }
 
+func flattenFirewallAddress6DynamicMappingPassiveFqdnLearning2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenFirewallAddress6DynamicMappingRouteTag2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -873,6 +881,16 @@ func refreshObjectFirewallAddress6DynamicMapping(d *schema.ResourceData, o map[s
 		}
 	}
 
+	if err = d.Set("passive_fqdn_learning", flattenFirewallAddress6DynamicMappingPassiveFqdnLearning2edl(o["passive-fqdn-learning"], d, "passive_fqdn_learning")); err != nil {
+		if vv, ok := fortiAPIPatch(o["passive-fqdn-learning"], "FirewallAddress6DynamicMapping-PassiveFqdnLearning"); ok {
+			if err = d.Set("passive_fqdn_learning", vv); err != nil {
+				return fmt.Errorf("Error reading passive_fqdn_learning: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading passive_fqdn_learning: %v", err)
+		}
+	}
+
 	if err = d.Set("route_tag", flattenFirewallAddress6DynamicMappingRouteTag2edl(o["route-tag"], d, "route_tag")); err != nil {
 		if vv, ok := fortiAPIPatch(o["route-tag"], "FirewallAddress6DynamicMapping-RouteTag"); ok {
 			if err = d.Set("route_tag", vv); err != nil {
@@ -1146,6 +1164,10 @@ func expandFirewallAddress6DynamicMappingObjId2edl(d *schema.ResourceData, v int
 	return v, nil
 }
 
+func expandFirewallAddress6DynamicMappingPassiveFqdnLearning2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandFirewallAddress6DynamicMappingRouteTag2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -1411,6 +1433,15 @@ func getObjectFirewallAddress6DynamicMapping(d *schema.ResourceData) (*map[strin
 			return &obj, err
 		} else if t != nil {
 			obj["obj-id"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("passive_fqdn_learning"); ok || d.HasChange("passive_fqdn_learning") {
+		t, err := expandFirewallAddress6DynamicMappingPassiveFqdnLearning2edl(d, v, "passive_fqdn_learning")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["passive-fqdn-learning"] = t
 		}
 	}
 

@@ -85,6 +85,7 @@ func resourceSwitchControllerManagedSwitchSystemDhcpServer() *schema.Resource {
 				Type:     schema.TypeInt,
 				ForceNew: true,
 				Optional: true,
+				Computed: true,
 			},
 			"interface": &schema.Schema{
 				Type:     schema.TypeSet,
@@ -241,11 +242,19 @@ func resourceSwitchControllerManagedSwitchSystemDhcpServerCreate(d *schema.Resou
 	}
 
 	if !existing {
-		_, err = c.CreateSwitchControllerManagedSwitchSystemDhcpServer(obj, paradict, wsParams)
+		v, err := c.CreateSwitchControllerManagedSwitchSystemDhcpServer(obj, paradict, wsParams)
 		if err != nil {
 			return fmt.Errorf("Error creating SwitchControllerManagedSwitchSystemDhcpServer resource: %v", err)
 		}
 
+		if v != nil && v["id"] != nil {
+			if vidn, ok := v["id"].(float64); ok {
+				d.SetId(strconv.Itoa(int(vidn)))
+				return resourceSwitchControllerManagedSwitchSystemDhcpServerRead(d, m)
+			} else {
+				return fmt.Errorf("Error creating SwitchControllerManagedSwitchSystemDhcpServer resource: %v", err)
+			}
+		}
 	}
 
 	d.SetId(strconv.Itoa(getIntKey(d, "fosid")))

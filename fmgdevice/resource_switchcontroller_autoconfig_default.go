@@ -91,7 +91,7 @@ func resourceSwitchControllerAutoConfigDefaultUpdate(d *schema.ResourceData, m i
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	obj, err := getObjectSwitchControllerAutoConfigDefault(d)
+	obj, err := getObjectSwitchControllerAutoConfigDefault(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating SwitchControllerAutoConfigDefault resource while getting object: %v", err)
 	}
@@ -112,7 +112,6 @@ func resourceSwitchControllerAutoConfigDefaultUpdate(d *schema.ResourceData, m i
 
 func resourceSwitchControllerAutoConfigDefaultDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -135,11 +134,17 @@ func resourceSwitchControllerAutoConfigDefaultDelete(d *schema.ResourceData, m i
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	obj, err := getObjectSwitchControllerAutoConfigDefault(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating SwitchControllerAutoConfigDefault resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteSwitchControllerAutoConfigDefault(mkey, paradict, wsParams)
+	_, err = c.UpdateSwitchControllerAutoConfigDefault(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting SwitchControllerAutoConfigDefault resource: %v", err)
+		return fmt.Errorf("Error clearing SwitchControllerAutoConfigDefault resource: %v", err)
 	}
 
 	d.SetId("")
@@ -264,7 +269,7 @@ func expandSwitchControllerAutoConfigDefaultIslPolicy(d *schema.ResourceData, v 
 	return expandStringList(v.(*schema.Set).List()), nil
 }
 
-func getObjectSwitchControllerAutoConfigDefault(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectSwitchControllerAutoConfigDefault(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("fgt_policy"); ok || d.HasChange("fgt_policy") {

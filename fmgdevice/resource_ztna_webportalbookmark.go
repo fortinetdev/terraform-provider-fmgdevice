@@ -175,9 +175,31 @@ func resourceZtnaWebPortalBookmark() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"llm_secure_proxy": &schema.Schema{
+				Type:     schema.TypeList,
+				Optional: true,
+				MaxItems: 1,
+				Computed: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"all_llm_servers": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+							Computed: true,
+						},
+						"llm_servers": &schema.Schema{
+							Type:     schema.TypeSet,
+							Elem:     &schema.Schema{Type: schema.TypeString},
+							Optional: true,
+							Computed: true,
+						},
+					},
+				},
+			},
 			"type": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"dynamic_sort_subtable": &schema.Schema{
 				Type:     schema.TypeString,
@@ -631,6 +653,37 @@ func flattenZtnaWebPortalBookmarkUsers(v interface{}, d *schema.ResourceData, pr
 	return flattenStringList(v)
 }
 
+func flattenZtnaWebPortalBookmarkLlmSecureProxy(v interface{}, d *schema.ResourceData, pre string) []map[string]interface{} {
+	if v == nil {
+		return nil
+	}
+
+	i := v.(map[string]interface{})
+	result := make(map[string]interface{})
+
+	pre_append := "" // complex
+	pre_append = pre + ".0." + "all_llm_servers"
+	if _, ok := i["all-llm-servers"]; ok {
+		result["all_llm_servers"] = flattenZtnaWebPortalBookmarkLlmSecureProxyAllLlmServers(i["all-llm-servers"], d, pre_append)
+	}
+
+	pre_append = pre + ".0." + "llm_servers"
+	if _, ok := i["llm-servers"]; ok {
+		result["llm_servers"] = flattenZtnaWebPortalBookmarkLlmSecureProxyLlmServers(i["llm-servers"], d, pre_append)
+	}
+
+	lastresult := []map[string]interface{}{result}
+	return lastresult
+}
+
+func flattenZtnaWebPortalBookmarkLlmSecureProxyAllLlmServers(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenZtnaWebPortalBookmarkLlmSecureProxyLlmServers(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
 func flattenZtnaWebPortalBookmarkType(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -693,6 +746,30 @@ func refreshObjectZtnaWebPortalBookmark(d *schema.ResourceData, o map[string]int
 			}
 		} else {
 			return fmt.Errorf("Error reading users: %v", err)
+		}
+	}
+
+	if isImportTable() {
+		if err = d.Set("llm_secure_proxy", flattenZtnaWebPortalBookmarkLlmSecureProxy(o["llm-secure-proxy"], d, "llm_secure_proxy")); err != nil {
+			if vv, ok := fortiAPIPatch(o["llm-secure-proxy"], "ZtnaWebPortalBookmark-LlmSecureProxy"); ok {
+				if err = d.Set("llm_secure_proxy", vv); err != nil {
+					return fmt.Errorf("Error reading llm_secure_proxy: %v", err)
+				}
+			} else {
+				return fmt.Errorf("Error reading llm_secure_proxy: %v", err)
+			}
+		}
+	} else {
+		if _, ok := d.GetOk("llm_secure_proxy"); ok {
+			if err = d.Set("llm_secure_proxy", flattenZtnaWebPortalBookmarkLlmSecureProxy(o["llm-secure-proxy"], d, "llm_secure_proxy")); err != nil {
+				if vv, ok := fortiAPIPatch(o["llm-secure-proxy"], "ZtnaWebPortalBookmark-LlmSecureProxy"); ok {
+					if err = d.Set("llm_secure_proxy", vv); err != nil {
+						return fmt.Errorf("Error reading llm_secure_proxy: %v", err)
+					}
+				} else {
+					return fmt.Errorf("Error reading llm_secure_proxy: %v", err)
+				}
+			}
 		}
 	}
 
@@ -949,6 +1026,36 @@ func expandZtnaWebPortalBookmarkUsers(d *schema.ResourceData, v interface{}, pre
 	return expandStringList(v.(*schema.Set).List()), nil
 }
 
+func expandZtnaWebPortalBookmarkLlmSecureProxy(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	l := v.([]interface{})
+	if len(l) == 0 || l[0] == nil {
+		return nil, nil
+	}
+
+	i := l[0].(map[string]interface{})
+	result := make(map[string]interface{})
+
+	pre_append := "" // complex
+	pre_append = pre + ".0." + "all_llm_servers"
+	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+		result["all-llm-servers"], _ = expandZtnaWebPortalBookmarkLlmSecureProxyAllLlmServers(d, i["all_llm_servers"], pre_append)
+	}
+	pre_append = pre + ".0." + "llm_servers"
+	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+		result["llm-servers"], _ = expandZtnaWebPortalBookmarkLlmSecureProxyLlmServers(d, i["llm_servers"], pre_append)
+	}
+
+	return result, nil
+}
+
+func expandZtnaWebPortalBookmarkLlmSecureProxyAllLlmServers(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandZtnaWebPortalBookmarkLlmSecureProxyLlmServers(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
 func expandZtnaWebPortalBookmarkType(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -989,6 +1096,15 @@ func getObjectZtnaWebPortalBookmark(d *schema.ResourceData) (*map[string]interfa
 			return &obj, err
 		} else if t != nil {
 			obj["users"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("llm_secure_proxy"); ok || d.HasChange("llm_secure_proxy") {
+		t, err := expandZtnaWebPortalBookmarkLlmSecureProxy(d, v, "llm_secure_proxy")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["llm-secure-proxy"] = t
 		}
 	}
 

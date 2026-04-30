@@ -1,5 +1,5 @@
 ---
-subcategory: "No Category"
+subcategory: "System"
 layout: "fmgdevice"
 page_title: "FortiManager Device: fmgdevice_system_interface"
 description: |-
@@ -249,8 +249,11 @@ The following arguments are supported:
 
 * `monitor_bandwidth` - Enable monitoring bandwidth on this interface. Valid values: `disable`, `enable`.
 
+* `mrru` - PPP MRRU (296 - 65535, default = 1500).
 * `mtu` - MTU value for this interface.
 * `mtu_override` - Enable to set a custom MTU for this interface. Valid values: `disable`, `enable`.
+
+* `multilink` - Enable/disable PPP multilink support. Valid values: `disable`, `enable`.
 
 * `mux_type` - Multiplexer type. Valid values: `llc-encaps`, `vc-encaps`.
 
@@ -625,6 +628,8 @@ The `ip6_delegated_prefix_list` block supports:
 * `autonomous_flag` - Enable/disable the autonomous flag. Valid values: `disable`, `enable`.
 
 * `delegated_prefix_iaid` - IAID of obtained delegated-prefix from the upstream interface.
+* `dnssl_service` - Enable/disable use of domain from delegated prefix for DNSSL. Valid values: `disable`, `enable`.
+
 * `onlink_flag` - Enable/disable the onlink flag. Valid values: `disable`, `enable`.
 
 * `prefix_id` - Prefix ID.
@@ -714,6 +719,7 @@ The `mirroring_filter` block supports:
 
 The `phy_setting` block supports:
 
+* `signal_ok_threshold` - Configure the signal strength value at which the FortiGate unit detects that the receiving signal is idle or that data is not being received. Zero means idle detection is disabled. Higher values mean the signal strength must be higher in order for the FortiGate unit to consider the interface is not idle (0 - 12, default = 0).
 * `signal_ok_threshold_value` - Signal-ok-threshold value(0 - 12).
 
 The `secondaryip` block supports:

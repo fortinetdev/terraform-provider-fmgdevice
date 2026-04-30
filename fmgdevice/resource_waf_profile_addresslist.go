@@ -108,7 +108,7 @@ func resourceWafProfileAddressListUpdate(d *schema.ResourceData, m interface{}) 
 	paradict["vdom"] = device_vdom
 	paradict["profile"] = profile
 
-	obj, err := getObjectWafProfileAddressList(d)
+	obj, err := getObjectWafProfileAddressList(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating WafProfileAddressList resource while getting object: %v", err)
 	}
@@ -129,7 +129,6 @@ func resourceWafProfileAddressListUpdate(d *schema.ResourceData, m interface{}) 
 
 func resourceWafProfileAddressListDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -154,11 +153,17 @@ func resourceWafProfileAddressListDelete(d *schema.ResourceData, m interface{}) 
 	paradict["vdom"] = device_vdom
 	paradict["profile"] = profile
 
+	obj, err := getObjectWafProfileAddressList(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating WafProfileAddressList resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteWafProfileAddressList(mkey, paradict, wsParams)
+	_, err = c.UpdateWafProfileAddressList(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting WafProfileAddressList resource: %v", err)
+		return fmt.Errorf("Error clearing WafProfileAddressList resource: %v", err)
 	}
 
 	d.SetId("")
@@ -330,7 +335,7 @@ func expandWafProfileAddressListTrustedAddress2edl(d *schema.ResourceData, v int
 	return expandStringList(v.(*schema.Set).List()), nil
 }
 
-func getObjectWafProfileAddressList(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectWafProfileAddressList(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("blocked_address"); ok || d.HasChange("blocked_address") {

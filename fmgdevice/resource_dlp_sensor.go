@@ -104,14 +104,17 @@ func resourceDlpSensor() *schema.Resource {
 			"dlp_log": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"extended_log": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"feature_set": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"filter": &schema.Schema{
 				Type:     schema.TypeList,
@@ -121,10 +124,12 @@ func resourceDlpSensor() *schema.Resource {
 						"action": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"archive": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"company_identifier": &schema.Schema{
 							Type:     schema.TypeString,
@@ -133,10 +138,12 @@ func resourceDlpSensor() *schema.Resource {
 						"expiry": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"file_size": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"file_type": &schema.Schema{
 							Type:     schema.TypeSet,
@@ -147,6 +154,7 @@ func resourceDlpSensor() *schema.Resource {
 						"filter_by": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"id": &schema.Schema{
 							Type:     schema.TypeInt,
@@ -155,6 +163,7 @@ func resourceDlpSensor() *schema.Resource {
 						"match_percentage": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"name": &schema.Schema{
 							Type:     schema.TypeString,
@@ -179,10 +188,12 @@ func resourceDlpSensor() *schema.Resource {
 						"severity": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"type": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 					},
 				},
@@ -196,6 +207,7 @@ func resourceDlpSensor() *schema.Resource {
 			"nac_quar_log": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"replacemsg_group": &schema.Schema{
 				Type:     schema.TypeSet,

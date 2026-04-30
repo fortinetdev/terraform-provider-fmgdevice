@@ -89,7 +89,7 @@ func resourceSwitchControllerSnmpTrapThresholdUpdate(d *schema.ResourceData, m i
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	obj, err := getObjectSwitchControllerSnmpTrapThreshold(d)
+	obj, err := getObjectSwitchControllerSnmpTrapThreshold(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating SwitchControllerSnmpTrapThreshold resource while getting object: %v", err)
 	}
@@ -110,7 +110,6 @@ func resourceSwitchControllerSnmpTrapThresholdUpdate(d *schema.ResourceData, m i
 
 func resourceSwitchControllerSnmpTrapThresholdDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -133,11 +132,17 @@ func resourceSwitchControllerSnmpTrapThresholdDelete(d *schema.ResourceData, m i
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	obj, err := getObjectSwitchControllerSnmpTrapThreshold(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating SwitchControllerSnmpTrapThreshold resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteSwitchControllerSnmpTrapThreshold(mkey, paradict, wsParams)
+	_, err = c.UpdateSwitchControllerSnmpTrapThreshold(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting SwitchControllerSnmpTrapThreshold resource: %v", err)
+		return fmt.Errorf("Error clearing SwitchControllerSnmpTrapThreshold resource: %v", err)
 	}
 
 	d.SetId("")
@@ -262,7 +267,7 @@ func expandSwitchControllerSnmpTrapThresholdTrapLowMemoryThreshold(d *schema.Res
 	return v, nil
 }
 
-func getObjectSwitchControllerSnmpTrapThreshold(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectSwitchControllerSnmpTrapThreshold(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("trap_high_cpu_threshold"); ok || d.HasChange("trap_high_cpu_threshold") {

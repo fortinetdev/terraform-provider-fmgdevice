@@ -96,7 +96,7 @@ func resourceExtensionControllerExtenderProfileCellularControllerReportUpdate(d 
 	paradict["vdom"] = device_vdom
 	paradict["extender_profile"] = extender_profile
 
-	obj, err := getObjectExtensionControllerExtenderProfileCellularControllerReport(d)
+	obj, err := getObjectExtensionControllerExtenderProfileCellularControllerReport(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating ExtensionControllerExtenderProfileCellularControllerReport resource while getting object: %v", err)
 	}
@@ -117,7 +117,6 @@ func resourceExtensionControllerExtenderProfileCellularControllerReportUpdate(d 
 
 func resourceExtensionControllerExtenderProfileCellularControllerReportDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -142,11 +141,17 @@ func resourceExtensionControllerExtenderProfileCellularControllerReportDelete(d 
 	paradict["vdom"] = device_vdom
 	paradict["extender_profile"] = extender_profile
 
+	obj, err := getObjectExtensionControllerExtenderProfileCellularControllerReport(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating ExtensionControllerExtenderProfileCellularControllerReport resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteExtensionControllerExtenderProfileCellularControllerReport(mkey, paradict, wsParams)
+	_, err = c.UpdateExtensionControllerExtenderProfileCellularControllerReport(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting ExtensionControllerExtenderProfileCellularControllerReport resource: %v", err)
+		return fmt.Errorf("Error clearing ExtensionControllerExtenderProfileCellularControllerReport resource: %v", err)
 	}
 
 	d.SetId("")
@@ -282,7 +287,7 @@ func expandExtensionControllerExtenderProfileCellularControllerReportStatus3rdl(
 	return v, nil
 }
 
-func getObjectExtensionControllerExtenderProfileCellularControllerReport(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectExtensionControllerExtenderProfileCellularControllerReport(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("interval"); ok || d.HasChange("interval") {

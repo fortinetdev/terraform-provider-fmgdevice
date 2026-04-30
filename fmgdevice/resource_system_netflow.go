@@ -122,6 +122,7 @@ func resourceSystemNetflow() *schema.Resource {
 						"protocol": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"source_ip": &schema.Schema{
 							Type:     schema.TypeString,
@@ -198,7 +199,7 @@ func resourceSystemNetflowUpdate(d *schema.ResourceData, m interface{}) error {
 	}
 	paradict["device"] = device_name
 
-	obj, err := getObjectSystemNetflow(d)
+	obj, err := getObjectSystemNetflow(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemNetflow resource while getting object: %v", err)
 	}
@@ -219,7 +220,6 @@ func resourceSystemNetflowUpdate(d *schema.ResourceData, m interface{}) error {
 
 func resourceSystemNetflowDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -237,11 +237,17 @@ func resourceSystemNetflowDelete(d *schema.ResourceData, m interface{}) error {
 	}
 	paradict["device"] = device_name
 
+	obj, err := getObjectSystemNetflow(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating SystemNetflow resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteSystemNetflow(mkey, paradict, wsParams)
+	_, err = c.UpdateSystemNetflow(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting SystemNetflow resource: %v", err)
+		return fmt.Errorf("Error clearing SystemNetflow resource: %v", err)
 	}
 
 	d.SetId("")
@@ -905,7 +911,7 @@ func expandSystemNetflowTemplateTxTimeout(d *schema.ResourceData, v interface{},
 	return v, nil
 }
 
-func getObjectSystemNetflow(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectSystemNetflow(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("active_flow_timeout"); ok || d.HasChange("active_flow_timeout") {
@@ -935,21 +941,29 @@ func getObjectSystemNetflow(d *schema.ResourceData) (*map[string]interface{}, er
 		}
 	}
 
-	if v, ok := d.GetOk("collectors"); ok || d.HasChange("collectors") {
-		t, err := expandSystemNetflowCollectors(d, v, "collectors")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["collectors"] = t
+	if bemptysontable {
+		obj["collectors"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("collectors"); ok || d.HasChange("collectors") {
+			t, err := expandSystemNetflowCollectors(d, v, "collectors")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["collectors"] = t
+			}
 		}
 	}
 
-	if v, ok := d.GetOk("exclusion_filters"); ok || d.HasChange("exclusion_filters") {
-		t, err := expandSystemNetflowExclusionFilters(d, v, "exclusion_filters")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["exclusion-filters"] = t
+	if bemptysontable {
+		obj["exclusion-filters"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("exclusion_filters"); ok || d.HasChange("exclusion_filters") {
+			t, err := expandSystemNetflowExclusionFilters(d, v, "exclusion_filters")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["exclusion-filters"] = t
+			}
 		}
 	}
 

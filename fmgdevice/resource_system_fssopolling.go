@@ -89,7 +89,7 @@ func resourceSystemFssoPollingUpdate(d *schema.ResourceData, m interface{}) erro
 	}
 	paradict["device"] = device_name
 
-	obj, err := getObjectSystemFssoPolling(d)
+	obj, err := getObjectSystemFssoPolling(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemFssoPolling resource while getting object: %v", err)
 	}
@@ -110,7 +110,6 @@ func resourceSystemFssoPollingUpdate(d *schema.ResourceData, m interface{}) erro
 
 func resourceSystemFssoPollingDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -128,11 +127,17 @@ func resourceSystemFssoPollingDelete(d *schema.ResourceData, m interface{}) erro
 	}
 	paradict["device"] = device_name
 
+	obj, err := getObjectSystemFssoPolling(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating SystemFssoPolling resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteSystemFssoPolling(mkey, paradict, wsParams)
+	_, err = c.UpdateSystemFssoPolling(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting SystemFssoPolling resource: %v", err)
+		return fmt.Errorf("Error clearing SystemFssoPolling resource: %v", err)
 	}
 
 	d.SetId("")
@@ -268,7 +273,7 @@ func expandSystemFssoPollingStatus(d *schema.ResourceData, v interface{}, pre st
 	return v, nil
 }
 
-func getObjectSystemFssoPolling(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectSystemFssoPolling(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("_gui_meta"); ok || d.HasChange("_gui_meta") {

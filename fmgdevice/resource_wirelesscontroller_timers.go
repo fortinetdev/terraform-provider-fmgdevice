@@ -140,10 +140,12 @@ func resourceWirelessControllerTimers() *schema.Resource {
 			"sta_offline_cleanup": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"sta_offline_ip2mac_cleanup": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"sta_stats_interval": &schema.Schema{
 				Type:     schema.TypeInt,
@@ -182,7 +184,7 @@ func resourceWirelessControllerTimersUpdate(d *schema.ResourceData, m interface{
 	}
 	paradict["device"] = device_name
 
-	obj, err := getObjectWirelessControllerTimers(d)
+	obj, err := getObjectWirelessControllerTimers(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating WirelessControllerTimers resource while getting object: %v", err)
 	}
@@ -203,7 +205,6 @@ func resourceWirelessControllerTimersUpdate(d *schema.ResourceData, m interface{
 
 func resourceWirelessControllerTimersDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -221,11 +222,17 @@ func resourceWirelessControllerTimersDelete(d *schema.ResourceData, m interface{
 	}
 	paradict["device"] = device_name
 
+	obj, err := getObjectWirelessControllerTimers(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating WirelessControllerTimers resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteWirelessControllerTimers(mkey, paradict, wsParams)
+	_, err = c.UpdateWirelessControllerTimers(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting WirelessControllerTimers resource: %v", err)
+		return fmt.Errorf("Error clearing WirelessControllerTimers resource: %v", err)
 	}
 
 	d.SetId("")
@@ -753,7 +760,7 @@ func expandWirelessControllerTimersWidsEntryCleanup(d *schema.ResourceData, v in
 	return v, nil
 }
 
-func getObjectWirelessControllerTimers(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectWirelessControllerTimers(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("ap_reboot_wait_interval1"); ok || d.HasChange("ap_reboot_wait_interval1") {

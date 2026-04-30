@@ -49,6 +49,12 @@ func resourceWebProxyGlobal() *schema.Resource {
 			"always_learn_client_ip": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
+			},
+			"auth_sign_timeout": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+				Computed: true,
 			},
 			"fast_policy_match": &schema.Schema{
 				Type:     schema.TypeString,
@@ -134,6 +140,11 @@ func resourceWebProxyGlobal() *schema.Resource {
 				Computed: true,
 			},
 			"policy_category_deep_inspect": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+			"policy_partial_match": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
@@ -272,7 +283,7 @@ func resourceWebProxyGlobalUpdate(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	obj, err := getObjectWebProxyGlobal(d)
+	obj, err := getObjectWebProxyGlobal(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating WebProxyGlobal resource while getting object: %v", err)
 	}
@@ -293,7 +304,6 @@ func resourceWebProxyGlobalUpdate(d *schema.ResourceData, m interface{}) error {
 
 func resourceWebProxyGlobalDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -316,11 +326,17 @@ func resourceWebProxyGlobalDelete(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	obj, err := getObjectWebProxyGlobal(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating WebProxyGlobal resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteWebProxyGlobal(mkey, paradict, wsParams)
+	_, err = c.UpdateWebProxyGlobal(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting WebProxyGlobal resource: %v", err)
+		return fmt.Errorf("Error clearing WebProxyGlobal resource: %v", err)
 	}
 
 	d.SetId("")
@@ -380,6 +396,10 @@ func resourceWebProxyGlobalRead(d *schema.ResourceData, m interface{}) error {
 }
 
 func flattenWebProxyGlobalAlwaysLearnClientIp(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWebProxyGlobalAuthSignTimeout(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -448,6 +468,10 @@ func flattenWebProxyGlobalMaxWafBodyCacheLength(v interface{}, d *schema.Resourc
 }
 
 func flattenWebProxyGlobalPolicyCategoryDeepInspect(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWebProxyGlobalPolicyPartialMatch(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -549,6 +573,16 @@ func refreshObjectWebProxyGlobal(d *schema.ResourceData, o map[string]interface{
 			}
 		} else {
 			return fmt.Errorf("Error reading always_learn_client_ip: %v", err)
+		}
+	}
+
+	if err = d.Set("auth_sign_timeout", flattenWebProxyGlobalAuthSignTimeout(o["auth-sign-timeout"], d, "auth_sign_timeout")); err != nil {
+		if vv, ok := fortiAPIPatch(o["auth-sign-timeout"], "WebProxyGlobal-AuthSignTimeout"); ok {
+			if err = d.Set("auth_sign_timeout", vv); err != nil {
+				return fmt.Errorf("Error reading auth_sign_timeout: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading auth_sign_timeout: %v", err)
 		}
 	}
 
@@ -719,6 +753,16 @@ func refreshObjectWebProxyGlobal(d *schema.ResourceData, o map[string]interface{
 			}
 		} else {
 			return fmt.Errorf("Error reading policy_category_deep_inspect: %v", err)
+		}
+	}
+
+	if err = d.Set("policy_partial_match", flattenWebProxyGlobalPolicyPartialMatch(o["policy-partial-match"], d, "policy_partial_match")); err != nil {
+		if vv, ok := fortiAPIPatch(o["policy-partial-match"], "WebProxyGlobal-PolicyPartialMatch"); ok {
+			if err = d.Set("policy_partial_match", vv); err != nil {
+				return fmt.Errorf("Error reading policy_partial_match: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading policy_partial_match: %v", err)
 		}
 	}
 
@@ -955,6 +999,10 @@ func expandWebProxyGlobalAlwaysLearnClientIp(d *schema.ResourceData, v interface
 	return v, nil
 }
 
+func expandWebProxyGlobalAuthSignTimeout(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandWebProxyGlobalFastPolicyMatch(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -1020,6 +1068,10 @@ func expandWebProxyGlobalMaxWafBodyCacheLength(d *schema.ResourceData, v interfa
 }
 
 func expandWebProxyGlobalPolicyCategoryDeepInspect(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWebProxyGlobalPolicyPartialMatch(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -1111,7 +1163,7 @@ func expandWebProxyGlobalUseDynamicPkey(d *schema.ResourceData, v interface{}, p
 	return v, nil
 }
 
-func getObjectWebProxyGlobal(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectWebProxyGlobal(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("always_learn_client_ip"); ok || d.HasChange("always_learn_client_ip") {
@@ -1120,6 +1172,15 @@ func getObjectWebProxyGlobal(d *schema.ResourceData) (*map[string]interface{}, e
 			return &obj, err
 		} else if t != nil {
 			obj["always-learn-client-ip"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("auth_sign_timeout"); ok || d.HasChange("auth_sign_timeout") {
+		t, err := expandWebProxyGlobalAuthSignTimeout(d, v, "auth_sign_timeout")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["auth-sign-timeout"] = t
 		}
 	}
 
@@ -1273,6 +1334,15 @@ func getObjectWebProxyGlobal(d *schema.ResourceData) (*map[string]interface{}, e
 			return &obj, err
 		} else if t != nil {
 			obj["policy-category-deep-inspect"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("policy_partial_match"); ok || d.HasChange("policy_partial_match") {
+		t, err := expandWebProxyGlobalPolicyPartialMatch(d, v, "policy_partial_match")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["policy-partial-match"] = t
 		}
 	}
 

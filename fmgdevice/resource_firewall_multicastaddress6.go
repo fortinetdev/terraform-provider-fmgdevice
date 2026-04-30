@@ -92,6 +92,10 @@ func resourceFirewallMulticastAddress6() *schema.Resource {
 					},
 				},
 			},
+			"visibility": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 			"dynamic_sort_subtable": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -368,6 +372,10 @@ func flattenFirewallMulticastAddress6TaggingTags(v interface{}, d *schema.Resour
 	return flattenStringList(v)
 }
 
+func flattenFirewallMulticastAddress6Visibility(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func refreshObjectFirewallMulticastAddress6(d *schema.ResourceData, o map[string]interface{}) error {
 	var err error
 
@@ -436,6 +444,16 @@ func refreshObjectFirewallMulticastAddress6(d *schema.ResourceData, o map[string
 					return fmt.Errorf("Error reading tagging: %v", err)
 				}
 			}
+		}
+	}
+
+	if err = d.Set("visibility", flattenFirewallMulticastAddress6Visibility(o["visibility"], d, "visibility")); err != nil {
+		if vv, ok := fortiAPIPatch(o["visibility"], "FirewallMulticastAddress6-Visibility"); ok {
+			if err = d.Set("visibility", vv); err != nil {
+				return fmt.Errorf("Error reading visibility: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading visibility: %v", err)
 		}
 	}
 
@@ -515,6 +533,10 @@ func expandFirewallMulticastAddress6TaggingTags(d *schema.ResourceData, v interf
 	return expandStringList(v.(*schema.Set).List()), nil
 }
 
+func expandFirewallMulticastAddress6Visibility(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func getObjectFirewallMulticastAddress6(d *schema.ResourceData) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
@@ -560,6 +582,15 @@ func getObjectFirewallMulticastAddress6(d *schema.ResourceData) (*map[string]int
 			return &obj, err
 		} else if t != nil {
 			obj["tagging"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("visibility"); ok || d.HasChange("visibility") {
+		t, err := expandFirewallMulticastAddress6Visibility(d, v, "visibility")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["visibility"] = t
 		}
 	}
 

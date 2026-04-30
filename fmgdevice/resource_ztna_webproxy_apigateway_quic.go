@@ -128,7 +128,7 @@ func resourceZtnaWebProxyApiGatewayQuicUpdate(d *schema.ResourceData, m interfac
 	paradict["web_proxy"] = web_proxy
 	paradict["api_gateway"] = api_gateway
 
-	obj, err := getObjectZtnaWebProxyApiGatewayQuic(d)
+	obj, err := getObjectZtnaWebProxyApiGatewayQuic(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating ZtnaWebProxyApiGatewayQuic resource while getting object: %v", err)
 	}
@@ -149,7 +149,6 @@ func resourceZtnaWebProxyApiGatewayQuicUpdate(d *schema.ResourceData, m interfac
 
 func resourceZtnaWebProxyApiGatewayQuicDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -176,11 +175,17 @@ func resourceZtnaWebProxyApiGatewayQuicDelete(d *schema.ResourceData, m interfac
 	paradict["web_proxy"] = web_proxy
 	paradict["api_gateway"] = api_gateway
 
+	obj, err := getObjectZtnaWebProxyApiGatewayQuic(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating ZtnaWebProxyApiGatewayQuic resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteZtnaWebProxyApiGatewayQuic(mkey, paradict, wsParams)
+	_, err = c.UpdateZtnaWebProxyApiGatewayQuic(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting ZtnaWebProxyApiGatewayQuic resource: %v", err)
+		return fmt.Errorf("Error clearing ZtnaWebProxyApiGatewayQuic resource: %v", err)
 	}
 
 	d.SetId("")
@@ -417,7 +422,7 @@ func expandZtnaWebProxyApiGatewayQuicMaxUdpPayloadSize3rdl(d *schema.ResourceDat
 	return v, nil
 }
 
-func getObjectZtnaWebProxyApiGatewayQuic(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectZtnaWebProxyApiGatewayQuic(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("ack_delay_exponent"); ok || d.HasChange("ack_delay_exponent") {

@@ -1,5 +1,5 @@
 ---
-subcategory: "No Category"
+subcategory: "VoIP"
 layout: "fmgdevice"
 page_title: "FortiManager Device: fmgdevice_voip_profile"
 description: |-

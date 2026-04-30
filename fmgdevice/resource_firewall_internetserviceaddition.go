@@ -71,6 +71,7 @@ func resourceFirewallInternetServiceAddition() *schema.Resource {
 									"end_port": &schema.Schema{
 										Type:     schema.TypeInt,
 										Optional: true,
+										Computed: true,
 									},
 									"id": &schema.Schema{
 										Type:     schema.TypeInt,
@@ -79,6 +80,7 @@ func resourceFirewallInternetServiceAddition() *schema.Resource {
 									"start_port": &schema.Schema{
 										Type:     schema.TypeInt,
 										Optional: true,
+										Computed: true,
 									},
 								},
 							},

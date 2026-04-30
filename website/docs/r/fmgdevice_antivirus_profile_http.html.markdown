@@ -1,5 +1,5 @@
 ---
-subcategory: "No Category"
+subcategory: "Antivirus"
 layout: "fmgdevice"
 page_title: "FortiManager Device: fmgdevice_antivirus_profile_http"
 description: |-
@@ -25,6 +25,8 @@ The following arguments are supported:
 * `archive_block` - Select the archive types to block. Valid values: `encrypted`, `corrupted`, `multipart`, `nested`, `mailbomb`, `unhandled`, `partiallycorrupted`, `timeout`.
 
 * `archive_log` - Select the archive types to log. Valid values: `encrypted`, `corrupted`, `multipart`, `nested`, `mailbomb`, `unhandled`, `partiallycorrupted`, `timeout`.
+
+* `av_optimize` - Av-Optimize. Valid values: `disable`, `enable`.
 
 * `av_scan` - Enable AntiVirus scan service. Valid values: `disable`, `monitor`, `block`.
 

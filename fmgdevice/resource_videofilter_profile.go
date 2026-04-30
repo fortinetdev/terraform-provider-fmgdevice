@@ -63,6 +63,7 @@ func resourceVideofilterProfile() *schema.Resource {
 			"default_action": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"filters": &schema.Schema{
 				Type:     schema.TypeList,
@@ -150,6 +151,7 @@ func resourceVideofilterProfile() *schema.Resource {
 			"log": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"name": &schema.Schema{
 				Type:     schema.TypeString,

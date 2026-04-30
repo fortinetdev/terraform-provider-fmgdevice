@@ -1,5 +1,5 @@
 ---
-subcategory: "No Category"
+subcategory: "Wireless Controller"
 layout: "fmgdevice"
 page_title: "FortiManager Device: fmgdevice_wirelesscontroller_snmp"
 description: |-
@@ -62,6 +62,7 @@ The following arguments are supported:
 The `community` block supports:
 
 * `hosts` - Hosts. The structure of `hosts` block is documented below.
+* `hosts6` - Hosts6. The structure of `hosts6` block is documented below.
 * `id` - Community ID.
 * `name` - Community name.
 * `query_v1_status` - Enable/disable SNMP v1 queries. Valid values: `disable`, `enable`.
@@ -80,6 +81,11 @@ The `hosts` block supports:
 * `id` - Host entry ID.
 * `ip` - IPv4 address of the SNMP manager (host).
 
+The `hosts6` block supports:
+
+* `id` - Host6 entry ID.
+* `ipv6` - IPv6 address of the SNMP manager (host).
+
 The `user` block supports:
 
 * `auth_proto` - Authentication protocol. Valid values: `md5`, `sha`.
@@ -87,6 +93,7 @@ The `user` block supports:
 * `auth_pwd` - Password for authentication protocol.
 * `name` - SNMP user name.
 * `notify_hosts` - Configure SNMP User Notify Hosts.
+* `notify_hosts6` - Configure IPv6 SNMP User Notify Hosts.
 * `priv_proto` - Privacy (encryption) protocol. Valid values: `aes`, `des`, `aes256`, `aes256cisco`.
 
 * `priv_pwd` - Password for privacy (encryption) protocol.

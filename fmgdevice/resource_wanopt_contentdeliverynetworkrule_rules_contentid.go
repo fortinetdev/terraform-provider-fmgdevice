@@ -112,7 +112,7 @@ func resourceWanoptContentDeliveryNetworkRuleRulesContentIdUpdate(d *schema.Reso
 	paradict["content_delivery_network_rule"] = content_delivery_network_rule
 	paradict["rules"] = rules
 
-	obj, err := getObjectWanoptContentDeliveryNetworkRuleRulesContentId(d)
+	obj, err := getObjectWanoptContentDeliveryNetworkRuleRulesContentId(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating WanoptContentDeliveryNetworkRuleRulesContentId resource while getting object: %v", err)
 	}
@@ -133,7 +133,6 @@ func resourceWanoptContentDeliveryNetworkRuleRulesContentIdUpdate(d *schema.Reso
 
 func resourceWanoptContentDeliveryNetworkRuleRulesContentIdDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -155,11 +154,17 @@ func resourceWanoptContentDeliveryNetworkRuleRulesContentIdDelete(d *schema.Reso
 	paradict["content_delivery_network_rule"] = content_delivery_network_rule
 	paradict["rules"] = rules
 
+	obj, err := getObjectWanoptContentDeliveryNetworkRuleRulesContentId(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating WanoptContentDeliveryNetworkRuleRulesContentId resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteWanoptContentDeliveryNetworkRuleRulesContentId(mkey, paradict, wsParams)
+	_, err = c.UpdateWanoptContentDeliveryNetworkRuleRulesContentId(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting WanoptContentDeliveryNetworkRuleRulesContentId resource: %v", err)
+		return fmt.Errorf("Error clearing WanoptContentDeliveryNetworkRuleRulesContentId resource: %v", err)
 	}
 
 	d.SetId("")
@@ -385,7 +390,7 @@ func expandWanoptContentDeliveryNetworkRuleRulesContentIdTarget3rdl(d *schema.Re
 	return v, nil
 }
 
-func getObjectWanoptContentDeliveryNetworkRuleRulesContentId(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectWanoptContentDeliveryNetworkRuleRulesContentId(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("end_direction"); ok || d.HasChange("end_direction") {

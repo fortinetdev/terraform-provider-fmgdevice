@@ -60,6 +60,64 @@ func resourceEmailfilterProfile() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"file_filter": &schema.Schema{
+				Type:     schema.TypeList,
+				Optional: true,
+				MaxItems: 1,
+				Computed: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"entries": &schema.Schema{
+							Type:     schema.TypeList,
+							Optional: true,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"action": &schema.Schema{
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+									"comment": &schema.Schema{
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+									"file_type": &schema.Schema{
+										Type:     schema.TypeSet,
+										Elem:     &schema.Schema{Type: schema.TypeString},
+										Optional: true,
+										Computed: true,
+									},
+									"filter": &schema.Schema{
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+									"password_protected": &schema.Schema{
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+									"protocol": &schema.Schema{
+										Type:     schema.TypeSet,
+										Elem:     &schema.Schema{Type: schema.TypeString},
+										Optional: true,
+										Computed: true,
+									},
+								},
+							},
+						},
+						"log": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"scan_archive_contents": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"status": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+					},
+				},
+			},
 			"feature_set": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -94,6 +152,7 @@ func resourceEmailfilterProfile() *schema.Resource {
 						"action": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"log": &schema.Schema{
 							Type:     schema.TypeString,
@@ -107,6 +166,7 @@ func resourceEmailfilterProfile() *schema.Resource {
 						"tag_msg": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"tag_type": &schema.Schema{
 							Type:     schema.TypeSet,
@@ -127,6 +187,7 @@ func resourceEmailfilterProfile() *schema.Resource {
 						"action": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"log": &schema.Schema{
 							Type:     schema.TypeString,
@@ -135,6 +196,7 @@ func resourceEmailfilterProfile() *schema.Resource {
 						"log_all": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 					},
 				},
@@ -179,6 +241,7 @@ func resourceEmailfilterProfile() *schema.Resource {
 						"log_all": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 					},
 				},
@@ -193,6 +256,7 @@ func resourceEmailfilterProfile() *schema.Resource {
 						"action": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"log": &schema.Schema{
 							Type:     schema.TypeString,
@@ -206,6 +270,7 @@ func resourceEmailfilterProfile() *schema.Resource {
 						"tag_msg": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"tag_type": &schema.Schema{
 							Type:     schema.TypeSet,
@@ -232,14 +297,17 @@ func resourceEmailfilterProfile() *schema.Resource {
 						"action": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"hdrip": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"local_override": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"log": &schema.Schema{
 							Type:     schema.TypeString,
@@ -253,6 +321,7 @@ func resourceEmailfilterProfile() *schema.Resource {
 						"tag_msg": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"tag_type": &schema.Schema{
 							Type:     schema.TypeSet,
@@ -305,6 +374,7 @@ func resourceEmailfilterProfile() *schema.Resource {
 			"spam_log_fortiguard_response": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"spam_mheader_table": &schema.Schema{
 				Type:     schema.TypeSet,
@@ -519,6 +589,140 @@ func flattenEmailfilterProfileComment(v interface{}, d *schema.ResourceData, pre
 }
 
 func flattenEmailfilterProfileExternal(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenEmailfilterProfileFileFilter(v interface{}, d *schema.ResourceData, pre string) []map[string]interface{} {
+	if v == nil {
+		return nil
+	}
+
+	i := v.(map[string]interface{})
+	result := make(map[string]interface{})
+
+	pre_append := "" // complex
+	pre_append = pre + ".0." + "entries"
+	if _, ok := i["entries"]; ok {
+		result["entries"] = flattenEmailfilterProfileFileFilterEntries(i["entries"], d, pre_append)
+	}
+
+	pre_append = pre + ".0." + "log"
+	if _, ok := i["log"]; ok {
+		result["log"] = flattenEmailfilterProfileFileFilterLog(i["log"], d, pre_append)
+	}
+
+	pre_append = pre + ".0." + "scan_archive_contents"
+	if _, ok := i["scan-archive-contents"]; ok {
+		result["scan_archive_contents"] = flattenEmailfilterProfileFileFilterScanArchiveContents(i["scan-archive-contents"], d, pre_append)
+	}
+
+	pre_append = pre + ".0." + "status"
+	if _, ok := i["status"]; ok {
+		result["status"] = flattenEmailfilterProfileFileFilterStatus(i["status"], d, pre_append)
+	}
+
+	lastresult := []map[string]interface{}{result}
+	return lastresult
+}
+
+func flattenEmailfilterProfileFileFilterEntries(v interface{}, d *schema.ResourceData, pre string) []map[string]interface{} {
+	if v == nil {
+		return nil
+	}
+
+	l := v.([]interface{})
+	if len(l) == 0 || l[0] == nil {
+		return nil
+	}
+
+	result := make([]map[string]interface{}, 0, len(l))
+
+	con := 0
+	for _, r := range l {
+		tmp := make(map[string]interface{})
+		i := r.(map[string]interface{})
+
+		pre_append := "" // table
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "action"
+		if _, ok := i["action"]; ok {
+			v := flattenEmailfilterProfileFileFilterEntriesAction(i["action"], d, pre_append)
+			tmp["action"] = fortiAPISubPartPatch(v, "EmailfilterProfileFileFilter-Entries-Action")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "comment"
+		if _, ok := i["comment"]; ok {
+			v := flattenEmailfilterProfileFileFilterEntriesComment(i["comment"], d, pre_append)
+			tmp["comment"] = fortiAPISubPartPatch(v, "EmailfilterProfileFileFilter-Entries-Comment")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "file_type"
+		if _, ok := i["file-type"]; ok {
+			v := flattenEmailfilterProfileFileFilterEntriesFileType(i["file-type"], d, pre_append)
+			tmp["file_type"] = fortiAPISubPartPatch(v, "EmailfilterProfileFileFilter-Entries-FileType")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "filter"
+		if _, ok := i["filter"]; ok {
+			v := flattenEmailfilterProfileFileFilterEntriesFilter(i["filter"], d, pre_append)
+			tmp["filter"] = fortiAPISubPartPatch(v, "EmailfilterProfileFileFilter-Entries-Filter")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "password_protected"
+		if _, ok := i["password-protected"]; ok {
+			v := flattenEmailfilterProfileFileFilterEntriesPasswordProtected(i["password-protected"], d, pre_append)
+			tmp["password_protected"] = fortiAPISubPartPatch(v, "EmailfilterProfileFileFilter-Entries-PasswordProtected")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "protocol"
+		if _, ok := i["protocol"]; ok {
+			v := flattenEmailfilterProfileFileFilterEntriesProtocol(i["protocol"], d, pre_append)
+			tmp["protocol"] = fortiAPISubPartPatch(v, "EmailfilterProfileFileFilter-Entries-Protocol")
+		}
+
+		if len(tmp) > 0 {
+			result = append(result, tmp)
+		}
+
+		con += 1
+	}
+
+	return result
+}
+
+func flattenEmailfilterProfileFileFilterEntriesAction(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenEmailfilterProfileFileFilterEntriesComment(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenEmailfilterProfileFileFilterEntriesFileType(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
+func flattenEmailfilterProfileFileFilterEntriesFilter(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenEmailfilterProfileFileFilterEntriesPasswordProtected(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenEmailfilterProfileFileFilterEntriesProtocol(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
+func flattenEmailfilterProfileFileFilterLog(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenEmailfilterProfileFileFilterScanArchiveContents(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenEmailfilterProfileFileFilterStatus(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -917,6 +1121,30 @@ func refreshObjectEmailfilterProfile(d *schema.ResourceData, o map[string]interf
 		}
 	}
 
+	if isImportTable() {
+		if err = d.Set("file_filter", flattenEmailfilterProfileFileFilter(o["file-filter"], d, "file_filter")); err != nil {
+			if vv, ok := fortiAPIPatch(o["file-filter"], "EmailfilterProfile-FileFilter"); ok {
+				if err = d.Set("file_filter", vv); err != nil {
+					return fmt.Errorf("Error reading file_filter: %v", err)
+				}
+			} else {
+				return fmt.Errorf("Error reading file_filter: %v", err)
+			}
+		}
+	} else {
+		if _, ok := d.GetOk("file_filter"); ok {
+			if err = d.Set("file_filter", flattenEmailfilterProfileFileFilter(o["file-filter"], d, "file_filter")); err != nil {
+				if vv, ok := fortiAPIPatch(o["file-filter"], "EmailfilterProfile-FileFilter"); ok {
+					if err = d.Set("file_filter", vv); err != nil {
+						return fmt.Errorf("Error reading file_filter: %v", err)
+					}
+				} else {
+					return fmt.Errorf("Error reading file_filter: %v", err)
+				}
+			}
+		}
+	}
+
 	if err = d.Set("feature_set", flattenEmailfilterProfileFeatureSet(o["feature-set"], d, "feature_set")); err != nil {
 		if vv, ok := fortiAPIPatch(o["feature-set"], "EmailfilterProfile-FeatureSet"); ok {
 			if err = d.Set("feature_set", vv); err != nil {
@@ -1239,6 +1467,131 @@ func expandEmailfilterProfileComment(d *schema.ResourceData, v interface{}, pre 
 }
 
 func expandEmailfilterProfileExternal(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandEmailfilterProfileFileFilter(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	l := v.([]interface{})
+	if len(l) == 0 || l[0] == nil {
+		return nil, nil
+	}
+
+	i := l[0].(map[string]interface{})
+	result := make(map[string]interface{})
+
+	pre_append := "" // complex
+	pre_append = pre + ".0." + "entries"
+	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+		t, err := expandEmailfilterProfileFileFilterEntries(d, i["entries"], pre_append)
+		if err != nil {
+			return result, err
+		} else if t != nil {
+			result["entries"] = t
+		}
+	}
+	pre_append = pre + ".0." + "log"
+	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+		result["log"], _ = expandEmailfilterProfileFileFilterLog(d, i["log"], pre_append)
+	}
+	pre_append = pre + ".0." + "scan_archive_contents"
+	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+		result["scan-archive-contents"], _ = expandEmailfilterProfileFileFilterScanArchiveContents(d, i["scan_archive_contents"], pre_append)
+	}
+	pre_append = pre + ".0." + "status"
+	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+		result["status"], _ = expandEmailfilterProfileFileFilterStatus(d, i["status"], pre_append)
+	}
+
+	return result, nil
+}
+
+func expandEmailfilterProfileFileFilterEntries(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	l := v.([]interface{})
+	result := make([]map[string]interface{}, 0, len(l))
+
+	if len(l) == 0 || l[0] == nil {
+		return result, nil
+	}
+
+	con := 0
+	for _, r := range l {
+		tmp := make(map[string]interface{})
+		i := r.(map[string]interface{})
+		pre_append := "" // table
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "action"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["action"], _ = expandEmailfilterProfileFileFilterEntriesAction(d, i["action"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "comment"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["comment"], _ = expandEmailfilterProfileFileFilterEntriesComment(d, i["comment"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "file_type"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["file-type"], _ = expandEmailfilterProfileFileFilterEntriesFileType(d, i["file_type"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "filter"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["filter"], _ = expandEmailfilterProfileFileFilterEntriesFilter(d, i["filter"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "password_protected"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["password-protected"], _ = expandEmailfilterProfileFileFilterEntriesPasswordProtected(d, i["password_protected"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "protocol"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["protocol"], _ = expandEmailfilterProfileFileFilterEntriesProtocol(d, i["protocol"], pre_append)
+		}
+
+		if len(tmp) > 0 {
+			result = append(result, tmp)
+		}
+
+		con += 1
+	}
+
+	return result, nil
+}
+
+func expandEmailfilterProfileFileFilterEntriesAction(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandEmailfilterProfileFileFilterEntriesComment(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandEmailfilterProfileFileFilterEntriesFileType(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandEmailfilterProfileFileFilterEntriesFilter(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandEmailfilterProfileFileFilterEntriesPasswordProtected(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandEmailfilterProfileFileFilterEntriesProtocol(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandEmailfilterProfileFileFilterLog(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandEmailfilterProfileFileFilterScanArchiveContents(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandEmailfilterProfileFileFilterStatus(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -1614,6 +1967,15 @@ func getObjectEmailfilterProfile(d *schema.ResourceData) (*map[string]interface{
 			return &obj, err
 		} else if t != nil {
 			obj["external"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("file_filter"); ok || d.HasChange("file_filter") {
+		t, err := expandEmailfilterProfileFileFilter(d, v, "file_filter")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["file-filter"] = t
 		}
 	}
 

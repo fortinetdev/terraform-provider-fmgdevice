@@ -90,7 +90,7 @@ func resourceEmailfilterProfileMsnHotmailUpdate(d *schema.ResourceData, m interf
 	paradict["vdom"] = device_vdom
 	paradict["profile"] = profile
 
-	obj, err := getObjectEmailfilterProfileMsnHotmail(d)
+	obj, err := getObjectEmailfilterProfileMsnHotmail(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating EmailfilterProfileMsnHotmail resource while getting object: %v", err)
 	}
@@ -111,7 +111,6 @@ func resourceEmailfilterProfileMsnHotmailUpdate(d *schema.ResourceData, m interf
 
 func resourceEmailfilterProfileMsnHotmailDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -136,11 +135,17 @@ func resourceEmailfilterProfileMsnHotmailDelete(d *schema.ResourceData, m interf
 	paradict["vdom"] = device_vdom
 	paradict["profile"] = profile
 
+	obj, err := getObjectEmailfilterProfileMsnHotmail(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating EmailfilterProfileMsnHotmail resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteEmailfilterProfileMsnHotmail(mkey, paradict, wsParams)
+	_, err = c.UpdateEmailfilterProfileMsnHotmail(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting EmailfilterProfileMsnHotmail resource: %v", err)
+		return fmt.Errorf("Error clearing EmailfilterProfileMsnHotmail resource: %v", err)
 	}
 
 	d.SetId("")
@@ -258,7 +263,7 @@ func expandEmailfilterProfileMsnHotmailLogAll2edl(d *schema.ResourceData, v inte
 	return v, nil
 }
 
-func getObjectEmailfilterProfileMsnHotmail(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectEmailfilterProfileMsnHotmail(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("log"); ok || d.HasChange("log") {

@@ -87,7 +87,7 @@ func resourceFirewallIpmacbindingSettingUpdate(d *schema.ResourceData, m interfa
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	obj, err := getObjectFirewallIpmacbindingSetting(d)
+	obj, err := getObjectFirewallIpmacbindingSetting(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating FirewallIpmacbindingSetting resource while getting object: %v", err)
 	}
@@ -108,7 +108,6 @@ func resourceFirewallIpmacbindingSettingUpdate(d *schema.ResourceData, m interfa
 
 func resourceFirewallIpmacbindingSettingDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -131,11 +130,17 @@ func resourceFirewallIpmacbindingSettingDelete(d *schema.ResourceData, m interfa
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	obj, err := getObjectFirewallIpmacbindingSetting(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating FirewallIpmacbindingSetting resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteFirewallIpmacbindingSetting(mkey, paradict, wsParams)
+	_, err = c.UpdateFirewallIpmacbindingSetting(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting FirewallIpmacbindingSetting resource: %v", err)
+		return fmt.Errorf("Error clearing FirewallIpmacbindingSetting resource: %v", err)
 	}
 
 	d.SetId("")
@@ -260,7 +265,7 @@ func expandFirewallIpmacbindingSettingUndefinedhost(d *schema.ResourceData, v in
 	return v, nil
 }
 
-func getObjectFirewallIpmacbindingSetting(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectFirewallIpmacbindingSetting(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("bindthroughfw"); ok || d.HasChange("bindthroughfw") {

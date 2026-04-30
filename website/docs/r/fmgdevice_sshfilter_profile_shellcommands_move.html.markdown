@@ -1,5 +1,5 @@
 ---
-subcategory: "No Category"
+subcategory: "SSH Filter"
 layout: "fmgdevice"
 page_title: "FortiManager Device: fmgdevice_sshfilter_profile_shellcommands_move"
 description: |-

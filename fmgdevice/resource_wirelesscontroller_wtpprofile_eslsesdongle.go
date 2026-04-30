@@ -134,7 +134,7 @@ func resourceWirelessControllerWtpProfileEslSesDongleUpdate(d *schema.ResourceDa
 	paradict["vdom"] = device_vdom
 	paradict["wtp_profile"] = wtp_profile
 
-	obj, err := getObjectWirelessControllerWtpProfileEslSesDongle(d)
+	obj, err := getObjectWirelessControllerWtpProfileEslSesDongle(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating WirelessControllerWtpProfileEslSesDongle resource while getting object: %v", err)
 	}
@@ -155,7 +155,6 @@ func resourceWirelessControllerWtpProfileEslSesDongleUpdate(d *schema.ResourceDa
 
 func resourceWirelessControllerWtpProfileEslSesDongleDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -180,11 +179,17 @@ func resourceWirelessControllerWtpProfileEslSesDongleDelete(d *schema.ResourceDa
 	paradict["vdom"] = device_vdom
 	paradict["wtp_profile"] = wtp_profile
 
+	obj, err := getObjectWirelessControllerWtpProfileEslSesDongle(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating WirelessControllerWtpProfileEslSesDongle resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteWirelessControllerWtpProfileEslSesDongle(mkey, paradict, wsParams)
+	_, err = c.UpdateWirelessControllerWtpProfileEslSesDongle(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting WirelessControllerWtpProfileEslSesDongle resource: %v", err)
+		return fmt.Errorf("Error clearing WirelessControllerWtpProfileEslSesDongle resource: %v", err)
 	}
 
 	d.SetId("")
@@ -464,7 +469,7 @@ func expandWirelessControllerWtpProfileEslSesDongleTlsFqdnVerification2edl(d *sc
 	return v, nil
 }
 
-func getObjectWirelessControllerWtpProfileEslSesDongle(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectWirelessControllerWtpProfileEslSesDongle(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("apc_addr_type"); ok || d.HasChange("apc_addr_type") {

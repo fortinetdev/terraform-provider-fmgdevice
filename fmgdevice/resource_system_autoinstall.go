@@ -43,6 +43,7 @@ func resourceSystemAutoInstall() *schema.Resource {
 			"auto_install_config": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"auto_install_image": &schema.Schema{
 				Type:     schema.TypeString,
@@ -82,7 +83,7 @@ func resourceSystemAutoInstallUpdate(d *schema.ResourceData, m interface{}) erro
 	}
 	paradict["device"] = device_name
 
-	obj, err := getObjectSystemAutoInstall(d)
+	obj, err := getObjectSystemAutoInstall(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemAutoInstall resource while getting object: %v", err)
 	}
@@ -103,7 +104,6 @@ func resourceSystemAutoInstallUpdate(d *schema.ResourceData, m interface{}) erro
 
 func resourceSystemAutoInstallDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -121,11 +121,17 @@ func resourceSystemAutoInstallDelete(d *schema.ResourceData, m interface{}) erro
 	}
 	paradict["device"] = device_name
 
+	obj, err := getObjectSystemAutoInstall(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating SystemAutoInstall resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteSystemAutoInstall(mkey, paradict, wsParams)
+	_, err = c.UpdateSystemAutoInstall(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting SystemAutoInstall resource: %v", err)
+		return fmt.Errorf("Error clearing SystemAutoInstall resource: %v", err)
 	}
 
 	d.SetId("")
@@ -257,7 +263,7 @@ func expandSystemAutoInstallDefaultImageFile(d *schema.ResourceData, v interface
 	return v, nil
 }
 
-func getObjectSystemAutoInstall(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectSystemAutoInstall(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("auto_install_config"); ok || d.HasChange("auto_install_config") {

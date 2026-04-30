@@ -117,6 +117,12 @@ func resourceFirewallProfileGroup() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"mms_profile": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Computed: true,
+			},
 			"ips_voip_filter": &schema.Schema{
 				Type:     schema.TypeSet,
 				Elem:     &schema.Schema{Type: schema.TypeString},
@@ -200,6 +206,12 @@ func resourceFirewallProfileGroup() *schema.Resource {
 				Computed: true,
 			},
 			"isolator_profile": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Computed: true,
+			},
+			"llm_profile": &schema.Schema{
 				Type:     schema.TypeSet,
 				Elem:     &schema.Schema{Type: schema.TypeString},
 				Optional: true,
@@ -451,6 +463,10 @@ func flattenFirewallProfileGroupIpsSensor(v interface{}, d *schema.ResourceData,
 	return flattenStringList(v)
 }
 
+func flattenFirewallProfileGroupMmsProfile(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
 func flattenFirewallProfileGroupIpsVoipFilter(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return flattenStringList(v)
 }
@@ -508,6 +524,10 @@ func flattenFirewallProfileGroupIaProfile(v interface{}, d *schema.ResourceData,
 }
 
 func flattenFirewallProfileGroupIsolatorProfile(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
+func flattenFirewallProfileGroupLlmProfile(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return flattenStringList(v)
 }
 
@@ -625,6 +645,16 @@ func refreshObjectFirewallProfileGroup(d *schema.ResourceData, o map[string]inte
 			}
 		} else {
 			return fmt.Errorf("Error reading ips_sensor: %v", err)
+		}
+	}
+
+	if err = d.Set("mms_profile", flattenFirewallProfileGroupMmsProfile(o["mms-profile"], d, "mms_profile")); err != nil {
+		if vv, ok := fortiAPIPatch(o["mms-profile"], "FirewallProfileGroup-MmsProfile"); ok {
+			if err = d.Set("mms_profile", vv); err != nil {
+				return fmt.Errorf("Error reading mms_profile: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading mms_profile: %v", err)
 		}
 	}
 
@@ -778,6 +808,16 @@ func refreshObjectFirewallProfileGroup(d *schema.ResourceData, o map[string]inte
 		}
 	}
 
+	if err = d.Set("llm_profile", flattenFirewallProfileGroupLlmProfile(o["llm-profile"], d, "llm_profile")); err != nil {
+		if vv, ok := fortiAPIPatch(o["llm-profile"], "FirewallProfileGroup-LlmProfile"); ok {
+			if err = d.Set("llm_profile", vv); err != nil {
+				return fmt.Errorf("Error reading llm_profile: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading llm_profile: %v", err)
+		}
+	}
+
 	if err = d.Set("redirect_profile", flattenFirewallProfileGroupRedirectProfile(o["redirect-profile"], d, "redirect_profile")); err != nil {
 		if vv, ok := fortiAPIPatch(o["redirect-profile"], "FirewallProfileGroup-RedirectProfile"); ok {
 			if err = d.Set("redirect_profile", vv); err != nil {
@@ -841,6 +881,10 @@ func expandFirewallProfileGroupIpsSensor(d *schema.ResourceData, v interface{}, 
 	return expandStringList(v.(*schema.Set).List()), nil
 }
 
+func expandFirewallProfileGroupMmsProfile(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
 func expandFirewallProfileGroupIpsVoipFilter(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return expandStringList(v.(*schema.Set).List()), nil
 }
@@ -898,6 +942,10 @@ func expandFirewallProfileGroupIaProfile(d *schema.ResourceData, v interface{}, 
 }
 
 func expandFirewallProfileGroupIsolatorProfile(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandFirewallProfileGroupLlmProfile(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return expandStringList(v.(*schema.Set).List()), nil
 }
 
@@ -1004,6 +1052,15 @@ func getObjectFirewallProfileGroup(d *schema.ResourceData) (*map[string]interfac
 			return &obj, err
 		} else if t != nil {
 			obj["ips-sensor"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("mms_profile"); ok || d.HasChange("mms_profile") {
+		t, err := expandFirewallProfileGroupMmsProfile(d, v, "mms_profile")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["mms-profile"] = t
 		}
 	}
 
@@ -1139,6 +1196,15 @@ func getObjectFirewallProfileGroup(d *schema.ResourceData) (*map[string]interfac
 			return &obj, err
 		} else if t != nil {
 			obj["isolator-profile"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("llm_profile"); ok || d.HasChange("llm_profile") {
+		t, err := expandFirewallProfileGroupLlmProfile(d, v, "llm_profile")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["llm-profile"] = t
 		}
 	}
 

@@ -1,5 +1,5 @@
 ---
-subcategory: "No Category"
+subcategory: "SCTP Filter"
 layout: "fmgdevice"
 page_title: "FortiManager Device: fmgdevice_sctpfilter_profile"
 description: |-

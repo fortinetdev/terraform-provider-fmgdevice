@@ -1,5 +1,5 @@
 ---
-subcategory: "No Category"
+subcategory: "Diameter Filter"
 layout: "fmgdevice"
 page_title: "FortiManager Device: fmgdevice_diameterfilter_profile"
 description: |-

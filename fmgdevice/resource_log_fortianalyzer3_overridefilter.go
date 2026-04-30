@@ -176,7 +176,7 @@ func resourceLogFortianalyzer3OverrideFilterUpdate(d *schema.ResourceData, m int
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	obj, err := getObjectLogFortianalyzer3OverrideFilter(d)
+	obj, err := getObjectLogFortianalyzer3OverrideFilter(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating LogFortianalyzer3OverrideFilter resource while getting object: %v", err)
 	}
@@ -197,7 +197,6 @@ func resourceLogFortianalyzer3OverrideFilterUpdate(d *schema.ResourceData, m int
 
 func resourceLogFortianalyzer3OverrideFilterDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -220,11 +219,17 @@ func resourceLogFortianalyzer3OverrideFilterDelete(d *schema.ResourceData, m int
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	obj, err := getObjectLogFortianalyzer3OverrideFilter(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating LogFortianalyzer3OverrideFilter resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteLogFortianalyzer3OverrideFilter(mkey, paradict, wsParams)
+	_, err = c.UpdateLogFortianalyzer3OverrideFilter(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting LogFortianalyzer3OverrideFilter resource: %v", err)
+		return fmt.Errorf("Error clearing LogFortianalyzer3OverrideFilter resource: %v", err)
 	}
 
 	d.SetId("")
@@ -722,7 +727,7 @@ func expandLogFortianalyzer3OverrideFilterZtnaTraffic(d *schema.ResourceData, v 
 	return v, nil
 }
 
-func getObjectLogFortianalyzer3OverrideFilter(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectLogFortianalyzer3OverrideFilter(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("anomaly"); ok || d.HasChange("anomaly") {
@@ -788,12 +793,16 @@ func getObjectLogFortianalyzer3OverrideFilter(d *schema.ResourceData) (*map[stri
 		}
 	}
 
-	if v, ok := d.GetOk("free_style"); ok || d.HasChange("free_style") {
-		t, err := expandLogFortianalyzer3OverrideFilterFreeStyle(d, v, "free_style")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["free-style"] = t
+	if bemptysontable {
+		obj["free-style"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("free_style"); ok || d.HasChange("free_style") {
+			t, err := expandLogFortianalyzer3OverrideFilterFreeStyle(d, v, "free_style")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["free-style"] = t
+			}
 		}
 	}
 

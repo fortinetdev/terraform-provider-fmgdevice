@@ -300,7 +300,7 @@ func resourceSystemStandaloneClusterUpdate(d *schema.ResourceData, m interface{}
 	}
 	paradict["device"] = device_name
 
-	obj, err := getObjectSystemStandaloneCluster(d)
+	obj, err := getObjectSystemStandaloneCluster(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemStandaloneCluster resource while getting object: %v", err)
 	}
@@ -321,7 +321,6 @@ func resourceSystemStandaloneClusterUpdate(d *schema.ResourceData, m interface{}
 
 func resourceSystemStandaloneClusterDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -339,11 +338,17 @@ func resourceSystemStandaloneClusterDelete(d *schema.ResourceData, m interface{}
 	}
 	paradict["device"] = device_name
 
+	obj, err := getObjectSystemStandaloneCluster(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating SystemStandaloneCluster resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteSystemStandaloneCluster(mkey, paradict, wsParams)
+	_, err = c.UpdateSystemStandaloneCluster(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting SystemStandaloneCluster resource: %v", err)
+		return fmt.Errorf("Error clearing SystemStandaloneCluster resource: %v", err)
 	}
 
 	d.SetId("")
@@ -1355,7 +1360,7 @@ func expandSystemStandaloneClusterUtmTrafficBounce(d *schema.ResourceData, v int
 	return v, nil
 }
 
-func getObjectSystemStandaloneCluster(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectSystemStandaloneCluster(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("asymmetric_traffic_control"); ok || d.HasChange("asymmetric_traffic_control") {
@@ -1367,12 +1372,16 @@ func getObjectSystemStandaloneCluster(d *schema.ResourceData) (*map[string]inter
 		}
 	}
 
-	if v, ok := d.GetOk("cluster_peer"); ok || d.HasChange("cluster_peer") {
-		t, err := expandSystemStandaloneClusterClusterPeer(d, v, "cluster_peer")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["cluster-peer"] = t
+	if bemptysontable {
+		obj["cluster-peer"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("cluster_peer"); ok || d.HasChange("cluster_peer") {
+			t, err := expandSystemStandaloneClusterClusterPeer(d, v, "cluster_peer")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["cluster-peer"] = t
+			}
 		}
 	}
 
@@ -1430,12 +1439,16 @@ func getObjectSystemStandaloneCluster(d *schema.ResourceData) (*map[string]inter
 		}
 	}
 
-	if v, ok := d.GetOk("monitor_prefix"); ok || d.HasChange("monitor_prefix") {
-		t, err := expandSystemStandaloneClusterMonitorPrefix(d, v, "monitor_prefix")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["monitor-prefix"] = t
+	if bemptysontable {
+		obj["monitor-prefix"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("monitor_prefix"); ok || d.HasChange("monitor_prefix") {
+			t, err := expandSystemStandaloneClusterMonitorPrefix(d, v, "monitor_prefix")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["monitor-prefix"] = t
+			}
 		}
 	}
 

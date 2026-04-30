@@ -80,7 +80,7 @@ func resourceFirewallVendorMacUpdate(d *schema.ResourceData, m interface{}) erro
 				}
 			paradict["device"] = device_name
 
-	obj, err := getObjectFirewallVendorMac(d)
+	obj, err := getObjectFirewallVendorMac(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating FirewallVendorMac resource while getting object: %v", err)
 	}
@@ -101,7 +101,6 @@ func resourceFirewallVendorMacUpdate(d *schema.ResourceData, m interface{}) erro
 
 func resourceFirewallVendorMacDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -119,11 +118,17 @@ func resourceFirewallVendorMacDelete(d *schema.ResourceData, m interface{}) erro
 				}
 			paradict["device"] = device_name
 
+	obj, err := getObjectFirewallVendorMac(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating FirewallVendorMac resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteFirewallVendorMac(mkey, paradict, wsParams)
+	_, err = c.UpdateFirewallVendorMac(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting FirewallVendorMac resource: %v", err)
+		return fmt.Errorf("Error clearing FirewallVendorMac resource: %v", err)
 	}
 
 	d.SetId("")
@@ -262,7 +267,7 @@ func expandFirewallVendorMacObsolete(d *schema.ResourceData, v interface{}, pre 
 }
 
 
-func getObjectFirewallVendorMac(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectFirewallVendorMac(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 	
 

@@ -49,6 +49,7 @@ func resourceLogEventfilter() *schema.Resource {
 			"cifs": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"connector": &schema.Schema{
 				Type:     schema.TypeString,
@@ -108,6 +109,7 @@ func resourceLogEventfilter() *schema.Resource {
 			"telemetry": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"user": &schema.Schema{
 				Type:     schema.TypeString,
@@ -120,6 +122,11 @@ func resourceLogEventfilter() *schema.Resource {
 				Computed: true,
 			},
 			"wan_opt": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+			"web_svc": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
@@ -182,7 +189,7 @@ func resourceLogEventfilterUpdate(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	obj, err := getObjectLogEventfilter(d)
+	obj, err := getObjectLogEventfilter(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating LogEventfilter resource while getting object: %v", err)
 	}
@@ -203,7 +210,6 @@ func resourceLogEventfilterUpdate(d *schema.ResourceData, m interface{}) error {
 
 func resourceLogEventfilterDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -226,11 +232,17 @@ func resourceLogEventfilterDelete(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	obj, err := getObjectLogEventfilter(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating LogEventfilter resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteLogEventfilter(mkey, paradict, wsParams)
+	_, err = c.UpdateLogEventfilter(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting LogEventfilter resource: %v", err)
+		return fmt.Errorf("Error clearing LogEventfilter resource: %v", err)
 	}
 
 	d.SetId("")
@@ -350,6 +362,10 @@ func flattenLogEventfilterVpn(v interface{}, d *schema.ResourceData, pre string)
 }
 
 func flattenLogEventfilterWanOpt(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenLogEventfilterWebSvc(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -544,6 +560,16 @@ func refreshObjectLogEventfilter(d *schema.ResourceData, o map[string]interface{
 		}
 	}
 
+	if err = d.Set("web_svc", flattenLogEventfilterWebSvc(o["web-svc"], d, "web_svc")); err != nil {
+		if vv, ok := fortiAPIPatch(o["web-svc"], "LogEventfilter-WebSvc"); ok {
+			if err = d.Set("web_svc", vv); err != nil {
+				return fmt.Errorf("Error reading web_svc: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading web_svc: %v", err)
+		}
+	}
+
 	if err = d.Set("webproxy", flattenLogEventfilterWebproxy(o["webproxy"], d, "webproxy")); err != nil {
 		if vv, ok := fortiAPIPatch(o["webproxy"], "LogEventfilter-Webproxy"); ok {
 			if err = d.Set("webproxy", vv); err != nil {
@@ -687,6 +713,10 @@ func expandLogEventfilterWanOpt(d *schema.ResourceData, v interface{}, pre strin
 	return v, nil
 }
 
+func expandLogEventfilterWebSvc(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandLogEventfilterWebproxy(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -715,7 +745,7 @@ func expandLogEventfilterWdb(d *schema.ResourceData, v interface{}, pre string) 
 	return v, nil
 }
 
-func getObjectLogEventfilter(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectLogEventfilter(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("cifs"); ok || d.HasChange("cifs") {
@@ -859,6 +889,15 @@ func getObjectLogEventfilter(d *schema.ResourceData) (*map[string]interface{}, e
 			return &obj, err
 		} else if t != nil {
 			obj["wan-opt"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("web_svc"); ok || d.HasChange("web_svc") {
+		t, err := expandLogEventfilterWebSvc(d, v, "web_svc")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["web-svc"] = t
 		}
 	}
 

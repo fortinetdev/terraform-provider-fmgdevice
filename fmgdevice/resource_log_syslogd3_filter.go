@@ -161,7 +161,7 @@ func resourceLogSyslogd3FilterUpdate(d *schema.ResourceData, m interface{}) erro
 	}
 	paradict["device"] = device_name
 
-	obj, err := getObjectLogSyslogd3Filter(d)
+	obj, err := getObjectLogSyslogd3Filter(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating LogSyslogd3Filter resource while getting object: %v", err)
 	}
@@ -182,7 +182,6 @@ func resourceLogSyslogd3FilterUpdate(d *schema.ResourceData, m interface{}) erro
 
 func resourceLogSyslogd3FilterDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -200,11 +199,17 @@ func resourceLogSyslogd3FilterDelete(d *schema.ResourceData, m interface{}) erro
 	}
 	paradict["device"] = device_name
 
+	obj, err := getObjectLogSyslogd3Filter(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating LogSyslogd3Filter resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteLogSyslogd3Filter(mkey, paradict, wsParams)
+	_, err = c.UpdateLogSyslogd3Filter(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting LogSyslogd3Filter resource: %v", err)
+		return fmt.Errorf("Error clearing LogSyslogd3Filter resource: %v", err)
 	}
 
 	d.SetId("")
@@ -673,7 +678,7 @@ func expandLogSyslogd3FilterZtnaTraffic(d *schema.ResourceData, v interface{}, p
 	return v, nil
 }
 
-func getObjectLogSyslogd3Filter(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectLogSyslogd3Filter(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("anomaly"); ok || d.HasChange("anomaly") {
@@ -730,12 +735,16 @@ func getObjectLogSyslogd3Filter(d *schema.ResourceData) (*map[string]interface{}
 		}
 	}
 
-	if v, ok := d.GetOk("free_style"); ok || d.HasChange("free_style") {
-		t, err := expandLogSyslogd3FilterFreeStyle(d, v, "free_style")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["free-style"] = t
+	if bemptysontable {
+		obj["free-style"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("free_style"); ok || d.HasChange("free_style") {
+			t, err := expandLogSyslogd3FilterFreeStyle(d, v, "free_style")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["free-style"] = t
+			}
 		}
 	}
 

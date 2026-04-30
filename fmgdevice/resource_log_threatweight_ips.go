@@ -99,7 +99,7 @@ func resourceLogThreatWeightIpsUpdate(d *schema.ResourceData, m interface{}) err
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	obj, err := getObjectLogThreatWeightIps(d)
+	obj, err := getObjectLogThreatWeightIps(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating LogThreatWeightIps resource while getting object: %v", err)
 	}
@@ -120,7 +120,6 @@ func resourceLogThreatWeightIpsUpdate(d *schema.ResourceData, m interface{}) err
 
 func resourceLogThreatWeightIpsDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -143,11 +142,17 @@ func resourceLogThreatWeightIpsDelete(d *schema.ResourceData, m interface{}) err
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	obj, err := getObjectLogThreatWeightIps(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating LogThreatWeightIps resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteLogThreatWeightIps(mkey, paradict, wsParams)
+	_, err = c.UpdateLogThreatWeightIps(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting LogThreatWeightIps resource: %v", err)
+		return fmt.Errorf("Error clearing LogThreatWeightIps resource: %v", err)
 	}
 
 	d.SetId("")
@@ -308,7 +313,7 @@ func expandLogThreatWeightIpsMediumSeverity2edl(d *schema.ResourceData, v interf
 	return v, nil
 }
 
-func getObjectLogThreatWeightIps(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectLogThreatWeightIps(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("critical_severity"); ok || d.HasChange("critical_severity") {

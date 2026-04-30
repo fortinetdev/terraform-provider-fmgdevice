@@ -107,6 +107,14 @@ func resourceFirewallProxyAddrgrp() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"visibility": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"logic_type": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 			"dynamic_sort_subtable": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -395,6 +403,14 @@ func flattenFirewallProxyAddrgrpUuid(v interface{}, d *schema.ResourceData, pre 
 	return v
 }
 
+func flattenFirewallProxyAddrgrpVisibility(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenFirewallProxyAddrgrpLogicType(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func refreshObjectFirewallProxyAddrgrp(d *schema.ResourceData, o map[string]interface{}) error {
 	var err error
 
@@ -496,6 +512,26 @@ func refreshObjectFirewallProxyAddrgrp(d *schema.ResourceData, o map[string]inte
 		}
 	}
 
+	if err = d.Set("visibility", flattenFirewallProxyAddrgrpVisibility(o["visibility"], d, "visibility")); err != nil {
+		if vv, ok := fortiAPIPatch(o["visibility"], "FirewallProxyAddrgrp-Visibility"); ok {
+			if err = d.Set("visibility", vv); err != nil {
+				return fmt.Errorf("Error reading visibility: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading visibility: %v", err)
+		}
+	}
+
+	if err = d.Set("logic_type", flattenFirewallProxyAddrgrpLogicType(o["logic-type"], d, "logic_type")); err != nil {
+		if vv, ok := fortiAPIPatch(o["logic-type"], "FirewallProxyAddrgrp-LogicType"); ok {
+			if err = d.Set("logic_type", vv); err != nil {
+				return fmt.Errorf("Error reading logic_type: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading logic_type: %v", err)
+		}
+	}
+
 	return nil
 }
 
@@ -584,6 +620,14 @@ func expandFirewallProxyAddrgrpUuid(d *schema.ResourceData, v interface{}, pre s
 	return v, nil
 }
 
+func expandFirewallProxyAddrgrpVisibility(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandFirewallProxyAddrgrpLogicType(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func getObjectFirewallProxyAddrgrp(d *schema.ResourceData) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
@@ -656,6 +700,24 @@ func getObjectFirewallProxyAddrgrp(d *schema.ResourceData) (*map[string]interfac
 			return &obj, err
 		} else if t != nil {
 			obj["uuid"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("visibility"); ok || d.HasChange("visibility") {
+		t, err := expandFirewallProxyAddrgrpVisibility(d, v, "visibility")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["visibility"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("logic_type"); ok || d.HasChange("logic_type") {
+		t, err := expandFirewallProxyAddrgrpLogicType(d, v, "logic_type")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["logic-type"] = t
 		}
 	}
 

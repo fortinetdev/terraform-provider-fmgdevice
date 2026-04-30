@@ -1,5 +1,5 @@
 ---
-subcategory: "No Category"
+subcategory: "Authentication"
 layout: "fmgdevice"
 page_title: "FortiManager Device: fmgdevice_authentication_scheme"
 description: |-
@@ -16,6 +16,8 @@ The following arguments are supported:
 
 * `device_name` - FortiManager managed device name. This variable is used in the request URL. If not specified, it will inherit the variable `device_name` of the provider.
 * `device_vdom` - FortiManager managed device vdom. This variable is used in the request URL. If not specified, it will inherit the variable `device_vdom` of the provider.
+
+* `cert_http_header` - Enable/disable authentication with user certificate in Client-Cert HTTP header (default = disable). Valid values: `disable`, `enable`.
 
 * `digest_algo` - Digest Authentication Algorithms. Valid values: `md5`, `sha-256`.
 
@@ -44,6 +46,13 @@ The following arguments are supported:
 * `user_cert` - Enable/disable authentication with user certificate (default = disable). Valid values: `disable`, `enable`.
 
 * `user_database` - Authentication server to contain user information; "local-user-db" (default) or "123" (for LDAP).
+* `auth_user_header` - Auth-User-Header.
+* `captcha` - Captcha. Valid values: `disable`, `enable`.
+
+* `captcha_secret_key` - Captcha-Secret-Key.
+* `captcha_site_key` - Captcha-Site-Key.
+* `captcha_vendor` - Captcha-Vendor. Valid values: `google-recaptcha-v2-checkbox`, `google-recaptcha-v2-invisible`, `google-recaptcha-v3`, `cloudflare-turnstile`.
+
 * `oidc_server` - Oidc-Server.
 * `oidc_timeout` - Oidc-Timeout.
 * `search_all_ldap_databases` - Search-All-Ldap-Databases. Valid values: `disable`, `enable`.

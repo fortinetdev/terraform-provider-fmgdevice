@@ -1,5 +1,5 @@
 ---
-subcategory: "No Category"
+subcategory: "DLP"
 layout: "fmgdevice"
 page_title: "FortiManager Device: fmgdevice_dlp_label"
 description: |-

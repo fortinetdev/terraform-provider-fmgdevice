@@ -1,5 +1,5 @@
 ---
-subcategory: "No Category"
+subcategory: "Firewall"
 layout: "fmgdevice"
 page_title: "FortiManager Device: fmgdevice_firewall_responseshapingpolicy"
 description: |-
@@ -20,11 +20,18 @@ The following arguments are supported:
 * `class_id` - Class-Id.
 * `class_id_reverse` - Class-Id-Reverse.
 * `comment` - Comment.
+* `diffserv_forward` - Diffserv-Forward. Valid values: `disable`, `enable`.
+
+* `diffserv_reverse` - Diffserv-Reverse. Valid values: `disable`, `enable`.
+
+* `diffservcode_forward` - Diffservcode-Forward.
+* `diffservcode_rev` - Diffservcode-Rev.
 * `dstaddr` - Dstaddr.
 * `dstaddr6` - Dstaddr6.
 * `fosid` - Id.
 * `ip_version` - Ip-Version. Valid values: `6`, `4`.
 
+* `matched_shaping_policies` - Matched-Shaping-Policies.
 * `name` - Name.
 * `per_ip_shaper` - Per-Ip-Shaper.
 * `schedule` - Schedule.

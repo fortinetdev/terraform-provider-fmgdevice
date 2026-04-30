@@ -166,6 +166,10 @@ func resourceFirewallAddress6() *schema.Resource {
 							Type:     schema.TypeString,
 							Optional: true,
 						},
+						"passive_fqdn_learning": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
 						"route_tag": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
@@ -251,10 +255,12 @@ func resourceFirewallAddress6() *schema.Resource {
 			"end_ip": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"end_mac": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"epg_name": &schema.Schema{
 				Type:     schema.TypeString,
@@ -285,6 +291,7 @@ func resourceFirewallAddress6() *schema.Resource {
 			"host_type": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"ip6": &schema.Schema{
 				Type:     schema.TypeString,
@@ -325,6 +332,11 @@ func resourceFirewallAddress6() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
+			"passive_fqdn_learning": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
 			"route_tag": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
@@ -347,10 +359,12 @@ func resourceFirewallAddress6() *schema.Resource {
 			"start_ip": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"start_mac": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"subnet_segment": &schema.Schema{
 				Type:     schema.TypeList,
@@ -364,6 +378,7 @@ func resourceFirewallAddress6() *schema.Resource {
 						"type": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"value": &schema.Schema{
 							Type:     schema.TypeString,
@@ -415,6 +430,10 @@ func resourceFirewallAddress6() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+			},
+			"visibility": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
 			},
 			"tags": &schema.Schema{
 				Type:     schema.TypeSet,
@@ -775,6 +794,12 @@ func flattenFirewallAddress6DynamicMapping(v interface{}, d *schema.ResourceData
 			tmp["obj_id"] = fortiAPISubPartPatch(v, "FirewallAddress6-DynamicMapping-ObjId")
 		}
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "passive_fqdn_learning"
+		if _, ok := i["passive-fqdn-learning"]; ok {
+			v := flattenFirewallAddress6DynamicMappingPassiveFqdnLearning(i["passive-fqdn-learning"], d, pre_append)
+			tmp["passive_fqdn_learning"] = fortiAPISubPartPatch(v, "FirewallAddress6-DynamicMapping-PassiveFqdnLearning")
+		}
+
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "route_tag"
 		if _, ok := i["route-tag"]; ok {
 			v := flattenFirewallAddress6DynamicMappingRouteTag(i["route-tag"], d, pre_append)
@@ -983,6 +1008,10 @@ func flattenFirewallAddress6DynamicMappingMacaddr(v interface{}, d *schema.Resou
 }
 
 func flattenFirewallAddress6DynamicMappingObjId(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenFirewallAddress6DynamicMappingPassiveFqdnLearning(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -1208,6 +1237,10 @@ func flattenFirewallAddress6ObjId(v interface{}, d *schema.ResourceData, pre str
 	return v
 }
 
+func flattenFirewallAddress6PassiveFqdnLearning(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenFirewallAddress6RouteTag(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -1363,6 +1396,10 @@ func flattenFirewallAddress6Type(v interface{}, d *schema.ResourceData, pre stri
 }
 
 func flattenFirewallAddress6Uuid(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenFirewallAddress6Visibility(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -1609,6 +1646,16 @@ func refreshObjectFirewallAddress6(d *schema.ResourceData, o map[string]interfac
 		}
 	}
 
+	if err = d.Set("passive_fqdn_learning", flattenFirewallAddress6PassiveFqdnLearning(o["passive-fqdn-learning"], d, "passive_fqdn_learning")); err != nil {
+		if vv, ok := fortiAPIPatch(o["passive-fqdn-learning"], "FirewallAddress6-PassiveFqdnLearning"); ok {
+			if err = d.Set("passive_fqdn_learning", vv); err != nil {
+				return fmt.Errorf("Error reading passive_fqdn_learning: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading passive_fqdn_learning: %v", err)
+		}
+	}
+
 	if err = d.Set("route_tag", flattenFirewallAddress6RouteTag(o["route-tag"], d, "route_tag")); err != nil {
 		if vv, ok := fortiAPIPatch(o["route-tag"], "FirewallAddress6-RouteTag"); ok {
 			if err = d.Set("route_tag", vv); err != nil {
@@ -1754,6 +1801,16 @@ func refreshObjectFirewallAddress6(d *schema.ResourceData, o map[string]interfac
 			}
 		} else {
 			return fmt.Errorf("Error reading uuid: %v", err)
+		}
+	}
+
+	if err = d.Set("visibility", flattenFirewallAddress6Visibility(o["visibility"], d, "visibility")); err != nil {
+		if vv, ok := fortiAPIPatch(o["visibility"], "FirewallAddress6-Visibility"); ok {
+			if err = d.Set("visibility", vv); err != nil {
+				return fmt.Errorf("Error reading visibility: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading visibility: %v", err)
 		}
 	}
 
@@ -1913,6 +1970,11 @@ func expandFirewallAddress6DynamicMapping(d *schema.ResourceData, v interface{},
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "obj_id"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
 			tmp["obj-id"], _ = expandFirewallAddress6DynamicMappingObjId(d, i["obj_id"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "passive_fqdn_learning"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["passive-fqdn-learning"], _ = expandFirewallAddress6DynamicMappingPassiveFqdnLearning(d, i["passive_fqdn_learning"], pre_append)
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "route_tag"
@@ -2107,6 +2169,10 @@ func expandFirewallAddress6DynamicMappingMacaddr(d *schema.ResourceData, v inter
 }
 
 func expandFirewallAddress6DynamicMappingObjId(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandFirewallAddress6DynamicMappingPassiveFqdnLearning(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -2316,6 +2382,10 @@ func expandFirewallAddress6ObjId(d *schema.ResourceData, v interface{}, pre stri
 	return v, nil
 }
 
+func expandFirewallAddress6PassiveFqdnLearning(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandFirewallAddress6RouteTag(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -2455,6 +2525,10 @@ func expandFirewallAddress6Type(d *schema.ResourceData, v interface{}, pre strin
 }
 
 func expandFirewallAddress6Uuid(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandFirewallAddress6Visibility(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -2649,6 +2723,15 @@ func getObjectFirewallAddress6(d *schema.ResourceData) (*map[string]interface{},
 		}
 	}
 
+	if v, ok := d.GetOk("passive_fqdn_learning"); ok || d.HasChange("passive_fqdn_learning") {
+		t, err := expandFirewallAddress6PassiveFqdnLearning(d, v, "passive_fqdn_learning")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["passive-fqdn-learning"] = t
+		}
+	}
+
 	if v, ok := d.GetOk("route_tag"); ok || d.HasChange("route_tag") {
 		t, err := expandFirewallAddress6RouteTag(d, v, "route_tag")
 		if err != nil {
@@ -2754,6 +2837,15 @@ func getObjectFirewallAddress6(d *schema.ResourceData) (*map[string]interface{},
 			return &obj, err
 		} else if t != nil {
 			obj["uuid"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("visibility"); ok || d.HasChange("visibility") {
+		t, err := expandFirewallAddress6Visibility(d, v, "visibility")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["visibility"] = t
 		}
 	}
 

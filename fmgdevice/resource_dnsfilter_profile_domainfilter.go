@@ -87,7 +87,7 @@ func resourceDnsfilterProfileDomainFilterUpdate(d *schema.ResourceData, m interf
 	paradict["vdom"] = device_vdom
 	paradict["profile"] = profile
 
-	obj, err := getObjectDnsfilterProfileDomainFilter(d)
+	obj, err := getObjectDnsfilterProfileDomainFilter(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating DnsfilterProfileDomainFilter resource while getting object: %v", err)
 	}
@@ -108,7 +108,6 @@ func resourceDnsfilterProfileDomainFilterUpdate(d *schema.ResourceData, m interf
 
 func resourceDnsfilterProfileDomainFilterDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -133,11 +132,17 @@ func resourceDnsfilterProfileDomainFilterDelete(d *schema.ResourceData, m interf
 	paradict["vdom"] = device_vdom
 	paradict["profile"] = profile
 
+	obj, err := getObjectDnsfilterProfileDomainFilter(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating DnsfilterProfileDomainFilter resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteDnsfilterProfileDomainFilter(mkey, paradict, wsParams)
+	_, err = c.UpdateDnsfilterProfileDomainFilter(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting DnsfilterProfileDomainFilter resource: %v", err)
+		return fmt.Errorf("Error clearing DnsfilterProfileDomainFilter resource: %v", err)
 	}
 
 	d.SetId("")
@@ -237,7 +242,7 @@ func expandDnsfilterProfileDomainFilterDomainFilterTable2edl(d *schema.ResourceD
 	return expandStringList(v.(*schema.Set).List()), nil
 }
 
-func getObjectDnsfilterProfileDomainFilter(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectDnsfilterProfileDomainFilter(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("domain_filter_table"); ok || d.HasChange("domain_filter_table") {

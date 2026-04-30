@@ -98,10 +98,12 @@ func resourceRouterMulticast() *schema.Resource {
 									"last_member_query_count": &schema.Schema{
 										Type:     schema.TypeInt,
 										Optional: true,
+										Computed: true,
 									},
 									"last_member_query_interval": &schema.Schema{
 										Type:     schema.TypeInt,
 										Optional: true,
+										Computed: true,
 									},
 									"query_interval": &schema.Schema{
 										Type:     schema.TypeInt,
@@ -139,6 +141,7 @@ func resourceRouterMulticast() *schema.Resource {
 									"address": &schema.Schema{
 										Type:     schema.TypeString,
 										Optional: true,
+										Computed: true,
 									},
 								},
 							},
@@ -172,6 +175,7 @@ func resourceRouterMulticast() *schema.Resource {
 						"propagation_delay": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"rp_candidate": &schema.Schema{
 							Type:     schema.TypeString,
@@ -187,10 +191,12 @@ func resourceRouterMulticast() *schema.Resource {
 						"rp_candidate_interval": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"rp_candidate_priority": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"rpf_nbr_fail_back": &schema.Schema{
 							Type:     schema.TypeString,
@@ -206,6 +212,7 @@ func resourceRouterMulticast() *schema.Resource {
 						"state_refresh_interval": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"static_group": &schema.Schema{
 							Type:     schema.TypeSet,
@@ -258,6 +265,7 @@ func resourceRouterMulticast() *schema.Resource {
 						"bsr_hash": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"bsr_interface": &schema.Schema{
 							Type:     schema.TypeSet,
@@ -333,6 +341,7 @@ func resourceRouterMulticast() *schema.Resource {
 						"register_source_ip": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"register_supression": &schema.Schema{
 							Type:     schema.TypeInt,
@@ -454,6 +463,7 @@ func resourceRouterMulticast() *schema.Resource {
 						"vrf": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 					},
 				},
@@ -501,7 +511,7 @@ func resourceRouterMulticastUpdate(d *schema.ResourceData, m interface{}) error 
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	obj, err := getObjectRouterMulticast(d)
+	obj, err := getObjectRouterMulticast(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating RouterMulticast resource while getting object: %v", err)
 	}
@@ -522,7 +532,6 @@ func resourceRouterMulticastUpdate(d *schema.ResourceData, m interface{}) error 
 
 func resourceRouterMulticastDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -545,11 +554,17 @@ func resourceRouterMulticastDelete(d *schema.ResourceData, m interface{}) error 
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	obj, err := getObjectRouterMulticast(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating RouterMulticast resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteRouterMulticast(mkey, paradict, wsParams)
+	_, err = c.UpdateRouterMulticast(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting RouterMulticast resource: %v", err)
+		return fmt.Errorf("Error clearing RouterMulticast resource: %v", err)
 	}
 
 	d.SetId("")
@@ -2372,15 +2387,19 @@ func expandRouterMulticastRouteThreshold(d *schema.ResourceData, v interface{}, 
 	return v, nil
 }
 
-func getObjectRouterMulticast(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectRouterMulticast(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
-	if v, ok := d.GetOk("interface"); ok || d.HasChange("interface") {
-		t, err := expandRouterMulticastInterface(d, v, "interface")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["interface"] = t
+	if bemptysontable {
+		obj["interface"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("interface"); ok || d.HasChange("interface") {
+			t, err := expandRouterMulticastInterface(d, v, "interface")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["interface"] = t
+			}
 		}
 	}
 
@@ -2402,12 +2421,16 @@ func getObjectRouterMulticast(d *schema.ResourceData) (*map[string]interface{}, 
 		}
 	}
 
-	if v, ok := d.GetOk("pim_sm_global_vrf"); ok || d.HasChange("pim_sm_global_vrf") {
-		t, err := expandRouterMulticastPimSmGlobalVrf(d, v, "pim_sm_global_vrf")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["pim-sm-global-vrf"] = t
+	if bemptysontable {
+		obj["pim-sm-global-vrf"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("pim_sm_global_vrf"); ok || d.HasChange("pim_sm_global_vrf") {
+			t, err := expandRouterMulticastPimSmGlobalVrf(d, v, "pim_sm_global_vrf")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["pim-sm-global-vrf"] = t
+			}
 		}
 	}
 

@@ -68,6 +68,7 @@ func resourceSystemAffinityPacketRedistribution() *schema.Resource {
 			"rxqid": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 		},
 	}

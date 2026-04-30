@@ -1,5 +1,5 @@
 ---
-subcategory: "No Category"
+subcategory: "Switch Controller"
 layout: "fmgdevice"
 page_title: "FortiManager Device: fmgdevice_switchcontroller_stpsettings"
 description: |-

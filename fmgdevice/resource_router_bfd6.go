@@ -110,6 +110,7 @@ func resourceRouterBfd6() *schema.Resource {
 						"ip6_address": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 					},
 				},
@@ -147,7 +148,7 @@ func resourceRouterBfd6Update(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	obj, err := getObjectRouterBfd6(d)
+	obj, err := getObjectRouterBfd6(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating RouterBfd6 resource while getting object: %v", err)
 	}
@@ -168,7 +169,6 @@ func resourceRouterBfd6Update(d *schema.ResourceData, m interface{}) error {
 
 func resourceRouterBfd6Delete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -191,11 +191,17 @@ func resourceRouterBfd6Delete(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	obj, err := getObjectRouterBfd6(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating RouterBfd6 resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteRouterBfd6(mkey, paradict, wsParams)
+	_, err = c.UpdateRouterBfd6(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting RouterBfd6 resource: %v", err)
+		return fmt.Errorf("Error clearing RouterBfd6 resource: %v", err)
 	}
 
 	d.SetId("")
@@ -604,24 +610,32 @@ func expandRouterBfd6NeighborIp6Address(d *schema.ResourceData, v interface{}, p
 	return v, nil
 }
 
-func getObjectRouterBfd6(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectRouterBfd6(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
-	if v, ok := d.GetOk("multihop_template"); ok || d.HasChange("multihop_template") {
-		t, err := expandRouterBfd6MultihopTemplate(d, v, "multihop_template")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["multihop-template"] = t
+	if bemptysontable {
+		obj["multihop-template"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("multihop_template"); ok || d.HasChange("multihop_template") {
+			t, err := expandRouterBfd6MultihopTemplate(d, v, "multihop_template")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["multihop-template"] = t
+			}
 		}
 	}
 
-	if v, ok := d.GetOk("neighbor"); ok || d.HasChange("neighbor") {
-		t, err := expandRouterBfd6Neighbor(d, v, "neighbor")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["neighbor"] = t
+	if bemptysontable {
+		obj["neighbor"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("neighbor"); ok || d.HasChange("neighbor") {
+			t, err := expandRouterBfd6Neighbor(d, v, "neighbor")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["neighbor"] = t
+			}
 		}
 	}
 

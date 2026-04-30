@@ -103,7 +103,7 @@ func resourceSystemSshConfigUpdate(d *schema.ResourceData, m interface{}) error 
 	}
 	paradict["device"] = device_name
 
-	obj, err := getObjectSystemSshConfig(d)
+	obj, err := getObjectSystemSshConfig(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemSshConfig resource while getting object: %v", err)
 	}
@@ -124,7 +124,6 @@ func resourceSystemSshConfigUpdate(d *schema.ResourceData, m interface{}) error 
 
 func resourceSystemSshConfigDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -142,11 +141,17 @@ func resourceSystemSshConfigDelete(d *schema.ResourceData, m interface{}) error 
 	}
 	paradict["device"] = device_name
 
+	obj, err := getObjectSystemSshConfig(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating SystemSshConfig resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteSystemSshConfig(mkey, paradict, wsParams)
+	_, err = c.UpdateSystemSshConfig(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting SystemSshConfig resource: %v", err)
+		return fmt.Errorf("Error clearing SystemSshConfig resource: %v", err)
 	}
 
 	d.SetId("")
@@ -318,7 +323,7 @@ func expandSystemSshConfigSshMacAlgo(d *schema.ResourceData, v interface{}, pre 
 	return expandStringList(v.(*schema.Set).List()), nil
 }
 
-func getObjectSystemSshConfig(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectSystemSshConfig(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("ssh_enc_algo"); ok || d.HasChange("ssh_enc_algo") {

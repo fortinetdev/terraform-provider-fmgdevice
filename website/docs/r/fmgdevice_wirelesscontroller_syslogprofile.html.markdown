@@ -1,5 +1,5 @@
 ---
-subcategory: "No Category"
+subcategory: "Wireless Controller"
 layout: "fmgdevice"
 page_title: "FortiManager Device: fmgdevice_wirelesscontroller_syslogprofile"
 description: |-
@@ -35,6 +35,7 @@ The following arguments are supported:
 * `log_level` - Lowest level of log messages that FortiAP units send to this server (default = information). Valid values: `emergency`, `alert`, `critical`, `error`, `warning`, `notification`, `information`, `debugging`.
 
 * `name` - WTP system log server profile name.
+* `server` - Syslog server CN domain name or IP address.
 * `server_addr_type` - Syslog server address type (default = ip). Valid values: `fqdn`, `ip`.
 
 * `server_fqdn` - FQDN of syslog server that FortiAP units send log messages to.

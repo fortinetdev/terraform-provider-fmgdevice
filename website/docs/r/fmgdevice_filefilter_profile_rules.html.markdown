@@ -1,5 +1,5 @@
 ---
-subcategory: "No Category"
+subcategory: "File Filter"
 layout: "fmgdevice"
 page_title: "FortiManager Device: fmgdevice_filefilter_profile_rules"
 description: |-

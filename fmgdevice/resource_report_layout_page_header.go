@@ -127,7 +127,7 @@ func resourceReportLayoutPageHeaderUpdate(d *schema.ResourceData, m interface{})
 	paradict["vdom"] = device_vdom
 	paradict["layout"] = layout
 
-	obj, err := getObjectReportLayoutPageHeader(d)
+	obj, err := getObjectReportLayoutPageHeader(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating ReportLayoutPageHeader resource while getting object: %v", err)
 	}
@@ -148,7 +148,6 @@ func resourceReportLayoutPageHeaderUpdate(d *schema.ResourceData, m interface{})
 
 func resourceReportLayoutPageHeaderDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -173,11 +172,17 @@ func resourceReportLayoutPageHeaderDelete(d *schema.ResourceData, m interface{})
 	paradict["vdom"] = device_vdom
 	paradict["layout"] = layout
 
+	obj, err := getObjectReportLayoutPageHeader(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating ReportLayoutPageHeader resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteReportLayoutPageHeader(mkey, paradict, wsParams)
+	_, err = c.UpdateReportLayoutPageHeader(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting ReportLayoutPageHeader resource: %v", err)
+		return fmt.Errorf("Error clearing ReportLayoutPageHeader resource: %v", err)
 	}
 
 	d.SetId("")
@@ -472,15 +477,19 @@ func expandReportLayoutPageHeaderStyle3rdl(d *schema.ResourceData, v interface{}
 	return expandStringList(v.(*schema.Set).List()), nil
 }
 
-func getObjectReportLayoutPageHeader(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectReportLayoutPageHeader(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
-	if v, ok := d.GetOk("header_item"); ok || d.HasChange("header_item") {
-		t, err := expandReportLayoutPageHeaderHeaderItem3rdl(d, v, "header_item")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["header-item"] = t
+	if bemptysontable {
+		obj["header-item"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("header_item"); ok || d.HasChange("header_item") {
+			t, err := expandReportLayoutPageHeaderHeaderItem3rdl(d, v, "header_item")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["header-item"] = t
+			}
 		}
 	}
 

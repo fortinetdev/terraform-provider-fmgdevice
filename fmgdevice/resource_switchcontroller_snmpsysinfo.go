@@ -95,7 +95,7 @@ func resourceSwitchControllerSnmpSysinfoUpdate(d *schema.ResourceData, m interfa
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	obj, err := getObjectSwitchControllerSnmpSysinfo(d)
+	obj, err := getObjectSwitchControllerSnmpSysinfo(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating SwitchControllerSnmpSysinfo resource while getting object: %v", err)
 	}
@@ -116,7 +116,6 @@ func resourceSwitchControllerSnmpSysinfoUpdate(d *schema.ResourceData, m interfa
 
 func resourceSwitchControllerSnmpSysinfoDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -139,11 +138,17 @@ func resourceSwitchControllerSnmpSysinfoDelete(d *schema.ResourceData, m interfa
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	obj, err := getObjectSwitchControllerSnmpSysinfo(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating SwitchControllerSnmpSysinfo resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteSwitchControllerSnmpSysinfo(mkey, paradict, wsParams)
+	_, err = c.UpdateSwitchControllerSnmpSysinfo(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting SwitchControllerSnmpSysinfo resource: %v", err)
+		return fmt.Errorf("Error clearing SwitchControllerSnmpSysinfo resource: %v", err)
 	}
 
 	d.SetId("")
@@ -304,7 +309,7 @@ func expandSwitchControllerSnmpSysinfoStatus(d *schema.ResourceData, v interface
 	return v, nil
 }
 
-func getObjectSwitchControllerSnmpSysinfo(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectSwitchControllerSnmpSysinfo(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("contact_info"); ok || d.HasChange("contact_info") {

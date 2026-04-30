@@ -246,7 +246,7 @@ func resourceWebfilterProfileFtgdWfUpdate(d *schema.ResourceData, m interface{})
 	paradict["vdom"] = device_vdom
 	paradict["profile"] = profile
 
-	obj, err := getObjectWebfilterProfileFtgdWf(d)
+	obj, err := getObjectWebfilterProfileFtgdWf(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating WebfilterProfileFtgdWf resource while getting object: %v", err)
 	}
@@ -267,7 +267,6 @@ func resourceWebfilterProfileFtgdWfUpdate(d *schema.ResourceData, m interface{})
 
 func resourceWebfilterProfileFtgdWfDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -292,11 +291,17 @@ func resourceWebfilterProfileFtgdWfDelete(d *schema.ResourceData, m interface{})
 	paradict["vdom"] = device_vdom
 	paradict["profile"] = profile
 
+	obj, err := getObjectWebfilterProfileFtgdWf(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating WebfilterProfileFtgdWf resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteWebfilterProfileFtgdWf(mkey, paradict, wsParams)
+	_, err = c.UpdateWebfilterProfileFtgdWf(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting WebfilterProfileFtgdWf resource: %v", err)
+		return fmt.Errorf("Error clearing WebfilterProfileFtgdWf resource: %v", err)
 	}
 
 	d.SetId("")
@@ -1137,7 +1142,7 @@ func expandWebfilterProfileFtgdWfRiskRiskLevel2edl(d *schema.ResourceData, v int
 	return expandStringList(v.(*schema.Set).List()), nil
 }
 
-func getObjectWebfilterProfileFtgdWf(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectWebfilterProfileFtgdWf(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("exempt_quota"); ok || d.HasChange("exempt_quota") {
@@ -1149,12 +1154,16 @@ func getObjectWebfilterProfileFtgdWf(d *schema.ResourceData) (*map[string]interf
 		}
 	}
 
-	if v, ok := d.GetOk("filters"); ok || d.HasChange("filters") {
-		t, err := expandWebfilterProfileFtgdWfFilters2edl(d, v, "filters")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["filters"] = t
+	if bemptysontable {
+		obj["filters"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("filters"); ok || d.HasChange("filters") {
+			t, err := expandWebfilterProfileFtgdWfFilters2edl(d, v, "filters")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["filters"] = t
+			}
 		}
 	}
 
@@ -1185,12 +1194,16 @@ func getObjectWebfilterProfileFtgdWf(d *schema.ResourceData) (*map[string]interf
 		}
 	}
 
-	if v, ok := d.GetOk("quota"); ok || d.HasChange("quota") {
-		t, err := expandWebfilterProfileFtgdWfQuota2edl(d, v, "quota")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["quota"] = t
+	if bemptysontable {
+		obj["quota"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("quota"); ok || d.HasChange("quota") {
+			t, err := expandWebfilterProfileFtgdWfQuota2edl(d, v, "quota")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["quota"] = t
+			}
 		}
 	}
 
@@ -1230,12 +1243,16 @@ func getObjectWebfilterProfileFtgdWf(d *schema.ResourceData) (*map[string]interf
 		}
 	}
 
-	if v, ok := d.GetOk("risk"); ok || d.HasChange("risk") {
-		t, err := expandWebfilterProfileFtgdWfRisk2edl(d, v, "risk")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["risk"] = t
+	if bemptysontable {
+		obj["risk"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("risk"); ok || d.HasChange("risk") {
+			t, err := expandWebfilterProfileFtgdWfRisk2edl(d, v, "risk")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["risk"] = t
+			}
 		}
 	}
 

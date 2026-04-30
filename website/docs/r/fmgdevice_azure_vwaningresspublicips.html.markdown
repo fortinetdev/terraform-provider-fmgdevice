@@ -1,5 +1,5 @@
 ---
-subcategory: "No Category"
+subcategory: "Azure"
 layout: "fmgdevice"
 page_title: "FortiManager Device: fmgdevice_azure_vwaningresspublicips"
 description: |-

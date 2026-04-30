@@ -1,5 +1,5 @@
 ---
-subcategory: "No Category"
+subcategory: "Wanopt"
 layout: "fmgdevice"
 page_title: "FortiManager Device: fmgdevice_wanopt_cacheservice"
 description: |-

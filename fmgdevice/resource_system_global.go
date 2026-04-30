@@ -229,6 +229,7 @@ func resourceSystemGlobal() *schema.Resource {
 			"admin_reset_button": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"admin_restrict_local": &schema.Schema{
 				Type:     schema.TypeString,
@@ -349,6 +350,7 @@ func resourceSystemGlobal() *schema.Resource {
 			"auth_session_auto_backup_interval": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"auth_session_limit": &schema.Schema{
 				Type:     schema.TypeString,
@@ -416,6 +418,7 @@ func resourceSystemGlobal() *schema.Resource {
 			"cfg_revert_timeout": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"cfg_save": &schema.Schema{
 				Type:     schema.TypeString,
@@ -559,6 +562,7 @@ func resourceSystemGlobal() *schema.Resource {
 			"fec_port": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"fgd_alert_subscription": &schema.Schema{
 				Type:     schema.TypeSet,
@@ -616,6 +620,7 @@ func resourceSystemGlobal() *schema.Resource {
 			"fortiipam_integration": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"fortigslb_integration": &schema.Schema{
 				Type:     schema.TypeString,
@@ -652,6 +657,11 @@ func resourceSystemGlobal() *schema.Resource {
 			},
 			"fortitoken_cloud_sync_interval": &schema.Schema{
 				Type:     schema.TypeInt,
+				Optional: true,
+				Computed: true,
+			},
+			"geoip_full_db": &schema.Schema{
+				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
 			},
@@ -733,6 +743,7 @@ func resourceSystemGlobal() *schema.Resource {
 			"gui_fortisandbox_cloud": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"gui_fortigate_cloud_sandbox": &schema.Schema{
 				Type:     schema.TypeString,
@@ -880,6 +891,7 @@ func resourceSystemGlobal() *schema.Resource {
 			"ipsec_asic_offload": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"ipsec_ha_seqjump_rate": &schema.Schema{
 				Type:     schema.TypeInt,
@@ -889,6 +901,7 @@ func resourceSystemGlobal() *schema.Resource {
 			"ipsec_hmac_offload": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"ipsec_qat_offload": &schema.Schema{
 				Type:     schema.TypeString,
@@ -973,6 +986,10 @@ func resourceSystemGlobal() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+			},
+			"log_daemon_cpu_threshold": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
 			},
 			"log_single_cpu_high": &schema.Schema{
 				Type:     schema.TypeString,
@@ -1072,6 +1089,7 @@ func resourceSystemGlobal() *schema.Resource {
 			"per_user_bwl": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"per_user_bal": &schema.Schema{
 				Type:     schema.TypeString,
@@ -1137,6 +1155,7 @@ func resourceSystemGlobal() *schema.Resource {
 			"proxy_hardware_acceleration": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"proxy_keep_alive_mode": &schema.Schema{
 				Type:     schema.TypeString,
@@ -1366,6 +1385,7 @@ func resourceSystemGlobal() *schema.Resource {
 			"ssd_trim_date": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"ssd_trim_freq": &schema.Schema{
 				Type:     schema.TypeString,
@@ -1390,6 +1410,7 @@ func resourceSystemGlobal() *schema.Resource {
 			"ssh_cbc_cipher": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"ssh_enc_algo": &schema.Schema{
 				Type:     schema.TypeSet,
@@ -1400,6 +1421,7 @@ func resourceSystemGlobal() *schema.Resource {
 			"ssh_hmac_md5": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"ssh_hostkey": &schema.Schema{
 				Type:     schema.TypeString,
@@ -1414,6 +1436,7 @@ func resourceSystemGlobal() *schema.Resource {
 			"ssh_hostkey_override": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"ssh_hostkey_password": &schema.Schema{
 				Type:      schema.TypeSet,
@@ -1431,6 +1454,7 @@ func resourceSystemGlobal() *schema.Resource {
 			"ssh_kex_sha1": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"ssh_mac_algo": &schema.Schema{
 				Type:     schema.TypeSet,
@@ -1441,6 +1465,7 @@ func resourceSystemGlobal() *schema.Resource {
 			"ssh_mac_weak": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"ssl_min_proto_version": &schema.Schema{
 				Type:     schema.TypeString,
@@ -1460,6 +1485,7 @@ func resourceSystemGlobal() *schema.Resource {
 			"sslvpn_cipher_hardware_acceleration": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"sslvpn_ems_sn_check": &schema.Schema{
 				Type:     schema.TypeString,
@@ -1469,6 +1495,7 @@ func resourceSystemGlobal() *schema.Resource {
 			"sslvpn_kxp_hardware_acceleration": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"sslvpn_max_worker_count": &schema.Schema{
 				Type:     schema.TypeInt,
@@ -1547,10 +1574,12 @@ func resourceSystemGlobal() *schema.Resource {
 			"telemetry_controller": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"telemetry_data_port": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"tftp": &schema.Schema{
 				Type:     schema.TypeString,
@@ -1675,6 +1704,7 @@ func resourceSystemGlobal() *schema.Resource {
 			"virtual_switch_vlan": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"vpn_ems_sn_check": &schema.Schema{
 				Type:     schema.TypeString,
@@ -1728,6 +1758,25 @@ func resourceSystemGlobal() *schema.Resource {
 			"wad_worker_count": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+			},
+			"wad_worker_dev_cache": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+				Computed: true,
+			},
+			"web_svc_auto_restart": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+			"web_svc_auto_restart_mem_threshold": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+			},
+			"web_svc_auto_restart_time_threshold": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+				Computed: true,
 			},
 			"wifi_ca_certificate": &schema.Schema{
 				Type:     schema.TypeSet,
@@ -1792,7 +1841,7 @@ func resourceSystemGlobalUpdate(d *schema.ResourceData, m interface{}) error {
 	}
 	paradict["device"] = device_name
 
-	obj, err := getObjectSystemGlobal(d)
+	obj, err := getObjectSystemGlobal(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemGlobal resource while getting object: %v", err)
 	}
@@ -1813,7 +1862,6 @@ func resourceSystemGlobalUpdate(d *schema.ResourceData, m interface{}) error {
 
 func resourceSystemGlobalDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -1831,11 +1879,17 @@ func resourceSystemGlobalDelete(d *schema.ResourceData, m interface{}) error {
 	}
 	paradict["device"] = device_name
 
+	obj, err := getObjectSystemGlobal(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating SystemGlobal resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteSystemGlobal(mkey, paradict, wsParams)
+	_, err = c.UpdateSystemGlobal(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting SystemGlobal resource: %v", err)
+		return fmt.Errorf("Error clearing SystemGlobal resource: %v", err)
 	}
 
 	d.SetId("")
@@ -2407,6 +2461,10 @@ func flattenSystemGlobalFortitokenCloudSyncInterval(v interface{}, d *schema.Res
 	return v
 }
 
+func flattenSystemGlobalGeoipFullDb(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenSystemGlobalGtpuDynamicSourcePort(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -2668,6 +2726,10 @@ func flattenSystemGlobalLldpReception(v interface{}, d *schema.ResourceData, pre
 }
 
 func flattenSystemGlobalLldpTransmission(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemGlobalLogDaemonCpuThreshold(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -3321,6 +3383,22 @@ func flattenSystemGlobalWadSourceAffinity(v interface{}, d *schema.ResourceData,
 }
 
 func flattenSystemGlobalWadWorkerCount(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemGlobalWadWorkerDevCache(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemGlobalWebSvcAutoRestart(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemGlobalWebSvcAutoRestartMemThreshold(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemGlobalWebSvcAutoRestartTimeThreshold(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -4669,6 +4747,16 @@ func refreshObjectSystemGlobal(d *schema.ResourceData, o map[string]interface{})
 		}
 	}
 
+	if err = d.Set("geoip_full_db", flattenSystemGlobalGeoipFullDb(o["geoip-full-db"], d, "geoip_full_db")); err != nil {
+		if vv, ok := fortiAPIPatch(o["geoip-full-db"], "SystemGlobal-GeoipFullDb"); ok {
+			if err = d.Set("geoip_full_db", vv); err != nil {
+				return fmt.Errorf("Error reading geoip_full_db: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading geoip_full_db: %v", err)
+		}
+	}
+
 	if err = d.Set("gtpu_dynamic_source_port", flattenSystemGlobalGtpuDynamicSourcePort(o["gtpu-dynamic-source-port"], d, "gtpu_dynamic_source_port")); err != nil {
 		if vv, ok := fortiAPIPatch(o["gtpu-dynamic-source-port"], "SystemGlobal-GtpuDynamicSourcePort"); ok {
 			if err = d.Set("gtpu_dynamic_source_port", vv); err != nil {
@@ -5326,6 +5414,16 @@ func refreshObjectSystemGlobal(d *schema.ResourceData, o map[string]interface{})
 			}
 		} else {
 			return fmt.Errorf("Error reading lldp_transmission: %v", err)
+		}
+	}
+
+	if err = d.Set("log_daemon_cpu_threshold", flattenSystemGlobalLogDaemonCpuThreshold(o["log-daemon-cpu-threshold"], d, "log_daemon_cpu_threshold")); err != nil {
+		if vv, ok := fortiAPIPatch(o["log-daemon-cpu-threshold"], "SystemGlobal-LogDaemonCpuThreshold"); ok {
+			if err = d.Set("log_daemon_cpu_threshold", vv); err != nil {
+				return fmt.Errorf("Error reading log_daemon_cpu_threshold: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading log_daemon_cpu_threshold: %v", err)
 		}
 	}
 
@@ -6863,6 +6961,46 @@ func refreshObjectSystemGlobal(d *schema.ResourceData, o map[string]interface{})
 		}
 	}
 
+	if err = d.Set("wad_worker_dev_cache", flattenSystemGlobalWadWorkerDevCache(o["wad-worker-dev-cache"], d, "wad_worker_dev_cache")); err != nil {
+		if vv, ok := fortiAPIPatch(o["wad-worker-dev-cache"], "SystemGlobal-WadWorkerDevCache"); ok {
+			if err = d.Set("wad_worker_dev_cache", vv); err != nil {
+				return fmt.Errorf("Error reading wad_worker_dev_cache: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading wad_worker_dev_cache: %v", err)
+		}
+	}
+
+	if err = d.Set("web_svc_auto_restart", flattenSystemGlobalWebSvcAutoRestart(o["web-svc-auto-restart"], d, "web_svc_auto_restart")); err != nil {
+		if vv, ok := fortiAPIPatch(o["web-svc-auto-restart"], "SystemGlobal-WebSvcAutoRestart"); ok {
+			if err = d.Set("web_svc_auto_restart", vv); err != nil {
+				return fmt.Errorf("Error reading web_svc_auto_restart: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading web_svc_auto_restart: %v", err)
+		}
+	}
+
+	if err = d.Set("web_svc_auto_restart_mem_threshold", flattenSystemGlobalWebSvcAutoRestartMemThreshold(o["web-svc-auto-restart-mem-threshold"], d, "web_svc_auto_restart_mem_threshold")); err != nil {
+		if vv, ok := fortiAPIPatch(o["web-svc-auto-restart-mem-threshold"], "SystemGlobal-WebSvcAutoRestartMemThreshold"); ok {
+			if err = d.Set("web_svc_auto_restart_mem_threshold", vv); err != nil {
+				return fmt.Errorf("Error reading web_svc_auto_restart_mem_threshold: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading web_svc_auto_restart_mem_threshold: %v", err)
+		}
+	}
+
+	if err = d.Set("web_svc_auto_restart_time_threshold", flattenSystemGlobalWebSvcAutoRestartTimeThreshold(o["web-svc-auto-restart-time-threshold"], d, "web_svc_auto_restart_time_threshold")); err != nil {
+		if vv, ok := fortiAPIPatch(o["web-svc-auto-restart-time-threshold"], "SystemGlobal-WebSvcAutoRestartTimeThreshold"); ok {
+			if err = d.Set("web_svc_auto_restart_time_threshold", vv); err != nil {
+				return fmt.Errorf("Error reading web_svc_auto_restart_time_threshold: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading web_svc_auto_restart_time_threshold: %v", err)
+		}
+	}
+
 	if err = d.Set("wifi_ca_certificate", flattenSystemGlobalWifiCaCertificate(o["wifi-ca-certificate"], d, "wifi_ca_certificate")); err != nil {
 		if vv, ok := fortiAPIPatch(o["wifi-ca-certificate"], "SystemGlobal-WifiCaCertificate"); ok {
 			if err = d.Set("wifi_ca_certificate", vv); err != nil {
@@ -7466,6 +7604,10 @@ func expandSystemGlobalFortitokenCloudSyncInterval(d *schema.ResourceData, v int
 	return v, nil
 }
 
+func expandSystemGlobalGeoipFullDb(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandSystemGlobalGtpuDynamicSourcePort(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -7727,6 +7869,10 @@ func expandSystemGlobalLldpReception(d *schema.ResourceData, v interface{}, pre 
 }
 
 func expandSystemGlobalLldpTransmission(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemGlobalLogDaemonCpuThreshold(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -8380,6 +8526,22 @@ func expandSystemGlobalWadWorkerCount(d *schema.ResourceData, v interface{}, pre
 	return v, nil
 }
 
+func expandSystemGlobalWadWorkerDevCache(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemGlobalWebSvcAutoRestart(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemGlobalWebSvcAutoRestartMemThreshold(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemGlobalWebSvcAutoRestartTimeThreshold(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandSystemGlobalWifiCaCertificate(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return expandStringList(v.(*schema.Set).List()), nil
 }
@@ -8408,7 +8570,7 @@ func expandSystemGlobalXstoolsUpdateFrequency(d *schema.ResourceData, v interfac
 	return v, nil
 }
 
-func getObjectSystemGlobal(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectSystemGlobal(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("close_wait_timeout"); ok || d.HasChange("close_wait_timeout") {
@@ -9590,6 +9752,15 @@ func getObjectSystemGlobal(d *schema.ResourceData) (*map[string]interface{}, err
 		}
 	}
 
+	if v, ok := d.GetOk("geoip_full_db"); ok || d.HasChange("geoip_full_db") {
+		t, err := expandSystemGlobalGeoipFullDb(d, v, "geoip_full_db")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["geoip-full-db"] = t
+		}
+	}
+
 	if v, ok := d.GetOk("gtpu_dynamic_source_port"); ok || d.HasChange("gtpu_dynamic_source_port") {
 		t, err := expandSystemGlobalGtpuDynamicSourcePort(d, v, "gtpu_dynamic_source_port")
 		if err != nil {
@@ -10181,6 +10352,15 @@ func getObjectSystemGlobal(d *schema.ResourceData) (*map[string]interface{}, err
 			return &obj, err
 		} else if t != nil {
 			obj["lldp-transmission"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("log_daemon_cpu_threshold"); ok || d.HasChange("log_daemon_cpu_threshold") {
+		t, err := expandSystemGlobalLogDaemonCpuThreshold(d, v, "log_daemon_cpu_threshold")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["log-daemon-cpu-threshold"] = t
 		}
 	}
 
@@ -10877,12 +11057,16 @@ func getObjectSystemGlobal(d *schema.ResourceData) (*map[string]interface{}, err
 		}
 	}
 
-	if v, ok := d.GetOk("split_port_mode"); ok || d.HasChange("split_port_mode") {
-		t, err := expandSystemGlobalSplitPortMode(d, v, "split_port_mode")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["split-port-mode"] = t
+	if bemptysontable {
+		obj["split-port-mode"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("split_port_mode"); ok || d.HasChange("split_port_mode") {
+			t, err := expandSystemGlobalSplitPortMode(d, v, "split_port_mode")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["split-port-mode"] = t
+			}
 		}
 	}
 
@@ -11558,6 +11742,42 @@ func getObjectSystemGlobal(d *schema.ResourceData) (*map[string]interface{}, err
 			return &obj, err
 		} else if t != nil {
 			obj["wad-worker-count"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("wad_worker_dev_cache"); ok || d.HasChange("wad_worker_dev_cache") {
+		t, err := expandSystemGlobalWadWorkerDevCache(d, v, "wad_worker_dev_cache")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["wad-worker-dev-cache"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("web_svc_auto_restart"); ok || d.HasChange("web_svc_auto_restart") {
+		t, err := expandSystemGlobalWebSvcAutoRestart(d, v, "web_svc_auto_restart")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["web-svc-auto-restart"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("web_svc_auto_restart_mem_threshold"); ok || d.HasChange("web_svc_auto_restart_mem_threshold") {
+		t, err := expandSystemGlobalWebSvcAutoRestartMemThreshold(d, v, "web_svc_auto_restart_mem_threshold")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["web-svc-auto-restart-mem-threshold"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("web_svc_auto_restart_time_threshold"); ok || d.HasChange("web_svc_auto_restart_time_threshold") {
+		t, err := expandSystemGlobalWebSvcAutoRestartTimeThreshold(d, v, "web_svc_auto_restart_time_threshold")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["web-svc-auto-restart-time-threshold"] = t
 		}
 	}
 

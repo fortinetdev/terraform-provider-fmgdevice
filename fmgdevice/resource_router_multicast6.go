@@ -146,7 +146,7 @@ func resourceRouterMulticast6Update(d *schema.ResourceData, m interface{}) error
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	obj, err := getObjectRouterMulticast6(d)
+	obj, err := getObjectRouterMulticast6(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating RouterMulticast6 resource while getting object: %v", err)
 	}
@@ -167,7 +167,6 @@ func resourceRouterMulticast6Update(d *schema.ResourceData, m interface{}) error
 
 func resourceRouterMulticast6Delete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -190,11 +189,17 @@ func resourceRouterMulticast6Delete(d *schema.ResourceData, m interface{}) error
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	obj, err := getObjectRouterMulticast6(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating RouterMulticast6 resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteRouterMulticast6(mkey, paradict, wsParams)
+	_, err = c.UpdateRouterMulticast6(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting RouterMulticast6 resource: %v", err)
+		return fmt.Errorf("Error clearing RouterMulticast6 resource: %v", err)
 	}
 
 	d.SetId("")
@@ -629,15 +634,19 @@ func expandRouterMulticast6PimSmGlobalRpAddressIp6Address(d *schema.ResourceData
 	return v, nil
 }
 
-func getObjectRouterMulticast6(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectRouterMulticast6(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
-	if v, ok := d.GetOk("interface"); ok || d.HasChange("interface") {
-		t, err := expandRouterMulticast6Interface(d, v, "interface")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["interface"] = t
+	if bemptysontable {
+		obj["interface"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("interface"); ok || d.HasChange("interface") {
+			t, err := expandRouterMulticast6Interface(d, v, "interface")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["interface"] = t
+			}
 		}
 	}
 

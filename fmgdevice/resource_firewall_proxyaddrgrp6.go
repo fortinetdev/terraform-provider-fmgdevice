@@ -59,6 +59,11 @@ func resourceFirewallProxyAddrgrp6() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
+			"logic_type": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
 			"member": &schema.Schema{
 				Type:     schema.TypeSet,
 				Elem:     &schema.Schema{Type: schema.TypeString},
@@ -312,6 +317,10 @@ func flattenFirewallProxyAddrgrp6Comment(v interface{}, d *schema.ResourceData, 
 	return v
 }
 
+func flattenFirewallProxyAddrgrp6LogicType(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenFirewallProxyAddrgrp6Member(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return flattenStringList(v)
 }
@@ -414,6 +423,16 @@ func refreshObjectFirewallProxyAddrgrp6(d *schema.ResourceData, o map[string]int
 		}
 	}
 
+	if err = d.Set("logic_type", flattenFirewallProxyAddrgrp6LogicType(o["logic-type"], d, "logic_type")); err != nil {
+		if vv, ok := fortiAPIPatch(o["logic-type"], "FirewallProxyAddrgrp6-LogicType"); ok {
+			if err = d.Set("logic_type", vv); err != nil {
+				return fmt.Errorf("Error reading logic_type: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading logic_type: %v", err)
+		}
+	}
+
 	if err = d.Set("member", flattenFirewallProxyAddrgrp6Member(o["member"], d, "member")); err != nil {
 		if vv, ok := fortiAPIPatch(o["member"], "FirewallProxyAddrgrp6-Member"); ok {
 			if err = d.Set("member", vv); err != nil {
@@ -492,6 +511,10 @@ func expandFirewallProxyAddrgrp6Color(d *schema.ResourceData, v interface{}, pre
 }
 
 func expandFirewallProxyAddrgrp6Comment(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandFirewallProxyAddrgrp6LogicType(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -580,6 +603,15 @@ func getObjectFirewallProxyAddrgrp6(d *schema.ResourceData) (*map[string]interfa
 			return &obj, err
 		} else if t != nil {
 			obj["comment"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("logic_type"); ok || d.HasChange("logic_type") {
+		t, err := expandFirewallProxyAddrgrp6LogicType(d, v, "logic_type")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["logic-type"] = t
 		}
 	}
 

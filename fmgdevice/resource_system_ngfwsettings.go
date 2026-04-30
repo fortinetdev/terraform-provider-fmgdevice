@@ -89,7 +89,7 @@ func resourceSystemNgfwSettingsUpdate(d *schema.ResourceData, m interface{}) err
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	obj, err := getObjectSystemNgfwSettings(d)
+	obj, err := getObjectSystemNgfwSettings(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemNgfwSettings resource while getting object: %v", err)
 	}
@@ -110,7 +110,6 @@ func resourceSystemNgfwSettingsUpdate(d *schema.ResourceData, m interface{}) err
 
 func resourceSystemNgfwSettingsDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -133,11 +132,17 @@ func resourceSystemNgfwSettingsDelete(d *schema.ResourceData, m interface{}) err
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	obj, err := getObjectSystemNgfwSettings(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating SystemNgfwSettings resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteSystemNgfwSettings(mkey, paradict, wsParams)
+	_, err = c.UpdateSystemNgfwSettings(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting SystemNgfwSettings resource: %v", err)
+		return fmt.Errorf("Error clearing SystemNgfwSettings resource: %v", err)
 	}
 
 	d.SetId("")
@@ -262,7 +267,7 @@ func expandSystemNgfwSettingsTcpMatchTimeout(d *schema.ResourceData, v interface
 	return v, nil
 }
 
-func getObjectSystemNgfwSettings(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectSystemNgfwSettings(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("match_timeout"); ok || d.HasChange("match_timeout") {

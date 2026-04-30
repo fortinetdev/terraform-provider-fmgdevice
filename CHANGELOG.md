@@ -1,4 +1,31 @@
-## 1.4.0 (Unreleased)
+## 1.5.0 (Unreleased)
+
+## 1.4.0 (Apr 30, 2026)
+
+IMPROVEMENTS:
+* Support FMG 7.2.12,  7.4.8, 7.4.10, 7.6.5, 7.6.6:
+* Fix inconsist issue; 
+* Update computed feature;
+* Fix issue of destroy operation could not clean tables for pre-existing resource;
+* Add subcategory for the docs;
+* Fix type change issue for API type from integer to string;
+* Fix issue of IPv4 format variable always show changes;
+* Fix issue of session keep increase on workspace mode is normal; 
+* Fix mismatch information on the doc;
+
+FEATURES:
+
+* **New Resource:** `fmgdevice_llm_profile`
+* **New Resource:** `fmgdevice_llm_profile_chat`
+* **New Resource:** `fmgdevice_llm_profile_imagegen`
+* **New Resource:** `fmgdevice_llm_profile_listmodels`
+* **New Resource:** `fmgdevice_llm_profile_response`
+* **New Resource:** `fmgdevice_llm_proxy`
+* **New Resource:** `fmgdevice_llm_server`
+* **New Resource:** `fmgdevice_llm_server_move`
+* **New Resource:** `fmgdevice_system_accprofile_secfabgrppermission`
+* **New Resource:** `fmgdevice_wirelesscontroller_lwprofile`
+* **New Resource:** `fmgdevice_ztna_webportalbookmark_llmsecureproxy`
 
 ## 1.3.0 (March 27, 2026)
 

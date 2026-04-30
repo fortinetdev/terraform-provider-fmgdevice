@@ -210,7 +210,7 @@ func resourceLogSyslogd3OverrideSettingUpdate(d *schema.ResourceData, m interfac
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	obj, err := getObjectLogSyslogd3OverrideSetting(d)
+	obj, err := getObjectLogSyslogd3OverrideSetting(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating LogSyslogd3OverrideSetting resource while getting object: %v", err)
 	}
@@ -231,7 +231,6 @@ func resourceLogSyslogd3OverrideSettingUpdate(d *schema.ResourceData, m interfac
 
 func resourceLogSyslogd3OverrideSettingDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -254,11 +253,17 @@ func resourceLogSyslogd3OverrideSettingDelete(d *schema.ResourceData, m interfac
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	obj, err := getObjectLogSyslogd3OverrideSetting(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating LogSyslogd3OverrideSetting resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteLogSyslogd3OverrideSetting(mkey, paradict, wsParams)
+	_, err = c.UpdateLogSyslogd3OverrideSetting(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting LogSyslogd3OverrideSetting resource: %v", err)
+		return fmt.Errorf("Error clearing LogSyslogd3OverrideSetting resource: %v", err)
 	}
 
 	d.SetId("")
@@ -944,7 +949,7 @@ func expandLogSyslogd3OverrideSettingLogTemplatesTemplate(d *schema.ResourceData
 	return v, nil
 }
 
-func getObjectLogSyslogd3OverrideSetting(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectLogSyslogd3OverrideSetting(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("certificate"); ok || d.HasChange("certificate") {
@@ -956,12 +961,16 @@ func getObjectLogSyslogd3OverrideSetting(d *schema.ResourceData) (*map[string]in
 		}
 	}
 
-	if v, ok := d.GetOk("custom_field_name"); ok || d.HasChange("custom_field_name") {
-		t, err := expandLogSyslogd3OverrideSettingCustomFieldName(d, v, "custom_field_name")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["custom-field-name"] = t
+	if bemptysontable {
+		obj["custom-field-name"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("custom_field_name"); ok || d.HasChange("custom_field_name") {
+			t, err := expandLogSyslogd3OverrideSettingCustomFieldName(d, v, "custom_field_name")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["custom-field-name"] = t
+			}
 		}
 	}
 
@@ -1118,12 +1127,16 @@ func getObjectLogSyslogd3OverrideSetting(d *schema.ResourceData) (*map[string]in
 		}
 	}
 
-	if v, ok := d.GetOk("log_templates"); ok || d.HasChange("log_templates") {
-		t, err := expandLogSyslogd3OverrideSettingLogTemplates(d, v, "log_templates")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["log-templates"] = t
+	if bemptysontable {
+		obj["log-templates"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("log_templates"); ok || d.HasChange("log_templates") {
+			t, err := expandLogSyslogd3OverrideSettingLogTemplates(d, v, "log_templates")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["log-templates"] = t
+			}
 		}
 	}
 

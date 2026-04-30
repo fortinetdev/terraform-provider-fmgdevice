@@ -730,6 +730,7 @@ func resourceFirewallAccessProxy6() *schema.Resource {
 			"http_supported_max_version": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"log_blocked_traffic": &schema.Schema{
 				Type:     schema.TypeString,

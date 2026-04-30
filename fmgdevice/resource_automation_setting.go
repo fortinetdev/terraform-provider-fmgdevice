@@ -78,7 +78,7 @@ func resourceAutomationSettingUpdate(d *schema.ResourceData, m interface{}) erro
 	}
 	paradict["device"] = device_name
 
-	obj, err := getObjectAutomationSetting(d)
+	obj, err := getObjectAutomationSetting(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating AutomationSetting resource while getting object: %v", err)
 	}
@@ -99,7 +99,6 @@ func resourceAutomationSettingUpdate(d *schema.ResourceData, m interface{}) erro
 
 func resourceAutomationSettingDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -117,11 +116,17 @@ func resourceAutomationSettingDelete(d *schema.ResourceData, m interface{}) erro
 	}
 	paradict["device"] = device_name
 
+	obj, err := getObjectAutomationSetting(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating AutomationSetting resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteAutomationSetting(mkey, paradict, wsParams)
+	_, err = c.UpdateAutomationSetting(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting AutomationSetting resource: %v", err)
+		return fmt.Errorf("Error clearing AutomationSetting resource: %v", err)
 	}
 
 	d.SetId("")
@@ -235,7 +240,7 @@ func expandAutomationSettingSecureMode(d *schema.ResourceData, v interface{}, pr
 	return v, nil
 }
 
-func getObjectAutomationSetting(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectAutomationSetting(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("fabric_sync"); ok || d.HasChange("fabric_sync") {

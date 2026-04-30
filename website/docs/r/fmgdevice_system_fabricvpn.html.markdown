@@ -1,5 +1,5 @@
 ---
-subcategory: "No Category"
+subcategory: "System"
 layout: "fmgdevice"
 page_title: "FortiManager Device: fmgdevice_system_fabricvpn"
 description: |-
@@ -44,7 +44,7 @@ The following arguments are supported:
 * `device_name` - FortiManager managed device name. This variable is used in the request URL. If not specified, it will inherit the variable `device_name` of the provider.
 
 * `advertised_subnets` - Advertised-Subnets. The structure of `advertised_subnets` block is documented below.
-* `bgp_as` - BGP Router AS number, valid from 1 to 4294967295.
+* `bgp_as` - BGP Router AS number, asplain/asdot/asdot+ format.
 * `branch_name` - Branch name.
 * `health_checks` - Underlying health checks.
 * `loopback_address_block` - IPv4 address and subnet mask for hub's loopback address, syntax: X.X.X.X/24.

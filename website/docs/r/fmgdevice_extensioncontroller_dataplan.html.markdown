@@ -1,5 +1,5 @@
 ---
-subcategory: "No Category"
+subcategory: "Extension Controller"
 layout: "fmgdevice"
 page_title: "FortiManager Device: fmgdevice_extensioncontroller_dataplan"
 description: |-

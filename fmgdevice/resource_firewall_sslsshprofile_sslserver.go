@@ -56,6 +56,14 @@ func resourceFirewallSslSshProfileSslServer() *schema.Resource {
 				Required: true,
 				ForceNew: true,
 			},
+			"ftps_client_cert_request": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"https_client_cert_request": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 			"ftps_client_certificate": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -71,6 +79,10 @@ func resourceFirewallSslSshProfileSslServer() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"imaps_client_cert_request": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 			"imaps_client_certificate": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -80,6 +92,18 @@ func resourceFirewallSslSshProfileSslServer() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+			},
+			"pop3s_client_cert_request": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"smtps_client_cert_request": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"ssl_other_client_cert_request": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
 			},
 			"pop3s_client_certificate": &schema.Schema{
 				Type:     schema.TypeString,
@@ -317,6 +341,14 @@ func resourceFirewallSslSshProfileSslServerRead(d *schema.ResourceData, m interf
 	return nil
 }
 
+func flattenFirewallSslSshProfileSslServerFtpsClientCertRequest2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenFirewallSslSshProfileSslServerHttpsClientCertRequest2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenFirewallSslSshProfileSslServerFtpsClientCertificate2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -329,11 +361,27 @@ func flattenFirewallSslSshProfileSslServerId2edl(v interface{}, d *schema.Resour
 	return v
 }
 
+func flattenFirewallSslSshProfileSslServerImapsClientCertRequest2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenFirewallSslSshProfileSslServerImapsClientCertificate2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
 func flattenFirewallSslSshProfileSslServerIp2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenFirewallSslSshProfileSslServerPop3SClientCertRequest2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenFirewallSslSshProfileSslServerSmtpsClientCertRequest2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenFirewallSslSshProfileSslServerSslOtherClientCertRequest2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -351,6 +399,26 @@ func flattenFirewallSslSshProfileSslServerSslOtherClientCertificate2edl(v interf
 
 func refreshObjectFirewallSslSshProfileSslServer(d *schema.ResourceData, o map[string]interface{}) error {
 	var err error
+
+	if err = d.Set("ftps_client_cert_request", flattenFirewallSslSshProfileSslServerFtpsClientCertRequest2edl(o["ftps-client-cert-request"], d, "ftps_client_cert_request")); err != nil {
+		if vv, ok := fortiAPIPatch(o["ftps-client-cert-request"], "FirewallSslSshProfileSslServer-FtpsClientCertRequest"); ok {
+			if err = d.Set("ftps_client_cert_request", vv); err != nil {
+				return fmt.Errorf("Error reading ftps_client_cert_request: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading ftps_client_cert_request: %v", err)
+		}
+	}
+
+	if err = d.Set("https_client_cert_request", flattenFirewallSslSshProfileSslServerHttpsClientCertRequest2edl(o["https-client-cert-request"], d, "https_client_cert_request")); err != nil {
+		if vv, ok := fortiAPIPatch(o["https-client-cert-request"], "FirewallSslSshProfileSslServer-HttpsClientCertRequest"); ok {
+			if err = d.Set("https_client_cert_request", vv); err != nil {
+				return fmt.Errorf("Error reading https_client_cert_request: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading https_client_cert_request: %v", err)
+		}
+	}
 
 	if err = d.Set("ftps_client_certificate", flattenFirewallSslSshProfileSslServerFtpsClientCertificate2edl(o["ftps-client-certificate"], d, "ftps_client_certificate")); err != nil {
 		if vv, ok := fortiAPIPatch(o["ftps-client-certificate"], "FirewallSslSshProfileSslServer-FtpsClientCertificate"); ok {
@@ -382,6 +450,16 @@ func refreshObjectFirewallSslSshProfileSslServer(d *schema.ResourceData, o map[s
 		}
 	}
 
+	if err = d.Set("imaps_client_cert_request", flattenFirewallSslSshProfileSslServerImapsClientCertRequest2edl(o["imaps-client-cert-request"], d, "imaps_client_cert_request")); err != nil {
+		if vv, ok := fortiAPIPatch(o["imaps-client-cert-request"], "FirewallSslSshProfileSslServer-ImapsClientCertRequest"); ok {
+			if err = d.Set("imaps_client_cert_request", vv); err != nil {
+				return fmt.Errorf("Error reading imaps_client_cert_request: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading imaps_client_cert_request: %v", err)
+		}
+	}
+
 	if err = d.Set("imaps_client_certificate", flattenFirewallSslSshProfileSslServerImapsClientCertificate2edl(o["imaps-client-certificate"], d, "imaps_client_certificate")); err != nil {
 		if vv, ok := fortiAPIPatch(o["imaps-client-certificate"], "FirewallSslSshProfileSslServer-ImapsClientCertificate"); ok {
 			if err = d.Set("imaps_client_certificate", vv); err != nil {
@@ -399,6 +477,36 @@ func refreshObjectFirewallSslSshProfileSslServer(d *schema.ResourceData, o map[s
 			}
 		} else {
 			return fmt.Errorf("Error reading ip: %v", err)
+		}
+	}
+
+	if err = d.Set("pop3s_client_cert_request", flattenFirewallSslSshProfileSslServerPop3SClientCertRequest2edl(o["pop3s-client-cert-request"], d, "pop3s_client_cert_request")); err != nil {
+		if vv, ok := fortiAPIPatch(o["pop3s-client-cert-request"], "FirewallSslSshProfileSslServer-Pop3SClientCertRequest"); ok {
+			if err = d.Set("pop3s_client_cert_request", vv); err != nil {
+				return fmt.Errorf("Error reading pop3s_client_cert_request: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading pop3s_client_cert_request: %v", err)
+		}
+	}
+
+	if err = d.Set("smtps_client_cert_request", flattenFirewallSslSshProfileSslServerSmtpsClientCertRequest2edl(o["smtps-client-cert-request"], d, "smtps_client_cert_request")); err != nil {
+		if vv, ok := fortiAPIPatch(o["smtps-client-cert-request"], "FirewallSslSshProfileSslServer-SmtpsClientCertRequest"); ok {
+			if err = d.Set("smtps_client_cert_request", vv); err != nil {
+				return fmt.Errorf("Error reading smtps_client_cert_request: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading smtps_client_cert_request: %v", err)
+		}
+	}
+
+	if err = d.Set("ssl_other_client_cert_request", flattenFirewallSslSshProfileSslServerSslOtherClientCertRequest2edl(o["ssl-other-client-cert-request"], d, "ssl_other_client_cert_request")); err != nil {
+		if vv, ok := fortiAPIPatch(o["ssl-other-client-cert-request"], "FirewallSslSshProfileSslServer-SslOtherClientCertRequest"); ok {
+			if err = d.Set("ssl_other_client_cert_request", vv); err != nil {
+				return fmt.Errorf("Error reading ssl_other_client_cert_request: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading ssl_other_client_cert_request: %v", err)
 		}
 	}
 
@@ -441,6 +549,14 @@ func flattenFirewallSslSshProfileSslServerFortiTestDebug(d *schema.ResourceData,
 	log.Printf("ER List: %v", e)
 }
 
+func expandFirewallSslSshProfileSslServerFtpsClientCertRequest2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandFirewallSslSshProfileSslServerHttpsClientCertRequest2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandFirewallSslSshProfileSslServerFtpsClientCertificate2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -453,11 +569,27 @@ func expandFirewallSslSshProfileSslServerId2edl(d *schema.ResourceData, v interf
 	return v, nil
 }
 
+func expandFirewallSslSshProfileSslServerImapsClientCertRequest2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandFirewallSslSshProfileSslServerImapsClientCertificate2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
 func expandFirewallSslSshProfileSslServerIp2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandFirewallSslSshProfileSslServerPop3SClientCertRequest2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandFirewallSslSshProfileSslServerSmtpsClientCertRequest2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandFirewallSslSshProfileSslServerSslOtherClientCertRequest2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -475,6 +607,24 @@ func expandFirewallSslSshProfileSslServerSslOtherClientCertificate2edl(d *schema
 
 func getObjectFirewallSslSshProfileSslServer(d *schema.ResourceData) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
+
+	if v, ok := d.GetOk("ftps_client_cert_request"); ok || d.HasChange("ftps_client_cert_request") {
+		t, err := expandFirewallSslSshProfileSslServerFtpsClientCertRequest2edl(d, v, "ftps_client_cert_request")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["ftps-client-cert-request"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("https_client_cert_request"); ok || d.HasChange("https_client_cert_request") {
+		t, err := expandFirewallSslSshProfileSslServerHttpsClientCertRequest2edl(d, v, "https_client_cert_request")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["https-client-cert-request"] = t
+		}
+	}
 
 	if v, ok := d.GetOk("ftps_client_certificate"); ok || d.HasChange("ftps_client_certificate") {
 		t, err := expandFirewallSslSshProfileSslServerFtpsClientCertificate2edl(d, v, "ftps_client_certificate")
@@ -503,6 +653,15 @@ func getObjectFirewallSslSshProfileSslServer(d *schema.ResourceData) (*map[strin
 		}
 	}
 
+	if v, ok := d.GetOk("imaps_client_cert_request"); ok || d.HasChange("imaps_client_cert_request") {
+		t, err := expandFirewallSslSshProfileSslServerImapsClientCertRequest2edl(d, v, "imaps_client_cert_request")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["imaps-client-cert-request"] = t
+		}
+	}
+
 	if v, ok := d.GetOk("imaps_client_certificate"); ok || d.HasChange("imaps_client_certificate") {
 		t, err := expandFirewallSslSshProfileSslServerImapsClientCertificate2edl(d, v, "imaps_client_certificate")
 		if err != nil {
@@ -518,6 +677,33 @@ func getObjectFirewallSslSshProfileSslServer(d *schema.ResourceData) (*map[strin
 			return &obj, err
 		} else if t != nil {
 			obj["ip"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("pop3s_client_cert_request"); ok || d.HasChange("pop3s_client_cert_request") {
+		t, err := expandFirewallSslSshProfileSslServerPop3SClientCertRequest2edl(d, v, "pop3s_client_cert_request")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["pop3s-client-cert-request"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("smtps_client_cert_request"); ok || d.HasChange("smtps_client_cert_request") {
+		t, err := expandFirewallSslSshProfileSslServerSmtpsClientCertRequest2edl(d, v, "smtps_client_cert_request")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["smtps-client-cert-request"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("ssl_other_client_cert_request"); ok || d.HasChange("ssl_other_client_cert_request") {
+		t, err := expandFirewallSslSshProfileSslServerSslOtherClientCertRequest2edl(d, v, "ssl_other_client_cert_request")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["ssl-other-client-cert-request"] = t
 		}
 	}
 

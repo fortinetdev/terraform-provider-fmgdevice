@@ -65,6 +65,7 @@ func resourceSystemDhcp6ServerIpRange() *schema.Resource {
 				Type:     schema.TypeInt,
 				ForceNew: true,
 				Optional: true,
+				Computed: true,
 			},
 			"start_ip": &schema.Schema{
 				Type:     schema.TypeString,
@@ -137,11 +138,19 @@ func resourceSystemDhcp6ServerIpRangeCreate(d *schema.ResourceData, m interface{
 	}
 
 	if !existing {
-		_, err = c.CreateSystemDhcp6ServerIpRange(obj, paradict, wsParams)
+		v, err := c.CreateSystemDhcp6ServerIpRange(obj, paradict, wsParams)
 		if err != nil {
 			return fmt.Errorf("Error creating SystemDhcp6ServerIpRange resource: %v", err)
 		}
 
+		if v != nil && v["id"] != nil {
+			if vidn, ok := v["id"].(float64); ok {
+				d.SetId(strconv.Itoa(int(vidn)))
+				return resourceSystemDhcp6ServerIpRangeRead(d, m)
+			} else {
+				return fmt.Errorf("Error creating SystemDhcp6ServerIpRange resource: %v", err)
+			}
+		}
 	}
 
 	d.SetId(strconv.Itoa(getIntKey(d, "fosid")))

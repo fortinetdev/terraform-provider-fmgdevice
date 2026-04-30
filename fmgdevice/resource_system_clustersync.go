@@ -64,14 +64,17 @@ func resourceSystemClusterSync() *schema.Resource {
 			"ike_heartbeat_interval": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"ike_monitor": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"ike_monitor_interval": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"ike_seqjump_speed": &schema.Schema{
 				Type:     schema.TypeInt,
@@ -169,6 +172,7 @@ func resourceSystemClusterSync() *schema.Resource {
 			"slave_add_ike_routes": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"sync_id": &schema.Schema{
 				Type:     schema.TypeInt,

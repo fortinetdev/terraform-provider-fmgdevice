@@ -168,10 +168,12 @@ func resourceIpsSensor() *schema.Resource {
 						"quarantine_expiry": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"quarantine_log": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"rate_count": &schema.Schema{
 							Type:     schema.TypeInt,
@@ -180,14 +182,17 @@ func resourceIpsSensor() *schema.Resource {
 						"rate_duration": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"rate_mode": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"rate_track": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"rule": &schema.Schema{
 							Type:     schema.TypeSet,

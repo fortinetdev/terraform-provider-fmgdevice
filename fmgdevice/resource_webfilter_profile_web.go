@@ -64,6 +64,7 @@ func resourceWebfilterProfileWeb() *schema.Resource {
 			"blocklist": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"bword_table": &schema.Schema{
 				Type:     schema.TypeSet,
@@ -152,7 +153,7 @@ func resourceWebfilterProfileWebUpdate(d *schema.ResourceData, m interface{}) er
 	paradict["vdom"] = device_vdom
 	paradict["profile"] = profile
 
-	obj, err := getObjectWebfilterProfileWeb(d)
+	obj, err := getObjectWebfilterProfileWeb(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating WebfilterProfileWeb resource while getting object: %v", err)
 	}
@@ -173,7 +174,6 @@ func resourceWebfilterProfileWebUpdate(d *schema.ResourceData, m interface{}) er
 
 func resourceWebfilterProfileWebDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -198,11 +198,17 @@ func resourceWebfilterProfileWebDelete(d *schema.ResourceData, m interface{}) er
 	paradict["vdom"] = device_vdom
 	paradict["profile"] = profile
 
+	obj, err := getObjectWebfilterProfileWeb(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating WebfilterProfileWeb resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteWebfilterProfileWeb(mkey, paradict, wsParams)
+	_, err = c.UpdateWebfilterProfileWeb(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting WebfilterProfileWeb resource: %v", err)
+		return fmt.Errorf("Error clearing WebfilterProfileWeb resource: %v", err)
 	}
 
 	d.SetId("")
@@ -536,7 +542,7 @@ func expandWebfilterProfileWebQwantRestrict2edl(d *schema.ResourceData, v interf
 	return v, nil
 }
 
-func getObjectWebfilterProfileWeb(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectWebfilterProfileWeb(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("blacklist"); ok || d.HasChange("blacklist") {

@@ -59,10 +59,12 @@ func resourceFirewallSniffer() *schema.Resource {
 						"action": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"log": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"name": &schema.Schema{
 							Type:     schema.TypeString,
@@ -71,18 +73,22 @@ func resourceFirewallSniffer() *schema.Resource {
 						"quarantine": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"quarantine_expiry": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"quarantine_log": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"status": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"synproxy_tcp_mss": &schema.Schema{
 							Type:     schema.TypeString,
@@ -132,6 +138,7 @@ func resourceFirewallSniffer() *schema.Resource {
 			"application_list_status": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"av_profile": &schema.Schema{
 				Type:     schema.TypeSet,
@@ -142,6 +149,7 @@ func resourceFirewallSniffer() *schema.Resource {
 			"av_profile_status": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"dlp_sensor": &schema.Schema{
 				Type:     schema.TypeSet,
@@ -163,6 +171,7 @@ func resourceFirewallSniffer() *schema.Resource {
 			"dlp_profile_status": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"dsri": &schema.Schema{
 				Type:     schema.TypeString,
@@ -178,6 +187,7 @@ func resourceFirewallSniffer() *schema.Resource {
 			"emailfilter_profile_status": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"file_filter_profile": &schema.Schema{
 				Type:     schema.TypeSet,
@@ -188,6 +198,7 @@ func resourceFirewallSniffer() *schema.Resource {
 			"file_filter_profile_status": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"host": &schema.Schema{
 				Type:     schema.TypeString,
@@ -213,10 +224,12 @@ func resourceFirewallSniffer() *schema.Resource {
 			"ip_threatfeed_status": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"ips_dos_status": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"ips_sensor": &schema.Schema{
 				Type:     schema.TypeSet,
@@ -227,6 +240,7 @@ func resourceFirewallSniffer() *schema.Resource {
 			"ips_sensor_status": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"ipv6": &schema.Schema{
 				Type:     schema.TypeString,
@@ -279,6 +293,7 @@ func resourceFirewallSniffer() *schema.Resource {
 			"webfilter_profile_status": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"dynamic_sort_subtable": &schema.Schema{
 				Type:     schema.TypeString,

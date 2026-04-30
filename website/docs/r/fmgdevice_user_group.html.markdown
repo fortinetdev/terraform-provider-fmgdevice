@@ -1,5 +1,5 @@
 ---
-subcategory: "No Category"
+subcategory: "User"
 layout: "fmgdevice"
 page_title: "FortiManager Device: fmgdevice_user_group"
 description: |-
@@ -63,6 +63,8 @@ The following arguments are supported:
 
 * `logic_type` - Logic-Type. Valid values: `or`, `and`.
 
+* `negate` - Negate. Valid values: `disable`, `enable`.
+
 * `dynamic_sort_subtable` - true or false, set this parameter to true when using dynamic for_each + toset to configure and sort sub-tables, please do not set this parameter when configuring static sub-tables.
 
 The `dynamic_mapping` block supports:
@@ -93,6 +95,8 @@ The `dynamic_mapping` block supports:
 * `mobile_phone` - Enable/disable the guest user mobile phone number field. Valid values: `disable`, `enable`.
 
 * `multiple_guest_add` - Enable/disable addition of multiple guests. Valid values: `disable`, `enable`.
+
+* `negate` - Negate. Valid values: `disable`, `enable`.
 
 * `password` - Guest user password type. Valid values: `auto-generate`, `specify`, `disable`.
 

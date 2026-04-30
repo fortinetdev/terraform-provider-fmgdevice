@@ -88,7 +88,7 @@ func resourceLogTacacsAccounting2FilterUpdate(d *schema.ResourceData, m interfac
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	obj, err := getObjectLogTacacsAccounting2Filter(d)
+	obj, err := getObjectLogTacacsAccounting2Filter(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating LogTacacsAccounting2Filter resource while getting object: %v", err)
 	}
@@ -109,7 +109,6 @@ func resourceLogTacacsAccounting2FilterUpdate(d *schema.ResourceData, m interfac
 
 func resourceLogTacacsAccounting2FilterDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -132,11 +131,17 @@ func resourceLogTacacsAccounting2FilterDelete(d *schema.ResourceData, m interfac
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	obj, err := getObjectLogTacacsAccounting2Filter(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating LogTacacsAccounting2Filter resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteLogTacacsAccounting2Filter(mkey, paradict, wsParams)
+	_, err = c.UpdateLogTacacsAccounting2Filter(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting LogTacacsAccounting2Filter resource: %v", err)
+		return fmt.Errorf("Error clearing LogTacacsAccounting2Filter resource: %v", err)
 	}
 
 	d.SetId("")
@@ -261,7 +266,7 @@ func expandLogTacacsAccounting2FilterLoginAudit(d *schema.ResourceData, v interf
 	return v, nil
 }
 
-func getObjectLogTacacsAccounting2Filter(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectLogTacacsAccounting2Filter(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("cli_cmd_audit"); ok || d.HasChange("cli_cmd_audit") {

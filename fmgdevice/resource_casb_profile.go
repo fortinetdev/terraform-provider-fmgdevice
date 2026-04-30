@@ -73,6 +73,7 @@ func resourceCasbProfile() *schema.Resource {
 									"action": &schema.Schema{
 										Type:     schema.TypeString,
 										Optional: true,
+										Computed: true,
 									},
 									"attribute_filter": &schema.Schema{
 										Type:     schema.TypeList,
@@ -82,6 +83,7 @@ func resourceCasbProfile() *schema.Resource {
 												"action": &schema.Schema{
 													Type:     schema.TypeString,
 													Optional: true,
+													Computed: true,
 												},
 												"attribute_match": &schema.Schema{
 													Type:     schema.TypeSet,
@@ -152,6 +154,7 @@ func resourceCasbProfile() *schema.Resource {
 												"action": &schema.Schema{
 													Type:     schema.TypeString,
 													Optional: true,
+													Computed: true,
 												},
 												"attribute_match": &schema.Schema{
 													Type:     schema.TypeSet,

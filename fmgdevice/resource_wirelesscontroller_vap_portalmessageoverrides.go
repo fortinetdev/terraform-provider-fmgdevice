@@ -97,7 +97,7 @@ func resourceWirelessControllerVapPortalMessageOverridesUpdate(d *schema.Resourc
 	paradict["vdom"] = device_vdom
 	paradict["vap"] = vap
 
-	obj, err := getObjectWirelessControllerVapPortalMessageOverrides(d)
+	obj, err := getObjectWirelessControllerVapPortalMessageOverrides(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating WirelessControllerVapPortalMessageOverrides resource while getting object: %v", err)
 	}
@@ -118,7 +118,6 @@ func resourceWirelessControllerVapPortalMessageOverridesUpdate(d *schema.Resourc
 
 func resourceWirelessControllerVapPortalMessageOverridesDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -143,11 +142,17 @@ func resourceWirelessControllerVapPortalMessageOverridesDelete(d *schema.Resourc
 	paradict["vdom"] = device_vdom
 	paradict["vap"] = vap
 
+	obj, err := getObjectWirelessControllerVapPortalMessageOverrides(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating WirelessControllerVapPortalMessageOverrides resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteWirelessControllerVapPortalMessageOverrides(mkey, paradict, wsParams)
+	_, err = c.UpdateWirelessControllerVapPortalMessageOverrides(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting WirelessControllerVapPortalMessageOverrides resource: %v", err)
+		return fmt.Errorf("Error clearing WirelessControllerVapPortalMessageOverrides resource: %v", err)
 	}
 
 	d.SetId("")
@@ -301,7 +306,7 @@ func expandWirelessControllerVapPortalMessageOverridesAuthRejectPage2edl(d *sche
 	return v, nil
 }
 
-func getObjectWirelessControllerVapPortalMessageOverrides(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectWirelessControllerVapPortalMessageOverrides(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("auth_disclaimer_page"); ok || d.HasChange("auth_disclaimer_page") {

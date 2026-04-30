@@ -1,5 +1,5 @@
 ---
-subcategory: "No Category"
+subcategory: "Wireless Controller"
 layout: "fmgdevice"
 page_title: "FortiManager Device: fmgdevice_wirelesscontroller_wtpprofile"
 description: |-
@@ -57,6 +57,32 @@ The following arguments are supported:
 
 * `ap_handoff` - Enable/disable AP handoff of clients to other APs (default = disable). Valid values: `disable`, `enable`.
 
+* `apcfg_auto_cert` - Enable/disable AP local auto cert configuration (default = disable). Valid values: `disable`, `enable`.
+
+* `apcfg_auto_cert_auto_regen_days` - Number of days to wait before expiry of an updated local certificate is requested (0 = disabled) (default = 30).
+* `apcfg_auto_cert_crypto_algo` - Cryptography algorithm: rsa-1024, rsa-1536, rsa-2048, rsa-4096, ec-secp256r1, ec-secp384r1, ec-secp521r1 (default = ec-secp256r1) Valid values: `rsa-1024`, `rsa-1536`, `rsa-2048`, `rsa-4096`, `ec-secp256r1`, `ec-secp384r1`, `ec-secp521r1`.
+
+* `apcfg_auto_cert_enroll_protocol` - Certificate enrollment protocol (default = none) Valid values: `none`, `scep`, `est`.
+
+* `apcfg_auto_cert_est_ca_id` - CA identifier of the CA server for signing via EST.
+* `apcfg_auto_cert_est_http_password` - HTTP Authentication password for signing via EST.
+* `apcfg_auto_cert_est_http_username` - HTTP Authentication username for signing via EST.
+* `apcfg_auto_cert_est_https_ca` - PEM format https CA Certificate.
+* `apcfg_auto_cert_est_server` - Address and port for EST server (e.g. https://example.com:1234).
+* `apcfg_auto_cert_est_subject` - Subject e.g. "CN=User,DC=example,DC=COM" (default = CN=FortiAP,DC=local,DC=COM)
+* `apcfg_auto_cert_est_subject_alt_name` - Subject alternative name (optional, e.g. "DNS:dns1.com,IP:192.168.1.99")
+* `apcfg_auto_cert_scep_ca_id` - CA identifier of the CA server for signing via SCEP.
+* `apcfg_auto_cert_scep_ec_name` - Elliptic curve name: secp256r1, secp384r1 and secp521r1. (default secp256r1). Valid values: `secp256r1`, `secp384r1`, `secp521r1`.
+
+* `apcfg_auto_cert_scep_https_ca` - PEM format https CA Certificate.
+* `apcfg_auto_cert_scep_keysize` - Key size: 1024, 1536, 2048, 4096 (default 2048). Valid values: `1024`, `1536`, `2048`, `4096`.
+
+* `apcfg_auto_cert_scep_keytype` - Key type (default = rsa) Valid values: `rsa`, `ec`.
+
+* `apcfg_auto_cert_scep_password` - SCEP server challenge password for auto-regeneration.
+* `apcfg_auto_cert_scep_sub_fully_dn` - Full DN of the subject (e.g C=US,ST=CA,L=Sunnyvale,O=Fortinet,OU=Dep1,emailAddress=test@example.com). There should be no space in between the attributes. Supported DN attributes (case-sensitive) are:C,ST,L,O,OU,emailAddress. The CN defaults to the device’s SN and cannot be changed.
+* `apcfg_auto_cert_scep_subject_alt_name` - Subject alternative name (optional, e.g. "DNS:dns1.com,IP:192.168.1.99")
+* `apcfg_auto_cert_scep_url` - SCEP server URL.
 * `apcfg_mesh` - Enable/disable AP local mesh configuration (default = disable). Valid values: `disable`, `enable`.
 
 * `apcfg_mesh_ap_type` - Mesh AP Type (default = ethernet). Valid values: `auto`, `ethernet`, `mesh`.
@@ -105,6 +131,7 @@ The following arguments are supported:
 * `login_passwd` - Set the managed WTP, FortiAP, or AP's administrator password.
 * `login_passwd_change` - Change or reset the administrator password of a managed WTP, FortiAP or AP (yes, default, or no, default = no). Valid values: `no`, `yes`, `default`.
 
+* `lw_profile` - LoRaWAN profile name.
 * `max_clients` - Maximum number of stations (STAs) supported by the WTP (default = 0, meaning no client limitation).
 * `name` - WTP (or FortiAP or AP) profile name.
 * `platform` - Platform. The structure of `platform` block is documented below.
@@ -282,6 +309,8 @@ The `radio_1` block supports:
 
 * `n80211mc` - Enable/disable 802.11mc responder mode (default = disable). Valid values: `disable`, `enable`.
 
+* `ai_darrp_support` - Enable/disable support for FortiAIOps to retrieve Distributed Automatic Radio Resource Provisioning (DARRP) data through REST API calls (default = disable). Valid values: `disable`, `enable`.
+
 * `airtime_fairness` - Enable/disable airtime fairness (default = disable). Valid values: `disable`, `enable`.
 
 * `amsdu` - Enable/disable 802.11n AMSDU support. AMSDU can improve performance if supported by your WiFi clients (default = enable). Valid values: `disable`, `enable`.
@@ -418,6 +447,8 @@ The `radio_2` block supports:
 * `n80211d` - Enable/disable 802.11d countryie(default = enable). Valid values: `disable`, `enable`.
 
 * `n80211mc` - Enable/disable 802.11mc responder mode (default = disable). Valid values: `disable`, `enable`.
+
+* `ai_darrp_support` - Enable/disable support for FortiAIOps to retrieve Distributed Automatic Radio Resource Provisioning (DARRP) data through REST API calls (default = disable). Valid values: `disable`, `enable`.
 
 * `airtime_fairness` - Enable/disable airtime fairness (default = disable). Valid values: `disable`, `enable`.
 
@@ -556,6 +587,8 @@ The `radio_3` block supports:
 
 * `n80211mc` - Enable/disable 802.11mc responder mode (default = disable). Valid values: `disable`, `enable`.
 
+* `ai_darrp_support` - Enable/disable support for FortiAIOps to retrieve Distributed Automatic Radio Resource Provisioning (DARRP) data through REST API calls (default = disable). Valid values: `disable`, `enable`.
+
 * `airtime_fairness` - Enable/disable airtime fairness (default = disable). Valid values: `disable`, `enable`.
 
 * `amsdu` - Enable/disable 802.11n AMSDU support. AMSDU can improve performance if supported by your WiFi clients (default = enable). Valid values: `disable`, `enable`.
@@ -692,6 +725,8 @@ The `radio_4` block supports:
 * `n80211d` - Enable/disable 802.11d countryie(default = enable). Valid values: `disable`, `enable`.
 
 * `n80211mc` - Enable/disable 802.11mc responder mode (default = disable). Valid values: `disable`, `enable`.
+
+* `ai_darrp_support` - Enable/disable support for FortiAIOps to retrieve Distributed Automatic Radio Resource Provisioning (DARRP) data through REST API calls (default = disable). Valid values: `disable`, `enable`.
 
 * `airtime_fairness` - Enable/disable airtime fairness (default = disable). Valid values: `disable`, `enable`.
 

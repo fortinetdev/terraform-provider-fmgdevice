@@ -124,7 +124,7 @@ func resourceSwitchController8021XSettingsUpdate(d *schema.ResourceData, m inter
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	obj, err := getObjectSwitchController8021XSettings(d)
+	obj, err := getObjectSwitchController8021XSettings(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating SwitchController8021XSettings resource while getting object: %v", err)
 	}
@@ -145,7 +145,6 @@ func resourceSwitchController8021XSettingsUpdate(d *schema.ResourceData, m inter
 
 func resourceSwitchController8021XSettingsDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -168,11 +167,17 @@ func resourceSwitchController8021XSettingsDelete(d *schema.ResourceData, m inter
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	obj, err := getObjectSwitchController8021XSettings(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating SwitchController8021XSettings resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteSwitchController8021XSettings(mkey, paradict, wsParams)
+	_, err = c.UpdateSwitchController8021XSettings(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting SwitchController8021XSettings resource: %v", err)
+		return fmt.Errorf("Error clearing SwitchController8021XSettings resource: %v", err)
 	}
 
 	d.SetId("")
@@ -423,7 +428,7 @@ func expandSwitchController8021XSettingsTxPeriod(d *schema.ResourceData, v inter
 	return v, nil
 }
 
-func getObjectSwitchController8021XSettings(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectSwitchController8021XSettings(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("link_down_auth"); ok || d.HasChange("link_down_auth") {

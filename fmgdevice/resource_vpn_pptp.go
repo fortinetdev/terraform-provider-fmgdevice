@@ -49,6 +49,7 @@ func resourceVpnPptp() *schema.Resource {
 			"eip": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"ip_mode": &schema.Schema{
 				Type:     schema.TypeString,
@@ -63,6 +64,7 @@ func resourceVpnPptp() *schema.Resource {
 			"sip": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"status": &schema.Schema{
 				Type:     schema.TypeString,
@@ -103,7 +105,7 @@ func resourceVpnPptpUpdate(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	obj, err := getObjectVpnPptp(d)
+	obj, err := getObjectVpnPptp(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating VpnPptp resource while getting object: %v", err)
 	}
@@ -124,7 +126,6 @@ func resourceVpnPptpUpdate(d *schema.ResourceData, m interface{}) error {
 
 func resourceVpnPptpDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -147,11 +148,17 @@ func resourceVpnPptpDelete(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	obj, err := getObjectVpnPptp(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating VpnPptp resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteVpnPptp(mkey, paradict, wsParams)
+	_, err = c.UpdateVpnPptp(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting VpnPptp resource: %v", err)
+		return fmt.Errorf("Error clearing VpnPptp resource: %v", err)
 	}
 
 	d.SetId("")
@@ -330,7 +337,7 @@ func expandVpnPptpUsrgrp(d *schema.ResourceData, v interface{}, pre string) (int
 	return expandStringList(v.(*schema.Set).List()), nil
 }
 
-func getObjectVpnPptp(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectVpnPptp(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("eip"); ok || d.HasChange("eip") {

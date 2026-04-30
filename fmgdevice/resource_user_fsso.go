@@ -252,14 +252,17 @@ func resourceUserFsso() *schema.Resource {
 			"ldap_poll": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"ldap_poll_filter": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"ldap_poll_interval": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"ldap_server": &schema.Schema{
 				Type:     schema.TypeSet,

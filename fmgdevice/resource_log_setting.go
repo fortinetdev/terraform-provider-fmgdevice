@@ -174,6 +174,11 @@ func resourceLogSetting() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"rest_api_performance": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
 			"rest_api_set": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -185,6 +190,11 @@ func resourceLogSetting() *schema.Resource {
 				Computed: true,
 			},
 			"user_anonymize": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+			"web_svc_perf": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
@@ -222,7 +232,7 @@ func resourceLogSettingUpdate(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	obj, err := getObjectLogSetting(d)
+	obj, err := getObjectLogSetting(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating LogSetting resource while getting object: %v", err)
 	}
@@ -243,7 +253,6 @@ func resourceLogSettingUpdate(d *schema.ResourceData, m interface{}) error {
 
 func resourceLogSettingDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -266,11 +275,17 @@ func resourceLogSettingDelete(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	obj, err := getObjectLogSetting(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating LogSetting resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteLogSetting(mkey, paradict, wsParams)
+	_, err = c.UpdateLogSetting(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting LogSetting resource: %v", err)
+		return fmt.Errorf("Error clearing LogSetting resource: %v", err)
 	}
 
 	d.SetId("")
@@ -433,6 +448,10 @@ func flattenLogSettingRestApiGet(v interface{}, d *schema.ResourceData, pre stri
 	return v
 }
 
+func flattenLogSettingRestApiPerformance(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenLogSettingRestApiSet(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -442,6 +461,10 @@ func flattenLogSettingSyslogOverride(v interface{}, d *schema.ResourceData, pre 
 }
 
 func flattenLogSettingUserAnonymize(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenLogSettingWebSvcPerf(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -712,6 +735,16 @@ func refreshObjectLogSetting(d *schema.ResourceData, o map[string]interface{}) e
 		}
 	}
 
+	if err = d.Set("rest_api_performance", flattenLogSettingRestApiPerformance(o["rest-api-performance"], d, "rest_api_performance")); err != nil {
+		if vv, ok := fortiAPIPatch(o["rest-api-performance"], "LogSetting-RestApiPerformance"); ok {
+			if err = d.Set("rest_api_performance", vv); err != nil {
+				return fmt.Errorf("Error reading rest_api_performance: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading rest_api_performance: %v", err)
+		}
+	}
+
 	if err = d.Set("rest_api_set", flattenLogSettingRestApiSet(o["rest-api-set"], d, "rest_api_set")); err != nil {
 		if vv, ok := fortiAPIPatch(o["rest-api-set"], "LogSetting-RestApiSet"); ok {
 			if err = d.Set("rest_api_set", vv); err != nil {
@@ -739,6 +772,16 @@ func refreshObjectLogSetting(d *schema.ResourceData, o map[string]interface{}) e
 			}
 		} else {
 			return fmt.Errorf("Error reading user_anonymize: %v", err)
+		}
+	}
+
+	if err = d.Set("web_svc_perf", flattenLogSettingWebSvcPerf(o["web-svc-perf"], d, "web_svc_perf")); err != nil {
+		if vv, ok := fortiAPIPatch(o["web-svc-perf"], "LogSetting-WebSvcPerf"); ok {
+			if err = d.Set("web_svc_perf", vv); err != nil {
+				return fmt.Errorf("Error reading web_svc_perf: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading web_svc_perf: %v", err)
 		}
 	}
 
@@ -865,6 +908,10 @@ func expandLogSettingRestApiGet(d *schema.ResourceData, v interface{}, pre strin
 	return v, nil
 }
 
+func expandLogSettingRestApiPerformance(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandLogSettingRestApiSet(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -877,11 +924,15 @@ func expandLogSettingUserAnonymize(d *schema.ResourceData, v interface{}, pre st
 	return v, nil
 }
 
+func expandLogSettingWebSvcPerf(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandLogSettingZoneName(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
-func getObjectLogSetting(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectLogSetting(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("anonymization_hash"); ok || d.HasChange("anonymization_hash") {
@@ -1118,6 +1169,15 @@ func getObjectLogSetting(d *schema.ResourceData) (*map[string]interface{}, error
 		}
 	}
 
+	if v, ok := d.GetOk("rest_api_performance"); ok || d.HasChange("rest_api_performance") {
+		t, err := expandLogSettingRestApiPerformance(d, v, "rest_api_performance")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["rest-api-performance"] = t
+		}
+	}
+
 	if v, ok := d.GetOk("rest_api_set"); ok || d.HasChange("rest_api_set") {
 		t, err := expandLogSettingRestApiSet(d, v, "rest_api_set")
 		if err != nil {
@@ -1142,6 +1202,15 @@ func getObjectLogSetting(d *schema.ResourceData) (*map[string]interface{}, error
 			return &obj, err
 		} else if t != nil {
 			obj["user-anonymize"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("web_svc_perf"); ok || d.HasChange("web_svc_perf") {
+		t, err := expandLogSettingWebSvcPerf(d, v, "web_svc_perf")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["web-svc-perf"] = t
 		}
 	}
 

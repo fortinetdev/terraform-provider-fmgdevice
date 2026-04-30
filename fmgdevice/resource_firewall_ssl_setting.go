@@ -126,7 +126,7 @@ func resourceFirewallSslSettingUpdate(d *schema.ResourceData, m interface{}) err
 	}
 	paradict["device"] = device_name
 
-	obj, err := getObjectFirewallSslSetting(d)
+	obj, err := getObjectFirewallSslSetting(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating FirewallSslSetting resource while getting object: %v", err)
 	}
@@ -147,7 +147,6 @@ func resourceFirewallSslSettingUpdate(d *schema.ResourceData, m interface{}) err
 
 func resourceFirewallSslSettingDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -165,11 +164,17 @@ func resourceFirewallSslSettingDelete(d *schema.ResourceData, m interface{}) err
 	}
 	paradict["device"] = device_name
 
+	obj, err := getObjectFirewallSslSetting(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating FirewallSslSetting resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteFirewallSslSetting(mkey, paradict, wsParams)
+	_, err = c.UpdateFirewallSslSetting(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting FirewallSslSetting resource: %v", err)
+		return fmt.Errorf("Error clearing FirewallSslSetting resource: %v", err)
 	}
 
 	d.SetId("")
@@ -463,7 +468,7 @@ func expandFirewallSslSettingSslSendEmptyFrags(d *schema.ResourceData, v interfa
 	return v, nil
 }
 
-func getObjectFirewallSslSetting(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectFirewallSslSetting(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("abbreviate_handshake"); ok || d.HasChange("abbreviate_handshake") {

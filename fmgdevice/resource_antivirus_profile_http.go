@@ -63,6 +63,10 @@ func resourceAntivirusProfileHttp() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"av_optimize": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 			"av_scan": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -95,6 +99,7 @@ func resourceAntivirusProfileHttp() *schema.Resource {
 			"fortindr": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"fortisandbox": &schema.Schema{
 				Type:     schema.TypeString,
@@ -149,7 +154,7 @@ func resourceAntivirusProfileHttpUpdate(d *schema.ResourceData, m interface{}) e
 	paradict["vdom"] = device_vdom
 	paradict["profile"] = profile
 
-	obj, err := getObjectAntivirusProfileHttp(d)
+	obj, err := getObjectAntivirusProfileHttp(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating AntivirusProfileHttp resource while getting object: %v", err)
 	}
@@ -170,7 +175,6 @@ func resourceAntivirusProfileHttpUpdate(d *schema.ResourceData, m interface{}) e
 
 func resourceAntivirusProfileHttpDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -195,11 +199,17 @@ func resourceAntivirusProfileHttpDelete(d *schema.ResourceData, m interface{}) e
 	paradict["vdom"] = device_vdom
 	paradict["profile"] = profile
 
+	obj, err := getObjectAntivirusProfileHttp(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating AntivirusProfileHttp resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteAntivirusProfileHttp(mkey, paradict, wsParams)
+	_, err = c.UpdateAntivirusProfileHttp(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting AntivirusProfileHttp resource: %v", err)
+		return fmt.Errorf("Error clearing AntivirusProfileHttp resource: %v", err)
 	}
 
 	d.SetId("")
@@ -277,6 +287,10 @@ func flattenAntivirusProfileHttpArchiveLog2edl(v interface{}, d *schema.Resource
 	return flattenStringList(v)
 }
 
+func flattenAntivirusProfileHttpAvOptimize2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenAntivirusProfileHttpAvScan2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -345,6 +359,16 @@ func refreshObjectAntivirusProfileHttp(d *schema.ResourceData, o map[string]inte
 			}
 		} else {
 			return fmt.Errorf("Error reading archive_log: %v", err)
+		}
+	}
+
+	if err = d.Set("av_optimize", flattenAntivirusProfileHttpAvOptimize2edl(o["av-optimize"], d, "av_optimize")); err != nil {
+		if vv, ok := fortiAPIPatch(o["av-optimize"], "AntivirusProfileHttp-AvOptimize"); ok {
+			if err = d.Set("av_optimize", vv); err != nil {
+				return fmt.Errorf("Error reading av_optimize: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading av_optimize: %v", err)
 		}
 	}
 
@@ -485,6 +509,10 @@ func expandAntivirusProfileHttpArchiveLog2edl(d *schema.ResourceData, v interfac
 	return expandStringList(v.(*schema.Set).List()), nil
 }
 
+func expandAntivirusProfileHttpAvOptimize2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandAntivirusProfileHttpAvScan2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -533,7 +561,7 @@ func expandAntivirusProfileHttpUnknownContentEncoding2edl(d *schema.ResourceData
 	return v, nil
 }
 
-func getObjectAntivirusProfileHttp(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectAntivirusProfileHttp(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("archive_block"); ok || d.HasChange("archive_block") {
@@ -551,6 +579,15 @@ func getObjectAntivirusProfileHttp(d *schema.ResourceData) (*map[string]interfac
 			return &obj, err
 		} else if t != nil {
 			obj["archive-log"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("av_optimize"); ok || d.HasChange("av_optimize") {
+		t, err := expandAntivirusProfileHttpAvOptimize2edl(d, v, "av_optimize")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["av-optimize"] = t
 		}
 	}
 

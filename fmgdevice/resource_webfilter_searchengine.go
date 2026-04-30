@@ -54,6 +54,7 @@ func resourceWebfilterSearchEngine() *schema.Resource {
 			"charset": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"hostname": &schema.Schema{
 				Type:     schema.TypeString,

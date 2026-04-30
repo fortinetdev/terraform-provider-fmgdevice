@@ -49,6 +49,7 @@ func resourceSystemPasswordPolicyGuestAdmin() *schema.Resource {
 			"change_4_characters": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"expire_day": &schema.Schema{
 				Type:     schema.TypeInt,
@@ -67,18 +68,22 @@ func resourceSystemPasswordPolicyGuestAdmin() *schema.Resource {
 			"min_lower_case_letter": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"min_non_alphanumeric": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"min_number": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"min_upper_case_letter": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"minimum_length": &schema.Schema{
 				Type:     schema.TypeInt,
@@ -126,7 +131,7 @@ func resourceSystemPasswordPolicyGuestAdminUpdate(d *schema.ResourceData, m inte
 	}
 	paradict["device"] = device_name
 
-	obj, err := getObjectSystemPasswordPolicyGuestAdmin(d)
+	obj, err := getObjectSystemPasswordPolicyGuestAdmin(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemPasswordPolicyGuestAdmin resource while getting object: %v", err)
 	}
@@ -147,7 +152,6 @@ func resourceSystemPasswordPolicyGuestAdminUpdate(d *schema.ResourceData, m inte
 
 func resourceSystemPasswordPolicyGuestAdminDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -165,11 +169,17 @@ func resourceSystemPasswordPolicyGuestAdminDelete(d *schema.ResourceData, m inte
 	}
 	paradict["device"] = device_name
 
+	obj, err := getObjectSystemPasswordPolicyGuestAdmin(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating SystemPasswordPolicyGuestAdmin resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteSystemPasswordPolicyGuestAdmin(mkey, paradict, wsParams)
+	_, err = c.UpdateSystemPasswordPolicyGuestAdmin(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting SystemPasswordPolicyGuestAdmin resource: %v", err)
+		return fmt.Errorf("Error clearing SystemPasswordPolicyGuestAdmin resource: %v", err)
 	}
 
 	d.SetId("")
@@ -481,7 +491,7 @@ func expandSystemPasswordPolicyGuestAdminPasswordHistory(d *schema.ResourceData,
 	return v, nil
 }
 
-func getObjectSystemPasswordPolicyGuestAdmin(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectSystemPasswordPolicyGuestAdmin(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("apply_to"); ok || d.HasChange("apply_to") {

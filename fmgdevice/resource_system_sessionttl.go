@@ -119,7 +119,7 @@ func resourceSystemSessionTtlUpdate(d *schema.ResourceData, m interface{}) error
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	obj, err := getObjectSystemSessionTtl(d)
+	obj, err := getObjectSystemSessionTtl(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemSessionTtl resource while getting object: %v", err)
 	}
@@ -140,7 +140,6 @@ func resourceSystemSessionTtlUpdate(d *schema.ResourceData, m interface{}) error
 
 func resourceSystemSessionTtlDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -163,11 +162,17 @@ func resourceSystemSessionTtlDelete(d *schema.ResourceData, m interface{}) error
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	obj, err := getObjectSystemSessionTtl(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating SystemSessionTtl resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteSystemSessionTtl(mkey, paradict, wsParams)
+	_, err = c.UpdateSystemSessionTtl(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting SystemSessionTtl resource: %v", err)
+		return fmt.Errorf("Error clearing SystemSessionTtl resource: %v", err)
 	}
 
 	d.SetId("")
@@ -451,7 +456,7 @@ func expandSystemSessionTtlPortTimeout(d *schema.ResourceData, v interface{}, pr
 	return v, nil
 }
 
-func getObjectSystemSessionTtl(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectSystemSessionTtl(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("default"); ok || d.HasChange("default") {
@@ -463,12 +468,16 @@ func getObjectSystemSessionTtl(d *schema.ResourceData) (*map[string]interface{},
 		}
 	}
 
-	if v, ok := d.GetOk("port"); ok || d.HasChange("port") {
-		t, err := expandSystemSessionTtlPort(d, v, "port")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["port"] = t
+	if bemptysontable {
+		obj["port"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("port"); ok || d.HasChange("port") {
+			t, err := expandSystemSessionTtlPort(d, v, "port")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["port"] = t
+			}
 		}
 	}
 

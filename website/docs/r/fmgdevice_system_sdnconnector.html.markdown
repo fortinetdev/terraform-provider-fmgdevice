@@ -1,5 +1,5 @@
 ---
-subcategory: "No Category"
+subcategory: "System"
 layout: "fmgdevice"
 page_title: "FortiManager Device: fmgdevice_system_sdnconnector"
 description: |-
@@ -68,6 +68,7 @@ The following arguments are supported:
 * `oci_region_list` - Oci-Region-List. The structure of `oci_region_list` block is documented below.
 * `oci_region_type` - OCI region type. Valid values: `commercial`, `government`.
 
+* `par_id` - Public address range ID.
 * `password` - Password of the remote SDN connector as login credentials.
 * `private_key` - Private key of GCP service account.
 * `proxy` - SDN proxy.

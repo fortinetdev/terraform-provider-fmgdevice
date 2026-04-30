@@ -76,7 +76,7 @@ func resourceFirewallInternetServiceAppendUpdate(d *schema.ResourceData, m inter
 	}
 	paradict["device"] = device_name
 
-	obj, err := getObjectFirewallInternetServiceAppend(d)
+	obj, err := getObjectFirewallInternetServiceAppend(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating FirewallInternetServiceAppend resource while getting object: %v", err)
 	}
@@ -97,7 +97,6 @@ func resourceFirewallInternetServiceAppendUpdate(d *schema.ResourceData, m inter
 
 func resourceFirewallInternetServiceAppendDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -115,11 +114,17 @@ func resourceFirewallInternetServiceAppendDelete(d *schema.ResourceData, m inter
 	}
 	paradict["device"] = device_name
 
+	obj, err := getObjectFirewallInternetServiceAppend(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating FirewallInternetServiceAppend resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteFirewallInternetServiceAppend(mkey, paradict, wsParams)
+	_, err = c.UpdateFirewallInternetServiceAppend(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting FirewallInternetServiceAppend resource: %v", err)
+		return fmt.Errorf("Error clearing FirewallInternetServiceAppend resource: %v", err)
 	}
 
 	d.SetId("")
@@ -233,7 +238,7 @@ func expandFirewallInternetServiceAppendMatchPort(d *schema.ResourceData, v inte
 	return v, nil
 }
 
-func getObjectFirewallInternetServiceAppend(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectFirewallInternetServiceAppend(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("addr_mode"); ok || d.HasChange("addr_mode") {

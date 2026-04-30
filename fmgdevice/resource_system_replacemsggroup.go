@@ -63,10 +63,12 @@ func resourceSystemReplacemsgGroup() *schema.Resource {
 						"format": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"header": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"msg_type": &schema.Schema{
 							Type:     schema.TypeString,
@@ -87,10 +89,12 @@ func resourceSystemReplacemsgGroup() *schema.Resource {
 						"format": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"header": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"id": &schema.Schema{
 							Type:     schema.TypeInt,
@@ -115,10 +119,12 @@ func resourceSystemReplacemsgGroup() *schema.Resource {
 						"format": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"header": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"msg_type": &schema.Schema{
 							Type:     schema.TypeString,
@@ -139,10 +145,12 @@ func resourceSystemReplacemsgGroup() *schema.Resource {
 						"format": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"header": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"msg_type": &schema.Schema{
 							Type:     schema.TypeString,
@@ -167,10 +175,12 @@ func resourceSystemReplacemsgGroup() *schema.Resource {
 						"format": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"header": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"msg_type": &schema.Schema{
 							Type:     schema.TypeString,
@@ -215,10 +225,12 @@ func resourceSystemReplacemsgGroup() *schema.Resource {
 						"format": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"header": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"msg_type": &schema.Schema{
 							Type:     schema.TypeString,
@@ -239,10 +251,12 @@ func resourceSystemReplacemsgGroup() *schema.Resource {
 						"format": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"header": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"msg_type": &schema.Schema{
 							Type:     schema.TypeString,
@@ -254,6 +268,7 @@ func resourceSystemReplacemsgGroup() *schema.Resource {
 			"group_type": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"http": &schema.Schema{
 				Type:     schema.TypeList,
@@ -267,10 +282,12 @@ func resourceSystemReplacemsgGroup() *schema.Resource {
 						"format": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"header": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"msg_type": &schema.Schema{
 							Type:     schema.TypeString,
@@ -291,10 +308,12 @@ func resourceSystemReplacemsgGroup() *schema.Resource {
 						"format": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"header": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"msg_type": &schema.Schema{
 							Type:     schema.TypeString,
@@ -315,10 +334,322 @@ func resourceSystemReplacemsgGroup() *schema.Resource {
 						"format": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"header": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
+						},
+						"msg_type": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+					},
+				},
+			},
+			"mm1": &schema.Schema{
+				Type:     schema.TypeList,
+				Optional: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"add_smil": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"charset": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"class": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"format": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"from": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"from_sender": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"header": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"image": &schema.Schema{
+							Type:     schema.TypeSet,
+							Elem:     &schema.Schema{Type: schema.TypeString},
+							Optional: true,
+							Computed: true,
+						},
+						"message": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"msg_type": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"priority": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"rsp_status": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"rsp_text": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"sender_visibility": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"smil_part": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"subject": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+					},
+				},
+			},
+			"mm3": &schema.Schema{
+				Type:     schema.TypeList,
+				Optional: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"add_html": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"charset": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"format": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"from": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"from_sender": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"header": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"html_part": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"image": &schema.Schema{
+							Type:     schema.TypeSet,
+							Elem:     &schema.Schema{Type: schema.TypeString},
+							Optional: true,
+							Computed: true,
+						},
+						"message": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"msg_type": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"priority": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"subject": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+					},
+				},
+			},
+			"mm4": &schema.Schema{
+				Type:     schema.TypeList,
+				Optional: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"add_smil": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"charset": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"class": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"domain": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"format": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"from": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"from_sender": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"header": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"image": &schema.Schema{
+							Type:     schema.TypeSet,
+							Elem:     &schema.Schema{Type: schema.TypeString},
+							Optional: true,
+							Computed: true,
+						},
+						"message": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"msg_type": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"priority": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"rsp_status": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"smil_part": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"subject": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+					},
+				},
+			},
+			"mm7": &schema.Schema{
+				Type:     schema.TypeList,
+				Optional: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"add_smil": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"addr_type": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"allow_content_adaptation": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"charset": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"class": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"format": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"from": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"from_sender": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"header": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"image": &schema.Schema{
+							Type:     schema.TypeSet,
+							Elem:     &schema.Schema{Type: schema.TypeString},
+							Optional: true,
+							Computed: true,
+						},
+						"message": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"msg_type": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"priority": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"rsp_status": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"smil_part": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"subject": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+					},
+				},
+			},
+			"mms": &schema.Schema{
+				Type:     schema.TypeList,
+				Optional: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"buffer": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"charset": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"format": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"header": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"image": &schema.Schema{
+							Type:     schema.TypeSet,
+							Elem:     &schema.Schema{Type: schema.TypeString},
+							Optional: true,
+							Computed: true,
 						},
 						"msg_type": &schema.Schema{
 							Type:     schema.TypeString,
@@ -339,10 +670,12 @@ func resourceSystemReplacemsgGroup() *schema.Resource {
 						"format": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"header": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"id": &schema.Schema{
 							Type:     schema.TypeInt,
@@ -396,10 +729,12 @@ func resourceSystemReplacemsgGroup() *schema.Resource {
 						"format": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"header": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"msg_type": &schema.Schema{
 							Type:     schema.TypeString,
@@ -420,10 +755,12 @@ func resourceSystemReplacemsgGroup() *schema.Resource {
 						"format": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"header": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"msg_type": &schema.Schema{
 							Type:     schema.TypeString,
@@ -444,10 +781,12 @@ func resourceSystemReplacemsgGroup() *schema.Resource {
 						"format": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"header": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"msg_type": &schema.Schema{
 							Type:     schema.TypeString,
@@ -468,10 +807,12 @@ func resourceSystemReplacemsgGroup() *schema.Resource {
 						"format": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"header": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"msg_type": &schema.Schema{
 							Type:     schema.TypeString,
@@ -492,10 +833,12 @@ func resourceSystemReplacemsgGroup() *schema.Resource {
 						"format": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"header": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"msg_type": &schema.Schema{
 							Type:     schema.TypeString,
@@ -1482,6 +1825,801 @@ func flattenSystemReplacemsgGroupMailMsgType(v interface{}, d *schema.ResourceDa
 	return v
 }
 
+func flattenSystemReplacemsgGroupMm1(v interface{}, d *schema.ResourceData, pre string) []map[string]interface{} {
+	if v == nil {
+		return nil
+	}
+
+	l := v.([]interface{})
+	if len(l) == 0 || l[0] == nil {
+		return nil
+	}
+
+	result := make([]map[string]interface{}, 0, len(l))
+
+	con := 0
+	for _, r := range l {
+		tmp := make(map[string]interface{})
+		i := r.(map[string]interface{})
+
+		pre_append := "" // table
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "add_smil"
+		if _, ok := i["add-smil"]; ok {
+			v := flattenSystemReplacemsgGroupMm1AddSmil(i["add-smil"], d, pre_append)
+			tmp["add_smil"] = fortiAPISubPartPatch(v, "SystemReplacemsgGroup-Mm1-AddSmil")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "charset"
+		if _, ok := i["charset"]; ok {
+			v := flattenSystemReplacemsgGroupMm1Charset(i["charset"], d, pre_append)
+			tmp["charset"] = fortiAPISubPartPatch(v, "SystemReplacemsgGroup-Mm1-Charset")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "class"
+		if _, ok := i["class"]; ok {
+			v := flattenSystemReplacemsgGroupMm1Class(i["class"], d, pre_append)
+			tmp["class"] = fortiAPISubPartPatch(v, "SystemReplacemsgGroup-Mm1-Class")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "format"
+		if _, ok := i["format"]; ok {
+			v := flattenSystemReplacemsgGroupMm1Format(i["format"], d, pre_append)
+			tmp["format"] = fortiAPISubPartPatch(v, "SystemReplacemsgGroup-Mm1-Format")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "from"
+		if _, ok := i["from"]; ok {
+			v := flattenSystemReplacemsgGroupMm1From(i["from"], d, pre_append)
+			tmp["from"] = fortiAPISubPartPatch(v, "SystemReplacemsgGroup-Mm1-From")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "from_sender"
+		if _, ok := i["from-sender"]; ok {
+			v := flattenSystemReplacemsgGroupMm1FromSender(i["from-sender"], d, pre_append)
+			tmp["from_sender"] = fortiAPISubPartPatch(v, "SystemReplacemsgGroup-Mm1-FromSender")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "header"
+		if _, ok := i["header"]; ok {
+			v := flattenSystemReplacemsgGroupMm1Header(i["header"], d, pre_append)
+			tmp["header"] = fortiAPISubPartPatch(v, "SystemReplacemsgGroup-Mm1-Header")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "image"
+		if _, ok := i["image"]; ok {
+			v := flattenSystemReplacemsgGroupMm1Image(i["image"], d, pre_append)
+			tmp["image"] = fortiAPISubPartPatch(v, "SystemReplacemsgGroup-Mm1-Image")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "message"
+		if _, ok := i["message"]; ok {
+			v := flattenSystemReplacemsgGroupMm1Message(i["message"], d, pre_append)
+			tmp["message"] = fortiAPISubPartPatch(v, "SystemReplacemsgGroup-Mm1-Message")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "msg_type"
+		if _, ok := i["msg-type"]; ok {
+			v := flattenSystemReplacemsgGroupMm1MsgType(i["msg-type"], d, pre_append)
+			tmp["msg_type"] = fortiAPISubPartPatch(v, "SystemReplacemsgGroup-Mm1-MsgType")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "priority"
+		if _, ok := i["priority"]; ok {
+			v := flattenSystemReplacemsgGroupMm1Priority(i["priority"], d, pre_append)
+			tmp["priority"] = fortiAPISubPartPatch(v, "SystemReplacemsgGroup-Mm1-Priority")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "rsp_status"
+		if _, ok := i["rsp-status"]; ok {
+			v := flattenSystemReplacemsgGroupMm1RspStatus(i["rsp-status"], d, pre_append)
+			tmp["rsp_status"] = fortiAPISubPartPatch(v, "SystemReplacemsgGroup-Mm1-RspStatus")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "rsp_text"
+		if _, ok := i["rsp-text"]; ok {
+			v := flattenSystemReplacemsgGroupMm1RspText(i["rsp-text"], d, pre_append)
+			tmp["rsp_text"] = fortiAPISubPartPatch(v, "SystemReplacemsgGroup-Mm1-RspText")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "sender_visibility"
+		if _, ok := i["sender-visibility"]; ok {
+			v := flattenSystemReplacemsgGroupMm1SenderVisibility(i["sender-visibility"], d, pre_append)
+			tmp["sender_visibility"] = fortiAPISubPartPatch(v, "SystemReplacemsgGroup-Mm1-SenderVisibility")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "smil_part"
+		if _, ok := i["smil-part"]; ok {
+			v := flattenSystemReplacemsgGroupMm1SmilPart(i["smil-part"], d, pre_append)
+			tmp["smil_part"] = fortiAPISubPartPatch(v, "SystemReplacemsgGroup-Mm1-SmilPart")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "subject"
+		if _, ok := i["subject"]; ok {
+			v := flattenSystemReplacemsgGroupMm1Subject(i["subject"], d, pre_append)
+			tmp["subject"] = fortiAPISubPartPatch(v, "SystemReplacemsgGroup-Mm1-Subject")
+		}
+
+		if len(tmp) > 0 {
+			result = append(result, tmp)
+		}
+
+		con += 1
+	}
+
+	return result
+}
+
+func flattenSystemReplacemsgGroupMm1AddSmil(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemReplacemsgGroupMm1Charset(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemReplacemsgGroupMm1Class(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemReplacemsgGroupMm1Format(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemReplacemsgGroupMm1From(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemReplacemsgGroupMm1FromSender(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemReplacemsgGroupMm1Header(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemReplacemsgGroupMm1Image(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
+func flattenSystemReplacemsgGroupMm1Message(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemReplacemsgGroupMm1MsgType(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemReplacemsgGroupMm1Priority(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemReplacemsgGroupMm1RspStatus(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemReplacemsgGroupMm1RspText(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemReplacemsgGroupMm1SenderVisibility(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemReplacemsgGroupMm1SmilPart(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemReplacemsgGroupMm1Subject(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemReplacemsgGroupMm3(v interface{}, d *schema.ResourceData, pre string) []map[string]interface{} {
+	if v == nil {
+		return nil
+	}
+
+	l := v.([]interface{})
+	if len(l) == 0 || l[0] == nil {
+		return nil
+	}
+
+	result := make([]map[string]interface{}, 0, len(l))
+
+	con := 0
+	for _, r := range l {
+		tmp := make(map[string]interface{})
+		i := r.(map[string]interface{})
+
+		pre_append := "" // table
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "add_html"
+		if _, ok := i["add-html"]; ok {
+			v := flattenSystemReplacemsgGroupMm3AddHtml(i["add-html"], d, pre_append)
+			tmp["add_html"] = fortiAPISubPartPatch(v, "SystemReplacemsgGroup-Mm3-AddHtml")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "charset"
+		if _, ok := i["charset"]; ok {
+			v := flattenSystemReplacemsgGroupMm3Charset(i["charset"], d, pre_append)
+			tmp["charset"] = fortiAPISubPartPatch(v, "SystemReplacemsgGroup-Mm3-Charset")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "format"
+		if _, ok := i["format"]; ok {
+			v := flattenSystemReplacemsgGroupMm3Format(i["format"], d, pre_append)
+			tmp["format"] = fortiAPISubPartPatch(v, "SystemReplacemsgGroup-Mm3-Format")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "from"
+		if _, ok := i["from"]; ok {
+			v := flattenSystemReplacemsgGroupMm3From(i["from"], d, pre_append)
+			tmp["from"] = fortiAPISubPartPatch(v, "SystemReplacemsgGroup-Mm3-From")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "from_sender"
+		if _, ok := i["from-sender"]; ok {
+			v := flattenSystemReplacemsgGroupMm3FromSender(i["from-sender"], d, pre_append)
+			tmp["from_sender"] = fortiAPISubPartPatch(v, "SystemReplacemsgGroup-Mm3-FromSender")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "header"
+		if _, ok := i["header"]; ok {
+			v := flattenSystemReplacemsgGroupMm3Header(i["header"], d, pre_append)
+			tmp["header"] = fortiAPISubPartPatch(v, "SystemReplacemsgGroup-Mm3-Header")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "html_part"
+		if _, ok := i["html-part"]; ok {
+			v := flattenSystemReplacemsgGroupMm3HtmlPart(i["html-part"], d, pre_append)
+			tmp["html_part"] = fortiAPISubPartPatch(v, "SystemReplacemsgGroup-Mm3-HtmlPart")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "image"
+		if _, ok := i["image"]; ok {
+			v := flattenSystemReplacemsgGroupMm3Image(i["image"], d, pre_append)
+			tmp["image"] = fortiAPISubPartPatch(v, "SystemReplacemsgGroup-Mm3-Image")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "message"
+		if _, ok := i["message"]; ok {
+			v := flattenSystemReplacemsgGroupMm3Message(i["message"], d, pre_append)
+			tmp["message"] = fortiAPISubPartPatch(v, "SystemReplacemsgGroup-Mm3-Message")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "msg_type"
+		if _, ok := i["msg-type"]; ok {
+			v := flattenSystemReplacemsgGroupMm3MsgType(i["msg-type"], d, pre_append)
+			tmp["msg_type"] = fortiAPISubPartPatch(v, "SystemReplacemsgGroup-Mm3-MsgType")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "priority"
+		if _, ok := i["priority"]; ok {
+			v := flattenSystemReplacemsgGroupMm3Priority(i["priority"], d, pre_append)
+			tmp["priority"] = fortiAPISubPartPatch(v, "SystemReplacemsgGroup-Mm3-Priority")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "subject"
+		if _, ok := i["subject"]; ok {
+			v := flattenSystemReplacemsgGroupMm3Subject(i["subject"], d, pre_append)
+			tmp["subject"] = fortiAPISubPartPatch(v, "SystemReplacemsgGroup-Mm3-Subject")
+		}
+
+		if len(tmp) > 0 {
+			result = append(result, tmp)
+		}
+
+		con += 1
+	}
+
+	return result
+}
+
+func flattenSystemReplacemsgGroupMm3AddHtml(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemReplacemsgGroupMm3Charset(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemReplacemsgGroupMm3Format(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemReplacemsgGroupMm3From(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemReplacemsgGroupMm3FromSender(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemReplacemsgGroupMm3Header(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemReplacemsgGroupMm3HtmlPart(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemReplacemsgGroupMm3Image(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
+func flattenSystemReplacemsgGroupMm3Message(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemReplacemsgGroupMm3MsgType(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemReplacemsgGroupMm3Priority(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemReplacemsgGroupMm3Subject(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemReplacemsgGroupMm4(v interface{}, d *schema.ResourceData, pre string) []map[string]interface{} {
+	if v == nil {
+		return nil
+	}
+
+	l := v.([]interface{})
+	if len(l) == 0 || l[0] == nil {
+		return nil
+	}
+
+	result := make([]map[string]interface{}, 0, len(l))
+
+	con := 0
+	for _, r := range l {
+		tmp := make(map[string]interface{})
+		i := r.(map[string]interface{})
+
+		pre_append := "" // table
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "add_smil"
+		if _, ok := i["add-smil"]; ok {
+			v := flattenSystemReplacemsgGroupMm4AddSmil(i["add-smil"], d, pre_append)
+			tmp["add_smil"] = fortiAPISubPartPatch(v, "SystemReplacemsgGroup-Mm4-AddSmil")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "charset"
+		if _, ok := i["charset"]; ok {
+			v := flattenSystemReplacemsgGroupMm4Charset(i["charset"], d, pre_append)
+			tmp["charset"] = fortiAPISubPartPatch(v, "SystemReplacemsgGroup-Mm4-Charset")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "class"
+		if _, ok := i["class"]; ok {
+			v := flattenSystemReplacemsgGroupMm4Class(i["class"], d, pre_append)
+			tmp["class"] = fortiAPISubPartPatch(v, "SystemReplacemsgGroup-Mm4-Class")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "domain"
+		if _, ok := i["domain"]; ok {
+			v := flattenSystemReplacemsgGroupMm4Domain(i["domain"], d, pre_append)
+			tmp["domain"] = fortiAPISubPartPatch(v, "SystemReplacemsgGroup-Mm4-Domain")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "format"
+		if _, ok := i["format"]; ok {
+			v := flattenSystemReplacemsgGroupMm4Format(i["format"], d, pre_append)
+			tmp["format"] = fortiAPISubPartPatch(v, "SystemReplacemsgGroup-Mm4-Format")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "from"
+		if _, ok := i["from"]; ok {
+			v := flattenSystemReplacemsgGroupMm4From(i["from"], d, pre_append)
+			tmp["from"] = fortiAPISubPartPatch(v, "SystemReplacemsgGroup-Mm4-From")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "from_sender"
+		if _, ok := i["from-sender"]; ok {
+			v := flattenSystemReplacemsgGroupMm4FromSender(i["from-sender"], d, pre_append)
+			tmp["from_sender"] = fortiAPISubPartPatch(v, "SystemReplacemsgGroup-Mm4-FromSender")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "header"
+		if _, ok := i["header"]; ok {
+			v := flattenSystemReplacemsgGroupMm4Header(i["header"], d, pre_append)
+			tmp["header"] = fortiAPISubPartPatch(v, "SystemReplacemsgGroup-Mm4-Header")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "image"
+		if _, ok := i["image"]; ok {
+			v := flattenSystemReplacemsgGroupMm4Image(i["image"], d, pre_append)
+			tmp["image"] = fortiAPISubPartPatch(v, "SystemReplacemsgGroup-Mm4-Image")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "message"
+		if _, ok := i["message"]; ok {
+			v := flattenSystemReplacemsgGroupMm4Message(i["message"], d, pre_append)
+			tmp["message"] = fortiAPISubPartPatch(v, "SystemReplacemsgGroup-Mm4-Message")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "msg_type"
+		if _, ok := i["msg-type"]; ok {
+			v := flattenSystemReplacemsgGroupMm4MsgType(i["msg-type"], d, pre_append)
+			tmp["msg_type"] = fortiAPISubPartPatch(v, "SystemReplacemsgGroup-Mm4-MsgType")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "priority"
+		if _, ok := i["priority"]; ok {
+			v := flattenSystemReplacemsgGroupMm4Priority(i["priority"], d, pre_append)
+			tmp["priority"] = fortiAPISubPartPatch(v, "SystemReplacemsgGroup-Mm4-Priority")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "rsp_status"
+		if _, ok := i["rsp-status"]; ok {
+			v := flattenSystemReplacemsgGroupMm4RspStatus(i["rsp-status"], d, pre_append)
+			tmp["rsp_status"] = fortiAPISubPartPatch(v, "SystemReplacemsgGroup-Mm4-RspStatus")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "smil_part"
+		if _, ok := i["smil-part"]; ok {
+			v := flattenSystemReplacemsgGroupMm4SmilPart(i["smil-part"], d, pre_append)
+			tmp["smil_part"] = fortiAPISubPartPatch(v, "SystemReplacemsgGroup-Mm4-SmilPart")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "subject"
+		if _, ok := i["subject"]; ok {
+			v := flattenSystemReplacemsgGroupMm4Subject(i["subject"], d, pre_append)
+			tmp["subject"] = fortiAPISubPartPatch(v, "SystemReplacemsgGroup-Mm4-Subject")
+		}
+
+		if len(tmp) > 0 {
+			result = append(result, tmp)
+		}
+
+		con += 1
+	}
+
+	return result
+}
+
+func flattenSystemReplacemsgGroupMm4AddSmil(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemReplacemsgGroupMm4Charset(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemReplacemsgGroupMm4Class(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemReplacemsgGroupMm4Domain(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemReplacemsgGroupMm4Format(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemReplacemsgGroupMm4From(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemReplacemsgGroupMm4FromSender(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemReplacemsgGroupMm4Header(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemReplacemsgGroupMm4Image(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
+func flattenSystemReplacemsgGroupMm4Message(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemReplacemsgGroupMm4MsgType(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemReplacemsgGroupMm4Priority(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemReplacemsgGroupMm4RspStatus(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemReplacemsgGroupMm4SmilPart(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemReplacemsgGroupMm4Subject(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemReplacemsgGroupMm7(v interface{}, d *schema.ResourceData, pre string) []map[string]interface{} {
+	if v == nil {
+		return nil
+	}
+
+	l := v.([]interface{})
+	if len(l) == 0 || l[0] == nil {
+		return nil
+	}
+
+	result := make([]map[string]interface{}, 0, len(l))
+
+	con := 0
+	for _, r := range l {
+		tmp := make(map[string]interface{})
+		i := r.(map[string]interface{})
+
+		pre_append := "" // table
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "add_smil"
+		if _, ok := i["add-smil"]; ok {
+			v := flattenSystemReplacemsgGroupMm7AddSmil(i["add-smil"], d, pre_append)
+			tmp["add_smil"] = fortiAPISubPartPatch(v, "SystemReplacemsgGroup-Mm7-AddSmil")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "addr_type"
+		if _, ok := i["addr-type"]; ok {
+			v := flattenSystemReplacemsgGroupMm7AddrType(i["addr-type"], d, pre_append)
+			tmp["addr_type"] = fortiAPISubPartPatch(v, "SystemReplacemsgGroup-Mm7-AddrType")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "allow_content_adaptation"
+		if _, ok := i["allow-content-adaptation"]; ok {
+			v := flattenSystemReplacemsgGroupMm7AllowContentAdaptation(i["allow-content-adaptation"], d, pre_append)
+			tmp["allow_content_adaptation"] = fortiAPISubPartPatch(v, "SystemReplacemsgGroup-Mm7-AllowContentAdaptation")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "charset"
+		if _, ok := i["charset"]; ok {
+			v := flattenSystemReplacemsgGroupMm7Charset(i["charset"], d, pre_append)
+			tmp["charset"] = fortiAPISubPartPatch(v, "SystemReplacemsgGroup-Mm7-Charset")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "class"
+		if _, ok := i["class"]; ok {
+			v := flattenSystemReplacemsgGroupMm7Class(i["class"], d, pre_append)
+			tmp["class"] = fortiAPISubPartPatch(v, "SystemReplacemsgGroup-Mm7-Class")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "format"
+		if _, ok := i["format"]; ok {
+			v := flattenSystemReplacemsgGroupMm7Format(i["format"], d, pre_append)
+			tmp["format"] = fortiAPISubPartPatch(v, "SystemReplacemsgGroup-Mm7-Format")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "from"
+		if _, ok := i["from"]; ok {
+			v := flattenSystemReplacemsgGroupMm7From(i["from"], d, pre_append)
+			tmp["from"] = fortiAPISubPartPatch(v, "SystemReplacemsgGroup-Mm7-From")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "from_sender"
+		if _, ok := i["from-sender"]; ok {
+			v := flattenSystemReplacemsgGroupMm7FromSender(i["from-sender"], d, pre_append)
+			tmp["from_sender"] = fortiAPISubPartPatch(v, "SystemReplacemsgGroup-Mm7-FromSender")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "header"
+		if _, ok := i["header"]; ok {
+			v := flattenSystemReplacemsgGroupMm7Header(i["header"], d, pre_append)
+			tmp["header"] = fortiAPISubPartPatch(v, "SystemReplacemsgGroup-Mm7-Header")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "image"
+		if _, ok := i["image"]; ok {
+			v := flattenSystemReplacemsgGroupMm7Image(i["image"], d, pre_append)
+			tmp["image"] = fortiAPISubPartPatch(v, "SystemReplacemsgGroup-Mm7-Image")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "message"
+		if _, ok := i["message"]; ok {
+			v := flattenSystemReplacemsgGroupMm7Message(i["message"], d, pre_append)
+			tmp["message"] = fortiAPISubPartPatch(v, "SystemReplacemsgGroup-Mm7-Message")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "msg_type"
+		if _, ok := i["msg-type"]; ok {
+			v := flattenSystemReplacemsgGroupMm7MsgType(i["msg-type"], d, pre_append)
+			tmp["msg_type"] = fortiAPISubPartPatch(v, "SystemReplacemsgGroup-Mm7-MsgType")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "priority"
+		if _, ok := i["priority"]; ok {
+			v := flattenSystemReplacemsgGroupMm7Priority(i["priority"], d, pre_append)
+			tmp["priority"] = fortiAPISubPartPatch(v, "SystemReplacemsgGroup-Mm7-Priority")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "rsp_status"
+		if _, ok := i["rsp-status"]; ok {
+			v := flattenSystemReplacemsgGroupMm7RspStatus(i["rsp-status"], d, pre_append)
+			tmp["rsp_status"] = fortiAPISubPartPatch(v, "SystemReplacemsgGroup-Mm7-RspStatus")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "smil_part"
+		if _, ok := i["smil-part"]; ok {
+			v := flattenSystemReplacemsgGroupMm7SmilPart(i["smil-part"], d, pre_append)
+			tmp["smil_part"] = fortiAPISubPartPatch(v, "SystemReplacemsgGroup-Mm7-SmilPart")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "subject"
+		if _, ok := i["subject"]; ok {
+			v := flattenSystemReplacemsgGroupMm7Subject(i["subject"], d, pre_append)
+			tmp["subject"] = fortiAPISubPartPatch(v, "SystemReplacemsgGroup-Mm7-Subject")
+		}
+
+		if len(tmp) > 0 {
+			result = append(result, tmp)
+		}
+
+		con += 1
+	}
+
+	return result
+}
+
+func flattenSystemReplacemsgGroupMm7AddSmil(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemReplacemsgGroupMm7AddrType(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemReplacemsgGroupMm7AllowContentAdaptation(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemReplacemsgGroupMm7Charset(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemReplacemsgGroupMm7Class(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemReplacemsgGroupMm7Format(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemReplacemsgGroupMm7From(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemReplacemsgGroupMm7FromSender(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemReplacemsgGroupMm7Header(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemReplacemsgGroupMm7Image(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
+func flattenSystemReplacemsgGroupMm7Message(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemReplacemsgGroupMm7MsgType(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemReplacemsgGroupMm7Priority(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemReplacemsgGroupMm7RspStatus(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemReplacemsgGroupMm7SmilPart(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemReplacemsgGroupMm7Subject(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemReplacemsgGroupMms(v interface{}, d *schema.ResourceData, pre string) []map[string]interface{} {
+	if v == nil {
+		return nil
+	}
+
+	l := v.([]interface{})
+	if len(l) == 0 || l[0] == nil {
+		return nil
+	}
+
+	result := make([]map[string]interface{}, 0, len(l))
+
+	con := 0
+	for _, r := range l {
+		tmp := make(map[string]interface{})
+		i := r.(map[string]interface{})
+
+		pre_append := "" // table
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "buffer"
+		if _, ok := i["buffer"]; ok {
+			v := flattenSystemReplacemsgGroupMmsBuffer(i["buffer"], d, pre_append)
+			tmp["buffer"] = fortiAPISubPartPatch(v, "SystemReplacemsgGroup-Mms-Buffer")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "charset"
+		if _, ok := i["charset"]; ok {
+			v := flattenSystemReplacemsgGroupMmsCharset(i["charset"], d, pre_append)
+			tmp["charset"] = fortiAPISubPartPatch(v, "SystemReplacemsgGroup-Mms-Charset")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "format"
+		if _, ok := i["format"]; ok {
+			v := flattenSystemReplacemsgGroupMmsFormat(i["format"], d, pre_append)
+			tmp["format"] = fortiAPISubPartPatch(v, "SystemReplacemsgGroup-Mms-Format")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "header"
+		if _, ok := i["header"]; ok {
+			v := flattenSystemReplacemsgGroupMmsHeader(i["header"], d, pre_append)
+			tmp["header"] = fortiAPISubPartPatch(v, "SystemReplacemsgGroup-Mms-Header")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "image"
+		if _, ok := i["image"]; ok {
+			v := flattenSystemReplacemsgGroupMmsImage(i["image"], d, pre_append)
+			tmp["image"] = fortiAPISubPartPatch(v, "SystemReplacemsgGroup-Mms-Image")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "msg_type"
+		if _, ok := i["msg-type"]; ok {
+			v := flattenSystemReplacemsgGroupMmsMsgType(i["msg-type"], d, pre_append)
+			tmp["msg_type"] = fortiAPISubPartPatch(v, "SystemReplacemsgGroup-Mms-MsgType")
+		}
+
+		if len(tmp) > 0 {
+			result = append(result, tmp)
+		}
+
+		con += 1
+	}
+
+	return result
+}
+
+func flattenSystemReplacemsgGroupMmsBuffer(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemReplacemsgGroupMmsCharset(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemReplacemsgGroupMmsFormat(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemReplacemsgGroupMmsHeader(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemReplacemsgGroupMmsImage(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
+func flattenSystemReplacemsgGroupMmsMsgType(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenSystemReplacemsgGroupNacQuar(v interface{}, d *schema.ResourceData, pre string) []map[string]interface{} {
 	if v == nil {
 		return nil
@@ -2265,6 +3403,126 @@ func refreshObjectSystemReplacemsgGroup(d *schema.ResourceData, o map[string]int
 					}
 				} else {
 					return fmt.Errorf("Error reading mail: %v", err)
+				}
+			}
+		}
+	}
+
+	if isImportTable() {
+		if err = d.Set("mm1", flattenSystemReplacemsgGroupMm1(o["mm1"], d, "mm1")); err != nil {
+			if vv, ok := fortiAPIPatch(o["mm1"], "SystemReplacemsgGroup-Mm1"); ok {
+				if err = d.Set("mm1", vv); err != nil {
+					return fmt.Errorf("Error reading mm1: %v", err)
+				}
+			} else {
+				return fmt.Errorf("Error reading mm1: %v", err)
+			}
+		}
+	} else {
+		if _, ok := d.GetOk("mm1"); ok {
+			if err = d.Set("mm1", flattenSystemReplacemsgGroupMm1(o["mm1"], d, "mm1")); err != nil {
+				if vv, ok := fortiAPIPatch(o["mm1"], "SystemReplacemsgGroup-Mm1"); ok {
+					if err = d.Set("mm1", vv); err != nil {
+						return fmt.Errorf("Error reading mm1: %v", err)
+					}
+				} else {
+					return fmt.Errorf("Error reading mm1: %v", err)
+				}
+			}
+		}
+	}
+
+	if isImportTable() {
+		if err = d.Set("mm3", flattenSystemReplacemsgGroupMm3(o["mm3"], d, "mm3")); err != nil {
+			if vv, ok := fortiAPIPatch(o["mm3"], "SystemReplacemsgGroup-Mm3"); ok {
+				if err = d.Set("mm3", vv); err != nil {
+					return fmt.Errorf("Error reading mm3: %v", err)
+				}
+			} else {
+				return fmt.Errorf("Error reading mm3: %v", err)
+			}
+		}
+	} else {
+		if _, ok := d.GetOk("mm3"); ok {
+			if err = d.Set("mm3", flattenSystemReplacemsgGroupMm3(o["mm3"], d, "mm3")); err != nil {
+				if vv, ok := fortiAPIPatch(o["mm3"], "SystemReplacemsgGroup-Mm3"); ok {
+					if err = d.Set("mm3", vv); err != nil {
+						return fmt.Errorf("Error reading mm3: %v", err)
+					}
+				} else {
+					return fmt.Errorf("Error reading mm3: %v", err)
+				}
+			}
+		}
+	}
+
+	if isImportTable() {
+		if err = d.Set("mm4", flattenSystemReplacemsgGroupMm4(o["mm4"], d, "mm4")); err != nil {
+			if vv, ok := fortiAPIPatch(o["mm4"], "SystemReplacemsgGroup-Mm4"); ok {
+				if err = d.Set("mm4", vv); err != nil {
+					return fmt.Errorf("Error reading mm4: %v", err)
+				}
+			} else {
+				return fmt.Errorf("Error reading mm4: %v", err)
+			}
+		}
+	} else {
+		if _, ok := d.GetOk("mm4"); ok {
+			if err = d.Set("mm4", flattenSystemReplacemsgGroupMm4(o["mm4"], d, "mm4")); err != nil {
+				if vv, ok := fortiAPIPatch(o["mm4"], "SystemReplacemsgGroup-Mm4"); ok {
+					if err = d.Set("mm4", vv); err != nil {
+						return fmt.Errorf("Error reading mm4: %v", err)
+					}
+				} else {
+					return fmt.Errorf("Error reading mm4: %v", err)
+				}
+			}
+		}
+	}
+
+	if isImportTable() {
+		if err = d.Set("mm7", flattenSystemReplacemsgGroupMm7(o["mm7"], d, "mm7")); err != nil {
+			if vv, ok := fortiAPIPatch(o["mm7"], "SystemReplacemsgGroup-Mm7"); ok {
+				if err = d.Set("mm7", vv); err != nil {
+					return fmt.Errorf("Error reading mm7: %v", err)
+				}
+			} else {
+				return fmt.Errorf("Error reading mm7: %v", err)
+			}
+		}
+	} else {
+		if _, ok := d.GetOk("mm7"); ok {
+			if err = d.Set("mm7", flattenSystemReplacemsgGroupMm7(o["mm7"], d, "mm7")); err != nil {
+				if vv, ok := fortiAPIPatch(o["mm7"], "SystemReplacemsgGroup-Mm7"); ok {
+					if err = d.Set("mm7", vv); err != nil {
+						return fmt.Errorf("Error reading mm7: %v", err)
+					}
+				} else {
+					return fmt.Errorf("Error reading mm7: %v", err)
+				}
+			}
+		}
+	}
+
+	if isImportTable() {
+		if err = d.Set("mms", flattenSystemReplacemsgGroupMms(o["mms"], d, "mms")); err != nil {
+			if vv, ok := fortiAPIPatch(o["mms"], "SystemReplacemsgGroup-Mms"); ok {
+				if err = d.Set("mms", vv); err != nil {
+					return fmt.Errorf("Error reading mms: %v", err)
+				}
+			} else {
+				return fmt.Errorf("Error reading mms: %v", err)
+			}
+		}
+	} else {
+		if _, ok := d.GetOk("mms"); ok {
+			if err = d.Set("mms", flattenSystemReplacemsgGroupMms(o["mms"], d, "mms")); err != nil {
+				if vv, ok := fortiAPIPatch(o["mms"], "SystemReplacemsgGroup-Mms"); ok {
+					if err = d.Set("mms", vv); err != nil {
+						return fmt.Errorf("Error reading mms: %v", err)
+					}
+				} else {
+					return fmt.Errorf("Error reading mms: %v", err)
 				}
 			}
 		}
@@ -3134,6 +4392,711 @@ func expandSystemReplacemsgGroupMailMsgType(d *schema.ResourceData, v interface{
 	return v, nil
 }
 
+func expandSystemReplacemsgGroupMm1(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	l := v.([]interface{})
+	result := make([]map[string]interface{}, 0, len(l))
+
+	if len(l) == 0 || l[0] == nil {
+		return result, nil
+	}
+
+	con := 0
+	for _, r := range l {
+		tmp := make(map[string]interface{})
+		i := r.(map[string]interface{})
+		pre_append := "" // table
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "add_smil"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["add-smil"], _ = expandSystemReplacemsgGroupMm1AddSmil(d, i["add_smil"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "charset"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["charset"], _ = expandSystemReplacemsgGroupMm1Charset(d, i["charset"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "class"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["class"], _ = expandSystemReplacemsgGroupMm1Class(d, i["class"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "format"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["format"], _ = expandSystemReplacemsgGroupMm1Format(d, i["format"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "from"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["from"], _ = expandSystemReplacemsgGroupMm1From(d, i["from"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "from_sender"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["from-sender"], _ = expandSystemReplacemsgGroupMm1FromSender(d, i["from_sender"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "header"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["header"], _ = expandSystemReplacemsgGroupMm1Header(d, i["header"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "image"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["image"], _ = expandSystemReplacemsgGroupMm1Image(d, i["image"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "message"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["message"], _ = expandSystemReplacemsgGroupMm1Message(d, i["message"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "msg_type"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["msg-type"], _ = expandSystemReplacemsgGroupMm1MsgType(d, i["msg_type"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "priority"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["priority"], _ = expandSystemReplacemsgGroupMm1Priority(d, i["priority"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "rsp_status"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["rsp-status"], _ = expandSystemReplacemsgGroupMm1RspStatus(d, i["rsp_status"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "rsp_text"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["rsp-text"], _ = expandSystemReplacemsgGroupMm1RspText(d, i["rsp_text"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "sender_visibility"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["sender-visibility"], _ = expandSystemReplacemsgGroupMm1SenderVisibility(d, i["sender_visibility"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "smil_part"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["smil-part"], _ = expandSystemReplacemsgGroupMm1SmilPart(d, i["smil_part"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "subject"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["subject"], _ = expandSystemReplacemsgGroupMm1Subject(d, i["subject"], pre_append)
+		}
+
+		if len(tmp) > 0 {
+			result = append(result, tmp)
+		}
+
+		con += 1
+	}
+
+	return result, nil
+}
+
+func expandSystemReplacemsgGroupMm1AddSmil(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemReplacemsgGroupMm1Charset(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemReplacemsgGroupMm1Class(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemReplacemsgGroupMm1Format(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemReplacemsgGroupMm1From(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemReplacemsgGroupMm1FromSender(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemReplacemsgGroupMm1Header(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemReplacemsgGroupMm1Image(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandSystemReplacemsgGroupMm1Message(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemReplacemsgGroupMm1MsgType(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemReplacemsgGroupMm1Priority(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemReplacemsgGroupMm1RspStatus(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemReplacemsgGroupMm1RspText(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemReplacemsgGroupMm1SenderVisibility(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemReplacemsgGroupMm1SmilPart(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemReplacemsgGroupMm1Subject(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemReplacemsgGroupMm3(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	l := v.([]interface{})
+	result := make([]map[string]interface{}, 0, len(l))
+
+	if len(l) == 0 || l[0] == nil {
+		return result, nil
+	}
+
+	con := 0
+	for _, r := range l {
+		tmp := make(map[string]interface{})
+		i := r.(map[string]interface{})
+		pre_append := "" // table
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "add_html"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["add-html"], _ = expandSystemReplacemsgGroupMm3AddHtml(d, i["add_html"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "charset"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["charset"], _ = expandSystemReplacemsgGroupMm3Charset(d, i["charset"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "format"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["format"], _ = expandSystemReplacemsgGroupMm3Format(d, i["format"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "from"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["from"], _ = expandSystemReplacemsgGroupMm3From(d, i["from"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "from_sender"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["from-sender"], _ = expandSystemReplacemsgGroupMm3FromSender(d, i["from_sender"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "header"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["header"], _ = expandSystemReplacemsgGroupMm3Header(d, i["header"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "html_part"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["html-part"], _ = expandSystemReplacemsgGroupMm3HtmlPart(d, i["html_part"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "image"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["image"], _ = expandSystemReplacemsgGroupMm3Image(d, i["image"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "message"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["message"], _ = expandSystemReplacemsgGroupMm3Message(d, i["message"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "msg_type"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["msg-type"], _ = expandSystemReplacemsgGroupMm3MsgType(d, i["msg_type"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "priority"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["priority"], _ = expandSystemReplacemsgGroupMm3Priority(d, i["priority"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "subject"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["subject"], _ = expandSystemReplacemsgGroupMm3Subject(d, i["subject"], pre_append)
+		}
+
+		if len(tmp) > 0 {
+			result = append(result, tmp)
+		}
+
+		con += 1
+	}
+
+	return result, nil
+}
+
+func expandSystemReplacemsgGroupMm3AddHtml(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemReplacemsgGroupMm3Charset(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemReplacemsgGroupMm3Format(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemReplacemsgGroupMm3From(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemReplacemsgGroupMm3FromSender(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemReplacemsgGroupMm3Header(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemReplacemsgGroupMm3HtmlPart(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemReplacemsgGroupMm3Image(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandSystemReplacemsgGroupMm3Message(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemReplacemsgGroupMm3MsgType(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemReplacemsgGroupMm3Priority(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemReplacemsgGroupMm3Subject(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemReplacemsgGroupMm4(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	l := v.([]interface{})
+	result := make([]map[string]interface{}, 0, len(l))
+
+	if len(l) == 0 || l[0] == nil {
+		return result, nil
+	}
+
+	con := 0
+	for _, r := range l {
+		tmp := make(map[string]interface{})
+		i := r.(map[string]interface{})
+		pre_append := "" // table
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "add_smil"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["add-smil"], _ = expandSystemReplacemsgGroupMm4AddSmil(d, i["add_smil"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "charset"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["charset"], _ = expandSystemReplacemsgGroupMm4Charset(d, i["charset"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "class"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["class"], _ = expandSystemReplacemsgGroupMm4Class(d, i["class"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "domain"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["domain"], _ = expandSystemReplacemsgGroupMm4Domain(d, i["domain"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "format"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["format"], _ = expandSystemReplacemsgGroupMm4Format(d, i["format"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "from"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["from"], _ = expandSystemReplacemsgGroupMm4From(d, i["from"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "from_sender"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["from-sender"], _ = expandSystemReplacemsgGroupMm4FromSender(d, i["from_sender"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "header"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["header"], _ = expandSystemReplacemsgGroupMm4Header(d, i["header"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "image"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["image"], _ = expandSystemReplacemsgGroupMm4Image(d, i["image"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "message"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["message"], _ = expandSystemReplacemsgGroupMm4Message(d, i["message"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "msg_type"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["msg-type"], _ = expandSystemReplacemsgGroupMm4MsgType(d, i["msg_type"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "priority"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["priority"], _ = expandSystemReplacemsgGroupMm4Priority(d, i["priority"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "rsp_status"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["rsp-status"], _ = expandSystemReplacemsgGroupMm4RspStatus(d, i["rsp_status"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "smil_part"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["smil-part"], _ = expandSystemReplacemsgGroupMm4SmilPart(d, i["smil_part"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "subject"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["subject"], _ = expandSystemReplacemsgGroupMm4Subject(d, i["subject"], pre_append)
+		}
+
+		if len(tmp) > 0 {
+			result = append(result, tmp)
+		}
+
+		con += 1
+	}
+
+	return result, nil
+}
+
+func expandSystemReplacemsgGroupMm4AddSmil(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemReplacemsgGroupMm4Charset(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemReplacemsgGroupMm4Class(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemReplacemsgGroupMm4Domain(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemReplacemsgGroupMm4Format(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemReplacemsgGroupMm4From(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemReplacemsgGroupMm4FromSender(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemReplacemsgGroupMm4Header(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemReplacemsgGroupMm4Image(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandSystemReplacemsgGroupMm4Message(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemReplacemsgGroupMm4MsgType(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemReplacemsgGroupMm4Priority(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemReplacemsgGroupMm4RspStatus(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemReplacemsgGroupMm4SmilPart(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemReplacemsgGroupMm4Subject(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemReplacemsgGroupMm7(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	l := v.([]interface{})
+	result := make([]map[string]interface{}, 0, len(l))
+
+	if len(l) == 0 || l[0] == nil {
+		return result, nil
+	}
+
+	con := 0
+	for _, r := range l {
+		tmp := make(map[string]interface{})
+		i := r.(map[string]interface{})
+		pre_append := "" // table
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "add_smil"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["add-smil"], _ = expandSystemReplacemsgGroupMm7AddSmil(d, i["add_smil"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "addr_type"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["addr-type"], _ = expandSystemReplacemsgGroupMm7AddrType(d, i["addr_type"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "allow_content_adaptation"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["allow-content-adaptation"], _ = expandSystemReplacemsgGroupMm7AllowContentAdaptation(d, i["allow_content_adaptation"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "charset"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["charset"], _ = expandSystemReplacemsgGroupMm7Charset(d, i["charset"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "class"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["class"], _ = expandSystemReplacemsgGroupMm7Class(d, i["class"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "format"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["format"], _ = expandSystemReplacemsgGroupMm7Format(d, i["format"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "from"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["from"], _ = expandSystemReplacemsgGroupMm7From(d, i["from"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "from_sender"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["from-sender"], _ = expandSystemReplacemsgGroupMm7FromSender(d, i["from_sender"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "header"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["header"], _ = expandSystemReplacemsgGroupMm7Header(d, i["header"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "image"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["image"], _ = expandSystemReplacemsgGroupMm7Image(d, i["image"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "message"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["message"], _ = expandSystemReplacemsgGroupMm7Message(d, i["message"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "msg_type"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["msg-type"], _ = expandSystemReplacemsgGroupMm7MsgType(d, i["msg_type"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "priority"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["priority"], _ = expandSystemReplacemsgGroupMm7Priority(d, i["priority"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "rsp_status"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["rsp-status"], _ = expandSystemReplacemsgGroupMm7RspStatus(d, i["rsp_status"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "smil_part"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["smil-part"], _ = expandSystemReplacemsgGroupMm7SmilPart(d, i["smil_part"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "subject"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["subject"], _ = expandSystemReplacemsgGroupMm7Subject(d, i["subject"], pre_append)
+		}
+
+		if len(tmp) > 0 {
+			result = append(result, tmp)
+		}
+
+		con += 1
+	}
+
+	return result, nil
+}
+
+func expandSystemReplacemsgGroupMm7AddSmil(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemReplacemsgGroupMm7AddrType(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemReplacemsgGroupMm7AllowContentAdaptation(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemReplacemsgGroupMm7Charset(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemReplacemsgGroupMm7Class(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemReplacemsgGroupMm7Format(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemReplacemsgGroupMm7From(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemReplacemsgGroupMm7FromSender(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemReplacemsgGroupMm7Header(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemReplacemsgGroupMm7Image(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandSystemReplacemsgGroupMm7Message(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemReplacemsgGroupMm7MsgType(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemReplacemsgGroupMm7Priority(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemReplacemsgGroupMm7RspStatus(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemReplacemsgGroupMm7SmilPart(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemReplacemsgGroupMm7Subject(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemReplacemsgGroupMms(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	l := v.([]interface{})
+	result := make([]map[string]interface{}, 0, len(l))
+
+	if len(l) == 0 || l[0] == nil {
+		return result, nil
+	}
+
+	con := 0
+	for _, r := range l {
+		tmp := make(map[string]interface{})
+		i := r.(map[string]interface{})
+		pre_append := "" // table
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "buffer"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["buffer"], _ = expandSystemReplacemsgGroupMmsBuffer(d, i["buffer"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "charset"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["charset"], _ = expandSystemReplacemsgGroupMmsCharset(d, i["charset"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "format"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["format"], _ = expandSystemReplacemsgGroupMmsFormat(d, i["format"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "header"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["header"], _ = expandSystemReplacemsgGroupMmsHeader(d, i["header"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "image"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["image"], _ = expandSystemReplacemsgGroupMmsImage(d, i["image"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "msg_type"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["msg-type"], _ = expandSystemReplacemsgGroupMmsMsgType(d, i["msg_type"], pre_append)
+		}
+
+		if len(tmp) > 0 {
+			result = append(result, tmp)
+		}
+
+		con += 1
+	}
+
+	return result, nil
+}
+
+func expandSystemReplacemsgGroupMmsBuffer(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemReplacemsgGroupMmsCharset(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemReplacemsgGroupMmsFormat(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemReplacemsgGroupMmsHeader(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemReplacemsgGroupMmsImage(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandSystemReplacemsgGroupMmsMsgType(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandSystemReplacemsgGroupNacQuar(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	l := v.([]interface{})
 	result := make([]map[string]interface{}, 0, len(l))
@@ -3684,6 +5647,51 @@ func getObjectSystemReplacemsgGroup(d *schema.ResourceData) (*map[string]interfa
 			return &obj, err
 		} else if t != nil {
 			obj["mail"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("mm1"); ok || d.HasChange("mm1") {
+		t, err := expandSystemReplacemsgGroupMm1(d, v, "mm1")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["mm1"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("mm3"); ok || d.HasChange("mm3") {
+		t, err := expandSystemReplacemsgGroupMm3(d, v, "mm3")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["mm3"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("mm4"); ok || d.HasChange("mm4") {
+		t, err := expandSystemReplacemsgGroupMm4(d, v, "mm4")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["mm4"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("mm7"); ok || d.HasChange("mm7") {
+		t, err := expandSystemReplacemsgGroupMm7(d, v, "mm7")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["mm7"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("mms"); ok || d.HasChange("mms") {
+		t, err := expandSystemReplacemsgGroupMms(d, v, "mms")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["mms"] = t
 		}
 	}
 

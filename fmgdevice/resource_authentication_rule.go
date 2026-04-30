@@ -103,6 +103,11 @@ func resourceAuthenticationRule() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"session_logout": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
 			"srcaddr": &schema.Schema{
 				Type:     schema.TypeSet,
 				Elem:     &schema.Schema{Type: schema.TypeString},
@@ -135,14 +140,17 @@ func resourceAuthenticationRule() *schema.Resource {
 			"transaction_based": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"web_auth_cookie": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"web_portal": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"form_auth_fallback": &schema.Schema{
 				Type:     schema.TypeString,
@@ -390,6 +398,10 @@ func flattenAuthenticationRuleProtocol(v interface{}, d *schema.ResourceData, pr
 	return v
 }
 
+func flattenAuthenticationRuleSessionLogout(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenAuthenticationRuleSrcaddr(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return flattenStringList(v)
 }
@@ -530,6 +542,16 @@ func refreshObjectAuthenticationRule(d *schema.ResourceData, o map[string]interf
 			}
 		} else {
 			return fmt.Errorf("Error reading protocol: %v", err)
+		}
+	}
+
+	if err = d.Set("session_logout", flattenAuthenticationRuleSessionLogout(o["session-logout"], d, "session_logout")); err != nil {
+		if vv, ok := fortiAPIPatch(o["session-logout"], "AuthenticationRule-SessionLogout"); ok {
+			if err = d.Set("session_logout", vv); err != nil {
+				return fmt.Errorf("Error reading session_logout: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading session_logout: %v", err)
 		}
 	}
 
@@ -682,6 +704,10 @@ func expandAuthenticationRuleProtocol(d *schema.ResourceData, v interface{}, pre
 	return v, nil
 }
 
+func expandAuthenticationRuleSessionLogout(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandAuthenticationRuleSrcaddr(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return expandStringList(v.(*schema.Set).List()), nil
 }
@@ -812,6 +838,15 @@ func getObjectAuthenticationRule(d *schema.ResourceData) (*map[string]interface{
 			return &obj, err
 		} else if t != nil {
 			obj["protocol"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("session_logout"); ok || d.HasChange("session_logout") {
+		t, err := expandAuthenticationRuleSessionLogout(d, v, "session_logout")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["session-logout"] = t
 		}
 	}
 

@@ -64,6 +64,7 @@ func resourceWebfilterContentEntries() *schema.Resource {
 			"lang": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"name": &schema.Schema{
 				Type:     schema.TypeString,

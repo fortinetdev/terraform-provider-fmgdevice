@@ -1,5 +1,5 @@
 ---
-subcategory: "No Category"
+subcategory: "Endpoint Control"
 layout: "fmgdevice"
 page_title: "FortiManager Device: fmgdevice_endpointcontrol_settings"
 description: |-

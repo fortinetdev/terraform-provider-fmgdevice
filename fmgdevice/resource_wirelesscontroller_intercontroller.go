@@ -127,7 +127,7 @@ func resourceWirelessControllerInterControllerUpdate(d *schema.ResourceData, m i
 	}
 	paradict["device"] = device_name
 
-	obj, err := getObjectWirelessControllerInterController(d)
+	obj, err := getObjectWirelessControllerInterController(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating WirelessControllerInterController resource while getting object: %v", err)
 	}
@@ -148,7 +148,6 @@ func resourceWirelessControllerInterControllerUpdate(d *schema.ResourceData, m i
 
 func resourceWirelessControllerInterControllerDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -166,11 +165,17 @@ func resourceWirelessControllerInterControllerDelete(d *schema.ResourceData, m i
 	}
 	paradict["device"] = device_name
 
+	obj, err := getObjectWirelessControllerInterController(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating WirelessControllerInterController resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteWirelessControllerInterController(mkey, paradict, wsParams)
+	_, err = c.UpdateWirelessControllerInterController(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting WirelessControllerInterController resource: %v", err)
+		return fmt.Errorf("Error clearing WirelessControllerInterController resource: %v", err)
 	}
 
 	d.SetId("")
@@ -481,7 +486,7 @@ func expandWirelessControllerInterControllerL3Roaming(d *schema.ResourceData, v 
 	return v, nil
 }
 
-func getObjectWirelessControllerInterController(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectWirelessControllerInterController(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("fast_failover_max"); ok || d.HasChange("fast_failover_max") {
@@ -520,12 +525,16 @@ func getObjectWirelessControllerInterController(d *schema.ResourceData) (*map[st
 		}
 	}
 
-	if v, ok := d.GetOk("inter_controller_peer"); ok || d.HasChange("inter_controller_peer") {
-		t, err := expandWirelessControllerInterControllerInterControllerPeer(d, v, "inter_controller_peer")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["inter-controller-peer"] = t
+	if bemptysontable {
+		obj["inter-controller-peer"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("inter_controller_peer"); ok || d.HasChange("inter_controller_peer") {
+			t, err := expandWirelessControllerInterControllerInterControllerPeer(d, v, "inter_controller_peer")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["inter-controller-peer"] = t
+			}
 		}
 	}
 

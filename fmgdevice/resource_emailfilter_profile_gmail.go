@@ -90,7 +90,7 @@ func resourceEmailfilterProfileGmailUpdate(d *schema.ResourceData, m interface{}
 	paradict["vdom"] = device_vdom
 	paradict["profile"] = profile
 
-	obj, err := getObjectEmailfilterProfileGmail(d)
+	obj, err := getObjectEmailfilterProfileGmail(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating EmailfilterProfileGmail resource while getting object: %v", err)
 	}
@@ -111,7 +111,6 @@ func resourceEmailfilterProfileGmailUpdate(d *schema.ResourceData, m interface{}
 
 func resourceEmailfilterProfileGmailDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -136,11 +135,17 @@ func resourceEmailfilterProfileGmailDelete(d *schema.ResourceData, m interface{}
 	paradict["vdom"] = device_vdom
 	paradict["profile"] = profile
 
+	obj, err := getObjectEmailfilterProfileGmail(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating EmailfilterProfileGmail resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteEmailfilterProfileGmail(mkey, paradict, wsParams)
+	_, err = c.UpdateEmailfilterProfileGmail(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting EmailfilterProfileGmail resource: %v", err)
+		return fmt.Errorf("Error clearing EmailfilterProfileGmail resource: %v", err)
 	}
 
 	d.SetId("")
@@ -258,7 +263,7 @@ func expandEmailfilterProfileGmailLogAll2edl(d *schema.ResourceData, v interface
 	return v, nil
 }
 
-func getObjectEmailfilterProfileGmail(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectEmailfilterProfileGmail(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("log"); ok || d.HasChange("log") {

@@ -216,6 +216,10 @@ func resourceSystemInterfaceIpv6() *schema.Resource {
 							Type:     schema.TypeInt,
 							Optional: true,
 						},
+						"dnssl_service": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
 						"onlink_flag": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
@@ -371,6 +375,7 @@ func resourceSystemInterfaceIpv6() *schema.Resource {
 						"rdnss_life_time": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 					},
 				},
@@ -569,7 +574,7 @@ func resourceSystemInterfaceIpv6Update(d *schema.ResourceData, m interface{}) er
 	paradict["device"] = device_name
 	paradict["interface"] = var_interface
 
-	obj, err := getObjectSystemInterfaceIpv6(d)
+	obj, err := getObjectSystemInterfaceIpv6(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemInterfaceIpv6 resource while getting object: %v", err)
 	}
@@ -590,7 +595,6 @@ func resourceSystemInterfaceIpv6Update(d *schema.ResourceData, m interface{}) er
 
 func resourceSystemInterfaceIpv6Delete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -610,11 +614,17 @@ func resourceSystemInterfaceIpv6Delete(d *schema.ResourceData, m interface{}) er
 	paradict["device"] = device_name
 	paradict["interface"] = var_interface
 
+	obj, err := getObjectSystemInterfaceIpv6(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating SystemInterfaceIpv6 resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteSystemInterfaceIpv6(mkey, paradict, wsParams)
+	_, err = c.UpdateSystemInterfaceIpv6(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting SystemInterfaceIpv6 resource: %v", err)
+		return fmt.Errorf("Error clearing SystemInterfaceIpv6 resource: %v", err)
 	}
 
 	d.SetId("")
@@ -936,6 +946,12 @@ func flattenSystemInterfaceIpv6Ip6DelegatedPrefixList2edl(v interface{}, d *sche
 			tmp["delegated_prefix_iaid"] = fortiAPISubPartPatch(v, "SystemInterfaceIpv6-Ip6DelegatedPrefixList-DelegatedPrefixIaid")
 		}
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "dnssl_service"
+		if _, ok := i["dnssl-service"]; ok {
+			v := flattenSystemInterfaceIpv6Ip6DelegatedPrefixListDnsslService2edl(i["dnssl-service"], d, pre_append)
+			tmp["dnssl_service"] = fortiAPISubPartPatch(v, "SystemInterfaceIpv6-Ip6DelegatedPrefixList-DnsslService")
+		}
+
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "onlink_flag"
 		if _, ok := i["onlink-flag"]; ok {
 			v := flattenSystemInterfaceIpv6Ip6DelegatedPrefixListOnlinkFlag2edl(i["onlink-flag"], d, pre_append)
@@ -987,6 +1003,10 @@ func flattenSystemInterfaceIpv6Ip6DelegatedPrefixListAutonomousFlag2edl(v interf
 }
 
 func flattenSystemInterfaceIpv6Ip6DelegatedPrefixListDelegatedPrefixIaid2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemInterfaceIpv6Ip6DelegatedPrefixListDnsslService2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -2487,6 +2507,11 @@ func expandSystemInterfaceIpv6Ip6DelegatedPrefixList2edl(d *schema.ResourceData,
 			tmp["delegated-prefix-iaid"], _ = expandSystemInterfaceIpv6Ip6DelegatedPrefixListDelegatedPrefixIaid2edl(d, i["delegated_prefix_iaid"], pre_append)
 		}
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "dnssl_service"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["dnssl-service"], _ = expandSystemInterfaceIpv6Ip6DelegatedPrefixListDnsslService2edl(d, i["dnssl_service"], pre_append)
+		}
+
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "onlink_flag"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
 			tmp["onlink-flag"], _ = expandSystemInterfaceIpv6Ip6DelegatedPrefixListOnlinkFlag2edl(d, i["onlink_flag"], pre_append)
@@ -2532,6 +2557,10 @@ func expandSystemInterfaceIpv6Ip6DelegatedPrefixListAutonomousFlag2edl(d *schema
 }
 
 func expandSystemInterfaceIpv6Ip6DelegatedPrefixListDelegatedPrefixIaid2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemInterfaceIpv6Ip6DelegatedPrefixListDnsslService2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -3046,7 +3075,7 @@ func expandSystemInterfaceIpv6Vrrp6Vrip62edl(d *schema.ResourceData, v interface
 	return v, nil
 }
 
-func getObjectSystemInterfaceIpv6(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectSystemInterfaceIpv6(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("autoconf"); ok || d.HasChange("autoconf") {
@@ -3067,12 +3096,16 @@ func getObjectSystemInterfaceIpv6(d *schema.ResourceData) (*map[string]interface
 		}
 	}
 
-	if v, ok := d.GetOk("client_options"); ok || d.HasChange("client_options") {
-		t, err := expandSystemInterfaceIpv6ClientOptions2edl(d, v, "client_options")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["client-options"] = t
+	if bemptysontable {
+		obj["client-options"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("client_options"); ok || d.HasChange("client_options") {
+			t, err := expandSystemInterfaceIpv6ClientOptions2edl(d, v, "client_options")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["client-options"] = t
+			}
 		}
 	}
 
@@ -3085,12 +3118,16 @@ func getObjectSystemInterfaceIpv6(d *schema.ResourceData) (*map[string]interface
 		}
 	}
 
-	if v, ok := d.GetOk("dhcp6_iapd_list"); ok || d.HasChange("dhcp6_iapd_list") {
-		t, err := expandSystemInterfaceIpv6Dhcp6IapdList2edl(d, v, "dhcp6_iapd_list")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["dhcp6-iapd-list"] = t
+	if bemptysontable {
+		obj["dhcp6-iapd-list"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("dhcp6_iapd_list"); ok || d.HasChange("dhcp6_iapd_list") {
+			t, err := expandSystemInterfaceIpv6Dhcp6IapdList2edl(d, v, "dhcp6_iapd_list")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["dhcp6-iapd-list"] = t
+			}
 		}
 	}
 
@@ -3256,12 +3293,16 @@ func getObjectSystemInterfaceIpv6(d *schema.ResourceData) (*map[string]interface
 		}
 	}
 
-	if v, ok := d.GetOk("ip6_delegated_prefix_list"); ok || d.HasChange("ip6_delegated_prefix_list") {
-		t, err := expandSystemInterfaceIpv6Ip6DelegatedPrefixList2edl(d, v, "ip6_delegated_prefix_list")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["ip6-delegated-prefix-list"] = t
+	if bemptysontable {
+		obj["ip6-delegated-prefix-list"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("ip6_delegated_prefix_list"); ok || d.HasChange("ip6_delegated_prefix_list") {
+			t, err := expandSystemInterfaceIpv6Ip6DelegatedPrefixList2edl(d, v, "ip6_delegated_prefix_list")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["ip6-delegated-prefix-list"] = t
+			}
 		}
 	}
 
@@ -3274,21 +3315,29 @@ func getObjectSystemInterfaceIpv6(d *schema.ResourceData) (*map[string]interface
 		}
 	}
 
-	if v, ok := d.GetOk("ip6_dnssl_list"); ok || d.HasChange("ip6_dnssl_list") {
-		t, err := expandSystemInterfaceIpv6Ip6DnsslList2edl(d, v, "ip6_dnssl_list")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["ip6-dnssl-list"] = t
+	if bemptysontable {
+		obj["ip6-dnssl-list"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("ip6_dnssl_list"); ok || d.HasChange("ip6_dnssl_list") {
+			t, err := expandSystemInterfaceIpv6Ip6DnsslList2edl(d, v, "ip6_dnssl_list")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["ip6-dnssl-list"] = t
+			}
 		}
 	}
 
-	if v, ok := d.GetOk("ip6_extra_addr"); ok || d.HasChange("ip6_extra_addr") {
-		t, err := expandSystemInterfaceIpv6Ip6ExtraAddr2edl(d, v, "ip6_extra_addr")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["ip6-extra-addr"] = t
+	if bemptysontable {
+		obj["ip6-extra-addr"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("ip6_extra_addr"); ok || d.HasChange("ip6_extra_addr") {
+			t, err := expandSystemInterfaceIpv6Ip6ExtraAddr2edl(d, v, "ip6_extra_addr")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["ip6-extra-addr"] = t
+			}
 		}
 	}
 
@@ -3355,12 +3404,16 @@ func getObjectSystemInterfaceIpv6(d *schema.ResourceData) (*map[string]interface
 		}
 	}
 
-	if v, ok := d.GetOk("ip6_prefix_list"); ok || d.HasChange("ip6_prefix_list") {
-		t, err := expandSystemInterfaceIpv6Ip6PrefixList2edl(d, v, "ip6_prefix_list")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["ip6-prefix-list"] = t
+	if bemptysontable {
+		obj["ip6-prefix-list"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("ip6_prefix_list"); ok || d.HasChange("ip6_prefix_list") {
+			t, err := expandSystemInterfaceIpv6Ip6PrefixList2edl(d, v, "ip6_prefix_list")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["ip6-prefix-list"] = t
+			}
 		}
 	}
 
@@ -3373,12 +3426,16 @@ func getObjectSystemInterfaceIpv6(d *schema.ResourceData) (*map[string]interface
 		}
 	}
 
-	if v, ok := d.GetOk("ip6_rdnss_list"); ok || d.HasChange("ip6_rdnss_list") {
-		t, err := expandSystemInterfaceIpv6Ip6RdnssList2edl(d, v, "ip6_rdnss_list")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["ip6-rdnss-list"] = t
+	if bemptysontable {
+		obj["ip6-rdnss-list"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("ip6_rdnss_list"); ok || d.HasChange("ip6_rdnss_list") {
+			t, err := expandSystemInterfaceIpv6Ip6RdnssList2edl(d, v, "ip6_rdnss_list")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["ip6-rdnss-list"] = t
+			}
 		}
 	}
 
@@ -3400,12 +3457,16 @@ func getObjectSystemInterfaceIpv6(d *schema.ResourceData) (*map[string]interface
 		}
 	}
 
-	if v, ok := d.GetOk("ip6_route_list"); ok || d.HasChange("ip6_route_list") {
-		t, err := expandSystemInterfaceIpv6Ip6RouteList2edl(d, v, "ip6_route_list")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["ip6-route-list"] = t
+	if bemptysontable {
+		obj["ip6-route-list"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("ip6_route_list"); ok || d.HasChange("ip6_route_list") {
+			t, err := expandSystemInterfaceIpv6Ip6RouteList2edl(d, v, "ip6_route_list")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["ip6-route-list"] = t
+			}
 		}
 	}
 
@@ -3535,12 +3596,16 @@ func getObjectSystemInterfaceIpv6(d *schema.ResourceData) (*map[string]interface
 		}
 	}
 
-	if v, ok := d.GetOk("vrrp6"); ok || d.HasChange("vrrp6") {
-		t, err := expandSystemInterfaceIpv6Vrrp62edl(d, v, "vrrp6")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["vrrp6"] = t
+	if bemptysontable {
+		obj["vrrp6"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("vrrp6"); ok || d.HasChange("vrrp6") {
+			t, err := expandSystemInterfaceIpv6Vrrp62edl(d, v, "vrrp6")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["vrrp6"] = t
+			}
 		}
 	}
 

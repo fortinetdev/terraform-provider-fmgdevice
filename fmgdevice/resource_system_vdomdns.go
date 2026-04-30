@@ -49,6 +49,7 @@ func resourceSystemVdomDns() *schema.Resource {
 			"dns_over_tls": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"alt_primary": &schema.Schema{
 				Type:     schema.TypeString,
@@ -162,7 +163,7 @@ func resourceSystemVdomDnsUpdate(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	obj, err := getObjectSystemVdomDns(d)
+	obj, err := getObjectSystemVdomDns(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemVdomDns resource while getting object: %v", err)
 	}
@@ -183,7 +184,6 @@ func resourceSystemVdomDnsUpdate(d *schema.ResourceData, m interface{}) error {
 
 func resourceSystemVdomDnsDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -206,11 +206,17 @@ func resourceSystemVdomDnsDelete(d *schema.ResourceData, m interface{}) error {
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	obj, err := getObjectSystemVdomDns(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating SystemVdomDns resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteSystemVdomDns(mkey, paradict, wsParams)
+	_, err = c.UpdateSystemVdomDns(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting SystemVdomDns resource: %v", err)
+		return fmt.Errorf("Error clearing SystemVdomDns resource: %v", err)
 	}
 
 	d.SetId("")
@@ -587,7 +593,7 @@ func expandSystemVdomDnsVrfSelect(d *schema.ResourceData, v interface{}, pre str
 	return v, nil
 }
 
-func getObjectSystemVdomDns(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectSystemVdomDns(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("dns_over_tls"); ok || d.HasChange("dns_over_tls") {

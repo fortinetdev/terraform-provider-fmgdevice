@@ -49,6 +49,7 @@ func resourceSystemPasswordPolicy() *schema.Resource {
 			"change_4_characters": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"expire_day": &schema.Schema{
 				Type:     schema.TypeInt,
@@ -58,6 +59,7 @@ func resourceSystemPasswordPolicy() *schema.Resource {
 			"expire_status": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"login_lockout_upon_downgrade": &schema.Schema{
 				Type:     schema.TypeString,
@@ -76,22 +78,27 @@ func resourceSystemPasswordPolicy() *schema.Resource {
 			"min_lower_case_letter": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"min_non_alphanumeric": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"min_number": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"min_upper_case_letter": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"minimum_length": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"reuse_password": &schema.Schema{
 				Type:     schema.TypeString,
@@ -134,7 +141,7 @@ func resourceSystemPasswordPolicyUpdate(d *schema.ResourceData, m interface{}) e
 	}
 	paradict["device"] = device_name
 
-	obj, err := getObjectSystemPasswordPolicy(d)
+	obj, err := getObjectSystemPasswordPolicy(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemPasswordPolicy resource while getting object: %v", err)
 	}
@@ -155,7 +162,6 @@ func resourceSystemPasswordPolicyUpdate(d *schema.ResourceData, m interface{}) e
 
 func resourceSystemPasswordPolicyDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -173,11 +179,17 @@ func resourceSystemPasswordPolicyDelete(d *schema.ResourceData, m interface{}) e
 	}
 	paradict["device"] = device_name
 
+	obj, err := getObjectSystemPasswordPolicy(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating SystemPasswordPolicy resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteSystemPasswordPolicy(mkey, paradict, wsParams)
+	_, err = c.UpdateSystemPasswordPolicy(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting SystemPasswordPolicy resource: %v", err)
+		return fmt.Errorf("Error clearing SystemPasswordPolicy resource: %v", err)
 	}
 
 	d.SetId("")
@@ -525,7 +537,7 @@ func expandSystemPasswordPolicyPasswordHistory(d *schema.ResourceData, v interfa
 	return v, nil
 }
 
-func getObjectSystemPasswordPolicy(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectSystemPasswordPolicy(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("apply_to"); ok || d.HasChange("apply_to") {

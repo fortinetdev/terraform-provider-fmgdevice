@@ -95,14 +95,21 @@ func resourceSystemSaml() *schema.Resource {
 			"life": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"portal_url": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 			},
+			"require_signed_resp_and_asrt": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
 			"role": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"server_address": &schema.Schema{
 				Type:     schema.TypeString,
@@ -125,6 +132,7 @@ func resourceSystemSaml() *schema.Resource {
 									"type": &schema.Schema{
 										Type:     schema.TypeString,
 										Optional: true,
+										Computed: true,
 									},
 								},
 							},
@@ -160,6 +168,7 @@ func resourceSystemSaml() *schema.Resource {
 						"sp_binding_protocol": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"sp_cert": &schema.Schema{
 							Type:     schema.TypeSet,
@@ -202,6 +211,7 @@ func resourceSystemSaml() *schema.Resource {
 			"tolerance": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"dynamic_sort_subtable": &schema.Schema{
 				Type:     schema.TypeString,
@@ -376,6 +386,10 @@ func flattenSystemSamlLife(v interface{}, d *schema.ResourceData, pre string) in
 }
 
 func flattenSystemSamlPortalUrl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemSamlRequireSignedRespAndAsrt(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -754,6 +768,16 @@ func refreshObjectSystemSaml(d *schema.ResourceData, o map[string]interface{}) e
 		}
 	}
 
+	if err = d.Set("require_signed_resp_and_asrt", flattenSystemSamlRequireSignedRespAndAsrt(o["require-signed-resp-and-asrt"], d, "require_signed_resp_and_asrt")); err != nil {
+		if vv, ok := fortiAPIPatch(o["require-signed-resp-and-asrt"], "SystemSaml-RequireSignedRespAndAsrt"); ok {
+			if err = d.Set("require_signed_resp_and_asrt", vv); err != nil {
+				return fmt.Errorf("Error reading require_signed_resp_and_asrt: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading require_signed_resp_and_asrt: %v", err)
+		}
+	}
+
 	if err = d.Set("role", flattenSystemSamlRole(o["role"], d, "role")); err != nil {
 		if vv, ok := fortiAPIPatch(o["role"], "SystemSaml-Role"); ok {
 			if err = d.Set("role", vv); err != nil {
@@ -896,6 +920,10 @@ func expandSystemSamlLife(d *schema.ResourceData, v interface{}, pre string) (in
 }
 
 func expandSystemSamlPortalUrl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemSamlRequireSignedRespAndAsrt(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -1233,6 +1261,15 @@ func getObjectSystemSaml(d *schema.ResourceData, bemptysontable bool) (*map[stri
 			return &obj, err
 		} else if t != nil {
 			obj["portal-url"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("require_signed_resp_and_asrt"); ok || d.HasChange("require_signed_resp_and_asrt") {
+		t, err := expandSystemSamlRequireSignedRespAndAsrt(d, v, "require_signed_resp_and_asrt")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["require-signed-resp-and-asrt"] = t
 		}
 	}
 

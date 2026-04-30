@@ -308,7 +308,7 @@ func resourceWirelessControllerWtpProfileLbsUpdate(d *schema.ResourceData, m int
 	paradict["vdom"] = device_vdom
 	paradict["wtp_profile"] = wtp_profile
 
-	obj, err := getObjectWirelessControllerWtpProfileLbs(d)
+	obj, err := getObjectWirelessControllerWtpProfileLbs(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating WirelessControllerWtpProfileLbs resource while getting object: %v", err)
 	}
@@ -329,7 +329,6 @@ func resourceWirelessControllerWtpProfileLbsUpdate(d *schema.ResourceData, m int
 
 func resourceWirelessControllerWtpProfileLbsDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -354,11 +353,17 @@ func resourceWirelessControllerWtpProfileLbsDelete(d *schema.ResourceData, m int
 	paradict["vdom"] = device_vdom
 	paradict["wtp_profile"] = wtp_profile
 
+	obj, err := getObjectWirelessControllerWtpProfileLbs(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating WirelessControllerWtpProfileLbs resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteWirelessControllerWtpProfileLbs(mkey, paradict, wsParams)
+	_, err = c.UpdateWirelessControllerWtpProfileLbs(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting WirelessControllerWtpProfileLbs resource: %v", err)
+		return fmt.Errorf("Error clearing WirelessControllerWtpProfileLbs resource: %v", err)
 	}
 
 	d.SetId("")
@@ -1326,7 +1331,7 @@ func expandWirelessControllerWtpProfileLbsStationLocate2edl(d *schema.ResourceDa
 	return v, nil
 }
 
-func getObjectWirelessControllerWtpProfileLbs(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectWirelessControllerWtpProfileLbs(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("aeroscout"); ok || d.HasChange("aeroscout") {

@@ -106,7 +106,7 @@ func resourceWafProfileConstraintMaxUrlParamUpdate(d *schema.ResourceData, m int
 	paradict["vdom"] = device_vdom
 	paradict["profile"] = profile
 
-	obj, err := getObjectWafProfileConstraintMaxUrlParam(d)
+	obj, err := getObjectWafProfileConstraintMaxUrlParam(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating WafProfileConstraintMaxUrlParam resource while getting object: %v", err)
 	}
@@ -127,7 +127,6 @@ func resourceWafProfileConstraintMaxUrlParamUpdate(d *schema.ResourceData, m int
 
 func resourceWafProfileConstraintMaxUrlParamDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -152,11 +151,17 @@ func resourceWafProfileConstraintMaxUrlParamDelete(d *schema.ResourceData, m int
 	paradict["vdom"] = device_vdom
 	paradict["profile"] = profile
 
+	obj, err := getObjectWafProfileConstraintMaxUrlParam(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating WafProfileConstraintMaxUrlParam resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteWafProfileConstraintMaxUrlParam(mkey, paradict, wsParams)
+	_, err = c.UpdateWafProfileConstraintMaxUrlParam(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting WafProfileConstraintMaxUrlParam resource: %v", err)
+		return fmt.Errorf("Error clearing WafProfileConstraintMaxUrlParam resource: %v", err)
 	}
 
 	d.SetId("")
@@ -328,7 +333,7 @@ func expandWafProfileConstraintMaxUrlParamStatus3rdl(d *schema.ResourceData, v i
 	return v, nil
 }
 
-func getObjectWafProfileConstraintMaxUrlParam(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectWafProfileConstraintMaxUrlParam(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("action"); ok || d.HasChange("action") {

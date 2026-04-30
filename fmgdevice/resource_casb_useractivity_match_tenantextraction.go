@@ -135,7 +135,7 @@ func resourceCasbUserActivityMatchTenantExtractionUpdate(d *schema.ResourceData,
 	paradict["user_activity"] = user_activity
 	paradict["match"] = match
 
-	obj, err := getObjectCasbUserActivityMatchTenantExtraction(d)
+	obj, err := getObjectCasbUserActivityMatchTenantExtraction(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating CasbUserActivityMatchTenantExtraction resource while getting object: %v", err)
 	}
@@ -156,7 +156,6 @@ func resourceCasbUserActivityMatchTenantExtractionUpdate(d *schema.ResourceData,
 
 func resourceCasbUserActivityMatchTenantExtractionDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -183,11 +182,17 @@ func resourceCasbUserActivityMatchTenantExtractionDelete(d *schema.ResourceData,
 	paradict["user_activity"] = user_activity
 	paradict["match"] = match
 
+	obj, err := getObjectCasbUserActivityMatchTenantExtraction(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating CasbUserActivityMatchTenantExtraction resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteCasbUserActivityMatchTenantExtraction(mkey, paradict, wsParams)
+	_, err = c.UpdateCasbUserActivityMatchTenantExtraction(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting CasbUserActivityMatchTenantExtraction resource: %v", err)
+		return fmt.Errorf("Error clearing CasbUserActivityMatchTenantExtraction resource: %v", err)
 	}
 
 	d.SetId("")
@@ -510,15 +515,19 @@ func expandCasbUserActivityMatchTenantExtractionType3rdl(d *schema.ResourceData,
 	return v, nil
 }
 
-func getObjectCasbUserActivityMatchTenantExtraction(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectCasbUserActivityMatchTenantExtraction(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
-	if v, ok := d.GetOk("filters"); ok || d.HasChange("filters") {
-		t, err := expandCasbUserActivityMatchTenantExtractionFilters3rdl(d, v, "filters")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["filters"] = t
+	if bemptysontable {
+		obj["filters"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("filters"); ok || d.HasChange("filters") {
+			t, err := expandCasbUserActivityMatchTenantExtractionFilters3rdl(d, v, "filters")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["filters"] = t
+			}
 		}
 	}
 

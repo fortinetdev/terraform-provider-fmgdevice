@@ -149,6 +149,7 @@ func resourceUserNacPolicy() *schema.Resource {
 			"switch_auto_auth": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"switch_fortilink": &schema.Schema{
 				Type:     schema.TypeSet,

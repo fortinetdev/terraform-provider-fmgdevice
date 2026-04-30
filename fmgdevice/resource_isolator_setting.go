@@ -90,7 +90,7 @@ func resourceIsolatorSettingUpdate(d *schema.ResourceData, m interface{}) error 
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	obj, err := getObjectIsolatorSetting(d)
+	obj, err := getObjectIsolatorSetting(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating IsolatorSetting resource while getting object: %v", err)
 	}
@@ -111,7 +111,6 @@ func resourceIsolatorSettingUpdate(d *schema.ResourceData, m interface{}) error 
 
 func resourceIsolatorSettingDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -134,11 +133,17 @@ func resourceIsolatorSettingDelete(d *schema.ResourceData, m interface{}) error 
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	obj, err := getObjectIsolatorSetting(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating IsolatorSetting resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteIsolatorSetting(mkey, paradict, wsParams)
+	_, err = c.UpdateIsolatorSetting(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting IsolatorSetting resource: %v", err)
+		return fmt.Errorf("Error clearing IsolatorSetting resource: %v", err)
 	}
 
 	d.SetId("")
@@ -263,7 +268,7 @@ func expandIsolatorSettingUnmatchedSession(d *schema.ResourceData, v interface{}
 	return v, nil
 }
 
-func getObjectIsolatorSetting(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectIsolatorSetting(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("default_isolator_profile"); ok || d.HasChange("default_isolator_profile") {

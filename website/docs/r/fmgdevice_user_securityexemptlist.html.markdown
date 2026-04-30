@@ -1,5 +1,5 @@
 ---
-subcategory: "No Category"
+subcategory: "User"
 layout: "fmgdevice"
 page_title: "FortiManager Device: fmgdevice_user_securityexemptlist"
 description: |-

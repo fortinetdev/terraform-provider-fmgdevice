@@ -214,7 +214,7 @@ func resourceSystemNethsmUpdate(d *schema.ResourceData, m interface{}) error {
 	}
 	paradict["device"] = device_name
 
-	obj, err := getObjectSystemNethsm(d)
+	obj, err := getObjectSystemNethsm(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemNethsm resource while getting object: %v", err)
 	}
@@ -235,7 +235,6 @@ func resourceSystemNethsmUpdate(d *schema.ResourceData, m interface{}) error {
 
 func resourceSystemNethsmDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -253,11 +252,17 @@ func resourceSystemNethsmDelete(d *schema.ResourceData, m interface{}) error {
 	}
 	paradict["device"] = device_name
 
+	obj, err := getObjectSystemNethsm(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating SystemNethsm resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteSystemNethsm(mkey, paradict, wsParams)
+	_, err = c.UpdateSystemNethsm(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting SystemNethsm resource: %v", err)
+		return fmt.Errorf("Error clearing SystemNethsm resource: %v", err)
 	}
 
 	d.SetId("")
@@ -1023,7 +1028,7 @@ func expandSystemNethsmVendor(d *schema.ResourceData, v interface{}, pre string)
 	return v, nil
 }
 
-func getObjectSystemNethsm(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectSystemNethsm(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("ha"); ok || d.HasChange("ha") {
@@ -1044,12 +1049,16 @@ func getObjectSystemNethsm(d *schema.ResourceData) (*map[string]interface{}, err
 		}
 	}
 
-	if v, ok := d.GetOk("hagroups"); ok || d.HasChange("hagroups") {
-		t, err := expandSystemNethsmHagroups(d, v, "hagroups")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["hagroups"] = t
+	if bemptysontable {
+		obj["hagroups"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("hagroups"); ok || d.HasChange("hagroups") {
+			t, err := expandSystemNethsmHagroups(d, v, "hagroups")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["hagroups"] = t
+			}
 		}
 	}
 
@@ -1062,12 +1071,16 @@ func getObjectSystemNethsm(d *schema.ResourceData) (*map[string]interface{}, err
 		}
 	}
 
-	if v, ok := d.GetOk("partitions"); ok || d.HasChange("partitions") {
-		t, err := expandSystemNethsmPartitions(d, v, "partitions")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["partitions"] = t
+	if bemptysontable {
+		obj["partitions"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("partitions"); ok || d.HasChange("partitions") {
+			t, err := expandSystemNethsmPartitions(d, v, "partitions")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["partitions"] = t
+			}
 		}
 	}
 
@@ -1107,21 +1120,29 @@ func getObjectSystemNethsm(d *schema.ResourceData) (*map[string]interface{}, err
 		}
 	}
 
-	if v, ok := d.GetOk("servers"); ok || d.HasChange("servers") {
-		t, err := expandSystemNethsmServers(d, v, "servers")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["servers"] = t
+	if bemptysontable {
+		obj["servers"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("servers"); ok || d.HasChange("servers") {
+			t, err := expandSystemNethsmServers(d, v, "servers")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["servers"] = t
+			}
 		}
 	}
 
-	if v, ok := d.GetOk("slots"); ok || d.HasChange("slots") {
-		t, err := expandSystemNethsmSlots(d, v, "slots")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["slots"] = t
+	if bemptysontable {
+		obj["slots"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("slots"); ok || d.HasChange("slots") {
+			t, err := expandSystemNethsmSlots(d, v, "slots")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["slots"] = t
+			}
 		}
 	}
 

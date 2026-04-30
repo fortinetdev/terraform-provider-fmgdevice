@@ -1,5 +1,5 @@
 ---
-subcategory: "No Category"
+subcategory: "Antivirus"
 layout: "fmgdevice"
 page_title: "FortiManager Device: fmgdevice_antivirus_profile"
 description: |-
@@ -67,6 +67,7 @@ The following arguments are supported:
 * `fortisandbox_max_upload` - Maximum size of files that can be uploaded to FortiSandbox in Mbytes.
 * `fortisandbox_mode` - FortiSandbox scan modes. Valid values: `inline`, `analytics-suspicious`, `analytics-everything`.
 
+* `fortisandbox_scan_timeout` - FortiSandbox inline scan timeout in seconds (30 - 180, default = 60).
 * `fortisandbox_timeout_action` - Action to take if FortiSandbox inline scan encounters a scan timeout. Valid values: `log-only`, `block`, `ignore`.
 
 * `ftp` - Ftp. The structure of `ftp` block is documented below.
@@ -196,6 +197,8 @@ The `http` block supports:
 * `archive_block` - Select the archive types to block. Valid values: `encrypted`, `corrupted`, `multipart`, `nested`, `mailbomb`, `unhandled`, `partiallycorrupted`, `timeout`.
 
 * `archive_log` - Select the archive types to log. Valid values: `encrypted`, `corrupted`, `multipart`, `nested`, `mailbomb`, `unhandled`, `partiallycorrupted`, `timeout`.
+
+* `av_optimize` - Av-Optimize. Valid values: `disable`, `enable`.
 
 * `av_scan` - Enable AntiVirus scan service. Valid values: `disable`, `monitor`, `block`.
 

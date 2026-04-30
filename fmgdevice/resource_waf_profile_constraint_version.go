@@ -100,7 +100,7 @@ func resourceWafProfileConstraintVersionUpdate(d *schema.ResourceData, m interfa
 	paradict["vdom"] = device_vdom
 	paradict["profile"] = profile
 
-	obj, err := getObjectWafProfileConstraintVersion(d)
+	obj, err := getObjectWafProfileConstraintVersion(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating WafProfileConstraintVersion resource while getting object: %v", err)
 	}
@@ -121,7 +121,6 @@ func resourceWafProfileConstraintVersionUpdate(d *schema.ResourceData, m interfa
 
 func resourceWafProfileConstraintVersionDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -146,11 +145,17 @@ func resourceWafProfileConstraintVersionDelete(d *schema.ResourceData, m interfa
 	paradict["vdom"] = device_vdom
 	paradict["profile"] = profile
 
+	obj, err := getObjectWafProfileConstraintVersion(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating WafProfileConstraintVersion resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteWafProfileConstraintVersion(mkey, paradict, wsParams)
+	_, err = c.UpdateWafProfileConstraintVersion(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting WafProfileConstraintVersion resource: %v", err)
+		return fmt.Errorf("Error clearing WafProfileConstraintVersion resource: %v", err)
 	}
 
 	d.SetId("")
@@ -304,7 +309,7 @@ func expandWafProfileConstraintVersionStatus3rdl(d *schema.ResourceData, v inter
 	return v, nil
 }
 
-func getObjectWafProfileConstraintVersion(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectWafProfileConstraintVersion(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("action"); ok || d.HasChange("action") {

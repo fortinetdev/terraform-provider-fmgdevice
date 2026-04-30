@@ -49,6 +49,7 @@ func resourceSwitchControllerSwitchLog() *schema.Resource {
 			"severity": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"status": &schema.Schema{
 				Type:     schema.TypeString,
@@ -83,7 +84,7 @@ func resourceSwitchControllerSwitchLogUpdate(d *schema.ResourceData, m interface
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	obj, err := getObjectSwitchControllerSwitchLog(d)
+	obj, err := getObjectSwitchControllerSwitchLog(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating SwitchControllerSwitchLog resource while getting object: %v", err)
 	}
@@ -104,7 +105,6 @@ func resourceSwitchControllerSwitchLogUpdate(d *schema.ResourceData, m interface
 
 func resourceSwitchControllerSwitchLogDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -127,11 +127,17 @@ func resourceSwitchControllerSwitchLogDelete(d *schema.ResourceData, m interface
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	obj, err := getObjectSwitchControllerSwitchLog(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating SwitchControllerSwitchLog resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteSwitchControllerSwitchLog(mkey, paradict, wsParams)
+	_, err = c.UpdateSwitchControllerSwitchLog(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting SwitchControllerSwitchLog resource: %v", err)
+		return fmt.Errorf("Error clearing SwitchControllerSwitchLog resource: %v", err)
 	}
 
 	d.SetId("")
@@ -238,7 +244,7 @@ func expandSwitchControllerSwitchLogStatus(d *schema.ResourceData, v interface{}
 	return v, nil
 }
 
-func getObjectSwitchControllerSwitchLog(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectSwitchControllerSwitchLog(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("severity"); ok || d.HasChange("severity") {

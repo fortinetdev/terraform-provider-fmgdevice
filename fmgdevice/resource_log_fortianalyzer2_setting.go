@@ -193,7 +193,7 @@ func resourceLogFortianalyzer2SettingUpdate(d *schema.ResourceData, m interface{
 	}
 	paradict["device"] = device_name
 
-	obj, err := getObjectLogFortianalyzer2Setting(d)
+	obj, err := getObjectLogFortianalyzer2Setting(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating LogFortianalyzer2Setting resource while getting object: %v", err)
 	}
@@ -214,7 +214,6 @@ func resourceLogFortianalyzer2SettingUpdate(d *schema.ResourceData, m interface{
 
 func resourceLogFortianalyzer2SettingDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -232,11 +231,17 @@ func resourceLogFortianalyzer2SettingDelete(d *schema.ResourceData, m interface{
 	}
 	paradict["device"] = device_name
 
+	obj, err := getObjectLogFortianalyzer2Setting(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating LogFortianalyzer2Setting resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteLogFortianalyzer2Setting(mkey, paradict, wsParams)
+	_, err = c.UpdateLogFortianalyzer2Setting(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting LogFortianalyzer2Setting resource: %v", err)
+		return fmt.Errorf("Error clearing LogFortianalyzer2Setting resource: %v", err)
 	}
 
 	d.SetId("")
@@ -818,7 +823,7 @@ func expandLogFortianalyzer2SettingVrfSelect(d *schema.ResourceData, v interface
 	return v, nil
 }
 
-func getObjectLogFortianalyzer2Setting(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectLogFortianalyzer2Setting(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("__change_ip"); ok || d.HasChange("__change_ip") {

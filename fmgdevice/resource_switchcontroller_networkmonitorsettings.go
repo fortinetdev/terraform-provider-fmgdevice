@@ -79,7 +79,7 @@ func resourceSwitchControllerNetworkMonitorSettingsUpdate(d *schema.ResourceData
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	obj, err := getObjectSwitchControllerNetworkMonitorSettings(d)
+	obj, err := getObjectSwitchControllerNetworkMonitorSettings(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating SwitchControllerNetworkMonitorSettings resource while getting object: %v", err)
 	}
@@ -100,7 +100,6 @@ func resourceSwitchControllerNetworkMonitorSettingsUpdate(d *schema.ResourceData
 
 func resourceSwitchControllerNetworkMonitorSettingsDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -123,11 +122,17 @@ func resourceSwitchControllerNetworkMonitorSettingsDelete(d *schema.ResourceData
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	obj, err := getObjectSwitchControllerNetworkMonitorSettings(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating SwitchControllerNetworkMonitorSettings resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteSwitchControllerNetworkMonitorSettings(mkey, paradict, wsParams)
+	_, err = c.UpdateSwitchControllerNetworkMonitorSettings(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting SwitchControllerNetworkMonitorSettings resource: %v", err)
+		return fmt.Errorf("Error clearing SwitchControllerNetworkMonitorSettings resource: %v", err)
 	}
 
 	d.SetId("")
@@ -216,7 +221,7 @@ func expandSwitchControllerNetworkMonitorSettingsNetworkMonitoring(d *schema.Res
 	return v, nil
 }
 
-func getObjectSwitchControllerNetworkMonitorSettings(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectSwitchControllerNetworkMonitorSettings(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("network_monitoring"); ok || d.HasChange("network_monitoring") {

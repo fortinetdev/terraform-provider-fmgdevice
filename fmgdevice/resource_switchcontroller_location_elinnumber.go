@@ -89,7 +89,7 @@ func resourceSwitchControllerLocationElinNumberUpdate(d *schema.ResourceData, m 
 	paradict["vdom"] = device_vdom
 	paradict["location"] = location
 
-	obj, err := getObjectSwitchControllerLocationElinNumber(d)
+	obj, err := getObjectSwitchControllerLocationElinNumber(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating SwitchControllerLocationElinNumber resource while getting object: %v", err)
 	}
@@ -110,7 +110,6 @@ func resourceSwitchControllerLocationElinNumberUpdate(d *schema.ResourceData, m 
 
 func resourceSwitchControllerLocationElinNumberDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -135,11 +134,17 @@ func resourceSwitchControllerLocationElinNumberDelete(d *schema.ResourceData, m 
 	paradict["vdom"] = device_vdom
 	paradict["location"] = location
 
+	obj, err := getObjectSwitchControllerLocationElinNumber(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating SwitchControllerLocationElinNumber resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteSwitchControllerLocationElinNumber(mkey, paradict, wsParams)
+	_, err = c.UpdateSwitchControllerLocationElinNumber(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting SwitchControllerLocationElinNumber resource: %v", err)
+		return fmt.Errorf("Error clearing SwitchControllerLocationElinNumber resource: %v", err)
 	}
 
 	d.SetId("")
@@ -257,7 +262,7 @@ func expandSwitchControllerLocationElinNumberParentKey2edl(d *schema.ResourceDat
 	return v, nil
 }
 
-func getObjectSwitchControllerLocationElinNumber(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectSwitchControllerLocationElinNumber(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("elin_num"); ok || d.HasChange("elin_num") {

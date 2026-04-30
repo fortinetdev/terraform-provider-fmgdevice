@@ -161,7 +161,7 @@ func resourceLogWebtrendsFilterUpdate(d *schema.ResourceData, m interface{}) err
 	}
 	paradict["device"] = device_name
 
-	obj, err := getObjectLogWebtrendsFilter(d)
+	obj, err := getObjectLogWebtrendsFilter(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating LogWebtrendsFilter resource while getting object: %v", err)
 	}
@@ -182,7 +182,6 @@ func resourceLogWebtrendsFilterUpdate(d *schema.ResourceData, m interface{}) err
 
 func resourceLogWebtrendsFilterDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -200,11 +199,17 @@ func resourceLogWebtrendsFilterDelete(d *schema.ResourceData, m interface{}) err
 	}
 	paradict["device"] = device_name
 
+	obj, err := getObjectLogWebtrendsFilter(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating LogWebtrendsFilter resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteLogWebtrendsFilter(mkey, paradict, wsParams)
+	_, err = c.UpdateLogWebtrendsFilter(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting LogWebtrendsFilter resource: %v", err)
+		return fmt.Errorf("Error clearing LogWebtrendsFilter resource: %v", err)
 	}
 
 	d.SetId("")
@@ -673,7 +678,7 @@ func expandLogWebtrendsFilterZtnaTraffic(d *schema.ResourceData, v interface{}, 
 	return v, nil
 }
 
-func getObjectLogWebtrendsFilter(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectLogWebtrendsFilter(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("anomaly"); ok || d.HasChange("anomaly") {
@@ -730,12 +735,16 @@ func getObjectLogWebtrendsFilter(d *schema.ResourceData) (*map[string]interface{
 		}
 	}
 
-	if v, ok := d.GetOk("free_style"); ok || d.HasChange("free_style") {
-		t, err := expandLogWebtrendsFilterFreeStyle(d, v, "free_style")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["free-style"] = t
+	if bemptysontable {
+		obj["free-style"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("free_style"); ok || d.HasChange("free_style") {
+			t, err := expandLogWebtrendsFilterFreeStyle(d, v, "free_style")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["free-style"] = t
+			}
 		}
 	}
 

@@ -203,7 +203,7 @@ func resourceSwitchControllerFlowTrackingUpdate(d *schema.ResourceData, m interf
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	obj, err := getObjectSwitchControllerFlowTracking(d)
+	obj, err := getObjectSwitchControllerFlowTracking(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating SwitchControllerFlowTracking resource while getting object: %v", err)
 	}
@@ -224,7 +224,6 @@ func resourceSwitchControllerFlowTrackingUpdate(d *schema.ResourceData, m interf
 
 func resourceSwitchControllerFlowTrackingDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -247,11 +246,17 @@ func resourceSwitchControllerFlowTrackingDelete(d *schema.ResourceData, m interf
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	obj, err := getObjectSwitchControllerFlowTracking(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating SwitchControllerFlowTracking resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteSwitchControllerFlowTracking(mkey, paradict, wsParams)
+	_, err = c.UpdateSwitchControllerFlowTracking(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting SwitchControllerFlowTracking resource: %v", err)
+		return fmt.Errorf("Error clearing SwitchControllerFlowTracking resource: %v", err)
 	}
 
 	d.SetId("")
@@ -882,15 +887,19 @@ func expandSwitchControllerFlowTrackingTransport(d *schema.ResourceData, v inter
 	return v, nil
 }
 
-func getObjectSwitchControllerFlowTracking(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectSwitchControllerFlowTracking(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
-	if v, ok := d.GetOk("aggregates"); ok || d.HasChange("aggregates") {
-		t, err := expandSwitchControllerFlowTrackingAggregates(d, v, "aggregates")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["aggregates"] = t
+	if bemptysontable {
+		obj["aggregates"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("aggregates"); ok || d.HasChange("aggregates") {
+			t, err := expandSwitchControllerFlowTrackingAggregates(d, v, "aggregates")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["aggregates"] = t
+			}
 		}
 	}
 
@@ -912,12 +921,16 @@ func getObjectSwitchControllerFlowTracking(d *schema.ResourceData) (*map[string]
 		}
 	}
 
-	if v, ok := d.GetOk("collectors"); ok || d.HasChange("collectors") {
-		t, err := expandSwitchControllerFlowTrackingCollectors(d, v, "collectors")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["collectors"] = t
+	if bemptysontable {
+		obj["collectors"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("collectors"); ok || d.HasChange("collectors") {
+			t, err := expandSwitchControllerFlowTrackingCollectors(d, v, "collectors")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["collectors"] = t
+			}
 		}
 	}
 

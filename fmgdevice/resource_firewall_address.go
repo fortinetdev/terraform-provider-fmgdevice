@@ -241,6 +241,10 @@ func resourceFirewallAddress() *schema.Resource {
 							Type:     schema.TypeString,
 							Optional: true,
 						},
+						"passive_fqdn_learning": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
 						"pattern_end": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
@@ -358,10 +362,12 @@ func resourceFirewallAddress() *schema.Resource {
 			"end_ip": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"end_mac": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"epg_name": &schema.Schema{
 				Type:     schema.TypeString,
@@ -460,6 +466,11 @@ func resourceFirewallAddress() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
+			"passive_fqdn_learning": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
 			"policy_group": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -477,6 +488,7 @@ func resourceFirewallAddress() *schema.Resource {
 			"sdn_addr_type": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"sdn_tag": &schema.Schema{
 				Type:     schema.TypeString,
@@ -491,14 +503,17 @@ func resourceFirewallAddress() *schema.Resource {
 			"start_ip": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"start_mac": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"sub_type": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"subnet": &schema.Schema{
 				Type:     schema.TypeList,
@@ -563,6 +578,10 @@ func resourceFirewallAddress() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+			},
+			"visibility": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
 			},
 			"wildcard": &schema.Schema{
 				Type:     schema.TypeList,
@@ -1016,6 +1035,12 @@ func flattenFirewallAddressDynamicMapping(v interface{}, d *schema.ResourceData,
 			tmp["os"] = fortiAPISubPartPatch(v, "FirewallAddress-DynamicMapping-Os")
 		}
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "passive_fqdn_learning"
+		if _, ok := i["passive-fqdn-learning"]; ok {
+			v := flattenFirewallAddressDynamicMappingPassiveFqdnLearning(i["passive-fqdn-learning"], d, pre_append)
+			tmp["passive_fqdn_learning"] = fortiAPISubPartPatch(v, "FirewallAddress-DynamicMapping-PassiveFqdnLearning")
+		}
+
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "pattern_end"
 		if _, ok := i["pattern-end"]; ok {
 			v := flattenFirewallAddressDynamicMappingPatternEnd(i["pattern-end"], d, pre_append)
@@ -1337,6 +1362,10 @@ func flattenFirewallAddressDynamicMappingOs(v interface{}, d *schema.ResourceDat
 	return v
 }
 
+func flattenFirewallAddressDynamicMappingPassiveFqdnLearning(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenFirewallAddressDynamicMappingPatternEnd(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -1572,6 +1601,10 @@ func flattenFirewallAddressOs(v interface{}, d *schema.ResourceData, pre string)
 	return v
 }
 
+func flattenFirewallAddressPassiveFqdnLearning(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenFirewallAddressPolicyGroup(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -1700,6 +1733,10 @@ func flattenFirewallAddressType(v interface{}, d *schema.ResourceData, pre strin
 }
 
 func flattenFirewallAddressUuid(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenFirewallAddressVisibility(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -2064,6 +2101,16 @@ func refreshObjectFirewallAddress(d *schema.ResourceData, o map[string]interface
 		}
 	}
 
+	if err = d.Set("passive_fqdn_learning", flattenFirewallAddressPassiveFqdnLearning(o["passive-fqdn-learning"], d, "passive_fqdn_learning")); err != nil {
+		if vv, ok := fortiAPIPatch(o["passive-fqdn-learning"], "FirewallAddress-PassiveFqdnLearning"); ok {
+			if err = d.Set("passive_fqdn_learning", vv); err != nil {
+				return fmt.Errorf("Error reading passive_fqdn_learning: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading passive_fqdn_learning: %v", err)
+		}
+	}
+
 	if err = d.Set("policy_group", flattenFirewallAddressPolicyGroup(o["policy-group"], d, "policy_group")); err != nil {
 		if vv, ok := fortiAPIPatch(o["policy-group"], "FirewallAddress-PolicyGroup"); ok {
 			if err = d.Set("policy_group", vv); err != nil {
@@ -2265,6 +2312,16 @@ func refreshObjectFirewallAddress(d *schema.ResourceData, o map[string]interface
 			}
 		} else {
 			return fmt.Errorf("Error reading uuid: %v", err)
+		}
+	}
+
+	if err = d.Set("visibility", flattenFirewallAddressVisibility(o["visibility"], d, "visibility")); err != nil {
+		if vv, ok := fortiAPIPatch(o["visibility"], "FirewallAddress-Visibility"); ok {
+			if err = d.Set("visibility", vv); err != nil {
+				return fmt.Errorf("Error reading visibility: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading visibility: %v", err)
 		}
 	}
 
@@ -2519,6 +2576,11 @@ func expandFirewallAddressDynamicMapping(d *schema.ResourceData, v interface{}, 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "os"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
 			tmp["os"], _ = expandFirewallAddressDynamicMappingOs(d, i["os"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "passive_fqdn_learning"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["passive-fqdn-learning"], _ = expandFirewallAddressDynamicMappingPassiveFqdnLearning(d, i["passive_fqdn_learning"], pre_append)
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "pattern_end"
@@ -2810,6 +2872,10 @@ func expandFirewallAddressDynamicMappingOs(d *schema.ResourceData, v interface{}
 	return v, nil
 }
 
+func expandFirewallAddressDynamicMappingPassiveFqdnLearning(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandFirewallAddressDynamicMappingPatternEnd(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -3037,6 +3103,10 @@ func expandFirewallAddressOs(d *schema.ResourceData, v interface{}, pre string) 
 	return v, nil
 }
 
+func expandFirewallAddressPassiveFqdnLearning(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandFirewallAddressPolicyGroup(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -3157,6 +3227,10 @@ func expandFirewallAddressType(d *schema.ResourceData, v interface{}, pre string
 }
 
 func expandFirewallAddressUuid(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandFirewallAddressVisibility(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -3458,6 +3532,15 @@ func getObjectFirewallAddress(d *schema.ResourceData) (*map[string]interface{}, 
 		}
 	}
 
+	if v, ok := d.GetOk("passive_fqdn_learning"); ok || d.HasChange("passive_fqdn_learning") {
+		t, err := expandFirewallAddressPassiveFqdnLearning(d, v, "passive_fqdn_learning")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["passive-fqdn-learning"] = t
+		}
+	}
+
 	if v, ok := d.GetOk("policy_group"); ok || d.HasChange("policy_group") {
 		t, err := expandFirewallAddressPolicyGroup(d, v, "policy_group")
 		if err != nil {
@@ -3626,6 +3709,15 @@ func getObjectFirewallAddress(d *schema.ResourceData) (*map[string]interface{}, 
 			return &obj, err
 		} else if t != nil {
 			obj["uuid"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("visibility"); ok || d.HasChange("visibility") {
+		t, err := expandFirewallAddressVisibility(d, v, "visibility")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["visibility"] = t
 		}
 	}
 

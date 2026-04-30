@@ -78,7 +78,7 @@ func resourceIpsRuleSettingsUpdate(d *schema.ResourceData, m interface{}) error 
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
-	obj, err := getObjectIpsRuleSettings(d)
+	obj, err := getObjectIpsRuleSettings(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating IpsRuleSettings resource while getting object: %v", err)
 	}
@@ -99,7 +99,6 @@ func resourceIpsRuleSettingsUpdate(d *schema.ResourceData, m interface{}) error 
 
 func resourceIpsRuleSettingsDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -122,11 +121,17 @@ func resourceIpsRuleSettingsDelete(d *schema.ResourceData, m interface{}) error 
 	paradict["device"] = device_name
 	paradict["vdom"] = device_vdom
 
+	obj, err := getObjectIpsRuleSettings(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating IpsRuleSettings resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteIpsRuleSettings(mkey, paradict, wsParams)
+	_, err = c.UpdateIpsRuleSettings(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting IpsRuleSettings resource: %v", err)
+		return fmt.Errorf("Error clearing IpsRuleSettings resource: %v", err)
 	}
 
 	d.SetId("")
@@ -215,7 +220,7 @@ func expandIpsRuleSettingsId(d *schema.ResourceData, v interface{}, pre string) 
 	return v, nil
 }
 
-func getObjectIpsRuleSettings(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectIpsRuleSettings(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("fosid"); ok || d.HasChange("fosid") {

@@ -54,10 +54,12 @@ func resourceWirelessControllerQosProfile() *schema.Resource {
 			"bandwidth_admission_control": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"bandwidth_capacity": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"burst": &schema.Schema{
 				Type:     schema.TypeString,
@@ -72,6 +74,7 @@ func resourceWirelessControllerQosProfile() *schema.Resource {
 			"call_capacity": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"comment": &schema.Schema{
 				Type:     schema.TypeString,

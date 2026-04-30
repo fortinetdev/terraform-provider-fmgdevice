@@ -187,7 +187,7 @@ func resourceLogSyslogdSettingUpdate(d *schema.ResourceData, m interface{}) erro
 	}
 	paradict["device"] = device_name
 
-	obj, err := getObjectLogSyslogdSetting(d)
+	obj, err := getObjectLogSyslogdSetting(d, false)
 	if err != nil {
 		return fmt.Errorf("Error updating LogSyslogdSetting resource while getting object: %v", err)
 	}
@@ -208,7 +208,6 @@ func resourceLogSyslogdSettingUpdate(d *schema.ResourceData, m interface{}) erro
 
 func resourceLogSyslogdSettingDelete(d *schema.ResourceData, m interface{}) error {
 	mkey := d.Id()
-
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
@@ -226,11 +225,17 @@ func resourceLogSyslogdSettingDelete(d *schema.ResourceData, m interface{}) erro
 	}
 	paradict["device"] = device_name
 
+	obj, err := getObjectLogSyslogdSetting(d, true)
+
+	if err != nil {
+		return fmt.Errorf("Error updating LogSyslogdSetting resource while getting object: %v", err)
+	}
+
 	wsParams["adom"] = adomv
 
-	err = c.DeleteLogSyslogdSetting(mkey, paradict, wsParams)
+	_, err = c.UpdateLogSyslogdSetting(obj, mkey, paradict, wsParams)
 	if err != nil {
-		return fmt.Errorf("Error deleting LogSyslogdSetting resource: %v", err)
+		return fmt.Errorf("Error clearing LogSyslogdSetting resource: %v", err)
 	}
 
 	d.SetId("")
@@ -869,7 +874,7 @@ func expandLogSyslogdSettingLogTemplatesTemplate(d *schema.ResourceData, v inter
 	return v, nil
 }
 
-func getObjectLogSyslogdSetting(d *schema.ResourceData) (*map[string]interface{}, error) {
+func getObjectLogSyslogdSetting(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if v, ok := d.GetOk("certificate"); ok || d.HasChange("certificate") {
@@ -881,12 +886,16 @@ func getObjectLogSyslogdSetting(d *schema.ResourceData) (*map[string]interface{}
 		}
 	}
 
-	if v, ok := d.GetOk("custom_field_name"); ok || d.HasChange("custom_field_name") {
-		t, err := expandLogSyslogdSettingCustomFieldName(d, v, "custom_field_name")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["custom-field-name"] = t
+	if bemptysontable {
+		obj["custom-field-name"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("custom_field_name"); ok || d.HasChange("custom_field_name") {
+			t, err := expandLogSyslogdSettingCustomFieldName(d, v, "custom_field_name")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["custom-field-name"] = t
+			}
 		}
 	}
 
@@ -1025,12 +1034,16 @@ func getObjectLogSyslogdSetting(d *schema.ResourceData) (*map[string]interface{}
 		}
 	}
 
-	if v, ok := d.GetOk("log_templates"); ok || d.HasChange("log_templates") {
-		t, err := expandLogSyslogdSettingLogTemplates(d, v, "log_templates")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["log-templates"] = t
+	if bemptysontable {
+		obj["log-templates"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("log_templates"); ok || d.HasChange("log_templates") {
+			t, err := expandLogSyslogdSettingLogTemplates(d, v, "log_templates")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["log-templates"] = t
+			}
 		}
 	}
 
