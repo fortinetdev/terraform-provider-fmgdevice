@@ -87,6 +87,10 @@ func resourceSystemSpeedTestSchedule() *schema.Resource {
 				ForceNew: true,
 				Optional: true,
 			},
+			"legacy_server_mode": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 			"mode": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -121,6 +125,10 @@ func resourceSystemSpeedTestSchedule() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+			},
+			"update_bandwidth_limit_unit": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
 			},
 			"update_inbandwidth": &schema.Schema{
 				Type:     schema.TypeString,
@@ -386,6 +394,10 @@ func flattenSystemSpeedTestScheduleInterface(v interface{}, d *schema.ResourceDa
 	return conv2str(v)
 }
 
+func flattenSystemSpeedTestScheduleLegacyServerMode(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenSystemSpeedTestScheduleMode(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -411,6 +423,10 @@ func flattenSystemSpeedTestScheduleServerPort(v interface{}, d *schema.ResourceD
 }
 
 func flattenSystemSpeedTestScheduleStatus(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemSpeedTestScheduleUpdateBandwidthLimitUnit(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -529,6 +545,16 @@ func refreshObjectSystemSpeedTestSchedule(d *schema.ResourceData, o map[string]i
 		}
 	}
 
+	if err = d.Set("legacy_server_mode", flattenSystemSpeedTestScheduleLegacyServerMode(o["legacy-server-mode"], d, "legacy_server_mode")); err != nil {
+		if vv, ok := fortiAPIPatch(o["legacy-server-mode"], "SystemSpeedTestSchedule-LegacyServerMode"); ok {
+			if err = d.Set("legacy_server_mode", vv); err != nil {
+				return fmt.Errorf("Error reading legacy_server_mode: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading legacy_server_mode: %v", err)
+		}
+	}
+
 	if err = d.Set("mode", flattenSystemSpeedTestScheduleMode(o["mode"], d, "mode")); err != nil {
 		if vv, ok := fortiAPIPatch(o["mode"], "SystemSpeedTestSchedule-Mode"); ok {
 			if err = d.Set("mode", vv); err != nil {
@@ -596,6 +622,16 @@ func refreshObjectSystemSpeedTestSchedule(d *schema.ResourceData, o map[string]i
 			}
 		} else {
 			return fmt.Errorf("Error reading status: %v", err)
+		}
+	}
+
+	if err = d.Set("update_bandwidth_limit_unit", flattenSystemSpeedTestScheduleUpdateBandwidthLimitUnit(o["update-bandwidth-limit-unit"], d, "update_bandwidth_limit_unit")); err != nil {
+		if vv, ok := fortiAPIPatch(o["update-bandwidth-limit-unit"], "SystemSpeedTestSchedule-UpdateBandwidthLimitUnit"); ok {
+			if err = d.Set("update_bandwidth_limit_unit", vv); err != nil {
+				return fmt.Errorf("Error reading update_bandwidth_limit_unit: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading update_bandwidth_limit_unit: %v", err)
 		}
 	}
 
@@ -720,6 +756,10 @@ func expandSystemSpeedTestScheduleInterface(d *schema.ResourceData, v interface{
 	return v, nil
 }
 
+func expandSystemSpeedTestScheduleLegacyServerMode(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandSystemSpeedTestScheduleMode(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -745,6 +785,10 @@ func expandSystemSpeedTestScheduleServerPort(d *schema.ResourceData, v interface
 }
 
 func expandSystemSpeedTestScheduleStatus(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemSpeedTestScheduleUpdateBandwidthLimitUnit(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -855,6 +899,15 @@ func getObjectSystemSpeedTestSchedule(d *schema.ResourceData) (*map[string]inter
 		}
 	}
 
+	if v, ok := d.GetOk("legacy_server_mode"); ok || d.HasChange("legacy_server_mode") {
+		t, err := expandSystemSpeedTestScheduleLegacyServerMode(d, v, "legacy_server_mode")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["legacy-server-mode"] = t
+		}
+	}
+
 	if v, ok := d.GetOk("mode"); ok || d.HasChange("mode") {
 		t, err := expandSystemSpeedTestScheduleMode(d, v, "mode")
 		if err != nil {
@@ -915,6 +968,15 @@ func getObjectSystemSpeedTestSchedule(d *schema.ResourceData) (*map[string]inter
 			return &obj, err
 		} else if t != nil {
 			obj["status"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("update_bandwidth_limit_unit"); ok || d.HasChange("update_bandwidth_limit_unit") {
+		t, err := expandSystemSpeedTestScheduleUpdateBandwidthLimitUnit(d, v, "update_bandwidth_limit_unit")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["update-bandwidth-limit-unit"] = t
 		}
 	}
 

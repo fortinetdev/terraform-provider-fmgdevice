@@ -45,6 +45,12 @@ func resourceSystemHaVcluster() *schema.Resource {
 				Computed: true,
 				ForceNew: true,
 			},
+			"link_group_monitor": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Computed: true,
+			},
 			"monitor": &schema.Schema{
 				Type:     schema.TypeSet,
 				Elem:     &schema.Schema{Type: schema.TypeString},
@@ -270,6 +276,10 @@ func resourceSystemHaVclusterRead(d *schema.ResourceData, m interface{}) error {
 	return nil
 }
 
+func flattenSystemHaVclusterLinkGroupMonitor2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
 func flattenSystemHaVclusterMonitor2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return flattenStringList(v)
 }
@@ -316,6 +326,16 @@ func flattenSystemHaVclusterVdom2edl(v interface{}, d *schema.ResourceData, pre 
 
 func refreshObjectSystemHaVcluster(d *schema.ResourceData, o map[string]interface{}) error {
 	var err error
+
+	if err = d.Set("link_group_monitor", flattenSystemHaVclusterLinkGroupMonitor2edl(o["link-group-monitor"], d, "link_group_monitor")); err != nil {
+		if vv, ok := fortiAPIPatch(o["link-group-monitor"], "SystemHaVcluster-LinkGroupMonitor"); ok {
+			if err = d.Set("link_group_monitor", vv); err != nil {
+				return fmt.Errorf("Error reading link_group_monitor: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading link_group_monitor: %v", err)
+		}
+	}
 
 	if err = d.Set("monitor", flattenSystemHaVclusterMonitor2edl(o["monitor"], d, "monitor")); err != nil {
 		if vv, ok := fortiAPIPatch(o["monitor"], "SystemHaVcluster-Monitor"); ok {
@@ -436,6 +456,10 @@ func flattenSystemHaVclusterFortiTestDebug(d *schema.ResourceData, fosdebugsn in
 	log.Printf("ER List: %v", e)
 }
 
+func expandSystemHaVclusterLinkGroupMonitor2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
 func expandSystemHaVclusterMonitor2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return expandStringList(v.(*schema.Set).List()), nil
 }
@@ -482,6 +506,15 @@ func expandSystemHaVclusterVdom2edl(d *schema.ResourceData, v interface{}, pre s
 
 func getObjectSystemHaVcluster(d *schema.ResourceData) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
+
+	if v, ok := d.GetOk("link_group_monitor"); ok || d.HasChange("link_group_monitor") {
+		t, err := expandSystemHaVclusterLinkGroupMonitor2edl(d, v, "link_group_monitor")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["link-group-monitor"] = t
+		}
+	}
 
 	if v, ok := d.GetOk("monitor"); ok || d.HasChange("monitor") {
 		t, err := expandSystemHaVclusterMonitor2edl(d, v, "monitor")

@@ -41,6 +41,8 @@ The following arguments are supported:
 * `allow_remove_admin_session` - Enable/disable allow admin session to be removed by privileged admin users. Valid values: `disable`, `enable`.
 
 * `comments` - Comment.
+* `disallowed_login_methods` - Configure login methods that explicitly are disallowed. All other login methods not listed here are permitted by default. Valid values: `console`, `gui`, `ssh`, `telnet`.
+
 * `email_to` - This administrator's email address.
 * `force_password_change` - Enable/disable force password change on next login. Valid values: `disable`, `enable`.
 
@@ -49,10 +51,18 @@ The following arguments are supported:
 
 * `guest_lang` - Guest management portal language.
 * `guest_usergroups` - Select guest user groups.
+* `gui_custom_theme` - Custom theme that overrides the default FortiGate theme.
+* `gui_dashboard_id` - GUI Dashboard ID.
 * `hidden` - Hidden.
 * `gui_default_dashboard_template` - The default dashboard template.
 * `gui_ignore_invalid_signature_version` - FortiOS image build version to ignore invalid signature warning for.
 * `gui_ignore_release_overview_version` - FortiOS version to ignore release overview prompt for.
+* `gui_llm_provider` - Select the LLM provider. Valid values: `fortiai`, `openai`.
+
+* `gui_theme` - Predefined theme that overrides the default FortiGate theme. Valid values: `melongene`, `mariner`, `neutrino`, `jade`, `graphite`, `dark-matter`, `onyx`, `eclipse`, `retro`, `jet-stream`, `security-fabric`, `none`.
+
+* `gui_theme_type` - Use predefined themes or custom themes. Valid values: `predefined`, `custom`.
+
 * `history0` - History0.
 * `history1` - History1.
 * `history10` - History10.
@@ -86,6 +96,11 @@ The following arguments are supported:
 * `ip6_trusthost9` - Any IPv6 address from which the administrator can connect to the FortiGate unit. Default allows access from any IPv6 address.
 * `name` - User name.
 * `old_password` - Admin user old password.
+* `openai_api_key` - Openai API key.
+* `openai_api_key_part2` - OpenAI API key part 2 for excess length.
+* `openai_model` - OpenAI model.
+* `openai_org_id` - OpenAI organization ID.
+* `openai_project_id` - OpenAI project ID.
 * `password` - Admin user password.
 * `password_expire` - Password expire time.
 * `peer_auth` - Set to enable peer certificate authentication (for HTTPS admin access). Valid values: `disable`, `enable`.

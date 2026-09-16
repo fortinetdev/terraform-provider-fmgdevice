@@ -58,6 +58,10 @@ func resourceSwitchControllerManagedSwitch() *schema.Resource {
 				Computed: true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
+						"allow_mac_move": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
 						"link_down_auth": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
@@ -67,6 +71,10 @@ func resourceSwitchControllerManagedSwitch() *schema.Resource {
 							Type:     schema.TypeString,
 							Optional: true,
 							Computed: true,
+						},
+						"mab_entry_as": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
 						},
 						"mab_reauth": &schema.Schema{
 							Type:     schema.TypeString,
@@ -125,6 +133,74 @@ func resourceSwitchControllerManagedSwitch() *schema.Resource {
 				Elem:     &schema.Schema{Type: schema.TypeString},
 				Optional: true,
 				Computed: true,
+			},
+			"components": &schema.Schema{
+				Type:     schema.TypeList,
+				Optional: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"admin_status": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"capability": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"component_id": &schema.Schema{
+							Type:     schema.TypeInt,
+							Optional: true,
+						},
+						"description": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"dynamically_discovered": &schema.Schema{
+							Type:     schema.TypeInt,
+							Optional: true,
+						},
+						"max_allowed_trunk_members": &schema.Schema{
+							Type:     schema.TypeInt,
+							Optional: true,
+						},
+						"name": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"poe_detection_type": &schema.Schema{
+							Type:     schema.TypeInt,
+							Optional: true,
+						},
+						"role": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"serial_number": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"status": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"sw_version": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"switch_id": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"type": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"version": &schema.Schema{
+							Type:     schema.TypeInt,
+							Optional: true,
+						},
+					},
+				},
 			},
 			"custom_command": &schema.Schema{
 				Type:     schema.TypeList,
@@ -439,6 +515,10 @@ func resourceSwitchControllerManagedSwitch() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"port_selection_criteria": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 			"ports": &schema.Schema{
 				Type:     schema.TypeList,
 				Optional: true,
@@ -540,6 +620,14 @@ func resourceSwitchControllerManagedSwitch() *schema.Resource {
 							Optional: true,
 							Computed: true,
 						},
+						"eee_tx_idle_time": &schema.Schema{
+							Type:     schema.TypeInt,
+							Optional: true,
+						},
+						"eee_tx_wake_time": &schema.Schema{
+							Type:     schema.TypeInt,
+							Optional: true,
+						},
 						"export_tags": &schema.Schema{
 							Type:     schema.TypeSet,
 							Elem:     &schema.Schema{Type: schema.TypeString},
@@ -548,6 +636,10 @@ func resourceSwitchControllerManagedSwitch() *schema.Resource {
 						},
 						"encrypted_port": &schema.Schema{
 							Type:     schema.TypeInt,
+							Optional: true,
+						},
+						"energy_efficient_ethernet": &schema.Schema{
+							Type:     schema.TypeString,
 							Optional: true,
 						},
 						"export_to": &schema.Schema{
@@ -804,6 +896,10 @@ func resourceSwitchControllerManagedSwitch() *schema.Resource {
 							Optional: true,
 						},
 						"poe_max_power": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"poe_max_power_mode": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
 						},
@@ -2034,6 +2130,11 @@ func flattenSwitchControllerManagedSwitch8021XSettings(v interface{}, d *schema.
 	result := make(map[string]interface{})
 
 	pre_append := "" // complex
+	pre_append = pre + ".0." + "allow_mac_move"
+	if _, ok := i["allow-mac-move"]; ok {
+		result["allow_mac_move"] = flattenSwitchControllerManagedSwitch8021XSettingsAllowMacMove(i["allow-mac-move"], d, pre_append)
+	}
+
 	pre_append = pre + ".0." + "link_down_auth"
 	if _, ok := i["link-down-auth"]; ok {
 		result["link_down_auth"] = flattenSwitchControllerManagedSwitch8021XSettingsLinkDownAuth(i["link-down-auth"], d, pre_append)
@@ -2042,6 +2143,11 @@ func flattenSwitchControllerManagedSwitch8021XSettings(v interface{}, d *schema.
 	pre_append = pre + ".0." + "local_override"
 	if _, ok := i["local-override"]; ok {
 		result["local_override"] = flattenSwitchControllerManagedSwitch8021XSettingsLocalOverride(i["local-override"], d, pre_append)
+	}
+
+	pre_append = pre + ".0." + "mab_entry_as"
+	if _, ok := i["mab-entry-as"]; ok {
+		result["mab_entry_as"] = flattenSwitchControllerManagedSwitch8021XSettingsMabEntryAs(i["mab-entry-as"], d, pre_append)
 	}
 
 	pre_append = pre + ".0." + "mab_reauth"
@@ -2093,11 +2199,19 @@ func flattenSwitchControllerManagedSwitch8021XSettings(v interface{}, d *schema.
 	return lastresult
 }
 
+func flattenSwitchControllerManagedSwitch8021XSettingsAllowMacMove(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenSwitchControllerManagedSwitch8021XSettingsLinkDownAuth(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
 func flattenSwitchControllerManagedSwitch8021XSettingsLocalOverride(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSwitchControllerManagedSwitch8021XSettingsMabEntryAs(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -2143,6 +2257,185 @@ func flattenSwitchControllerManagedSwitchPlatform(v interface{}, d *schema.Resou
 
 func flattenSwitchControllerManagedSwitchAccessProfile(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return flattenStringList(v)
+}
+
+func flattenSwitchControllerManagedSwitchComponents(v interface{}, d *schema.ResourceData, pre string) []map[string]interface{} {
+	if v == nil {
+		return nil
+	}
+
+	l := v.([]interface{})
+	if len(l) == 0 || l[0] == nil {
+		return nil
+	}
+
+	result := make([]map[string]interface{}, 0, len(l))
+
+	con := 0
+	for _, r := range l {
+		tmp := make(map[string]interface{})
+		i := r.(map[string]interface{})
+
+		pre_append := "" // table
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "admin_status"
+		if _, ok := i["admin-status"]; ok {
+			v := flattenSwitchControllerManagedSwitchComponentsAdminStatus(i["admin-status"], d, pre_append)
+			tmp["admin_status"] = fortiAPISubPartPatch(v, "SwitchControllerManagedSwitch-Components-AdminStatus")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "capability"
+		if _, ok := i["capability"]; ok {
+			v := flattenSwitchControllerManagedSwitchComponentsCapability(i["capability"], d, pre_append)
+			tmp["capability"] = fortiAPISubPartPatch(v, "SwitchControllerManagedSwitch-Components-Capability")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "component_id"
+		if _, ok := i["component-id"]; ok {
+			v := flattenSwitchControllerManagedSwitchComponentsComponentId(i["component-id"], d, pre_append)
+			tmp["component_id"] = fortiAPISubPartPatch(v, "SwitchControllerManagedSwitch-Components-ComponentId")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "description"
+		if _, ok := i["description"]; ok {
+			v := flattenSwitchControllerManagedSwitchComponentsDescription(i["description"], d, pre_append)
+			tmp["description"] = fortiAPISubPartPatch(v, "SwitchControllerManagedSwitch-Components-Description")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "dynamically_discovered"
+		if _, ok := i["dynamically-discovered"]; ok {
+			v := flattenSwitchControllerManagedSwitchComponentsDynamicallyDiscovered(i["dynamically-discovered"], d, pre_append)
+			tmp["dynamically_discovered"] = fortiAPISubPartPatch(v, "SwitchControllerManagedSwitch-Components-DynamicallyDiscovered")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "max_allowed_trunk_members"
+		if _, ok := i["max-allowed-trunk-members"]; ok {
+			v := flattenSwitchControllerManagedSwitchComponentsMaxAllowedTrunkMembers(i["max-allowed-trunk-members"], d, pre_append)
+			tmp["max_allowed_trunk_members"] = fortiAPISubPartPatch(v, "SwitchControllerManagedSwitch-Components-MaxAllowedTrunkMembers")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "name"
+		if _, ok := i["name"]; ok {
+			v := flattenSwitchControllerManagedSwitchComponentsName(i["name"], d, pre_append)
+			tmp["name"] = fortiAPISubPartPatch(v, "SwitchControllerManagedSwitch-Components-Name")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "poe_detection_type"
+		if _, ok := i["poe-detection-type"]; ok {
+			v := flattenSwitchControllerManagedSwitchComponentsPoeDetectionType(i["poe-detection-type"], d, pre_append)
+			tmp["poe_detection_type"] = fortiAPISubPartPatch(v, "SwitchControllerManagedSwitch-Components-PoeDetectionType")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "role"
+		if _, ok := i["role"]; ok {
+			v := flattenSwitchControllerManagedSwitchComponentsRole(i["role"], d, pre_append)
+			tmp["role"] = fortiAPISubPartPatch(v, "SwitchControllerManagedSwitch-Components-Role")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "serial_number"
+		if _, ok := i["serial-number"]; ok {
+			v := flattenSwitchControllerManagedSwitchComponentsSerialNumber(i["serial-number"], d, pre_append)
+			tmp["serial_number"] = fortiAPISubPartPatch(v, "SwitchControllerManagedSwitch-Components-SerialNumber")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "status"
+		if _, ok := i["status"]; ok {
+			v := flattenSwitchControllerManagedSwitchComponentsStatus(i["status"], d, pre_append)
+			tmp["status"] = fortiAPISubPartPatch(v, "SwitchControllerManagedSwitch-Components-Status")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "sw_version"
+		if _, ok := i["sw-version"]; ok {
+			v := flattenSwitchControllerManagedSwitchComponentsSwVersion(i["sw-version"], d, pre_append)
+			tmp["sw_version"] = fortiAPISubPartPatch(v, "SwitchControllerManagedSwitch-Components-SwVersion")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "switch_id"
+		if _, ok := i["switch-id"]; ok {
+			v := flattenSwitchControllerManagedSwitchComponentsSwitchId(i["switch-id"], d, pre_append)
+			tmp["switch_id"] = fortiAPISubPartPatch(v, "SwitchControllerManagedSwitch-Components-SwitchId")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "type"
+		if _, ok := i["type"]; ok {
+			v := flattenSwitchControllerManagedSwitchComponentsType(i["type"], d, pre_append)
+			tmp["type"] = fortiAPISubPartPatch(v, "SwitchControllerManagedSwitch-Components-Type")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "version"
+		if _, ok := i["version"]; ok {
+			v := flattenSwitchControllerManagedSwitchComponentsVersion(i["version"], d, pre_append)
+			tmp["version"] = fortiAPISubPartPatch(v, "SwitchControllerManagedSwitch-Components-Version")
+		}
+
+		if len(tmp) > 0 {
+			result = append(result, tmp)
+		}
+
+		con += 1
+	}
+
+	return result
+}
+
+func flattenSwitchControllerManagedSwitchComponentsAdminStatus(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSwitchControllerManagedSwitchComponentsCapability(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSwitchControllerManagedSwitchComponentsComponentId(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSwitchControllerManagedSwitchComponentsDescription(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSwitchControllerManagedSwitchComponentsDynamicallyDiscovered(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSwitchControllerManagedSwitchComponentsMaxAllowedTrunkMembers(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSwitchControllerManagedSwitchComponentsName(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSwitchControllerManagedSwitchComponentsPoeDetectionType(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSwitchControllerManagedSwitchComponentsRole(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSwitchControllerManagedSwitchComponentsSerialNumber(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSwitchControllerManagedSwitchComponentsStatus(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSwitchControllerManagedSwitchComponentsSwVersion(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSwitchControllerManagedSwitchComponentsSwitchId(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSwitchControllerManagedSwitchComponentsType(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSwitchControllerManagedSwitchComponentsVersion(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
 }
 
 func flattenSwitchControllerManagedSwitchCustomCommand(v interface{}, d *schema.ResourceData, pre string) []map[string]interface{} {
@@ -2712,6 +3005,10 @@ func flattenSwitchControllerManagedSwitchPoePreStandardDetection(v interface{}, 
 	return v
 }
 
+func flattenSwitchControllerManagedSwitchPortSelectionCriteria(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenSwitchControllerManagedSwitchPorts(v interface{}, d *schema.ResourceData, pre string) []map[string]interface{} {
 	if v == nil {
 		return nil
@@ -2827,6 +3124,18 @@ func flattenSwitchControllerManagedSwitchPorts(v interface{}, d *schema.Resource
 			tmp["edge_port"] = fortiAPISubPartPatch(v, "SwitchControllerManagedSwitch-Ports-EdgePort")
 		}
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "eee_tx_idle_time"
+		if _, ok := i["eee-tx-idle-time"]; ok {
+			v := flattenSwitchControllerManagedSwitchPortsEeeTxIdleTime(i["eee-tx-idle-time"], d, pre_append)
+			tmp["eee_tx_idle_time"] = fortiAPISubPartPatch(v, "SwitchControllerManagedSwitch-Ports-EeeTxIdleTime")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "eee_tx_wake_time"
+		if _, ok := i["eee-tx-wake-time"]; ok {
+			v := flattenSwitchControllerManagedSwitchPortsEeeTxWakeTime(i["eee-tx-wake-time"], d, pre_append)
+			tmp["eee_tx_wake_time"] = fortiAPISubPartPatch(v, "SwitchControllerManagedSwitch-Ports-EeeTxWakeTime")
+		}
+
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "export_tags"
 		if _, ok := i["export-tags"]; ok {
 			v := flattenSwitchControllerManagedSwitchPortsExportTags(i["export-tags"], d, pre_append)
@@ -2837,6 +3146,12 @@ func flattenSwitchControllerManagedSwitchPorts(v interface{}, d *schema.Resource
 		if _, ok := i["encrypted-port"]; ok {
 			v := flattenSwitchControllerManagedSwitchPortsEncryptedPort(i["encrypted-port"], d, pre_append)
 			tmp["encrypted_port"] = fortiAPISubPartPatch(v, "SwitchControllerManagedSwitch-Ports-EncryptedPort")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "energy_efficient_ethernet"
+		if _, ok := i["energy-efficient-ethernet"]; ok {
+			v := flattenSwitchControllerManagedSwitchPortsEnergyEfficientEthernet(i["energy-efficient-ethernet"], d, pre_append)
+			tmp["energy_efficient_ethernet"] = fortiAPISubPartPatch(v, "SwitchControllerManagedSwitch-Ports-EnergyEfficientEthernet")
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "export_to"
@@ -3167,6 +3482,12 @@ func flattenSwitchControllerManagedSwitchPorts(v interface{}, d *schema.Resource
 		if _, ok := i["poe-max-power"]; ok {
 			v := flattenSwitchControllerManagedSwitchPortsPoeMaxPower(i["poe-max-power"], d, pre_append)
 			tmp["poe_max_power"] = fortiAPISubPartPatch(v, "SwitchControllerManagedSwitch-Ports-PoeMaxPower")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "poe_max_power_mode"
+		if _, ok := i["poe-max-power-mode"]; ok {
+			v := flattenSwitchControllerManagedSwitchPortsPoeMaxPowerMode(i["poe-max-power-mode"], d, pre_append)
+			tmp["poe_max_power_mode"] = fortiAPISubPartPatch(v, "SwitchControllerManagedSwitch-Ports-PoeMaxPowerMode")
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "poe_mode_bt_cabable"
@@ -3526,11 +3847,23 @@ func flattenSwitchControllerManagedSwitchPortsEdgePort(v interface{}, d *schema.
 	return v
 }
 
+func flattenSwitchControllerManagedSwitchPortsEeeTxIdleTime(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSwitchControllerManagedSwitchPortsEeeTxWakeTime(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenSwitchControllerManagedSwitchPortsExportTags(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return flattenStringList(v)
 }
 
 func flattenSwitchControllerManagedSwitchPortsEncryptedPort(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSwitchControllerManagedSwitchPortsEnergyEfficientEthernet(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -3751,6 +4084,10 @@ func flattenSwitchControllerManagedSwitchPortsPoeCapable(v interface{}, d *schem
 }
 
 func flattenSwitchControllerManagedSwitchPortsPoeMaxPower(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSwitchControllerManagedSwitchPortsPoeMaxPowerMode(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -5641,6 +5978,30 @@ func refreshObjectSwitchControllerManagedSwitch(d *schema.ResourceData, o map[st
 	}
 
 	if isImportTable() {
+		if err = d.Set("components", flattenSwitchControllerManagedSwitchComponents(o["components"], d, "components")); err != nil {
+			if vv, ok := fortiAPIPatch(o["components"], "SwitchControllerManagedSwitch-Components"); ok {
+				if err = d.Set("components", vv); err != nil {
+					return fmt.Errorf("Error reading components: %v", err)
+				}
+			} else {
+				return fmt.Errorf("Error reading components: %v", err)
+			}
+		}
+	} else {
+		if _, ok := d.GetOk("components"); ok {
+			if err = d.Set("components", flattenSwitchControllerManagedSwitchComponents(o["components"], d, "components")); err != nil {
+				if vv, ok := fortiAPIPatch(o["components"], "SwitchControllerManagedSwitch-Components"); ok {
+					if err = d.Set("components", vv); err != nil {
+						return fmt.Errorf("Error reading components: %v", err)
+					}
+				} else {
+					return fmt.Errorf("Error reading components: %v", err)
+				}
+			}
+		}
+	}
+
+	if isImportTable() {
 		if err = d.Set("custom_command", flattenSwitchControllerManagedSwitchCustomCommand(o["custom-command"], d, "custom_command")); err != nil {
 			if vv, ok := fortiAPIPatch(o["custom-command"], "SwitchControllerManagedSwitch-CustomCommand"); ok {
 				if err = d.Set("custom_command", vv); err != nil {
@@ -6037,6 +6398,16 @@ func refreshObjectSwitchControllerManagedSwitch(d *schema.ResourceData, o map[st
 			}
 		} else {
 			return fmt.Errorf("Error reading poe_pre_standard_detection: %v", err)
+		}
+	}
+
+	if err = d.Set("port_selection_criteria", flattenSwitchControllerManagedSwitchPortSelectionCriteria(o["port-selection-criteria"], d, "port_selection_criteria")); err != nil {
+		if vv, ok := fortiAPIPatch(o["port-selection-criteria"], "SwitchControllerManagedSwitch-PortSelectionCriteria"); ok {
+			if err = d.Set("port_selection_criteria", vv); err != nil {
+				return fmt.Errorf("Error reading port_selection_criteria: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading port_selection_criteria: %v", err)
 		}
 	}
 
@@ -6667,6 +7038,10 @@ func expandSwitchControllerManagedSwitch8021XSettings(d *schema.ResourceData, v 
 	result := make(map[string]interface{})
 
 	pre_append := "" // complex
+	pre_append = pre + ".0." + "allow_mac_move"
+	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+		result["allow-mac-move"], _ = expandSwitchControllerManagedSwitch8021XSettingsAllowMacMove(d, i["allow_mac_move"], pre_append)
+	}
 	pre_append = pre + ".0." + "link_down_auth"
 	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
 		result["link-down-auth"], _ = expandSwitchControllerManagedSwitch8021XSettingsLinkDownAuth(d, i["link_down_auth"], pre_append)
@@ -6674,6 +7049,10 @@ func expandSwitchControllerManagedSwitch8021XSettings(d *schema.ResourceData, v 
 	pre_append = pre + ".0." + "local_override"
 	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
 		result["local-override"], _ = expandSwitchControllerManagedSwitch8021XSettingsLocalOverride(d, i["local_override"], pre_append)
+	}
+	pre_append = pre + ".0." + "mab_entry_as"
+	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+		result["mab-entry-as"], _ = expandSwitchControllerManagedSwitch8021XSettingsMabEntryAs(d, i["mab_entry_as"], pre_append)
 	}
 	pre_append = pre + ".0." + "mab_reauth"
 	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
@@ -6715,11 +7094,19 @@ func expandSwitchControllerManagedSwitch8021XSettings(d *schema.ResourceData, v 
 	return result, nil
 }
 
+func expandSwitchControllerManagedSwitch8021XSettingsAllowMacMove(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandSwitchControllerManagedSwitch8021XSettingsLinkDownAuth(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
 func expandSwitchControllerManagedSwitch8021XSettingsLocalOverride(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSwitchControllerManagedSwitch8021XSettingsMabEntryAs(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -6765,6 +7152,165 @@ func expandSwitchControllerManagedSwitchPlatform(d *schema.ResourceData, v inter
 
 func expandSwitchControllerManagedSwitchAccessProfile(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandSwitchControllerManagedSwitchComponents(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	l := v.([]interface{})
+	result := make([]map[string]interface{}, 0, len(l))
+
+	if len(l) == 0 || l[0] == nil {
+		return result, nil
+	}
+
+	con := 0
+	for _, r := range l {
+		tmp := make(map[string]interface{})
+		i := r.(map[string]interface{})
+		pre_append := "" // table
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "admin_status"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["admin-status"], _ = expandSwitchControllerManagedSwitchComponentsAdminStatus(d, i["admin_status"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "capability"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["capability"], _ = expandSwitchControllerManagedSwitchComponentsCapability(d, i["capability"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "component_id"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["component-id"], _ = expandSwitchControllerManagedSwitchComponentsComponentId(d, i["component_id"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "description"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["description"], _ = expandSwitchControllerManagedSwitchComponentsDescription(d, i["description"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "dynamically_discovered"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["dynamically-discovered"], _ = expandSwitchControllerManagedSwitchComponentsDynamicallyDiscovered(d, i["dynamically_discovered"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "max_allowed_trunk_members"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["max-allowed-trunk-members"], _ = expandSwitchControllerManagedSwitchComponentsMaxAllowedTrunkMembers(d, i["max_allowed_trunk_members"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "name"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["name"], _ = expandSwitchControllerManagedSwitchComponentsName(d, i["name"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "poe_detection_type"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["poe-detection-type"], _ = expandSwitchControllerManagedSwitchComponentsPoeDetectionType(d, i["poe_detection_type"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "role"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["role"], _ = expandSwitchControllerManagedSwitchComponentsRole(d, i["role"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "serial_number"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["serial-number"], _ = expandSwitchControllerManagedSwitchComponentsSerialNumber(d, i["serial_number"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "status"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["status"], _ = expandSwitchControllerManagedSwitchComponentsStatus(d, i["status"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "sw_version"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["sw-version"], _ = expandSwitchControllerManagedSwitchComponentsSwVersion(d, i["sw_version"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "switch_id"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["switch-id"], _ = expandSwitchControllerManagedSwitchComponentsSwitchId(d, i["switch_id"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "type"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["type"], _ = expandSwitchControllerManagedSwitchComponentsType(d, i["type"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "version"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["version"], _ = expandSwitchControllerManagedSwitchComponentsVersion(d, i["version"], pre_append)
+		}
+
+		if len(tmp) > 0 {
+			result = append(result, tmp)
+		}
+
+		con += 1
+	}
+
+	return result, nil
+}
+
+func expandSwitchControllerManagedSwitchComponentsAdminStatus(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSwitchControllerManagedSwitchComponentsCapability(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSwitchControllerManagedSwitchComponentsComponentId(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSwitchControllerManagedSwitchComponentsDescription(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSwitchControllerManagedSwitchComponentsDynamicallyDiscovered(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSwitchControllerManagedSwitchComponentsMaxAllowedTrunkMembers(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSwitchControllerManagedSwitchComponentsName(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSwitchControllerManagedSwitchComponentsPoeDetectionType(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSwitchControllerManagedSwitchComponentsRole(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSwitchControllerManagedSwitchComponentsSerialNumber(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSwitchControllerManagedSwitchComponentsStatus(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSwitchControllerManagedSwitchComponentsSwVersion(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSwitchControllerManagedSwitchComponentsSwitchId(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSwitchControllerManagedSwitchComponentsType(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSwitchControllerManagedSwitchComponentsVersion(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
 }
 
 func expandSwitchControllerManagedSwitchCustomCommand(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
@@ -7287,6 +7833,10 @@ func expandSwitchControllerManagedSwitchPoePreStandardDetection(d *schema.Resour
 	return v, nil
 }
 
+func expandSwitchControllerManagedSwitchPortSelectionCriteria(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandSwitchControllerManagedSwitchPorts(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	l := v.([]interface{})
 	result := make([]map[string]interface{}, 0, len(l))
@@ -7386,6 +7936,16 @@ func expandSwitchControllerManagedSwitchPorts(d *schema.ResourceData, v interfac
 			tmp["edge-port"], _ = expandSwitchControllerManagedSwitchPortsEdgePort(d, i["edge_port"], pre_append)
 		}
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "eee_tx_idle_time"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["eee-tx-idle-time"], _ = expandSwitchControllerManagedSwitchPortsEeeTxIdleTime(d, i["eee_tx_idle_time"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "eee_tx_wake_time"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["eee-tx-wake-time"], _ = expandSwitchControllerManagedSwitchPortsEeeTxWakeTime(d, i["eee_tx_wake_time"], pre_append)
+		}
+
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "export_tags"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
 			tmp["export-tags"], _ = expandSwitchControllerManagedSwitchPortsExportTags(d, i["export_tags"], pre_append)
@@ -7394,6 +7954,11 @@ func expandSwitchControllerManagedSwitchPorts(d *schema.ResourceData, v interfac
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "encrypted_port"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
 			tmp["encrypted-port"], _ = expandSwitchControllerManagedSwitchPortsEncryptedPort(d, i["encrypted_port"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "energy_efficient_ethernet"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["energy-efficient-ethernet"], _ = expandSwitchControllerManagedSwitchPortsEnergyEfficientEthernet(d, i["energy_efficient_ethernet"], pre_append)
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "export_to"
@@ -7669,6 +8234,11 @@ func expandSwitchControllerManagedSwitchPorts(d *schema.ResourceData, v interfac
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "poe_max_power"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
 			tmp["poe-max-power"], _ = expandSwitchControllerManagedSwitchPortsPoeMaxPower(d, i["poe_max_power"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "poe_max_power_mode"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["poe-max-power-mode"], _ = expandSwitchControllerManagedSwitchPortsPoeMaxPowerMode(d, i["poe_max_power_mode"], pre_append)
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "poe_mode_bt_cabable"
@@ -7982,11 +8552,23 @@ func expandSwitchControllerManagedSwitchPortsEdgePort(d *schema.ResourceData, v 
 	return v, nil
 }
 
+func expandSwitchControllerManagedSwitchPortsEeeTxIdleTime(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSwitchControllerManagedSwitchPortsEeeTxWakeTime(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandSwitchControllerManagedSwitchPortsExportTags(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return expandStringList(v.(*schema.Set).List()), nil
 }
 
 func expandSwitchControllerManagedSwitchPortsEncryptedPort(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSwitchControllerManagedSwitchPortsEnergyEfficientEthernet(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -8207,6 +8789,10 @@ func expandSwitchControllerManagedSwitchPortsPoeCapable(d *schema.ResourceData, 
 }
 
 func expandSwitchControllerManagedSwitchPortsPoeMaxPower(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSwitchControllerManagedSwitchPortsPoeMaxPowerMode(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -9926,6 +10512,15 @@ func getObjectSwitchControllerManagedSwitch(d *schema.ResourceData) (*map[string
 		}
 	}
 
+	if v, ok := d.GetOk("components"); ok || d.HasChange("components") {
+		t, err := expandSwitchControllerManagedSwitchComponents(d, v, "components")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["components"] = t
+		}
+	}
+
 	if v, ok := d.GetOk("custom_command"); ok || d.HasChange("custom_command") {
 		t, err := expandSwitchControllerManagedSwitchCustomCommand(d, v, "custom_command")
 		if err != nil {
@@ -10220,6 +10815,15 @@ func getObjectSwitchControllerManagedSwitch(d *schema.ResourceData) (*map[string
 			return &obj, err
 		} else if t != nil {
 			obj["poe-pre-standard-detection"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("port_selection_criteria"); ok || d.HasChange("port_selection_criteria") {
+		t, err := expandSwitchControllerManagedSwitchPortSelectionCriteria(d, v, "port_selection_criteria")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["port-selection-criteria"] = t
 		}
 	}
 

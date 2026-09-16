@@ -149,6 +149,7 @@ The `interface` block supports:
 * `state_refresh_interval` - Interval between sending state-refresh packets (1 - 100 sec, default = 60).
 * `static_group` - Statically set multicast groups to forward out.
 * `ttl_threshold` - Minimum TTL of multicast packets that will be forwarded (applied only to new multicast routes) (1 - 255, default = 1).
+* `update_source` - Interface to use as source IP.
 
 The `igmp` block supports:
 

@@ -30,11 +30,18 @@ The following arguments are supported:
 * `color` - Integer value to determine the color of the icon in the GUI (range 1 to 32, default = 0, which sets the value to 1).
 * `comment` - Comment.
 * `country` - IPv6 addresses associated to a specific country.
+* `custom_tags` - Custom tags.
+* `display_with` - Display object with first tag, all tags, or just the icon. Valid values: `all-tags`, `first-tag-only`, `icon-and-color`.
+
 * `dynamic_mapping` - Dynamic_Mapping. The structure of `dynamic_mapping` block is documented below.
 * `end_ip` - Final IP address (inclusive) in the range for the address (format: xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx).
 * `end_mac` - Last MAC address in the range.
 * `epg_name` - Endpoint group name.
+* `fabric_force_sync` - Enable/disable forced synchronization of configuration objects from the root FortiGate unit to the downstream devices.  Configuration conflict check is skipped. Valid values: `disable`, `enable`.
+
 * `fabric_object` - Security Fabric global object setting. Valid values: `disable`, `enable`.
+
+* `fabric_object_source` - Source of truth for fabric object. Valid values: `member`, `local`, `root`.
 
 * `filter` - Match criteria filter.
 * `fqdn` - Fully qualified domain name.
@@ -47,6 +54,8 @@ The following arguments are supported:
 * `macaddr` - Multiple MAC address ranges.
 * `name` - Address name.
 * `obj_id` - Object ID for NSX.
+* `obj_tag` - Tag of dynamic address object.
+* `obsolete` - Obsolete.
 * `passive_fqdn_learning` - Enable/disable passive learning of FQDNs.  When enabled, the FortiGate learns, trusts, and saves FQDNs from endpoint DNS queries (default = enable). Valid values: `disable`, `enable`.
 
 * `route_tag` - route-tag address.
@@ -55,8 +64,13 @@ The following arguments are supported:
 
 * `sdn_tag` - SDN Tag.
 * `start_ip` - First IP address (inclusive) in the range for the address (format: xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx).
+* `sub_type` - Sub-type of address. Valid values: `sdn`, `ems-tag`, `8021x`.
+
 * `start_mac` - First MAC address in the range.
 * `subnet_segment` - Subnet-Segment. The structure of `subnet_segment` block is documented below.
+* `tag_detection_level` - Tag detection level of dynamic address object.
+* `tag_type` - Tag type of dynamic address object.
+* `tag_uuid` - Foreign UUID of dynamic address object.
 * `tagging` - Tagging. The structure of `tagging` block is documented below.
 * `template` - IPv6 address template.
 * `tenant` - Tenant.
@@ -77,10 +91,17 @@ The `dynamic_mapping` block supports:
 * `color` - Integer value to determine the color of the icon in the GUI (range 1 to 32, default = 0, which sets the value to 1).
 * `comment` - Comment.
 * `country` - IPv6 addresses associated to a specific country.
+* `custom_tags` - Custom tags.
+* `display_with` - Display object with first tag, all tags, or just the icon. Valid values: `all-tags`, `first-tag-only`, `icon-and-color`.
+
 * `end_ip` - Final IP address (inclusive) in the range for the address (format: xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx).
 * `end_mac` - End-Mac.
 * `epg_name` - Endpoint group name.
+* `fabric_force_sync` - Enable/disable forced synchronization of configuration objects from the root FortiGate unit to the downstream devices.  Configuration conflict check is skipped. Valid values: `disable`, `enable`.
+
 * `fabric_object` - Security Fabric global object setting. Valid values: `disable`, `enable`.
+
+* `fabric_object_source` - Source of truth for fabric object. Valid values: `member`, `local`, `root`.
 
 * `filter` - Match criteria filter.
 * `fqdn` - Fully qualified domain name.
@@ -91,6 +112,8 @@ The `dynamic_mapping` block supports:
 * `ip6` - IPv6 address prefix (format: xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx/xxx).
 * `macaddr` - Multiple MAC address ranges.
 * `obj_id` - Object ID for NSX.
+* `obj_tag` - Tag of dynamic address object.
+* `obsolete` - Obsolete.
 * `passive_fqdn_learning` - Enable/disable passive learning of FQDNs.  When enabled, the FortiGate learns, trusts, and saves FQDNs from endpoint DNS queries (default = enable). Valid values: `disable`, `enable`.
 
 * `route_tag` - route-tag address.
@@ -100,7 +123,12 @@ The `dynamic_mapping` block supports:
 * `sdn_tag` - SDN Tag.
 * `start_ip` - First IP address (inclusive) in the range for the address (format: xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx).
 * `start_mac` - Start-Mac.
+* `sub_type` - Sub-type of address. Valid values: `sdn`, `ems-tag`, `8021x`.
+
 * `subnet_segment` - Subnet-Segment. The structure of `subnet_segment` block is documented below.
+* `tag_detection_level` - Tag detection level of dynamic address object.
+* `tag_type` - Tag type of dynamic address object.
+* `tag_uuid` - Foreign UUID of dynamic address object.
 * `tags` - Tags.
 * `template` - IPv6 address template.
 * `tenant` - Tenant.

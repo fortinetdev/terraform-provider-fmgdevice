@@ -157,6 +157,10 @@ func resourceWirelessControllerGlobal() *schema.Resource {
 				Type:     schema.TypeInt,
 				Optional: true,
 			},
+			"max_vap_per_radio": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 			"max_wids_entry": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
@@ -420,6 +424,10 @@ func flattenWirelessControllerGlobalMaxStaOffline(v interface{}, d *schema.Resou
 }
 
 func flattenWirelessControllerGlobalMaxStaOfflineIp2Mac(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWirelessControllerGlobalMaxVapPerRadio(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -716,6 +724,16 @@ func refreshObjectWirelessControllerGlobal(d *schema.ResourceData, o map[string]
 		}
 	}
 
+	if err = d.Set("max_vap_per_radio", flattenWirelessControllerGlobalMaxVapPerRadio(o["max-vap-per-radio"], d, "max_vap_per_radio")); err != nil {
+		if vv, ok := fortiAPIPatch(o["max-vap-per-radio"], "WirelessControllerGlobal-MaxVapPerRadio"); ok {
+			if err = d.Set("max_vap_per_radio", vv); err != nil {
+				return fmt.Errorf("Error reading max_vap_per_radio: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading max_vap_per_radio: %v", err)
+		}
+	}
+
 	if err = d.Set("max_wids_entry", flattenWirelessControllerGlobalMaxWidsEntry(o["max-wids-entry"], d, "max_wids_entry")); err != nil {
 		if vv, ok := fortiAPIPatch(o["max-wids-entry"], "WirelessControllerGlobal-MaxWidsEntry"); ok {
 			if err = d.Set("max_wids_entry", vv); err != nil {
@@ -922,6 +940,10 @@ func expandWirelessControllerGlobalMaxStaOffline(d *schema.ResourceData, v inter
 }
 
 func expandWirelessControllerGlobalMaxStaOfflineIp2Mac(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWirelessControllerGlobalMaxVapPerRadio(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -1190,6 +1212,15 @@ func getObjectWirelessControllerGlobal(d *schema.ResourceData, bemptysontable bo
 			return &obj, err
 		} else if t != nil {
 			obj["max-sta-offline-ip2mac"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("max_vap_per_radio"); ok || d.HasChange("max_vap_per_radio") {
+		t, err := expandWirelessControllerGlobalMaxVapPerRadio(d, v, "max_vap_per_radio")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["max-vap-per-radio"] = t
 		}
 	}
 

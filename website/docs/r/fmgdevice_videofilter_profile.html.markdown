@@ -28,12 +28,19 @@ The following arguments are supported:
 
 * `default_action` - Default-Action. Valid values: `block`, `monitor`, `allow`.
 
+* `fabric_force_sync` - Enable/disable forced synchronization of configuration objects from the root FortiGate unit to the downstream devices.  Configuration conflict check is skipped. Valid values: `disable`, `enable`.
+
+* `fabric_object` - Security Fabric global object setting. Valid values: `disable`, `enable`.
+
+* `fabric_object_source` - Source of truth for fabric object. Valid values: `member`, `local`, `root`.
+
 * `filters` - Filters. The structure of `filters` block is documented below.
 * `fortiguard_category` - Fortiguard-Category. The structure of `fortiguard_category` block is documented below.
 * `log` - Log. Valid values: `disable`, `enable`.
 
 * `name` - Name.
 * `replacemsg_group` - Replacement message group.
+* `uuid` - Universally Unique Identifier (UUID; automatically assigned but can be manually reset).
 * `vimeo` - Enable/disable Vimeo video source. Valid values: `disable`, `enable`.
 
 * `vimeo_restrict` - Vimeo-Restrict.

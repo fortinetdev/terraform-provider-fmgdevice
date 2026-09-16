@@ -65,6 +65,8 @@ The following arguments are supported:
 * `ike_localid` - Local ID the FortiGate uses for authentication as a VPN client.
 * `ike_localid_type` - IKE local ID type. Valid values: `fqdn`, `asn1dn`.
 
+* `keyid` - FortiGate internal keyid.
+* `keyid_password` - FortiGate internal keyid-password.
 * `last_updated` - Time at which certificate was last updated.
 * `name` - Name.
 * `name_encoding` - Name encoding method for auto-regeneration. Valid values: `printable`, `utf8`.

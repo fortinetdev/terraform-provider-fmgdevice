@@ -208,6 +208,10 @@ func resourceSystemCentralManagement() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"use_default_servers_as_main": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 			"use_elbc_vdom": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -543,6 +547,10 @@ func flattenSystemCentralManagementType(v interface{}, d *schema.ResourceData, p
 	return v
 }
 
+func flattenSystemCentralManagementUseDefaultServersAsMain(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenSystemCentralManagementUseElbcVdom(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -856,6 +864,16 @@ func refreshObjectSystemCentralManagement(d *schema.ResourceData, o map[string]i
 		}
 	}
 
+	if err = d.Set("use_default_servers_as_main", flattenSystemCentralManagementUseDefaultServersAsMain(o["use-default-servers-as-main"], d, "use_default_servers_as_main")); err != nil {
+		if vv, ok := fortiAPIPatch(o["use-default-servers-as-main"], "SystemCentralManagement-UseDefaultServersAsMain"); ok {
+			if err = d.Set("use_default_servers_as_main", vv); err != nil {
+				return fmt.Errorf("Error reading use_default_servers_as_main: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading use_default_servers_as_main: %v", err)
+		}
+	}
+
 	if err = d.Set("use_elbc_vdom", flattenSystemCentralManagementUseElbcVdom(o["use-elbc-vdom"], d, "use_elbc_vdom")); err != nil {
 		if vv, ok := fortiAPIPatch(o["use-elbc-vdom"], "SystemCentralManagement-UseElbcVdom"); ok {
 			if err = d.Set("use_elbc_vdom", vv); err != nil {
@@ -1078,6 +1096,10 @@ func expandSystemCentralManagementServerListServerType(d *schema.ResourceData, v
 }
 
 func expandSystemCentralManagementType(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemCentralManagementUseDefaultServersAsMain(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -1349,6 +1371,15 @@ func getObjectSystemCentralManagement(d *schema.ResourceData, bemptysontable boo
 			return &obj, err
 		} else if t != nil {
 			obj["type"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("use_default_servers_as_main"); ok || d.HasChange("use_default_servers_as_main") {
+		t, err := expandSystemCentralManagementUseDefaultServersAsMain(d, v, "use_default_servers_as_main")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["use-default-servers-as-main"] = t
 		}
 	}
 

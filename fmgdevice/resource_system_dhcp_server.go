@@ -164,6 +164,16 @@ func resourceSystemDhcpServer() *schema.Resource {
 							Type:     schema.TypeInt,
 							Optional: true,
 						},
+						"oui_match": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"oui_string": &schema.Schema{
+							Type:     schema.TypeSet,
+							Elem:     &schema.Schema{Type: schema.TypeString},
+							Optional: true,
+							Computed: true,
+						},
 						"start_ip": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
@@ -190,6 +200,10 @@ func resourceSystemDhcpServer() *schema.Resource {
 							Elem:     &schema.Schema{Type: schema.TypeString},
 							Optional: true,
 							Computed: true,
+						},
+						"vendor": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
 						},
 					},
 				},
@@ -238,6 +252,16 @@ func resourceSystemDhcpServer() *schema.Resource {
 							Type:     schema.TypeInt,
 							Optional: true,
 						},
+						"oui_match": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"oui_string": &schema.Schema{
+							Type:     schema.TypeSet,
+							Elem:     &schema.Schema{Type: schema.TypeString},
+							Optional: true,
+							Computed: true,
+						},
 						"start_ip": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
@@ -264,6 +288,10 @@ func resourceSystemDhcpServer() *schema.Resource {
 							Elem:     &schema.Schema{Type: schema.TypeString},
 							Optional: true,
 							Computed: true,
+						},
+						"vendor": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
 						},
 					},
 				},
@@ -433,6 +461,22 @@ func resourceSystemDhcpServer() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"template": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Computed: true,
+			},
+			"template_subnet": &schema.Schema{
+				Type:     schema.TypeList,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Computed: true,
+			},
+			"template_subnet_from_interface": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 			"tftp_server": &schema.Schema{
 				Type:     schema.TypeSet,
 				Elem:     &schema.Schema{Type: schema.TypeString},
@@ -600,14 +644,21 @@ func resourceSystemDhcpServerUpdate(d *schema.ResourceData, m interface{}) error
 
 	wsParams["adom"] = adomv
 
-	_, err = c.UpdateSystemDhcpServer(obj, mkey, paradict, wsParams)
+	v, err := c.UpdateSystemDhcpServer(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemDhcpServer resource: %v", err)
 	}
 
 	log.Printf(strconv.Itoa(c.Retries))
 
-	d.SetId(strconv.Itoa(getIntKey(d, "fosid")))
+	if v != nil && v["id"] != nil {
+		if vidn, ok := v["id"].(float64); ok {
+			d.SetId(strconv.Itoa(int(vidn)))
+			return resourceSystemDhcpServerRead(d, m)
+		} else {
+			return fmt.Errorf("Error updating SystemDhcpServer resource: %v", err)
+		}
+	}
 
 	return resourceSystemDhcpServerRead(d, m)
 }
@@ -809,6 +860,18 @@ func flattenSystemDhcpServerExcludeRange(v interface{}, d *schema.ResourceData, 
 			tmp["lease_time"] = fortiAPISubPartPatch(v, "SystemDhcpServer-ExcludeRange-LeaseTime")
 		}
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "oui_match"
+		if _, ok := i["oui-match"]; ok {
+			v := flattenSystemDhcpServerExcludeRangeOuiMatch(i["oui-match"], d, pre_append)
+			tmp["oui_match"] = fortiAPISubPartPatch(v, "SystemDhcpServer-ExcludeRange-OuiMatch")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "oui_string"
+		if _, ok := i["oui-string"]; ok {
+			v := flattenSystemDhcpServerExcludeRangeOuiString(i["oui-string"], d, pre_append)
+			tmp["oui_string"] = fortiAPISubPartPatch(v, "SystemDhcpServer-ExcludeRange-OuiString")
+		}
+
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "start_ip"
 		if _, ok := i["start-ip"]; ok {
 			v := flattenSystemDhcpServerExcludeRangeStartIp(i["start-ip"], d, pre_append)
@@ -839,6 +902,12 @@ func flattenSystemDhcpServerExcludeRange(v interface{}, d *schema.ResourceData, 
 			tmp["vci_string"] = fortiAPISubPartPatch(v, "SystemDhcpServer-ExcludeRange-VciString")
 		}
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "vendor"
+		if _, ok := i["vendor"]; ok {
+			v := flattenSystemDhcpServerExcludeRangeVendor(i["vendor"], d, pre_append)
+			tmp["vendor"] = fortiAPISubPartPatch(v, "SystemDhcpServer-ExcludeRange-Vendor")
+		}
+
 		if len(tmp) > 0 {
 			result = append(result, tmp)
 		}
@@ -861,6 +930,14 @@ func flattenSystemDhcpServerExcludeRangeLeaseTime(v interface{}, d *schema.Resou
 	return v
 }
 
+func flattenSystemDhcpServerExcludeRangeOuiMatch(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemDhcpServerExcludeRangeOuiString(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
 func flattenSystemDhcpServerExcludeRangeStartIp(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -879,6 +956,10 @@ func flattenSystemDhcpServerExcludeRangeVciMatch(v interface{}, d *schema.Resour
 
 func flattenSystemDhcpServerExcludeRangeVciString(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return flattenStringList(v)
+}
+
+func flattenSystemDhcpServerExcludeRangeVendor(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
 }
 
 func flattenSystemDhcpServerFilename(v interface{}, d *schema.ResourceData, pre string) interface{} {
@@ -938,6 +1019,18 @@ func flattenSystemDhcpServerIpRange(v interface{}, d *schema.ResourceData, pre s
 			tmp["lease_time"] = fortiAPISubPartPatch(v, "SystemDhcpServer-IpRange-LeaseTime")
 		}
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "oui_match"
+		if _, ok := i["oui-match"]; ok {
+			v := flattenSystemDhcpServerIpRangeOuiMatch(i["oui-match"], d, pre_append)
+			tmp["oui_match"] = fortiAPISubPartPatch(v, "SystemDhcpServer-IpRange-OuiMatch")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "oui_string"
+		if _, ok := i["oui-string"]; ok {
+			v := flattenSystemDhcpServerIpRangeOuiString(i["oui-string"], d, pre_append)
+			tmp["oui_string"] = fortiAPISubPartPatch(v, "SystemDhcpServer-IpRange-OuiString")
+		}
+
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "start_ip"
 		if _, ok := i["start-ip"]; ok {
 			v := flattenSystemDhcpServerIpRangeStartIp(i["start-ip"], d, pre_append)
@@ -968,6 +1061,12 @@ func flattenSystemDhcpServerIpRange(v interface{}, d *schema.ResourceData, pre s
 			tmp["vci_string"] = fortiAPISubPartPatch(v, "SystemDhcpServer-IpRange-VciString")
 		}
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "vendor"
+		if _, ok := i["vendor"]; ok {
+			v := flattenSystemDhcpServerIpRangeVendor(i["vendor"], d, pre_append)
+			tmp["vendor"] = fortiAPISubPartPatch(v, "SystemDhcpServer-IpRange-Vendor")
+		}
+
 		if len(tmp) > 0 {
 			result = append(result, tmp)
 		}
@@ -990,6 +1089,14 @@ func flattenSystemDhcpServerIpRangeLeaseTime(v interface{}, d *schema.ResourceDa
 	return v
 }
 
+func flattenSystemDhcpServerIpRangeOuiMatch(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemDhcpServerIpRangeOuiString(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
 func flattenSystemDhcpServerIpRangeStartIp(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -1008,6 +1115,10 @@ func flattenSystemDhcpServerIpRangeVciMatch(v interface{}, d *schema.ResourceDat
 
 func flattenSystemDhcpServerIpRangeVciString(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return flattenStringList(v)
+}
+
+func flattenSystemDhcpServerIpRangeVendor(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
 }
 
 func flattenSystemDhcpServerIpsecLeaseHold(v interface{}, d *schema.ResourceData, pre string) interface{} {
@@ -1307,6 +1418,18 @@ func flattenSystemDhcpServerSharedSubnet(v interface{}, d *schema.ResourceData, 
 }
 
 func flattenSystemDhcpServerStatus(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemDhcpServerTemplate(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
+func flattenSystemDhcpServerTemplateSubnet(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
+func flattenSystemDhcpServerTemplateSubnetFromInterface(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -1817,6 +1940,36 @@ func refreshObjectSystemDhcpServer(d *schema.ResourceData, o map[string]interfac
 		}
 	}
 
+	if err = d.Set("template", flattenSystemDhcpServerTemplate(o["template"], d, "template")); err != nil {
+		if vv, ok := fortiAPIPatch(o["template"], "SystemDhcpServer-Template"); ok {
+			if err = d.Set("template", vv); err != nil {
+				return fmt.Errorf("Error reading template: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading template: %v", err)
+		}
+	}
+
+	if err = d.Set("template_subnet", flattenSystemDhcpServerTemplateSubnet(o["template-subnet"], d, "template_subnet")); err != nil {
+		if vv, ok := fortiAPIPatch(o["template-subnet"], "SystemDhcpServer-TemplateSubnet"); ok {
+			if err = d.Set("template_subnet", vv); err != nil {
+				return fmt.Errorf("Error reading template_subnet: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading template_subnet: %v", err)
+		}
+	}
+
+	if err = d.Set("template_subnet_from_interface", flattenSystemDhcpServerTemplateSubnetFromInterface(o["template-subnet-from-interface"], d, "template_subnet_from_interface")); err != nil {
+		if vv, ok := fortiAPIPatch(o["template-subnet-from-interface"], "SystemDhcpServer-TemplateSubnetFromInterface"); ok {
+			if err = d.Set("template_subnet_from_interface", vv); err != nil {
+				return fmt.Errorf("Error reading template_subnet_from_interface: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading template_subnet_from_interface: %v", err)
+		}
+	}
+
 	if err = d.Set("tftp_server", flattenSystemDhcpServerTftpServer(o["tftp-server"], d, "tftp_server")); err != nil {
 		if vv, ok := fortiAPIPatch(o["tftp-server"], "SystemDhcpServer-TftpServer"); ok {
 			if err = d.Set("tftp_server", vv); err != nil {
@@ -2041,6 +2194,16 @@ func expandSystemDhcpServerExcludeRange(d *schema.ResourceData, v interface{}, p
 			tmp["lease-time"], _ = expandSystemDhcpServerExcludeRangeLeaseTime(d, i["lease_time"], pre_append)
 		}
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "oui_match"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["oui-match"], _ = expandSystemDhcpServerExcludeRangeOuiMatch(d, i["oui_match"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "oui_string"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["oui-string"], _ = expandSystemDhcpServerExcludeRangeOuiString(d, i["oui_string"], pre_append)
+		}
+
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "start_ip"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
 			tmp["start-ip"], _ = expandSystemDhcpServerExcludeRangeStartIp(d, i["start_ip"], pre_append)
@@ -2066,6 +2229,11 @@ func expandSystemDhcpServerExcludeRange(d *schema.ResourceData, v interface{}, p
 			tmp["vci-string"], _ = expandSystemDhcpServerExcludeRangeVciString(d, i["vci_string"], pre_append)
 		}
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "vendor"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["vendor"], _ = expandSystemDhcpServerExcludeRangeVendor(d, i["vendor"], pre_append)
+		}
+
 		if len(tmp) > 0 {
 			result = append(result, tmp)
 		}
@@ -2088,6 +2256,14 @@ func expandSystemDhcpServerExcludeRangeLeaseTime(d *schema.ResourceData, v inter
 	return v, nil
 }
 
+func expandSystemDhcpServerExcludeRangeOuiMatch(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemDhcpServerExcludeRangeOuiString(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
 func expandSystemDhcpServerExcludeRangeStartIp(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -2106,6 +2282,10 @@ func expandSystemDhcpServerExcludeRangeVciMatch(d *schema.ResourceData, v interf
 
 func expandSystemDhcpServerExcludeRangeVciString(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandSystemDhcpServerExcludeRangeVendor(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
 }
 
 func expandSystemDhcpServerFilename(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
@@ -2157,6 +2337,16 @@ func expandSystemDhcpServerIpRange(d *schema.ResourceData, v interface{}, pre st
 			tmp["lease-time"], _ = expandSystemDhcpServerIpRangeLeaseTime(d, i["lease_time"], pre_append)
 		}
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "oui_match"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["oui-match"], _ = expandSystemDhcpServerIpRangeOuiMatch(d, i["oui_match"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "oui_string"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["oui-string"], _ = expandSystemDhcpServerIpRangeOuiString(d, i["oui_string"], pre_append)
+		}
+
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "start_ip"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
 			tmp["start-ip"], _ = expandSystemDhcpServerIpRangeStartIp(d, i["start_ip"], pre_append)
@@ -2182,6 +2372,11 @@ func expandSystemDhcpServerIpRange(d *schema.ResourceData, v interface{}, pre st
 			tmp["vci-string"], _ = expandSystemDhcpServerIpRangeVciString(d, i["vci_string"], pre_append)
 		}
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "vendor"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["vendor"], _ = expandSystemDhcpServerIpRangeVendor(d, i["vendor"], pre_append)
+		}
+
 		if len(tmp) > 0 {
 			result = append(result, tmp)
 		}
@@ -2204,6 +2399,14 @@ func expandSystemDhcpServerIpRangeLeaseTime(d *schema.ResourceData, v interface{
 	return v, nil
 }
 
+func expandSystemDhcpServerIpRangeOuiMatch(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemDhcpServerIpRangeOuiString(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
 func expandSystemDhcpServerIpRangeStartIp(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -2222,6 +2425,10 @@ func expandSystemDhcpServerIpRangeVciMatch(d *schema.ResourceData, v interface{}
 
 func expandSystemDhcpServerIpRangeVciString(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandSystemDhcpServerIpRangeVendor(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
 }
 
 func expandSystemDhcpServerIpsecLeaseHold(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
@@ -2492,6 +2699,18 @@ func expandSystemDhcpServerSharedSubnet(d *schema.ResourceData, v interface{}, p
 }
 
 func expandSystemDhcpServerStatus(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemDhcpServerTemplate(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandSystemDhcpServerTemplateSubnet(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.([]interface{})), nil
+}
+
+func expandSystemDhcpServerTemplateSubnetFromInterface(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -2908,6 +3127,33 @@ func getObjectSystemDhcpServer(d *schema.ResourceData) (*map[string]interface{},
 			return &obj, err
 		} else if t != nil {
 			obj["status"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("template"); ok || d.HasChange("template") {
+		t, err := expandSystemDhcpServerTemplate(d, v, "template")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["template"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("template_subnet"); ok || d.HasChange("template_subnet") {
+		t, err := expandSystemDhcpServerTemplateSubnet(d, v, "template_subnet")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["template-subnet"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("template_subnet_from_interface"); ok || d.HasChange("template_subnet_from_interface") {
+		t, err := expandSystemDhcpServerTemplateSubnetFromInterface(d, v, "template_subnet_from_interface")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["template-subnet-from-interface"] = t
 		}
 	}
 

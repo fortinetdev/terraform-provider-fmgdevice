@@ -79,6 +79,11 @@ func resourceApplicationListEntries() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"classification": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
 			"exclusion": &schema.Schema{
 				Type:     schema.TypeSet,
 				Elem:     &schema.Schema{Type: schema.TypeInt},
@@ -462,6 +467,10 @@ func flattenApplicationListEntriesCategory2edl(v interface{}, d *schema.Resource
 	return flattenStringList(v)
 }
 
+func flattenApplicationListEntriesClassification2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenApplicationListEntriesExclusion2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return flattenIntegerList(v)
 }
@@ -704,6 +713,16 @@ func refreshObjectApplicationListEntries(d *schema.ResourceData, o map[string]in
 			}
 		} else {
 			return fmt.Errorf("Error reading category: %v", err)
+		}
+	}
+
+	if err = d.Set("classification", flattenApplicationListEntriesClassification2edl(o["classification"], d, "classification")); err != nil {
+		if vv, ok := fortiAPIPatch(o["classification"], "ApplicationListEntries-Classification"); ok {
+			if err = d.Set("classification", vv); err != nil {
+				return fmt.Errorf("Error reading classification: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading classification: %v", err)
 		}
 	}
 
@@ -966,6 +985,10 @@ func expandApplicationListEntriesCategory2edl(d *schema.ResourceData, v interfac
 	return expandStringList(v.(*schema.Set).List()), nil
 }
 
+func expandApplicationListEntriesClassification2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandApplicationListEntriesExclusion2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return expandIntegerList(v.(*schema.Set).List()), nil
 }
@@ -1189,6 +1212,15 @@ func getObjectApplicationListEntries(d *schema.ResourceData) (*map[string]interf
 			return &obj, err
 		} else if t != nil {
 			obj["category"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("classification"); ok || d.HasChange("classification") {
+		t, err := expandApplicationListEntriesClassification2edl(d, v, "classification")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["classification"] = t
 		}
 	}
 

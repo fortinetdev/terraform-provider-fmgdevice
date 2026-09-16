@@ -12,6 +12,7 @@ Configure HA.
 ~> The following variables have sub resource. Avoid using them together, otherwise conflicts and overwrites may occur.
 >- `frup_settings`: `fmgdevice_system_ha_frupsettings`
 >- `ha_mgmt_interfaces`: `fmgdevice_system_ha_hamgmtinterfaces`
+>- `link_group`: `fmgdevice_system_ha_linkgroup`
 >- `secondary_vcluster`: `fmgdevice_system_ha_secondaryvcluster`
 >- `unicast_peers`: `fmgdevice_system_ha_unicastpeers`
 >- `vcluster`: `fmgdevice_system_ha_vcluster`
@@ -96,6 +97,8 @@ The following arguments are supported:
 * `l2ep_eth_type` - Telnet session HA heartbeat packet Ethertype (4-digit hex).
 * `link_failed_signal` - Enable to shut down all interfaces for 1 sec after a failover. Use if gratuitous ARPs do not update network. Valid values: `disable`, `enable`.
 
+* `link_group` - Link-Group. The structure of `link_group` block is documented below.
+* `link_group_monitor` - Link groups to check for port monitoring.
 * `load_balance_all` - Enable to load balance TCP sessions. Disable to load balance proxy sessions only. Valid values: `disable`, `enable`.
 
 * `logical_sn` - Enable/disable usage of the logical serial number. Valid values: `disable`, `enable`.
@@ -202,6 +205,12 @@ The `ha_mgmt_interfaces` block supports:
 * `id` - Table ID.
 * `interface` - Interface to reserve for HA management.
 
+The `link_group` block supports:
+
+* `member` - Member interface in this link group.
+* `min_members` - Minimum number of members that must be up before this link group is considered up.
+* `name` - Name.
+
 The `secondary_vcluster` block supports:
 
 * `monitor` - Interfaces to check for port monitoring (or link failure).
@@ -225,6 +234,7 @@ The `unicast_peers` block supports:
 
 The `vcluster` block supports:
 
+* `link_group_monitor` - Link groups to check for port monitoring.
 * `monitor` - Interfaces to check for port monitoring (or link failure).
 * `override` - Enable and increase the priority of the unit that should always be primary (master). Valid values: `disable`, `enable`.
 

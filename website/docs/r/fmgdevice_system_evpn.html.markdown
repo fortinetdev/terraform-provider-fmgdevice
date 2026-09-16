@@ -31,14 +31,23 @@ The following arguments are supported:
 * `device_name` - FortiManager managed device name. This variable is used in the request URL. If not specified, it will inherit the variable `device_name` of the provider.
 * `device_vdom` - FortiManager managed device vdom. This variable is used in the request URL. If not specified, it will inherit the variable `device_vdom` of the provider.
 
+* `adv_default_gw` - Enable/disable advertisement of default gateway. Valid values: `disable`, `enable`.
+
 * `arp_suppression` - Enable/disable ARP suppression. Valid values: `disable`, `enable`.
+
+* `distribute_local_route` - Enable/disable distribution of local EVPN routes as IPv4 routes to BGP. Valid values: `disable`, `enable`.
 
 * `export_rt` - List of export route targets.
 * `fosid` - ID.
 * `import_rt` - List of import route targets.
+* `interface` - Outgoing interface for all VxLANs in this L3VRF EVPN instance.
 * `ip_local_learning` - Enable/disable IP address local learning. Valid values: `disable`, `enable`.
 
+* `l3_instance` - L3VRF EVPN instance ID.
 * `rd` - Route Distinguisher: AA:NN|A.B.C.D:NN.
+* `type` - EVPN instance type. Valid values: `macvrf`, `ipvrf`.
+
+* `virtual_mac_vrid` - VRID used to generate virtual MAC address.
 
 
 ## Attribute Reference

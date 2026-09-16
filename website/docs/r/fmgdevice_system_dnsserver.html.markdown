@@ -42,6 +42,7 @@ The following arguments are supported:
 * `mode` - DNS server mode. Valid values: `recursive`, `non-recursive`, `forward-only`.
 
 * `name` - DNS server name.
+* `ssl_cert` - SSL certificate for DNS.
 
 
 ## Attribute Reference

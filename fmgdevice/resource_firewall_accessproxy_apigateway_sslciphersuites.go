@@ -188,14 +188,21 @@ func resourceFirewallAccessProxyApiGatewaySslCipherSuitesUpdate(d *schema.Resour
 
 	wsParams["adom"] = adomv
 
-	_, err = c.UpdateFirewallAccessProxyApiGatewaySslCipherSuites(obj, mkey, paradict, wsParams)
+	v, err := c.UpdateFirewallAccessProxyApiGatewaySslCipherSuites(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating FirewallAccessProxyApiGatewaySslCipherSuites resource: %v", err)
 	}
 
 	log.Printf(strconv.Itoa(c.Retries))
 
-	d.SetId(strconv.Itoa(getIntKey(d, "priority")))
+	if v != nil && v["priority"] != nil {
+		if vidn, ok := v["priority"].(float64); ok {
+			d.SetId(strconv.Itoa(int(vidn)))
+			return resourceFirewallAccessProxyApiGatewaySslCipherSuitesRead(d, m)
+		} else {
+			return fmt.Errorf("Error updating FirewallAccessProxyApiGatewaySslCipherSuites resource: %v", err)
+		}
+	}
 
 	return resourceFirewallAccessProxyApiGatewaySslCipherSuitesRead(d, m)
 }

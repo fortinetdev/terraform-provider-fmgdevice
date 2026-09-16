@@ -61,6 +61,16 @@ func resourceFirewallVip() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"auth_portal": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"auth_virtual_host": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Computed: true,
+			},
 			"client_cert": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -106,6 +116,16 @@ func resourceFirewallVip() *schema.Resource {
 						"arp_reply": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+						},
+						"auth_portal": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"auth_virtual_host": &schema.Schema{
+							Type:     schema.TypeSet,
+							Elem:     &schema.Schema{Type: schema.TypeString},
+							Optional: true,
+							Computed: true,
 						},
 						"client_cert": &schema.Schema{
 							Type:     schema.TypeString,
@@ -240,6 +260,10 @@ func resourceFirewallVip() *schema.Resource {
 							Optional: true,
 						},
 						"ldb_method": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"log_blocked_traffic": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
 						},
@@ -529,6 +553,10 @@ func resourceFirewallVip() *schema.Resource {
 							Type:     schema.TypeString,
 							Optional: true,
 						},
+						"ssl_http_strip_secure_cookies": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
 						"ssl_max_version": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
@@ -553,6 +581,12 @@ func resourceFirewallVip() *schema.Resource {
 							Type:     schema.TypeString,
 							Optional: true,
 						},
+						"ssl_server_client_certificate": &schema.Schema{
+							Type:     schema.TypeSet,
+							Elem:     &schema.Schema{Type: schema.TypeString},
+							Optional: true,
+							Computed: true,
+						},
 						"ssl_server_max_version": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
@@ -574,6 +608,10 @@ func resourceFirewallVip() *schema.Resource {
 							Optional: true,
 						},
 						"ssl_server_session_state_type": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"ssl_upstream": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
 						},
@@ -756,6 +794,10 @@ func resourceFirewallVip() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+			},
+			"log_blocked_traffic": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
 			},
 			"mapped_addr": &schema.Schema{
 				Type:     schema.TypeSet,
@@ -1133,6 +1175,10 @@ func resourceFirewallVip() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"ssl_http_strip_secure_cookies": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 			"ssl_max_version": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -1186,6 +1232,12 @@ func resourceFirewallVip() *schema.Resource {
 					},
 				},
 			},
+			"ssl_server_client_certificate": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Computed: true,
+			},
 			"ssl_server_max_version": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -1215,6 +1267,10 @@ func resourceFirewallVip() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+			},
+			"ssl_upstream": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
 			},
 			"status": &schema.Schema{
 				Type:     schema.TypeString,
@@ -1464,6 +1520,14 @@ func flattenFirewallVipArpReply(v interface{}, d *schema.ResourceData, pre strin
 	return v
 }
 
+func flattenFirewallVipAuthPortal(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenFirewallVipAuthVirtualHost(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
 func flattenFirewallVipClientCert(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -1515,6 +1579,18 @@ func flattenFirewallVipDynamicMapping(v interface{}, d *schema.ResourceData, pre
 		if _, ok := i["arp-reply"]; ok {
 			v := flattenFirewallVipDynamicMappingArpReply(i["arp-reply"], d, pre_append)
 			tmp["arp_reply"] = fortiAPISubPartPatch(v, "FirewallVip-DynamicMapping-ArpReply")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "auth_portal"
+		if _, ok := i["auth-portal"]; ok {
+			v := flattenFirewallVipDynamicMappingAuthPortal(i["auth-portal"], d, pre_append)
+			tmp["auth_portal"] = fortiAPISubPartPatch(v, "FirewallVip-DynamicMapping-AuthPortal")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "auth_virtual_host"
+		if _, ok := i["auth-virtual-host"]; ok {
+			v := flattenFirewallVipDynamicMappingAuthVirtualHost(i["auth-virtual-host"], d, pre_append)
+			tmp["auth_virtual_host"] = fortiAPISubPartPatch(v, "FirewallVip-DynamicMapping-AuthVirtualHost")
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "client_cert"
@@ -1713,6 +1789,12 @@ func flattenFirewallVipDynamicMapping(v interface{}, d *schema.ResourceData, pre
 		if _, ok := i["ldb-method"]; ok {
 			v := flattenFirewallVipDynamicMappingLdbMethod(i["ldb-method"], d, pre_append)
 			tmp["ldb_method"] = fortiAPISubPartPatch(v, "FirewallVip-DynamicMapping-LdbMethod")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "log_blocked_traffic"
+		if _, ok := i["log-blocked-traffic"]; ok {
+			v := flattenFirewallVipDynamicMappingLogBlockedTraffic(i["log-blocked-traffic"], d, pre_append)
+			tmp["log_blocked_traffic"] = fortiAPISubPartPatch(v, "FirewallVip-DynamicMapping-LogBlockedTraffic")
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "mapped_addr"
@@ -1967,6 +2049,12 @@ func flattenFirewallVipDynamicMapping(v interface{}, d *schema.ResourceData, pre
 			tmp["ssl_http_match_host"] = fortiAPISubPartPatch(v, "FirewallVip-DynamicMapping-SslHttpMatchHost")
 		}
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "ssl_http_strip_secure_cookies"
+		if _, ok := i["ssl-http-strip-secure-cookies"]; ok {
+			v := flattenFirewallVipDynamicMappingSslHttpStripSecureCookies(i["ssl-http-strip-secure-cookies"], d, pre_append)
+			tmp["ssl_http_strip_secure_cookies"] = fortiAPISubPartPatch(v, "FirewallVip-DynamicMapping-SslHttpStripSecureCookies")
+		}
+
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "ssl_max_version"
 		if _, ok := i["ssl-max-version"]; ok {
 			v := flattenFirewallVipDynamicMappingSslMaxVersion(i["ssl-max-version"], d, pre_append)
@@ -2003,6 +2091,12 @@ func flattenFirewallVipDynamicMapping(v interface{}, d *schema.ResourceData, pre
 			tmp["ssl_server_algorithm"] = fortiAPISubPartPatch(v, "FirewallVip-DynamicMapping-SslServerAlgorithm")
 		}
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "ssl_server_client_certificate"
+		if _, ok := i["ssl-server-client-certificate"]; ok {
+			v := flattenFirewallVipDynamicMappingSslServerClientCertificate(i["ssl-server-client-certificate"], d, pre_append)
+			tmp["ssl_server_client_certificate"] = fortiAPISubPartPatch(v, "FirewallVip-DynamicMapping-SslServerClientCertificate")
+		}
+
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "ssl_server_max_version"
 		if _, ok := i["ssl-server-max-version"]; ok {
 			v := flattenFirewallVipDynamicMappingSslServerMaxVersion(i["ssl-server-max-version"], d, pre_append)
@@ -2037,6 +2131,12 @@ func flattenFirewallVipDynamicMapping(v interface{}, d *schema.ResourceData, pre
 		if _, ok := i["ssl-server-session-state-type"]; ok {
 			v := flattenFirewallVipDynamicMappingSslServerSessionStateType(i["ssl-server-session-state-type"], d, pre_append)
 			tmp["ssl_server_session_state_type"] = fortiAPISubPartPatch(v, "FirewallVip-DynamicMapping-SslServerSessionStateType")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "ssl_upstream"
+		if _, ok := i["ssl-upstream"]; ok {
+			v := flattenFirewallVipDynamicMappingSslUpstream(i["ssl-upstream"], d, pre_append)
+			tmp["ssl_upstream"] = fortiAPISubPartPatch(v, "FirewallVip-DynamicMapping-SslUpstream")
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "status"
@@ -2146,6 +2246,14 @@ func flattenFirewallVipDynamicMappingAddNat46Route(v interface{}, d *schema.Reso
 
 func flattenFirewallVipDynamicMappingArpReply(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
+}
+
+func flattenFirewallVipDynamicMappingAuthPortal(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenFirewallVipDynamicMappingAuthVirtualHost(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
 }
 
 func flattenFirewallVipDynamicMappingClientCert(v interface{}, d *schema.ResourceData, pre string) interface{} {
@@ -2277,6 +2385,10 @@ func flattenFirewallVipDynamicMappingIpv6Mappedport(v interface{}, d *schema.Res
 }
 
 func flattenFirewallVipDynamicMappingLdbMethod(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenFirewallVipDynamicMappingLogBlockedTraffic(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -2708,6 +2820,10 @@ func flattenFirewallVipDynamicMappingSslHttpMatchHost(v interface{}, d *schema.R
 	return v
 }
 
+func flattenFirewallVipDynamicMappingSslHttpStripSecureCookies(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenFirewallVipDynamicMappingSslMaxVersion(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -2732,6 +2848,10 @@ func flattenFirewallVipDynamicMappingSslServerAlgorithm(v interface{}, d *schema
 	return v
 }
 
+func flattenFirewallVipDynamicMappingSslServerClientCertificate(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
 func flattenFirewallVipDynamicMappingSslServerMaxVersion(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -2753,6 +2873,10 @@ func flattenFirewallVipDynamicMappingSslServerSessionStateTimeout(v interface{},
 }
 
 func flattenFirewallVipDynamicMappingSslServerSessionStateType(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenFirewallVipDynamicMappingSslUpstream(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -2942,6 +3066,10 @@ func flattenFirewallVipIpv6Mappedport(v interface{}, d *schema.ResourceData, pre
 }
 
 func flattenFirewallVipLdbMethod(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenFirewallVipLogBlockedTraffic(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -3462,6 +3590,10 @@ func flattenFirewallVipSslHttpMatchHost(v interface{}, d *schema.ResourceData, p
 	return v
 }
 
+func flattenFirewallVipSslHttpStripSecureCookies(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenFirewallVipSslMaxVersion(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -3545,6 +3677,10 @@ func flattenFirewallVipSslServerCipherSuitesVersions(v interface{}, d *schema.Re
 	return flattenStringList(v)
 }
 
+func flattenFirewallVipSslServerClientCertificate(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
 func flattenFirewallVipSslServerMaxVersion(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -3566,6 +3702,10 @@ func flattenFirewallVipSslServerSessionStateTimeout(v interface{}, d *schema.Res
 }
 
 func flattenFirewallVipSslServerSessionStateType(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenFirewallVipSslUpstream(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -3625,6 +3765,26 @@ func refreshObjectFirewallVip(d *schema.ResourceData, o map[string]interface{}) 
 			}
 		} else {
 			return fmt.Errorf("Error reading arp_reply: %v", err)
+		}
+	}
+
+	if err = d.Set("auth_portal", flattenFirewallVipAuthPortal(o["auth-portal"], d, "auth_portal")); err != nil {
+		if vv, ok := fortiAPIPatch(o["auth-portal"], "FirewallVip-AuthPortal"); ok {
+			if err = d.Set("auth_portal", vv); err != nil {
+				return fmt.Errorf("Error reading auth_portal: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading auth_portal: %v", err)
+		}
+	}
+
+	if err = d.Set("auth_virtual_host", flattenFirewallVipAuthVirtualHost(o["auth-virtual-host"], d, "auth_virtual_host")); err != nil {
+		if vv, ok := fortiAPIPatch(o["auth-virtual-host"], "FirewallVip-AuthVirtualHost"); ok {
+			if err = d.Set("auth_virtual_host", vv); err != nil {
+				return fmt.Errorf("Error reading auth_virtual_host: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading auth_virtual_host: %v", err)
 		}
 	}
 
@@ -3993,6 +4153,16 @@ func refreshObjectFirewallVip(d *schema.ResourceData, o map[string]interface{}) 
 			}
 		} else {
 			return fmt.Errorf("Error reading ldb_method: %v", err)
+		}
+	}
+
+	if err = d.Set("log_blocked_traffic", flattenFirewallVipLogBlockedTraffic(o["log-blocked-traffic"], d, "log_blocked_traffic")); err != nil {
+		if vv, ok := fortiAPIPatch(o["log-blocked-traffic"], "FirewallVip-LogBlockedTraffic"); ok {
+			if err = d.Set("log_blocked_traffic", vv); err != nil {
+				return fmt.Errorf("Error reading log_blocked_traffic: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading log_blocked_traffic: %v", err)
 		}
 	}
 
@@ -4478,6 +4648,16 @@ func refreshObjectFirewallVip(d *schema.ResourceData, o map[string]interface{}) 
 		}
 	}
 
+	if err = d.Set("ssl_http_strip_secure_cookies", flattenFirewallVipSslHttpStripSecureCookies(o["ssl-http-strip-secure-cookies"], d, "ssl_http_strip_secure_cookies")); err != nil {
+		if vv, ok := fortiAPIPatch(o["ssl-http-strip-secure-cookies"], "FirewallVip-SslHttpStripSecureCookies"); ok {
+			if err = d.Set("ssl_http_strip_secure_cookies", vv); err != nil {
+				return fmt.Errorf("Error reading ssl_http_strip_secure_cookies: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading ssl_http_strip_secure_cookies: %v", err)
+		}
+	}
+
 	if err = d.Set("ssl_max_version", flattenFirewallVipSslMaxVersion(o["ssl-max-version"], d, "ssl_max_version")); err != nil {
 		if vv, ok := fortiAPIPatch(o["ssl-max-version"], "FirewallVip-SslMaxVersion"); ok {
 			if err = d.Set("ssl_max_version", vv); err != nil {
@@ -4562,6 +4742,16 @@ func refreshObjectFirewallVip(d *schema.ResourceData, o map[string]interface{}) 
 		}
 	}
 
+	if err = d.Set("ssl_server_client_certificate", flattenFirewallVipSslServerClientCertificate(o["ssl-server-client-certificate"], d, "ssl_server_client_certificate")); err != nil {
+		if vv, ok := fortiAPIPatch(o["ssl-server-client-certificate"], "FirewallVip-SslServerClientCertificate"); ok {
+			if err = d.Set("ssl_server_client_certificate", vv); err != nil {
+				return fmt.Errorf("Error reading ssl_server_client_certificate: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading ssl_server_client_certificate: %v", err)
+		}
+	}
+
 	if err = d.Set("ssl_server_max_version", flattenFirewallVipSslServerMaxVersion(o["ssl-server-max-version"], d, "ssl_server_max_version")); err != nil {
 		if vv, ok := fortiAPIPatch(o["ssl-server-max-version"], "FirewallVip-SslServerMaxVersion"); ok {
 			if err = d.Set("ssl_server_max_version", vv); err != nil {
@@ -4619,6 +4809,16 @@ func refreshObjectFirewallVip(d *schema.ResourceData, o map[string]interface{}) 
 			}
 		} else {
 			return fmt.Errorf("Error reading ssl_server_session_state_type: %v", err)
+		}
+	}
+
+	if err = d.Set("ssl_upstream", flattenFirewallVipSslUpstream(o["ssl-upstream"], d, "ssl_upstream")); err != nil {
+		if vv, ok := fortiAPIPatch(o["ssl-upstream"], "FirewallVip-SslUpstream"); ok {
+			if err = d.Set("ssl_upstream", vv); err != nil {
+				return fmt.Errorf("Error reading ssl_upstream: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading ssl_upstream: %v", err)
 		}
 	}
 
@@ -4719,6 +4919,14 @@ func expandFirewallVipArpReply(d *schema.ResourceData, v interface{}, pre string
 	return v, nil
 }
 
+func expandFirewallVipAuthPortal(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandFirewallVipAuthVirtualHost(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
 func expandFirewallVipClientCert(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -4767,6 +4975,16 @@ func expandFirewallVipDynamicMapping(d *schema.ResourceData, v interface{}, pre 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "arp_reply"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
 			tmp["arp-reply"], _ = expandFirewallVipDynamicMappingArpReply(d, i["arp_reply"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "auth_portal"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["auth-portal"], _ = expandFirewallVipDynamicMappingAuthPortal(d, i["auth_portal"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "auth_virtual_host"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["auth-virtual-host"], _ = expandFirewallVipDynamicMappingAuthVirtualHost(d, i["auth_virtual_host"], pre_append)
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "client_cert"
@@ -4932,6 +5150,11 @@ func expandFirewallVipDynamicMapping(d *schema.ResourceData, v interface{}, pre 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "ldb_method"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
 			tmp["ldb-method"], _ = expandFirewallVipDynamicMappingLdbMethod(d, i["ldb_method"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "log_blocked_traffic"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["log-blocked-traffic"], _ = expandFirewallVipDynamicMappingLogBlockedTraffic(d, i["log_blocked_traffic"], pre_append)
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "mapped_addr"
@@ -5154,6 +5377,11 @@ func expandFirewallVipDynamicMapping(d *schema.ResourceData, v interface{}, pre 
 			tmp["ssl-http-match-host"], _ = expandFirewallVipDynamicMappingSslHttpMatchHost(d, i["ssl_http_match_host"], pre_append)
 		}
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "ssl_http_strip_secure_cookies"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["ssl-http-strip-secure-cookies"], _ = expandFirewallVipDynamicMappingSslHttpStripSecureCookies(d, i["ssl_http_strip_secure_cookies"], pre_append)
+		}
+
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "ssl_max_version"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
 			tmp["ssl-max-version"], _ = expandFirewallVipDynamicMappingSslMaxVersion(d, i["ssl_max_version"], pre_append)
@@ -5184,6 +5412,11 @@ func expandFirewallVipDynamicMapping(d *schema.ResourceData, v interface{}, pre 
 			tmp["ssl-server-algorithm"], _ = expandFirewallVipDynamicMappingSslServerAlgorithm(d, i["ssl_server_algorithm"], pre_append)
 		}
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "ssl_server_client_certificate"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["ssl-server-client-certificate"], _ = expandFirewallVipDynamicMappingSslServerClientCertificate(d, i["ssl_server_client_certificate"], pre_append)
+		}
+
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "ssl_server_max_version"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
 			tmp["ssl-server-max-version"], _ = expandFirewallVipDynamicMappingSslServerMaxVersion(d, i["ssl_server_max_version"], pre_append)
@@ -5212,6 +5445,11 @@ func expandFirewallVipDynamicMapping(d *schema.ResourceData, v interface{}, pre 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "ssl_server_session_state_type"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
 			tmp["ssl-server-session-state-type"], _ = expandFirewallVipDynamicMappingSslServerSessionStateType(d, i["ssl_server_session_state_type"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "ssl_upstream"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["ssl-upstream"], _ = expandFirewallVipDynamicMappingSslUpstream(d, i["ssl_upstream"], pre_append)
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "status"
@@ -5307,6 +5545,14 @@ func expandFirewallVipDynamicMappingAddNat46Route(d *schema.ResourceData, v inte
 
 func expandFirewallVipDynamicMappingArpReply(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
+}
+
+func expandFirewallVipDynamicMappingAuthPortal(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandFirewallVipDynamicMappingAuthVirtualHost(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
 }
 
 func expandFirewallVipDynamicMappingClientCert(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
@@ -5438,6 +5684,10 @@ func expandFirewallVipDynamicMappingIpv6Mappedport(d *schema.ResourceData, v int
 }
 
 func expandFirewallVipDynamicMappingLdbMethod(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandFirewallVipDynamicMappingLogBlockedTraffic(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -5838,6 +6088,10 @@ func expandFirewallVipDynamicMappingSslHttpMatchHost(d *schema.ResourceData, v i
 	return v, nil
 }
 
+func expandFirewallVipDynamicMappingSslHttpStripSecureCookies(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandFirewallVipDynamicMappingSslMaxVersion(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -5862,6 +6116,10 @@ func expandFirewallVipDynamicMappingSslServerAlgorithm(d *schema.ResourceData, v
 	return v, nil
 }
 
+func expandFirewallVipDynamicMappingSslServerClientCertificate(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
 func expandFirewallVipDynamicMappingSslServerMaxVersion(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -5883,6 +6141,10 @@ func expandFirewallVipDynamicMappingSslServerSessionStateTimeout(d *schema.Resou
 }
 
 func expandFirewallVipDynamicMappingSslServerSessionStateType(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandFirewallVipDynamicMappingSslUpstream(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -6065,6 +6327,10 @@ func expandFirewallVipIpv6Mappedport(d *schema.ResourceData, v interface{}, pre 
 }
 
 func expandFirewallVipLdbMethod(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandFirewallVipLogBlockedTraffic(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -6547,6 +6813,10 @@ func expandFirewallVipSslHttpMatchHost(d *schema.ResourceData, v interface{}, pr
 	return v, nil
 }
 
+func expandFirewallVipSslHttpStripSecureCookies(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandFirewallVipSslMaxVersion(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -6622,6 +6892,10 @@ func expandFirewallVipSslServerCipherSuitesVersions(d *schema.ResourceData, v in
 	return expandStringList(v.(*schema.Set).List()), nil
 }
 
+func expandFirewallVipSslServerClientCertificate(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
 func expandFirewallVipSslServerMaxVersion(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -6643,6 +6917,10 @@ func expandFirewallVipSslServerSessionStateTimeout(d *schema.ResourceData, v int
 }
 
 func expandFirewallVipSslServerSessionStateType(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandFirewallVipSslUpstream(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -6696,6 +6974,24 @@ func getObjectFirewallVip(d *schema.ResourceData) (*map[string]interface{}, erro
 			return &obj, err
 		} else if t != nil {
 			obj["arp-reply"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("auth_portal"); ok || d.HasChange("auth_portal") {
+		t, err := expandFirewallVipAuthPortal(d, v, "auth_portal")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["auth-portal"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("auth_virtual_host"); ok || d.HasChange("auth_virtual_host") {
+		t, err := expandFirewallVipAuthVirtualHost(d, v, "auth_virtual_host")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["auth-virtual-host"] = t
 		}
 	}
 
@@ -7002,6 +7298,15 @@ func getObjectFirewallVip(d *schema.ResourceData) (*map[string]interface{}, erro
 			return &obj, err
 		} else if t != nil {
 			obj["ldb-method"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("log_blocked_traffic"); ok || d.HasChange("log_blocked_traffic") {
+		t, err := expandFirewallVipLogBlockedTraffic(d, v, "log_blocked_traffic")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["log-blocked-traffic"] = t
 		}
 	}
 
@@ -7401,6 +7706,15 @@ func getObjectFirewallVip(d *schema.ResourceData) (*map[string]interface{}, erro
 		}
 	}
 
+	if v, ok := d.GetOk("ssl_http_strip_secure_cookies"); ok || d.HasChange("ssl_http_strip_secure_cookies") {
+		t, err := expandFirewallVipSslHttpStripSecureCookies(d, v, "ssl_http_strip_secure_cookies")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["ssl-http-strip-secure-cookies"] = t
+		}
+	}
+
 	if v, ok := d.GetOk("ssl_max_version"); ok || d.HasChange("ssl_max_version") {
 		t, err := expandFirewallVipSslMaxVersion(d, v, "ssl_max_version")
 		if err != nil {
@@ -7464,6 +7778,15 @@ func getObjectFirewallVip(d *schema.ResourceData) (*map[string]interface{}, erro
 		}
 	}
 
+	if v, ok := d.GetOk("ssl_server_client_certificate"); ok || d.HasChange("ssl_server_client_certificate") {
+		t, err := expandFirewallVipSslServerClientCertificate(d, v, "ssl_server_client_certificate")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["ssl-server-client-certificate"] = t
+		}
+	}
+
 	if v, ok := d.GetOk("ssl_server_max_version"); ok || d.HasChange("ssl_server_max_version") {
 		t, err := expandFirewallVipSslServerMaxVersion(d, v, "ssl_server_max_version")
 		if err != nil {
@@ -7515,6 +7838,15 @@ func getObjectFirewallVip(d *schema.ResourceData) (*map[string]interface{}, erro
 			return &obj, err
 		} else if t != nil {
 			obj["ssl-server-session-state-type"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("ssl_upstream"); ok || d.HasChange("ssl_upstream") {
+		t, err := expandFirewallVipSslUpstream(d, v, "ssl_upstream")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["ssl-upstream"] = t
 		}
 	}
 

@@ -131,6 +131,22 @@ func resourceSystemIpam() *schema.Resource {
 							Optional: true,
 							Computed: true,
 						},
+						"dhcp_template": &schema.Schema{
+							Type:     schema.TypeSet,
+							Elem:     &schema.Schema{Type: schema.TypeString},
+							Optional: true,
+							Computed: true,
+						},
+						"item_name": &schema.Schema{
+							Type:     schema.TypeSet,
+							Elem:     &schema.Schema{Type: schema.TypeString},
+							Optional: true,
+							Computed: true,
+						},
+						"item_type": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
 						"interface": &schema.Schema{
 							Type:     schema.TypeSet,
 							Elem:     &schema.Schema{Type: schema.TypeString},
@@ -149,6 +165,12 @@ func resourceSystemIpam() *schema.Resource {
 						},
 						"role": &schema.Schema{
 							Type:     schema.TypeString,
+							Optional: true,
+							Computed: true,
+						},
+						"vdom": &schema.Schema{
+							Type:     schema.TypeSet,
+							Elem:     &schema.Schema{Type: schema.TypeString},
 							Optional: true,
 							Computed: true,
 						},
@@ -464,6 +486,24 @@ func flattenSystemIpamRules(v interface{}, d *schema.ResourceData, pre string) [
 			tmp["dhcp"] = fortiAPISubPartPatch(v, "SystemIpam-Rules-Dhcp")
 		}
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "dhcp_template"
+		if _, ok := i["dhcp-template"]; ok {
+			v := flattenSystemIpamRulesDhcpTemplate(i["dhcp-template"], d, pre_append)
+			tmp["dhcp_template"] = fortiAPISubPartPatch(v, "SystemIpam-Rules-DhcpTemplate")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "item_name"
+		if _, ok := i["item-name"]; ok {
+			v := flattenSystemIpamRulesItemName(i["item-name"], d, pre_append)
+			tmp["item_name"] = fortiAPISubPartPatch(v, "SystemIpam-Rules-ItemName")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "item_type"
+		if _, ok := i["item-type"]; ok {
+			v := flattenSystemIpamRulesItemType(i["item-type"], d, pre_append)
+			tmp["item_type"] = fortiAPISubPartPatch(v, "SystemIpam-Rules-ItemType")
+		}
+
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "interface"
 		if _, ok := i["interface"]; ok {
 			v := flattenSystemIpamRulesInterface(i["interface"], d, pre_append)
@@ -488,6 +528,12 @@ func flattenSystemIpamRules(v interface{}, d *schema.ResourceData, pre string) [
 			tmp["role"] = fortiAPISubPartPatch(v, "SystemIpam-Rules-Role")
 		}
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "vdom"
+		if _, ok := i["vdom"]; ok {
+			v := flattenSystemIpamRulesVdom(i["vdom"], d, pre_append)
+			tmp["vdom"] = fortiAPISubPartPatch(v, "SystemIpam-Rules-Vdom")
+		}
+
 		if len(tmp) > 0 {
 			result = append(result, tmp)
 		}
@@ -510,6 +556,18 @@ func flattenSystemIpamRulesDhcp(v interface{}, d *schema.ResourceData, pre strin
 	return v
 }
 
+func flattenSystemIpamRulesDhcpTemplate(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
+func flattenSystemIpamRulesItemName(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
+func flattenSystemIpamRulesItemType(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenSystemIpamRulesInterface(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return flattenStringList(v)
 }
@@ -524,6 +582,10 @@ func flattenSystemIpamRulesPool(v interface{}, d *schema.ResourceData, pre strin
 
 func flattenSystemIpamRulesRole(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
+}
+
+func flattenSystemIpamRulesVdom(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
 }
 
 func flattenSystemIpamServerType(v interface{}, d *schema.ResourceData, pre string) interface{} {
@@ -834,6 +896,21 @@ func expandSystemIpamRules(d *schema.ResourceData, v interface{}, pre string) (i
 			tmp["dhcp"], _ = expandSystemIpamRulesDhcp(d, i["dhcp"], pre_append)
 		}
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "dhcp_template"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["dhcp-template"], _ = expandSystemIpamRulesDhcpTemplate(d, i["dhcp_template"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "item_name"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["item-name"], _ = expandSystemIpamRulesItemName(d, i["item_name"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "item_type"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["item-type"], _ = expandSystemIpamRulesItemType(d, i["item_type"], pre_append)
+		}
+
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "interface"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
 			tmp["interface"], _ = expandSystemIpamRulesInterface(d, i["interface"], pre_append)
@@ -852,6 +929,11 @@ func expandSystemIpamRules(d *schema.ResourceData, v interface{}, pre string) (i
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "role"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
 			tmp["role"], _ = expandSystemIpamRulesRole(d, i["role"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "vdom"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["vdom"], _ = expandSystemIpamRulesVdom(d, i["vdom"], pre_append)
 		}
 
 		if len(tmp) > 0 {
@@ -876,6 +958,18 @@ func expandSystemIpamRulesDhcp(d *schema.ResourceData, v interface{}, pre string
 	return v, nil
 }
 
+func expandSystemIpamRulesDhcpTemplate(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandSystemIpamRulesItemName(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandSystemIpamRulesItemType(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandSystemIpamRulesInterface(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return expandStringList(v.(*schema.Set).List()), nil
 }
@@ -890,6 +984,10 @@ func expandSystemIpamRulesPool(d *schema.ResourceData, v interface{}, pre string
 
 func expandSystemIpamRulesRole(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
+}
+
+func expandSystemIpamRulesVdom(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
 }
 
 func expandSystemIpamServerType(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {

@@ -61,10 +61,26 @@ func resourceZtnaReverseConnector() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"default_incoming_vip": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Computed: true,
+			},
 			"health_check_interval": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
 				Computed: true,
+			},
+			"interface": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Computed: true,
+			},
+			"interface_select_method": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
 			},
 			"name": &schema.Schema{
 				Type:     schema.TypeString,
@@ -75,10 +91,24 @@ func resourceZtnaReverseConnector() *schema.Resource {
 				Type:     schema.TypeInt,
 				Optional: true,
 			},
+			"source_ip": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"source_ip_interface": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Computed: true,
+			},
 			"ssl_max_version": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+			},
+			"ssl_min_version": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
 			},
 			"status": &schema.Schema{
 				Type:     schema.TypeString,
@@ -90,6 +120,10 @@ func resourceZtnaReverseConnector() *schema.Resource {
 				Elem:     &schema.Schema{Type: schema.TypeString},
 				Optional: true,
 				Computed: true,
+			},
+			"vrf_select": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
 			},
 		},
 	}
@@ -295,7 +329,19 @@ func flattenZtnaReverseConnectorCertificate(v interface{}, d *schema.ResourceDat
 	return flattenStringList(v)
 }
 
+func flattenZtnaReverseConnectorDefaultIncomingVip(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
 func flattenZtnaReverseConnectorHealthCheckInterval(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenZtnaReverseConnectorInterface(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
+func flattenZtnaReverseConnectorInterfaceSelectMethod(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -307,7 +353,19 @@ func flattenZtnaReverseConnectorPort(v interface{}, d *schema.ResourceData, pre 
 	return v
 }
 
+func flattenZtnaReverseConnectorSourceIp(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenZtnaReverseConnectorSourceIpInterface(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
 func flattenZtnaReverseConnectorSslMaxVersion(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenZtnaReverseConnectorSslMinVersion(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -317,6 +375,10 @@ func flattenZtnaReverseConnectorStatus(v interface{}, d *schema.ResourceData, pr
 
 func flattenZtnaReverseConnectorTrustedServerCa(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return flattenStringList(v)
+}
+
+func flattenZtnaReverseConnectorVrfSelect(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
 }
 
 func refreshObjectZtnaReverseConnector(d *schema.ResourceData, o map[string]interface{}) error {
@@ -342,6 +404,16 @@ func refreshObjectZtnaReverseConnector(d *schema.ResourceData, o map[string]inte
 		}
 	}
 
+	if err = d.Set("default_incoming_vip", flattenZtnaReverseConnectorDefaultIncomingVip(o["default-incoming-vip"], d, "default_incoming_vip")); err != nil {
+		if vv, ok := fortiAPIPatch(o["default-incoming-vip"], "ZtnaReverseConnector-DefaultIncomingVip"); ok {
+			if err = d.Set("default_incoming_vip", vv); err != nil {
+				return fmt.Errorf("Error reading default_incoming_vip: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading default_incoming_vip: %v", err)
+		}
+	}
+
 	if err = d.Set("health_check_interval", flattenZtnaReverseConnectorHealthCheckInterval(o["health-check-interval"], d, "health_check_interval")); err != nil {
 		if vv, ok := fortiAPIPatch(o["health-check-interval"], "ZtnaReverseConnector-HealthCheckInterval"); ok {
 			if err = d.Set("health_check_interval", vv); err != nil {
@@ -349,6 +421,26 @@ func refreshObjectZtnaReverseConnector(d *schema.ResourceData, o map[string]inte
 			}
 		} else {
 			return fmt.Errorf("Error reading health_check_interval: %v", err)
+		}
+	}
+
+	if err = d.Set("interface", flattenZtnaReverseConnectorInterface(o["interface"], d, "interface")); err != nil {
+		if vv, ok := fortiAPIPatch(o["interface"], "ZtnaReverseConnector-Interface"); ok {
+			if err = d.Set("interface", vv); err != nil {
+				return fmt.Errorf("Error reading interface: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading interface: %v", err)
+		}
+	}
+
+	if err = d.Set("interface_select_method", flattenZtnaReverseConnectorInterfaceSelectMethod(o["interface-select-method"], d, "interface_select_method")); err != nil {
+		if vv, ok := fortiAPIPatch(o["interface-select-method"], "ZtnaReverseConnector-InterfaceSelectMethod"); ok {
+			if err = d.Set("interface_select_method", vv); err != nil {
+				return fmt.Errorf("Error reading interface_select_method: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading interface_select_method: %v", err)
 		}
 	}
 
@@ -372,6 +464,26 @@ func refreshObjectZtnaReverseConnector(d *schema.ResourceData, o map[string]inte
 		}
 	}
 
+	if err = d.Set("source_ip", flattenZtnaReverseConnectorSourceIp(o["source-ip"], d, "source_ip")); err != nil {
+		if vv, ok := fortiAPIPatch(o["source-ip"], "ZtnaReverseConnector-SourceIp"); ok {
+			if err = d.Set("source_ip", vv); err != nil {
+				return fmt.Errorf("Error reading source_ip: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading source_ip: %v", err)
+		}
+	}
+
+	if err = d.Set("source_ip_interface", flattenZtnaReverseConnectorSourceIpInterface(o["source-ip-interface"], d, "source_ip_interface")); err != nil {
+		if vv, ok := fortiAPIPatch(o["source-ip-interface"], "ZtnaReverseConnector-SourceIpInterface"); ok {
+			if err = d.Set("source_ip_interface", vv); err != nil {
+				return fmt.Errorf("Error reading source_ip_interface: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading source_ip_interface: %v", err)
+		}
+	}
+
 	if err = d.Set("ssl_max_version", flattenZtnaReverseConnectorSslMaxVersion(o["ssl-max-version"], d, "ssl_max_version")); err != nil {
 		if vv, ok := fortiAPIPatch(o["ssl-max-version"], "ZtnaReverseConnector-SslMaxVersion"); ok {
 			if err = d.Set("ssl_max_version", vv); err != nil {
@@ -379,6 +491,16 @@ func refreshObjectZtnaReverseConnector(d *schema.ResourceData, o map[string]inte
 			}
 		} else {
 			return fmt.Errorf("Error reading ssl_max_version: %v", err)
+		}
+	}
+
+	if err = d.Set("ssl_min_version", flattenZtnaReverseConnectorSslMinVersion(o["ssl-min-version"], d, "ssl_min_version")); err != nil {
+		if vv, ok := fortiAPIPatch(o["ssl-min-version"], "ZtnaReverseConnector-SslMinVersion"); ok {
+			if err = d.Set("ssl_min_version", vv); err != nil {
+				return fmt.Errorf("Error reading ssl_min_version: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading ssl_min_version: %v", err)
 		}
 	}
 
@@ -402,6 +524,16 @@ func refreshObjectZtnaReverseConnector(d *schema.ResourceData, o map[string]inte
 		}
 	}
 
+	if err = d.Set("vrf_select", flattenZtnaReverseConnectorVrfSelect(o["vrf-select"], d, "vrf_select")); err != nil {
+		if vv, ok := fortiAPIPatch(o["vrf-select"], "ZtnaReverseConnector-VrfSelect"); ok {
+			if err = d.Set("vrf_select", vv); err != nil {
+				return fmt.Errorf("Error reading vrf_select: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading vrf_select: %v", err)
+		}
+	}
+
 	return nil
 }
 
@@ -419,7 +551,19 @@ func expandZtnaReverseConnectorCertificate(d *schema.ResourceData, v interface{}
 	return expandStringList(v.(*schema.Set).List()), nil
 }
 
+func expandZtnaReverseConnectorDefaultIncomingVip(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
 func expandZtnaReverseConnectorHealthCheckInterval(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandZtnaReverseConnectorInterface(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandZtnaReverseConnectorInterfaceSelectMethod(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -431,7 +575,19 @@ func expandZtnaReverseConnectorPort(d *schema.ResourceData, v interface{}, pre s
 	return v, nil
 }
 
+func expandZtnaReverseConnectorSourceIp(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandZtnaReverseConnectorSourceIpInterface(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
 func expandZtnaReverseConnectorSslMaxVersion(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandZtnaReverseConnectorSslMinVersion(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -441,6 +597,10 @@ func expandZtnaReverseConnectorStatus(d *schema.ResourceData, v interface{}, pre
 
 func expandZtnaReverseConnectorTrustedServerCa(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandZtnaReverseConnectorVrfSelect(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
 }
 
 func getObjectZtnaReverseConnector(d *schema.ResourceData) (*map[string]interface{}, error) {
@@ -464,12 +624,39 @@ func getObjectZtnaReverseConnector(d *schema.ResourceData) (*map[string]interfac
 		}
 	}
 
+	if v, ok := d.GetOk("default_incoming_vip"); ok || d.HasChange("default_incoming_vip") {
+		t, err := expandZtnaReverseConnectorDefaultIncomingVip(d, v, "default_incoming_vip")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["default-incoming-vip"] = t
+		}
+	}
+
 	if v, ok := d.GetOk("health_check_interval"); ok || d.HasChange("health_check_interval") {
 		t, err := expandZtnaReverseConnectorHealthCheckInterval(d, v, "health_check_interval")
 		if err != nil {
 			return &obj, err
 		} else if t != nil {
 			obj["health-check-interval"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("interface"); ok || d.HasChange("interface") {
+		t, err := expandZtnaReverseConnectorInterface(d, v, "interface")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["interface"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("interface_select_method"); ok || d.HasChange("interface_select_method") {
+		t, err := expandZtnaReverseConnectorInterfaceSelectMethod(d, v, "interface_select_method")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["interface-select-method"] = t
 		}
 	}
 
@@ -491,12 +678,39 @@ func getObjectZtnaReverseConnector(d *schema.ResourceData) (*map[string]interfac
 		}
 	}
 
+	if v, ok := d.GetOk("source_ip"); ok || d.HasChange("source_ip") {
+		t, err := expandZtnaReverseConnectorSourceIp(d, v, "source_ip")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["source-ip"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("source_ip_interface"); ok || d.HasChange("source_ip_interface") {
+		t, err := expandZtnaReverseConnectorSourceIpInterface(d, v, "source_ip_interface")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["source-ip-interface"] = t
+		}
+	}
+
 	if v, ok := d.GetOk("ssl_max_version"); ok || d.HasChange("ssl_max_version") {
 		t, err := expandZtnaReverseConnectorSslMaxVersion(d, v, "ssl_max_version")
 		if err != nil {
 			return &obj, err
 		} else if t != nil {
 			obj["ssl-max-version"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("ssl_min_version"); ok || d.HasChange("ssl_min_version") {
+		t, err := expandZtnaReverseConnectorSslMinVersion(d, v, "ssl_min_version")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["ssl-min-version"] = t
 		}
 	}
 
@@ -515,6 +729,15 @@ func getObjectZtnaReverseConnector(d *schema.ResourceData) (*map[string]interfac
 			return &obj, err
 		} else if t != nil {
 			obj["trusted-server-ca"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("vrf_select"); ok || d.HasChange("vrf_select") {
+		t, err := expandZtnaReverseConnectorVrfSelect(d, v, "vrf_select")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["vrf-select"] = t
 		}
 	}
 

@@ -11,6 +11,7 @@ Configure FortiSwitch devices that are managed by this FortiGate.
 
 ~> The following variables have sub resource. Avoid using them together, otherwise conflicts and overwrites may occur.
 >- `n802_1x_settings`: `fmgdevice_switchcontroller_managedswitch_8021xsettings`
+>- `components`: `fmgdevice_switchcontroller_managedswitch_components`
 >- `custom_command`: `fmgdevice_switchcontroller_managedswitch_customcommand`
 >- `dhcp_snooping_static_client`: `fmgdevice_switchcontroller_managedswitch_dhcpsnoopingstaticclient`
 >- `igmp_snooping`: `fmgdevice_switchcontroller_managedswitch_igmpsnooping`
@@ -79,6 +80,7 @@ The following arguments are supported:
 * `n802_1x_settings` - 802-1X-Settings. The structure of `n802_1x_settings` block is documented below.
 * `_platform` - _Platform.
 * `access_profile` - FortiSwitch access profile.
+* `components` - Components. The structure of `components` block is documented below.
 * `custom_command` - Custom-Command. The structure of `custom_command` block is documented below.
 * `delayed_restart_trigger` - Delayed restart triggered for this FortiSwitch.
 * `description` - Description.
@@ -123,6 +125,8 @@ The following arguments are supported:
 * `poe_lldp_detection` - Enable/disable PoE LLDP detection. Valid values: `disable`, `enable`.
 
 * `poe_pre_standard_detection` - Enable/disable PoE pre-standard detection. Valid values: `disable`, `enable`.
+
+* `port_selection_criteria` - Algorithm for aggregate port selection. Valid values: `src-mac`, `dst-mac`, `src-dst-mac`, `src-ip`, `dst-ip`, `src-dst-ip`.
 
 * `ports` - Ports. The structure of `ports` block is documented below.
 * `pre_provisioned` - Pre-provisioned managed switch.
@@ -172,9 +176,13 @@ The following arguments are supported:
 
 The `n802_1x_settings` block supports:
 
+* `allow_mac_move` - Enable/disable MAC move (default = enable). Valid values: `disable`, `enable`.
+
 * `link_down_auth` - Authentication state to set if a link is down. Valid values: `set-unauth`, `no-action`.
 
 * `local_override` - Enable to override global 802.1X settings on individual FortiSwitches. Valid values: `disable`, `enable`.
+
+* `mab_entry_as` - Configure MAB MAC entry as static or dynamic (default = static). Valid values: `dynamic`, `static`.
 
 * `mab_reauth` - Enable or disable MAB reauthentication settings. Valid values: `disable`, `enable`.
 
@@ -191,6 +199,28 @@ The `n802_1x_settings` block supports:
 * `max_reauth_attempt` - Maximum number of authentication attempts (0 - 15, default = 3).
 * `reauth_period` - Reauthentication time interval (1 - 1440 min, default = 60, 0 = disable).
 * `tx_period` - 802.1X Tx period (seconds, default=30).
+
+The `components` block supports:
+
+* `admin_status` - Managed-switch component admin-status. Valid values: `disable`, `enable`.
+
+* `capability` - Managed-switch feature capability list.
+* `component_id` - Managed-switch component id in stacking/chassis.
+* `description` - Managed-switch component description.
+* `dynamically_discovered` - Dynamically-Discovered.
+* `max_allowed_trunk_members` - Managed-switch component maximum allowed trunk members.
+* `name` - Managed-switch component name.
+* `poe_detection_type` - Managed-switch component PoE detection type.
+* `role` - Managed-switch components role. Valid values: `None`, `Primary`, `Backup`, `Follower`, `Standalone`.
+
+* `serial_number` - Managed-switch component serial number.
+* `status` - Status. Valid values: `offline`, `online`.
+
+* `sw_version` - Managed-switch component software version.
+* `switch_id` - Switch-Id.
+* `type` - Managed-switch component type. Valid values: `stack-node`, `supervisor`, `linecard`.
+
+* `version` - Managed-switch component version.
 
 The `custom_command` block supports:
 
@@ -275,8 +305,12 @@ The `ports` block supports:
 * `dsl_profile` - DSL policy configuration.
 * `edge_port` - Enable/disable this interface as an edge port, bridging connections between workstations and/or computers. Valid values: `disable`, `enable`.
 
+* `eee_tx_idle_time` - Time in which the transmitter is in low power idle (LPI) before transitioning to the refresh state in microseconds (0 - 2560, default = 60).
+* `eee_tx_wake_time` - Time for the transmitter to transition from low power idle (LPI) to its normal operating state in microseconds (0 - 2560, default = 30).
 * `export_tags` - Configure export tag(s) for FortiSwitch port when exported to a virtual port pool.
 * `encrypted_port` - Encrypted-Port.
+* `energy_efficient_ethernet` - Enable/disable energy efficient events. Valid values: `disable`, `enable`.
+
 * `export_to` - Export managed-switch port to a tenant VDOM.
 * `export_to_pool` - Switch controller export port to pool-list.
 * `export_to_pool_flag` - Switch controller export port to pool-list.
@@ -351,6 +385,8 @@ The `ports` block supports:
 * `pd_capable` - Powered device capable.
 * `poe_capable` - PoE capable.
 * `poe_max_power` - Poe-Max-Power.
+* `poe_max_power_mode` - PoE maximum power mode. Valid values: `class-based`, `30W`, `60W`.
+
 * `poe_mode_bt_cabable` - PoE mode IEEE 802.3BT capable.
 * `poe_port_mode` - Configure PoE port mode. Valid values: `ieee802-3af`, `ieee802-3at`, `ieee802-3bt`.
 

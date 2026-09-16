@@ -34,6 +34,7 @@ The following arguments are supported:
 
 * `device_name` - FortiManager managed device name. This variable is used in the request URL. If not specified, it will inherit the variable `device_name` of the provider.
 
+* `link_group_monitor` - Link groups to check for port monitoring.
 * `monitor` - Interfaces to check for port monitoring (or link failure).
 * `override` - Enable and increase the priority of the unit that should always be primary (master). Valid values: `disable`, `enable`.
 

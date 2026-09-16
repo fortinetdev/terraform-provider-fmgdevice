@@ -170,6 +170,8 @@ func getStringKey(d *schema.ResourceData, field string) string {
 	if v, ok := d.GetOkExists(field); ok {
 		if v1, ok := v.(string); ok {
 			return v1
+		} else if v1, ok := v.(int); ok {
+			return fmt.Sprintf("%v", v1)
 		}
 	}
 

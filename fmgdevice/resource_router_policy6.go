@@ -295,14 +295,21 @@ func resourceRouterPolicy6Update(d *schema.ResourceData, m interface{}) error {
 
 	wsParams["adom"] = adomv
 
-	_, err = c.UpdateRouterPolicy6(obj, mkey, paradict, wsParams)
+	v, err := c.UpdateRouterPolicy6(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating RouterPolicy6 resource: %v", err)
 	}
 
 	log.Printf(strconv.Itoa(c.Retries))
 
-	d.SetId(strconv.Itoa(getIntKey(d, "seq_num")))
+	if v != nil && v["seq-num"] != nil {
+		if vidn, ok := v["seq-num"].(float64); ok {
+			d.SetId(strconv.Itoa(int(vidn)))
+			return resourceRouterPolicy6Read(d, m)
+		} else {
+			return fmt.Errorf("Error updating RouterPolicy6 resource: %v", err)
+		}
+	}
 
 	return resourceRouterPolicy6Read(d, m)
 }

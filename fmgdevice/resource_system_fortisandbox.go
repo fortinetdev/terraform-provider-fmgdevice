@@ -51,6 +51,20 @@ func resourceSystemFortisandbox() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"cn_list": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Computed: true,
+			},
+			"default": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"device": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 			"cn": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -242,6 +256,18 @@ func flattenSystemFortisandboxCertificateVerification(v interface{}, d *schema.R
 	return v
 }
 
+func flattenSystemFortisandboxCnList(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
+func flattenSystemFortisandboxDefault(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemFortisandboxDevice(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenSystemFortisandboxCn(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -318,6 +344,36 @@ func refreshObjectSystemFortisandbox(d *schema.ResourceData, o map[string]interf
 			}
 		} else {
 			return fmt.Errorf("Error reading certificate_verification: %v", err)
+		}
+	}
+
+	if err = d.Set("cn_list", flattenSystemFortisandboxCnList(o["cn-list"], d, "cn_list")); err != nil {
+		if vv, ok := fortiAPIPatch(o["cn-list"], "SystemFortisandbox-CnList"); ok {
+			if err = d.Set("cn_list", vv); err != nil {
+				return fmt.Errorf("Error reading cn_list: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading cn_list: %v", err)
+		}
+	}
+
+	if err = d.Set("default", flattenSystemFortisandboxDefault(o["default"], d, "default")); err != nil {
+		if vv, ok := fortiAPIPatch(o["default"], "SystemFortisandbox-Default"); ok {
+			if err = d.Set("default", vv); err != nil {
+				return fmt.Errorf("Error reading default: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading default: %v", err)
+		}
+	}
+
+	if err = d.Set("device", flattenSystemFortisandboxDevice(o["device"], d, "device")); err != nil {
+		if vv, ok := fortiAPIPatch(o["device"], "SystemFortisandbox-Device"); ok {
+			if err = d.Set("device", vv); err != nil {
+				return fmt.Errorf("Error reading device: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading device: %v", err)
 		}
 	}
 
@@ -478,6 +534,18 @@ func expandSystemFortisandboxCertificateVerification(d *schema.ResourceData, v i
 	return v, nil
 }
 
+func expandSystemFortisandboxCnList(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandSystemFortisandboxDefault(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemFortisandboxDevice(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandSystemFortisandboxCn(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -552,6 +620,33 @@ func getObjectSystemFortisandbox(d *schema.ResourceData, bemptysontable bool) (*
 			return &obj, err
 		} else if t != nil {
 			obj["certificate-verification"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("cn_list"); ok || d.HasChange("cn_list") {
+		t, err := expandSystemFortisandboxCnList(d, v, "cn_list")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["cn-list"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("default"); ok || d.HasChange("default") {
+		t, err := expandSystemFortisandboxDefault(d, v, "default")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["default"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("device"); ok || d.HasChange("device") {
+		t, err := expandSystemFortisandboxDevice(d, v, "device")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["device"] = t
 		}
 	}
 

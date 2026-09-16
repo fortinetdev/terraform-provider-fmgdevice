@@ -36,6 +36,12 @@ The following arguments are supported:
 * `hello_holdtime` - Time before old neighbor information expires in seconds (1 - 65535, default = 105).
 * `hello_interval` - Interval between sending PIM hello messages in seconds (1 - 65535, default = 30).
 * `name` - Interface name.
+* `rp_candidate` - Enable/disable compete to become RP in elections. Valid values: `disable`, `enable`.
+
+* `rp_candidate_group` - Multicast groups managed by this RP.
+* `rp_candidate_interval` - RP candidate advertisement interval (1 - 16383 sec, default = 60).
+* `rp_candidate_priority` - Router's priority as RP.
+* `static_group` - Statically set IPv6 multicast groups to forward out.
 
 
 ## Attribute Reference

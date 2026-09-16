@@ -203,14 +203,21 @@ func resourceFirewallAddress6TemplateSubnetSegmentUpdate(d *schema.ResourceData,
 
 	wsParams["adom"] = adomv
 
-	_, err = c.UpdateFirewallAddress6TemplateSubnetSegment(obj, mkey, paradict, wsParams)
+	v, err := c.UpdateFirewallAddress6TemplateSubnetSegment(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating FirewallAddress6TemplateSubnetSegment resource: %v", err)
 	}
 
 	log.Printf(strconv.Itoa(c.Retries))
 
-	d.SetId(strconv.Itoa(getIntKey(d, "fosid")))
+	if v != nil && v["id"] != nil {
+		if vidn, ok := v["id"].(float64); ok {
+			d.SetId(strconv.Itoa(int(vidn)))
+			return resourceFirewallAddress6TemplateSubnetSegmentRead(d, m)
+		} else {
+			return fmt.Errorf("Error updating FirewallAddress6TemplateSubnetSegment resource: %v", err)
+		}
+	}
 
 	return resourceFirewallAddress6TemplateSubnetSegmentRead(d, m)
 }

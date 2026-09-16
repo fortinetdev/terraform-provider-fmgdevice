@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"net/url"
 	"os"
 	"time"
 
@@ -29,6 +30,7 @@ type Config struct {
 	FMGType       string
 	WorkspaceMode string
 	UpdateIfExist bool
+	HTTPProxy     string
 
 	LogSession    bool
 	Session       string
@@ -60,7 +62,7 @@ func (c *Config) CreateClient() (interface{}, error) {
 func createFMGClient(fClient *FortiClient, c *Config) error {
 	config := &tls.Config{}
 
-	auth := auth.NewAuth(c.Hostname, c.User, c.Passwd, c.CABundle, c.Session, c.Token, c.FMGCloudToken, c.FMGType, c.LogSession, c.CleanSession, c.UpdateIfExist)
+	auth := auth.NewAuth(c.Hostname, c.User, c.Passwd, c.CABundle, c.Session, c.Token, c.FMGCloudToken, c.FMGType, c.LogSession, c.CleanSession, c.UpdateIfExist, c.HTTPProxy)
 
 	if auth.Hostname == "" {
 		_, err := auth.GetEnvHostname()
@@ -101,6 +103,13 @@ func createFMGClient(fClient *FortiClient, c *Config) error {
 		auth.GetEnvCABundle()
 	}
 
+	if auth.HTTPProxy == "ENV" {
+		_, err := auth.GetEnvHTTPProxy()
+		if err != nil {
+			return fmt.Errorf("Error reading HTTP proxy")
+		}
+	}
+
 	if auth.CABundle != "" {
 		f, err := os.Open(auth.CABundle)
 		if err != nil {
@@ -138,6 +147,14 @@ func createFMGClient(fClient *FortiClient, c *Config) error {
 
 	tr := &http.Transport{
 		TLSClientConfig: config,
+	}
+
+	if auth.HTTPProxy != "" {
+		httpProxy, err := url.Parse(auth.HTTPProxy)
+		if err != nil {
+			return fmt.Errorf("Error parsing HTTP proxy: %w", err)
+		}
+		tr.Proxy = http.ProxyURL(httpProxy)
 	}
 
 	client := &http.Client{

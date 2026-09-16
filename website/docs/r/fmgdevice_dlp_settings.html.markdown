@@ -9,6 +9,11 @@ description: |-
 # fmgdevice_dlp_settings
 Designate logical storage for DLP fingerprint database.
 
+~> The following variables have sub resource. Avoid using them together, otherwise conflicts and overwrites may occur.
+>- `ocr`: `fmgdevice_dlp_settings_ocr`
+
+
+
 ## Example Usage
 
 ```hcl
@@ -34,8 +39,17 @@ The following arguments are supported:
 * `config_builder_timeout` - Maximum time allowed for building a single DLP profile (default 60 seconds).
 * `db_mode` - Behavior when the maximum size is reached. Valid values: `stop-adding`, `remove-modified-then-oldest`, `remove-oldest`.
 
+* `ocr` - Ocr. The structure of `ocr` block is documented below.
 * `size` - Maximum total size of files within the storage (MB).
 * `storage_device` - Storage device name.
+
+The `ocr` block supports:
+
+* `confidence` - Minimum confidence threshold for the OCR converted content to be scanned (0 - 100, default = 80).
+* `filetype_ignore_list` - List of file types to be exempt from OCR scanning.
+* `max_file_size` - Maximum file size for an image to be a candidate for OCR conversion in kilobytes (0 - 4193280, 0 = unlimited).
+* `scan` - Enable/disable OCR conversion of images for DLP content scanning. Valid values: `disable`, `enable`.
+
 
 
 ## Attribute Reference

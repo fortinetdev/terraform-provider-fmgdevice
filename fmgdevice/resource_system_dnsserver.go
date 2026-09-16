@@ -82,6 +82,12 @@ func resourceSystemDnsServer() *schema.Resource {
 				ForceNew: true,
 				Optional: true,
 			},
+			"ssl_cert": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Computed: true,
+			},
 		},
 	}
 }
@@ -302,6 +308,10 @@ func flattenSystemDnsServerName(v interface{}, d *schema.ResourceData, pre strin
 	return convintflist2str(v, d.Get(pre))
 }
 
+func flattenSystemDnsServerSslCert(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
 func refreshObjectSystemDnsServer(d *schema.ResourceData, o map[string]interface{}) error {
 	var err error
 
@@ -365,6 +375,16 @@ func refreshObjectSystemDnsServer(d *schema.ResourceData, o map[string]interface
 		}
 	}
 
+	if err = d.Set("ssl_cert", flattenSystemDnsServerSslCert(o["ssl-cert"], d, "ssl_cert")); err != nil {
+		if vv, ok := fortiAPIPatch(o["ssl-cert"], "SystemDnsServer-SslCert"); ok {
+			if err = d.Set("ssl_cert", vv); err != nil {
+				return fmt.Errorf("Error reading ssl_cert: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading ssl_cert: %v", err)
+		}
+	}
+
 	return nil
 }
 
@@ -396,6 +416,10 @@ func expandSystemDnsServerMode(d *schema.ResourceData, v interface{}, pre string
 
 func expandSystemDnsServerName(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return convstr2list(v, nil), nil
+}
+
+func expandSystemDnsServerSslCert(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
 }
 
 func getObjectSystemDnsServer(d *schema.ResourceData) (*map[string]interface{}, error) {
@@ -452,6 +476,15 @@ func getObjectSystemDnsServer(d *schema.ResourceData) (*map[string]interface{}, 
 			return &obj, err
 		} else if t != nil {
 			obj["name"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("ssl_cert"); ok || d.HasChange("ssl_cert") {
+		t, err := expandSystemDnsServerSslCert(d, v, "ssl_cert")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["ssl-cert"] = t
 		}
 	}
 

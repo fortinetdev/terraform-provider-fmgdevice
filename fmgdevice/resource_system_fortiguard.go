@@ -210,6 +210,10 @@ func resourceSystemFortiguard() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"proxy_fqdn_host": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 			"proxy_password": &schema.Schema{
 				Type:      schema.TypeSet,
 				Elem:      &schema.Schema{Type: schema.TypeString},
@@ -644,6 +648,10 @@ func flattenSystemFortiguardPort(v interface{}, d *schema.ResourceData, pre stri
 }
 
 func flattenSystemFortiguardProtocol(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemFortiguardProxyFqdnHost(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -1135,6 +1143,16 @@ func refreshObjectSystemFortiguard(d *schema.ResourceData, o map[string]interfac
 			}
 		} else {
 			return fmt.Errorf("Error reading protocol: %v", err)
+		}
+	}
+
+	if err = d.Set("proxy_fqdn_host", flattenSystemFortiguardProxyFqdnHost(o["proxy-fqdn-host"], d, "proxy_fqdn_host")); err != nil {
+		if vv, ok := fortiAPIPatch(o["proxy-fqdn-host"], "SystemFortiguard-ProxyFqdnHost"); ok {
+			if err = d.Set("proxy_fqdn_host", vv); err != nil {
+				return fmt.Errorf("Error reading proxy_fqdn_host: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading proxy_fqdn_host: %v", err)
 		}
 	}
 
@@ -1653,6 +1671,10 @@ func expandSystemFortiguardProtocol(d *schema.ResourceData, v interface{}, pre s
 	return v, nil
 }
 
+func expandSystemFortiguardProxyFqdnHost(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandSystemFortiguardProxyPassword(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return expandStringList(v.(*schema.Set).List()), nil
 }
@@ -2111,6 +2133,15 @@ func getObjectSystemFortiguard(d *schema.ResourceData, bemptysontable bool) (*ma
 			return &obj, err
 		} else if t != nil {
 			obj["protocol"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("proxy_fqdn_host"); ok || d.HasChange("proxy_fqdn_host") {
+		t, err := expandSystemFortiguardProxyFqdnHost(d, v, "proxy_fqdn_host")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["proxy-fqdn-host"] = t
 		}
 	}
 

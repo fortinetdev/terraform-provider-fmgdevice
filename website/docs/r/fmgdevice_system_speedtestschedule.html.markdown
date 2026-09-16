@@ -40,6 +40,8 @@ The following arguments are supported:
 * `expected_outbandwidth_maximum` - Set the maximum outbandwidth threshold for applying speedtest results on shaping-profile.
 * `expected_outbandwidth_minimum` - Set the minimum outbandwidth threshold for applying speedtest results on shaping-profile.
 * `interface` - Interface name.
+* `legacy_server_mode` - Legacy test server selection. Valid values: `disable`, `enable`.
+
 * `mode` - Protocol Auto(default), TCP or UDP used for speed test. Valid values: `UDP`, `TCP`, `Auto`.
 
 * `retries` - Maximum number of times the FortiGate unit will attempt to contact the same server before considering the speed test has failed (1 - 10, default = 5).
@@ -48,6 +50,8 @@ The following arguments are supported:
 * `server_name` - Speed test server name.
 * `server_port` - Port of the server to run speed test.
 * `status` - Enable/disable scheduled speed test. Valid values: `disable`, `enable`.
+
+* `update_bandwidth_limit_unit` - Set the update bandwidth limits by values in kbps or percentages of interface's bandwidth. Valid values: `value`, `percentage`.
 
 * `update_inbandwidth` - Enable/disable bypassing interface's inbound bandwidth setting. Valid values: `disable`, `enable`.
 

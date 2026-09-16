@@ -183,14 +183,21 @@ func resourceFirewallVipSslCipherSuitesUpdate(d *schema.ResourceData, m interfac
 
 	wsParams["adom"] = adomv
 
-	_, err = c.UpdateFirewallVipSslCipherSuites(obj, mkey, paradict, wsParams)
+	v, err := c.UpdateFirewallVipSslCipherSuites(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating FirewallVipSslCipherSuites resource: %v", err)
 	}
 
 	log.Printf(strconv.Itoa(c.Retries))
 
-	d.SetId(strconv.Itoa(getIntKey(d, "priority")))
+	if v != nil && v["priority"] != nil {
+		if vidn, ok := v["priority"].(float64); ok {
+			d.SetId(strconv.Itoa(int(vidn)))
+			return resourceFirewallVipSslCipherSuitesRead(d, m)
+		} else {
+			return fmt.Errorf("Error updating FirewallVipSslCipherSuites resource: %v", err)
+		}
+	}
 
 	return resourceFirewallVipSslCipherSuitesRead(d, m)
 }

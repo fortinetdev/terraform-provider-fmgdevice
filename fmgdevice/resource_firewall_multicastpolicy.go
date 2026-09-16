@@ -65,6 +65,12 @@ func resourceFirewallMulticastPolicy() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
+			"custom_tags": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Computed: true,
+			},
 			"dnat": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -264,14 +270,21 @@ func resourceFirewallMulticastPolicyUpdate(d *schema.ResourceData, m interface{}
 
 	wsParams["adom"] = adomv
 
-	_, err = c.UpdateFirewallMulticastPolicy(obj, mkey, paradict, wsParams)
+	v, err := c.UpdateFirewallMulticastPolicy(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating FirewallMulticastPolicy resource: %v", err)
 	}
 
 	log.Printf(strconv.Itoa(c.Retries))
 
-	d.SetId(strconv.Itoa(getIntKey(d, "fosid")))
+	if v != nil && v["id"] != nil {
+		if vidn, ok := v["id"].(float64); ok {
+			d.SetId(strconv.Itoa(int(vidn)))
+			return resourceFirewallMulticastPolicyRead(d, m)
+		} else {
+			return fmt.Errorf("Error updating FirewallMulticastPolicy resource: %v", err)
+		}
+	}
 
 	return resourceFirewallMulticastPolicyRead(d, m)
 }
@@ -376,6 +389,10 @@ func flattenFirewallMulticastPolicyComments(v interface{}, d *schema.ResourceDat
 	return v
 }
 
+func flattenFirewallMulticastPolicyCustomTags(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
 func flattenFirewallMulticastPolicyDnat(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -478,6 +495,16 @@ func refreshObjectFirewallMulticastPolicy(d *schema.ResourceData, o map[string]i
 			}
 		} else {
 			return fmt.Errorf("Error reading comments: %v", err)
+		}
+	}
+
+	if err = d.Set("custom_tags", flattenFirewallMulticastPolicyCustomTags(o["custom-tags"], d, "custom_tags")); err != nil {
+		if vv, ok := fortiAPIPatch(o["custom-tags"], "FirewallMulticastPolicy-CustomTags"); ok {
+			if err = d.Set("custom_tags", vv); err != nil {
+				return fmt.Errorf("Error reading custom_tags: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading custom_tags: %v", err)
 		}
 	}
 
@@ -682,6 +709,10 @@ func expandFirewallMulticastPolicyComments(d *schema.ResourceData, v interface{}
 	return v, nil
 }
 
+func expandFirewallMulticastPolicyCustomTags(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
 func expandFirewallMulticastPolicyDnat(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -781,6 +812,15 @@ func getObjectFirewallMulticastPolicy(d *schema.ResourceData) (*map[string]inter
 			return &obj, err
 		} else if t != nil {
 			obj["comments"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("custom_tags"); ok || d.HasChange("custom_tags") {
+		t, err := expandFirewallMulticastPolicyCustomTags(d, v, "custom_tags")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["custom-tags"] = t
 		}
 	}
 

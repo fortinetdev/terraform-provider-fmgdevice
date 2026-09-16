@@ -61,6 +61,10 @@ func resourceSystemSdwanService() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"bandwidth_type": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 			"bandwidth_weight": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
@@ -609,6 +613,10 @@ func flattenSystemSdwanServiceAgentExclusive2edl(v interface{}, d *schema.Resour
 	return v
 }
 
+func flattenSystemSdwanServiceBandwidthType2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenSystemSdwanServiceBandwidthWeight2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -938,6 +946,16 @@ func refreshObjectSystemSdwanService(d *schema.ResourceData, o map[string]interf
 			}
 		} else {
 			return fmt.Errorf("Error reading agent_exclusive: %v", err)
+		}
+	}
+
+	if err = d.Set("bandwidth_type", flattenSystemSdwanServiceBandwidthType2edl(o["bandwidth-type"], d, "bandwidth_type")); err != nil {
+		if vv, ok := fortiAPIPatch(o["bandwidth-type"], "SystemSdwanService-BandwidthType"); ok {
+			if err = d.Set("bandwidth_type", vv); err != nil {
+				return fmt.Errorf("Error reading bandwidth_type: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading bandwidth_type: %v", err)
 		}
 	}
 
@@ -1622,6 +1640,10 @@ func expandSystemSdwanServiceAgentExclusive2edl(d *schema.ResourceData, v interf
 	return v, nil
 }
 
+func expandSystemSdwanServiceBandwidthType2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandSystemSdwanServiceBandwidthWeight2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -1938,6 +1960,15 @@ func getObjectSystemSdwanService(d *schema.ResourceData) (*map[string]interface{
 			return &obj, err
 		} else if t != nil {
 			obj["agent-exclusive"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("bandwidth_type"); ok || d.HasChange("bandwidth_type") {
+		t, err := expandSystemSdwanServiceBandwidthType2edl(d, v, "bandwidth_type")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["bandwidth-type"] = t
 		}
 	}
 

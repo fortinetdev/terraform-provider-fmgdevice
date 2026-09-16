@@ -110,6 +110,18 @@ func resourceFirewallInternetServiceCustom() *schema.Resource {
 					},
 				},
 			},
+			"fabric_force_sync": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"fabric_object": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"fabric_object_source": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 			"fosid": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
@@ -120,6 +132,11 @@ func resourceFirewallInternetServiceCustom() *schema.Resource {
 			},
 			"reputation": &schema.Schema{
 				Type:     schema.TypeInt,
+				Optional: true,
+				Computed: true,
+			},
+			"uuid": &schema.Schema{
+				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
 			},
@@ -472,6 +489,18 @@ func flattenFirewallInternetServiceCustomEntryProtocol(v interface{}, d *schema.
 	return v
 }
 
+func flattenFirewallInternetServiceCustomFabricForceSync(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenFirewallInternetServiceCustomFabricObject(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenFirewallInternetServiceCustomFabricObjectSource(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenFirewallInternetServiceCustomId(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -481,6 +510,10 @@ func flattenFirewallInternetServiceCustomName(v interface{}, d *schema.ResourceD
 }
 
 func flattenFirewallInternetServiceCustomReputation(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenFirewallInternetServiceCustomUuid(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -525,6 +558,36 @@ func refreshObjectFirewallInternetServiceCustom(d *schema.ResourceData, o map[st
 		}
 	}
 
+	if err = d.Set("fabric_force_sync", flattenFirewallInternetServiceCustomFabricForceSync(o["fabric-force-sync"], d, "fabric_force_sync")); err != nil {
+		if vv, ok := fortiAPIPatch(o["fabric-force-sync"], "FirewallInternetServiceCustom-FabricForceSync"); ok {
+			if err = d.Set("fabric_force_sync", vv); err != nil {
+				return fmt.Errorf("Error reading fabric_force_sync: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading fabric_force_sync: %v", err)
+		}
+	}
+
+	if err = d.Set("fabric_object", flattenFirewallInternetServiceCustomFabricObject(o["fabric-object"], d, "fabric_object")); err != nil {
+		if vv, ok := fortiAPIPatch(o["fabric-object"], "FirewallInternetServiceCustom-FabricObject"); ok {
+			if err = d.Set("fabric_object", vv); err != nil {
+				return fmt.Errorf("Error reading fabric_object: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading fabric_object: %v", err)
+		}
+	}
+
+	if err = d.Set("fabric_object_source", flattenFirewallInternetServiceCustomFabricObjectSource(o["fabric-object-source"], d, "fabric_object_source")); err != nil {
+		if vv, ok := fortiAPIPatch(o["fabric-object-source"], "FirewallInternetServiceCustom-FabricObjectSource"); ok {
+			if err = d.Set("fabric_object_source", vv); err != nil {
+				return fmt.Errorf("Error reading fabric_object_source: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading fabric_object_source: %v", err)
+		}
+	}
+
 	if err = d.Set("fosid", flattenFirewallInternetServiceCustomId(o["id"], d, "fosid")); err != nil {
 		if vv, ok := fortiAPIPatch(o["id"], "FirewallInternetServiceCustom-Id"); ok {
 			if err = d.Set("fosid", vv); err != nil {
@@ -552,6 +615,16 @@ func refreshObjectFirewallInternetServiceCustom(d *schema.ResourceData, o map[st
 			}
 		} else {
 			return fmt.Errorf("Error reading reputation: %v", err)
+		}
+	}
+
+	if err = d.Set("uuid", flattenFirewallInternetServiceCustomUuid(o["uuid"], d, "uuid")); err != nil {
+		if vv, ok := fortiAPIPatch(o["uuid"], "FirewallInternetServiceCustom-Uuid"); ok {
+			if err = d.Set("uuid", vv); err != nil {
+				return fmt.Errorf("Error reading uuid: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading uuid: %v", err)
 		}
 	}
 
@@ -698,6 +771,18 @@ func expandFirewallInternetServiceCustomEntryProtocol(d *schema.ResourceData, v 
 	return v, nil
 }
 
+func expandFirewallInternetServiceCustomFabricForceSync(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandFirewallInternetServiceCustomFabricObject(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandFirewallInternetServiceCustomFabricObjectSource(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandFirewallInternetServiceCustomId(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -707,6 +792,10 @@ func expandFirewallInternetServiceCustomName(d *schema.ResourceData, v interface
 }
 
 func expandFirewallInternetServiceCustomReputation(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandFirewallInternetServiceCustomUuid(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -728,6 +817,33 @@ func getObjectFirewallInternetServiceCustom(d *schema.ResourceData) (*map[string
 			return &obj, err
 		} else if t != nil {
 			obj["entry"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("fabric_force_sync"); ok || d.HasChange("fabric_force_sync") {
+		t, err := expandFirewallInternetServiceCustomFabricForceSync(d, v, "fabric_force_sync")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["fabric-force-sync"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("fabric_object"); ok || d.HasChange("fabric_object") {
+		t, err := expandFirewallInternetServiceCustomFabricObject(d, v, "fabric_object")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["fabric-object"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("fabric_object_source"); ok || d.HasChange("fabric_object_source") {
+		t, err := expandFirewallInternetServiceCustomFabricObjectSource(d, v, "fabric_object_source")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["fabric-object-source"] = t
 		}
 	}
 
@@ -755,6 +871,15 @@ func getObjectFirewallInternetServiceCustom(d *schema.ResourceData) (*map[string
 			return &obj, err
 		} else if t != nil {
 			obj["reputation"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("uuid"); ok || d.HasChange("uuid") {
+		t, err := expandFirewallInternetServiceCustomUuid(d, v, "uuid")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["uuid"] = t
 		}
 	}
 

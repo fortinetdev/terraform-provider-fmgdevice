@@ -146,6 +146,11 @@ func resourceZtnaWebPortalBookmark() *schema.Resource {
 							Type:     schema.TypeString,
 							Optional: true,
 						},
+						"verify_cert": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+							Computed: true,
+						},
 						"vnc_keyboard_layout": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
@@ -535,6 +540,12 @@ func flattenZtnaWebPortalBookmarkBookmarks(v interface{}, d *schema.ResourceData
 			tmp["url"] = fortiAPISubPartPatch(v, "ZtnaWebPortalBookmark-Bookmarks-Url")
 		}
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "verify_cert"
+		if _, ok := i["verify-cert"]; ok {
+			v := flattenZtnaWebPortalBookmarkBookmarksVerifyCert(i["verify-cert"], d, pre_append)
+			tmp["verify_cert"] = fortiAPISubPartPatch(v, "ZtnaWebPortalBookmark-Bookmarks-VerifyCert")
+		}
+
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "vnc_keyboard_layout"
 		if _, ok := i["vnc-keyboard-layout"]; ok {
 			v := flattenZtnaWebPortalBookmarkBookmarksVncKeyboardLayout(i["vnc-keyboard-layout"], d, pre_append)
@@ -630,6 +641,10 @@ func flattenZtnaWebPortalBookmarkBookmarksSso(v interface{}, d *schema.ResourceD
 }
 
 func flattenZtnaWebPortalBookmarkBookmarksUrl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenZtnaWebPortalBookmarkBookmarksVerifyCert(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -906,6 +921,11 @@ func expandZtnaWebPortalBookmarkBookmarks(d *schema.ResourceData, v interface{},
 			tmp["url"], _ = expandZtnaWebPortalBookmarkBookmarksUrl(d, i["url"], pre_append)
 		}
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "verify_cert"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["verify-cert"], _ = expandZtnaWebPortalBookmarkBookmarksVerifyCert(d, i["verify_cert"], pre_append)
+		}
+
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "vnc_keyboard_layout"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
 			tmp["vnc-keyboard-layout"], _ = expandZtnaWebPortalBookmarkBookmarksVncKeyboardLayout(d, i["vnc_keyboard_layout"], pre_append)
@@ -1003,6 +1023,10 @@ func expandZtnaWebPortalBookmarkBookmarksSso(d *schema.ResourceData, v interface
 }
 
 func expandZtnaWebPortalBookmarkBookmarksUrl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandZtnaWebPortalBookmarkBookmarksVerifyCert(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 

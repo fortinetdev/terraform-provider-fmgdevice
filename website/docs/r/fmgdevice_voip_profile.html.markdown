@@ -25,12 +25,19 @@ The following arguments are supported:
 * `device_vdom` - FortiManager managed device vdom. This variable is used in the request URL. If not specified, it will inherit the variable `device_vdom` of the provider.
 
 * `comment` - Comment.
+* `fabric_force_sync` - Enable/disable forced synchronization of configuration objects from the root FortiGate unit to the downstream devices.  Configuration conflict check is skipped. Valid values: `disable`, `enable`.
+
+* `fabric_object` - Security Fabric global object setting. Valid values: `disable`, `enable`.
+
+* `fabric_object_source` - Source of truth for fabric object. Valid values: `member`, `local`, `root`.
+
 * `feature_set` - IPS or voipd (SIP-ALG) inspection feature set. Valid values: `ips`, `voipd`.
 
 * `msrp` - Msrp. The structure of `msrp` block is documented below.
 * `name` - Profile name.
 * `sccp` - Sccp. The structure of `sccp` block is documented below.
 * `sip` - Sip. The structure of `sip` block is documented below.
+* `uuid` - Universally Unique Identifier (UUID; automatically assigned but can be manually reset).
 
 The `msrp` block supports:
 

@@ -56,10 +56,20 @@ func resourceRouterBgpRedistribute() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"route_map_evpn": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Computed: true,
+			},
 			"status": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+			},
+			"status_evpn": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
 			},
 		},
 	}
@@ -204,7 +214,15 @@ func flattenRouterBgpRedistributeRouteMap2edl(v interface{}, d *schema.ResourceD
 	return flattenStringList(v)
 }
 
+func flattenRouterBgpRedistributeRouteMapEvpn2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
 func flattenRouterBgpRedistributeStatus2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenRouterBgpRedistributeStatusEvpn2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -231,6 +249,16 @@ func refreshObjectRouterBgpRedistribute(d *schema.ResourceData, o map[string]int
 		}
 	}
 
+	if err = d.Set("route_map_evpn", flattenRouterBgpRedistributeRouteMapEvpn2edl(o["route-map-evpn"], d, "route_map_evpn")); err != nil {
+		if vv, ok := fortiAPIPatch(o["route-map-evpn"], "RouterBgpRedistribute-RouteMapEvpn"); ok {
+			if err = d.Set("route_map_evpn", vv); err != nil {
+				return fmt.Errorf("Error reading route_map_evpn: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading route_map_evpn: %v", err)
+		}
+	}
+
 	if err = d.Set("status", flattenRouterBgpRedistributeStatus2edl(o["status"], d, "status")); err != nil {
 		if vv, ok := fortiAPIPatch(o["status"], "RouterBgpRedistribute-Status"); ok {
 			if err = d.Set("status", vv); err != nil {
@@ -238,6 +266,16 @@ func refreshObjectRouterBgpRedistribute(d *schema.ResourceData, o map[string]int
 			}
 		} else {
 			return fmt.Errorf("Error reading status: %v", err)
+		}
+	}
+
+	if err = d.Set("status_evpn", flattenRouterBgpRedistributeStatusEvpn2edl(o["status-evpn"], d, "status_evpn")); err != nil {
+		if vv, ok := fortiAPIPatch(o["status-evpn"], "RouterBgpRedistribute-StatusEvpn"); ok {
+			if err = d.Set("status_evpn", vv); err != nil {
+				return fmt.Errorf("Error reading status_evpn: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading status_evpn: %v", err)
 		}
 	}
 
@@ -258,7 +296,15 @@ func expandRouterBgpRedistributeRouteMap2edl(d *schema.ResourceData, v interface
 	return expandStringList(v.(*schema.Set).List()), nil
 }
 
+func expandRouterBgpRedistributeRouteMapEvpn2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
 func expandRouterBgpRedistributeStatus2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandRouterBgpRedistributeStatusEvpn2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -283,12 +329,30 @@ func getObjectRouterBgpRedistribute(d *schema.ResourceData) (*map[string]interfa
 		}
 	}
 
+	if v, ok := d.GetOk("route_map_evpn"); ok || d.HasChange("route_map_evpn") {
+		t, err := expandRouterBgpRedistributeRouteMapEvpn2edl(d, v, "route_map_evpn")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["route-map-evpn"] = t
+		}
+	}
+
 	if v, ok := d.GetOk("status"); ok || d.HasChange("status") {
 		t, err := expandRouterBgpRedistributeStatus2edl(d, v, "status")
 		if err != nil {
 			return &obj, err
 		} else if t != nil {
 			obj["status"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("status_evpn"); ok || d.HasChange("status_evpn") {
+		t, err := expandRouterBgpRedistributeStatusEvpn2edl(d, v, "status_evpn")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["status-evpn"] = t
 		}
 	}
 

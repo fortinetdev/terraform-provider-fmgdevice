@@ -66,6 +66,12 @@ func resourceLogSyslogdSetting() *schema.Resource {
 					},
 				},
 			},
+			"custom_log_format": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Computed: true,
+			},
 			"enc_algorithm": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -346,6 +352,10 @@ func flattenLogSyslogdSettingCustomFieldNameName(v interface{}, d *schema.Resour
 	return v
 }
 
+func flattenLogSyslogdSettingCustomLogFormat(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
 func flattenLogSyslogdSettingEncAlgorithm(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -513,6 +523,16 @@ func refreshObjectLogSyslogdSetting(d *schema.ResourceData, o map[string]interfa
 					return fmt.Errorf("Error reading custom_field_name: %v", err)
 				}
 			}
+		}
+	}
+
+	if err = d.Set("custom_log_format", flattenLogSyslogdSettingCustomLogFormat(o["custom-log-format"], d, "custom_log_format")); err != nil {
+		if vv, ok := fortiAPIPatch(o["custom-log-format"], "LogSyslogdSetting-CustomLogFormat"); ok {
+			if err = d.Set("custom_log_format", vv); err != nil {
+				return fmt.Errorf("Error reading custom_log_format: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading custom_log_format: %v", err)
 		}
 	}
 
@@ -754,6 +774,10 @@ func expandLogSyslogdSettingCustomFieldNameName(d *schema.ResourceData, v interf
 	return v, nil
 }
 
+func expandLogSyslogdSettingCustomLogFormat(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
 func expandLogSyslogdSettingEncAlgorithm(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -896,6 +920,15 @@ func getObjectLogSyslogdSetting(d *schema.ResourceData, bemptysontable bool) (*m
 			} else if t != nil {
 				obj["custom-field-name"] = t
 			}
+		}
+	}
+
+	if v, ok := d.GetOk("custom_log_format"); ok || d.HasChange("custom_log_format") {
+		t, err := expandLogSyslogdSettingCustomLogFormat(d, v, "custom_log_format")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["custom-log-format"] = t
 		}
 	}
 

@@ -123,6 +123,10 @@ func resourceVpnCertificateHsmLocal() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"scep_url": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 		},
 	}
 }
@@ -383,6 +387,10 @@ func flattenVpnCertificateHsmLocalVendor(v interface{}, d *schema.ResourceData, 
 	return v
 }
 
+func flattenVpnCertificateHsmLocalScepUrl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func refreshObjectVpnCertificateHsmLocal(d *schema.ResourceData, o map[string]interface{}) error {
 	var err error
 
@@ -546,6 +554,16 @@ func refreshObjectVpnCertificateHsmLocal(d *schema.ResourceData, o map[string]in
 		}
 	}
 
+	if err = d.Set("scep_url", flattenVpnCertificateHsmLocalScepUrl(o["scep-url"], d, "scep_url")); err != nil {
+		if vv, ok := fortiAPIPatch(o["scep-url"], "VpnCertificateHsmLocal-ScepUrl"); ok {
+			if err = d.Set("scep_url", vv); err != nil {
+				return fmt.Errorf("Error reading scep_url: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading scep_url: %v", err)
+		}
+	}
+
 	return nil
 }
 
@@ -616,6 +634,10 @@ func expandVpnCertificateHsmLocalTmpCertFile(d *schema.ResourceData, v interface
 }
 
 func expandVpnCertificateHsmLocalVendor(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandVpnCertificateHsmLocalScepUrl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -763,6 +785,15 @@ func getObjectVpnCertificateHsmLocal(d *schema.ResourceData) (*map[string]interf
 			return &obj, err
 		} else if t != nil {
 			obj["vendor"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("scep_url"); ok || d.HasChange("scep_url") {
+		t, err := expandVpnCertificateHsmLocalScepUrl(d, v, "scep_url")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["scep-url"] = t
 		}
 	}
 

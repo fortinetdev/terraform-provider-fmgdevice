@@ -908,7 +908,7 @@ func flattenRouterRouteMapRuleMatchIp6Nexthop(v interface{}, d *schema.ResourceD
 }
 
 func flattenRouterRouteMapRuleMatchMetric(v interface{}, d *schema.ResourceData, pre string) interface{} {
-	return v
+	return conv2str(v)
 }
 
 func flattenRouterRouteMapRuleMatchOrigin(v interface{}, d *schema.ResourceData, pre string) interface{} {
@@ -924,7 +924,7 @@ func flattenRouterRouteMapRuleMatchSuppress(v interface{}, d *schema.ResourceDat
 }
 
 func flattenRouterRouteMapRuleMatchTag(v interface{}, d *schema.ResourceData, pre string) interface{} {
-	return v
+	return conv2str(v)
 }
 
 func flattenRouterRouteMapRuleMatchVrf(v interface{}, d *schema.ResourceData, pre string) interface{} {
@@ -1012,7 +1012,7 @@ func flattenRouterRouteMapRuleSetIp6NexthopLocal(v interface{}, d *schema.Resour
 }
 
 func flattenRouterRouteMapRuleSetLocalPreference(v interface{}, d *schema.ResourceData, pre string) interface{} {
-	return v
+	return conv2str(v)
 }
 
 func flattenRouterRouteMapRuleSetMetric(v interface{}, d *schema.ResourceData, pre string) interface{} {
@@ -1036,7 +1036,7 @@ func flattenRouterRouteMapRuleSetPriority(v interface{}, d *schema.ResourceData,
 }
 
 func flattenRouterRouteMapRuleSetRouteTag(v interface{}, d *schema.ResourceData, pre string) interface{} {
-	return v
+	return conv2str(v)
 }
 
 func flattenRouterRouteMapRuleSetTag(v interface{}, d *schema.ResourceData, pre string) interface{} {
@@ -1056,7 +1056,7 @@ func flattenRouterRouteMapRuleSetVpnv6NexthopLocal(v interface{}, d *schema.Reso
 }
 
 func flattenRouterRouteMapRuleSetWeight(v interface{}, d *schema.ResourceData, pre string) interface{} {
-	return v
+	return conv2str(v)
 }
 
 func refreshObjectRouterRouteMap(d *schema.ResourceData, o map[string]interface{}) error {

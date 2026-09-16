@@ -89,6 +89,10 @@ func resourceSystemInterfaceIpv6() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"dhcp6_egress_cos": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 			"dhcp6_iapd_list": &schema.Schema{
 				Type:     schema.TypeList,
 				Optional: true,
@@ -289,6 +293,10 @@ func resourceSystemInterfaceIpv6() *schema.Resource {
 				Type:     schema.TypeInt,
 				Optional: true,
 			},
+			"ip6_link_local": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 			"ip6_link_mtu": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
@@ -302,6 +310,10 @@ func resourceSystemInterfaceIpv6() *schema.Resource {
 				Type:     schema.TypeInt,
 				Optional: true,
 				Computed: true,
+			},
+			"ip6_mgmt_address": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
 			},
 			"ip6_min_interval": &schema.Schema{
 				Type:     schema.TypeInt,
@@ -774,6 +786,10 @@ func flattenSystemInterfaceIpv6Dhcp6ClientOptions2edl(v interface{}, d *schema.R
 	return flattenStringList(v)
 }
 
+func flattenSystemInterfaceIpv6Dhcp6EgressCos2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenSystemInterfaceIpv6Dhcp6IapdList2edl(v interface{}, d *schema.ResourceData, pre string) []map[string]interface{} {
 	if v == nil {
 		return nil
@@ -1130,6 +1146,10 @@ func flattenSystemInterfaceIpv6Ip6HopLimit2edl(v interface{}, d *schema.Resource
 	return v
 }
 
+func flattenSystemInterfaceIpv6Ip6LinkLocal2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenSystemInterfaceIpv6Ip6LinkMtu2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -1139,6 +1159,10 @@ func flattenSystemInterfaceIpv6Ip6ManageFlag2edl(v interface{}, d *schema.Resour
 }
 
 func flattenSystemInterfaceIpv6Ip6MaxInterval2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemInterfaceIpv6Ip6MgmtAddress2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -1639,6 +1663,16 @@ func refreshObjectSystemInterfaceIpv6(d *schema.ResourceData, o map[string]inter
 		}
 	}
 
+	if err = d.Set("dhcp6_egress_cos", flattenSystemInterfaceIpv6Dhcp6EgressCos2edl(o["dhcp6-egress-cos"], d, "dhcp6_egress_cos")); err != nil {
+		if vv, ok := fortiAPIPatch(o["dhcp6-egress-cos"], "SystemInterfaceIpv6-Dhcp6EgressCos"); ok {
+			if err = d.Set("dhcp6_egress_cos", vv); err != nil {
+				return fmt.Errorf("Error reading dhcp6_egress_cos: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading dhcp6_egress_cos: %v", err)
+		}
+	}
+
 	if isImportTable() {
 		if err = d.Set("dhcp6_iapd_list", flattenSystemInterfaceIpv6Dhcp6IapdList2edl(o["dhcp6-iapd-list"], d, "dhcp6_iapd_list")); err != nil {
 			if vv, ok := fortiAPIPatch(o["dhcp6-iapd-list"], "SystemInterfaceIpv6-Dhcp6IapdList"); ok {
@@ -1935,6 +1969,16 @@ func refreshObjectSystemInterfaceIpv6(d *schema.ResourceData, o map[string]inter
 		}
 	}
 
+	if err = d.Set("ip6_link_local", flattenSystemInterfaceIpv6Ip6LinkLocal2edl(o["ip6-link-local"], d, "ip6_link_local")); err != nil {
+		if vv, ok := fortiAPIPatch(o["ip6-link-local"], "SystemInterfaceIpv6-Ip6LinkLocal"); ok {
+			if err = d.Set("ip6_link_local", vv); err != nil {
+				return fmt.Errorf("Error reading ip6_link_local: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading ip6_link_local: %v", err)
+		}
+	}
+
 	if err = d.Set("ip6_link_mtu", flattenSystemInterfaceIpv6Ip6LinkMtu2edl(o["ip6-link-mtu"], d, "ip6_link_mtu")); err != nil {
 		if vv, ok := fortiAPIPatch(o["ip6-link-mtu"], "SystemInterfaceIpv6-Ip6LinkMtu"); ok {
 			if err = d.Set("ip6_link_mtu", vv); err != nil {
@@ -1962,6 +2006,16 @@ func refreshObjectSystemInterfaceIpv6(d *schema.ResourceData, o map[string]inter
 			}
 		} else {
 			return fmt.Errorf("Error reading ip6_max_interval: %v", err)
+		}
+	}
+
+	if err = d.Set("ip6_mgmt_address", flattenSystemInterfaceIpv6Ip6MgmtAddress2edl(o["ip6-mgmt-address"], d, "ip6_mgmt_address")); err != nil {
+		if vv, ok := fortiAPIPatch(o["ip6-mgmt-address"], "SystemInterfaceIpv6-Ip6MgmtAddress"); ok {
+			if err = d.Set("ip6_mgmt_address", vv); err != nil {
+				return fmt.Errorf("Error reading ip6_mgmt_address: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading ip6_mgmt_address: %v", err)
 		}
 	}
 
@@ -2351,6 +2405,10 @@ func expandSystemInterfaceIpv6Dhcp6ClientOptions2edl(d *schema.ResourceData, v i
 	return expandStringList(v.(*schema.Set).List()), nil
 }
 
+func expandSystemInterfaceIpv6Dhcp6EgressCos2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandSystemInterfaceIpv6Dhcp6IapdList2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	l := v.([]interface{})
 	result := make([]map[string]interface{}, 0, len(l))
@@ -2671,6 +2729,10 @@ func expandSystemInterfaceIpv6Ip6HopLimit2edl(d *schema.ResourceData, v interfac
 	return v, nil
 }
 
+func expandSystemInterfaceIpv6Ip6LinkLocal2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandSystemInterfaceIpv6Ip6LinkMtu2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -2680,6 +2742,10 @@ func expandSystemInterfaceIpv6Ip6ManageFlag2edl(d *schema.ResourceData, v interf
 }
 
 func expandSystemInterfaceIpv6Ip6MaxInterval2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemInterfaceIpv6Ip6MgmtAddress2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -3118,6 +3184,15 @@ func getObjectSystemInterfaceIpv6(d *schema.ResourceData, bemptysontable bool) (
 		}
 	}
 
+	if v, ok := d.GetOk("dhcp6_egress_cos"); ok || d.HasChange("dhcp6_egress_cos") {
+		t, err := expandSystemInterfaceIpv6Dhcp6EgressCos2edl(d, v, "dhcp6_egress_cos")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["dhcp6-egress-cos"] = t
+		}
+	}
+
 	if bemptysontable {
 		obj["dhcp6-iapd-list"] = make([]struct{}, 0)
 	} else {
@@ -3350,6 +3425,15 @@ func getObjectSystemInterfaceIpv6(d *schema.ResourceData, bemptysontable bool) (
 		}
 	}
 
+	if v, ok := d.GetOk("ip6_link_local"); ok || d.HasChange("ip6_link_local") {
+		t, err := expandSystemInterfaceIpv6Ip6LinkLocal2edl(d, v, "ip6_link_local")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["ip6-link-local"] = t
+		}
+	}
+
 	if v, ok := d.GetOk("ip6_link_mtu"); ok || d.HasChange("ip6_link_mtu") {
 		t, err := expandSystemInterfaceIpv6Ip6LinkMtu2edl(d, v, "ip6_link_mtu")
 		if err != nil {
@@ -3374,6 +3458,15 @@ func getObjectSystemInterfaceIpv6(d *schema.ResourceData, bemptysontable bool) (
 			return &obj, err
 		} else if t != nil {
 			obj["ip6-max-interval"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("ip6_mgmt_address"); ok || d.HasChange("ip6_mgmt_address") {
+		t, err := expandSystemInterfaceIpv6Ip6MgmtAddress2edl(d, v, "ip6_mgmt_address")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["ip6-mgmt-address"] = t
 		}
 	}
 

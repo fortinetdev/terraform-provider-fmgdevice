@@ -136,6 +136,21 @@ func resourceSystemSdnConnector() *schema.Resource {
 					},
 				},
 			},
+			"fabric_force_sync": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+			"fabric_object": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+			"fabric_object_source": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
 			"forwarding_rule": &schema.Schema{
 				Type:     schema.TypeList,
 				Optional: true,
@@ -185,6 +200,12 @@ func resourceSystemSdnConnector() *schema.Resource {
 			},
 			"ibm_region": &schema.Schema{
 				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+			"k8s_allow_list": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
 				Optional: true,
 				Computed: true,
 			},
@@ -469,6 +490,11 @@ func resourceSystemSdnConnector() *schema.Resource {
 			"username": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+			},
+			"uuid": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
 			},
 			"vcenter_password": &schema.Schema{
 				Type:      schema.TypeSet,
@@ -856,6 +882,18 @@ func flattenSystemSdnConnectorExternalIpName(v interface{}, d *schema.ResourceDa
 	return v
 }
 
+func flattenSystemSdnConnectorFabricForceSync(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemSdnConnectorFabricObject(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemSdnConnectorFabricObjectSource(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenSystemSdnConnectorForwardingRule(v interface{}, d *schema.ResourceData, pre string) []map[string]interface{} {
 	if v == nil {
 		return nil
@@ -968,6 +1006,10 @@ func flattenSystemSdnConnectorHaStatus(v interface{}, d *schema.ResourceData, pr
 
 func flattenSystemSdnConnectorIbmRegion(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
+}
+
+func flattenSystemSdnConnectorK8SAllowList(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
 }
 
 func flattenSystemSdnConnectorIbmRegionGen1(v interface{}, d *schema.ResourceData, pre string) interface{} {
@@ -1422,6 +1464,10 @@ func flattenSystemSdnConnectorUsername(v interface{}, d *schema.ResourceData, pr
 	return v
 }
 
+func flattenSystemSdnConnectorUuid(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenSystemSdnConnectorVcenterServer(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -1607,6 +1653,36 @@ func refreshObjectSystemSdnConnector(d *schema.ResourceData, o map[string]interf
 		}
 	}
 
+	if err = d.Set("fabric_force_sync", flattenSystemSdnConnectorFabricForceSync(o["fabric-force-sync"], d, "fabric_force_sync")); err != nil {
+		if vv, ok := fortiAPIPatch(o["fabric-force-sync"], "SystemSdnConnector-FabricForceSync"); ok {
+			if err = d.Set("fabric_force_sync", vv); err != nil {
+				return fmt.Errorf("Error reading fabric_force_sync: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading fabric_force_sync: %v", err)
+		}
+	}
+
+	if err = d.Set("fabric_object", flattenSystemSdnConnectorFabricObject(o["fabric-object"], d, "fabric_object")); err != nil {
+		if vv, ok := fortiAPIPatch(o["fabric-object"], "SystemSdnConnector-FabricObject"); ok {
+			if err = d.Set("fabric_object", vv); err != nil {
+				return fmt.Errorf("Error reading fabric_object: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading fabric_object: %v", err)
+		}
+	}
+
+	if err = d.Set("fabric_object_source", flattenSystemSdnConnectorFabricObjectSource(o["fabric-object-source"], d, "fabric_object_source")); err != nil {
+		if vv, ok := fortiAPIPatch(o["fabric-object-source"], "SystemSdnConnector-FabricObjectSource"); ok {
+			if err = d.Set("fabric_object_source", vv); err != nil {
+				return fmt.Errorf("Error reading fabric_object_source: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading fabric_object_source: %v", err)
+		}
+	}
+
 	if isImportTable() {
 		if err = d.Set("forwarding_rule", flattenSystemSdnConnectorForwardingRule(o["forwarding-rule"], d, "forwarding_rule")); err != nil {
 			if vv, ok := fortiAPIPatch(o["forwarding-rule"], "SystemSdnConnector-ForwardingRule"); ok {
@@ -1692,6 +1768,16 @@ func refreshObjectSystemSdnConnector(d *schema.ResourceData, o map[string]interf
 			}
 		} else {
 			return fmt.Errorf("Error reading ibm_region: %v", err)
+		}
+	}
+
+	if err = d.Set("k8s_allow_list", flattenSystemSdnConnectorK8SAllowList(o["k8s-allow-list"], d, "k8s_allow_list")); err != nil {
+		if vv, ok := fortiAPIPatch(o["k8s-allow-list"], "SystemSdnConnector-K8SAllowList"); ok {
+			if err = d.Set("k8s_allow_list", vv); err != nil {
+				return fmt.Errorf("Error reading k8s_allow_list: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading k8s_allow_list: %v", err)
 		}
 	}
 
@@ -2131,6 +2217,16 @@ func refreshObjectSystemSdnConnector(d *schema.ResourceData, o map[string]interf
 		}
 	}
 
+	if err = d.Set("uuid", flattenSystemSdnConnectorUuid(o["uuid"], d, "uuid")); err != nil {
+		if vv, ok := fortiAPIPatch(o["uuid"], "SystemSdnConnector-Uuid"); ok {
+			if err = d.Set("uuid", vv); err != nil {
+				return fmt.Errorf("Error reading uuid: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading uuid: %v", err)
+		}
+	}
+
 	if err = d.Set("vcenter_server", flattenSystemSdnConnectorVcenterServer(o["vcenter-server"], d, "vcenter_server")); err != nil {
 		if vv, ok := fortiAPIPatch(o["vcenter-server"], "SystemSdnConnector-VcenterServer"); ok {
 			if err = d.Set("vcenter_server", vv); err != nil {
@@ -2383,6 +2479,18 @@ func expandSystemSdnConnectorExternalIpName(d *schema.ResourceData, v interface{
 	return v, nil
 }
 
+func expandSystemSdnConnectorFabricForceSync(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemSdnConnectorFabricObject(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemSdnConnectorFabricObjectSource(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandSystemSdnConnectorForwardingRule(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	l := v.([]interface{})
 	result := make([]map[string]interface{}, 0, len(l))
@@ -2481,6 +2589,10 @@ func expandSystemSdnConnectorHaStatus(d *schema.ResourceData, v interface{}, pre
 
 func expandSystemSdnConnectorIbmRegion(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
+}
+
+func expandSystemSdnConnectorK8SAllowList(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
 }
 
 func expandSystemSdnConnectorIbmRegionGen1(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
@@ -2916,6 +3028,10 @@ func expandSystemSdnConnectorUsername(d *schema.ResourceData, v interface{}, pre
 	return v, nil
 }
 
+func expandSystemSdnConnectorUuid(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandSystemSdnConnectorVcenterPassword(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return expandStringList(v.(*schema.Set).List()), nil
 }
@@ -3067,6 +3183,33 @@ func getObjectSystemSdnConnector(d *schema.ResourceData) (*map[string]interface{
 		}
 	}
 
+	if v, ok := d.GetOk("fabric_force_sync"); ok || d.HasChange("fabric_force_sync") {
+		t, err := expandSystemSdnConnectorFabricForceSync(d, v, "fabric_force_sync")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["fabric-force-sync"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("fabric_object"); ok || d.HasChange("fabric_object") {
+		t, err := expandSystemSdnConnectorFabricObject(d, v, "fabric_object")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["fabric-object"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("fabric_object_source"); ok || d.HasChange("fabric_object_source") {
+		t, err := expandSystemSdnConnectorFabricObjectSource(d, v, "fabric_object_source")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["fabric-object-source"] = t
+		}
+	}
+
 	if v, ok := d.GetOk("forwarding_rule"); ok || d.HasChange("forwarding_rule") {
 		t, err := expandSystemSdnConnectorForwardingRule(d, v, "forwarding_rule")
 		if err != nil {
@@ -3118,6 +3261,15 @@ func getObjectSystemSdnConnector(d *schema.ResourceData) (*map[string]interface{
 			return &obj, err
 		} else if t != nil {
 			obj["ibm-region"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("k8s_allow_list"); ok || d.HasChange("k8s_allow_list") {
+		t, err := expandSystemSdnConnectorK8SAllowList(d, v, "k8s_allow_list")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["k8s-allow-list"] = t
 		}
 	}
 
@@ -3496,6 +3648,15 @@ func getObjectSystemSdnConnector(d *schema.ResourceData) (*map[string]interface{
 			return &obj, err
 		} else if t != nil {
 			obj["username"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("uuid"); ok || d.HasChange("uuid") {
+		t, err := expandSystemSdnConnectorUuid(d, v, "uuid")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["uuid"] = t
 		}
 	}
 

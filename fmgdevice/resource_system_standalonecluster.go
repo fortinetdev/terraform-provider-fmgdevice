@@ -66,6 +66,12 @@ func resourceSystemStandaloneCluster() *schema.Resource {
 							Optional: true,
 							Computed: true,
 						},
+						"interface": &schema.Schema{
+							Type:     schema.TypeSet,
+							Elem:     &schema.Schema{Type: schema.TypeString},
+							Optional: true,
+							Computed: true,
+						},
 						"ike_heartbeat_interval": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
@@ -173,6 +179,10 @@ func resourceSystemStandaloneCluster() *schema.Resource {
 								},
 							},
 						},
+						"source_ip": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
 						"sync_id": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
@@ -256,6 +266,10 @@ func resourceSystemStandaloneCluster() *schema.Resource {
 				Optional:  true,
 				Sensitive: true,
 				Computed:  true,
+			},
+			"session_sync": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
 			},
 			"session_sync_dev": &schema.Schema{
 				Type:     schema.TypeSet,
@@ -437,6 +451,12 @@ func flattenSystemStandaloneClusterClusterPeer(v interface{}, d *schema.Resource
 			tmp["hb_lost_threshold"] = fortiAPISubPartPatch(v, "SystemStandaloneCluster-ClusterPeer-HbLostThreshold")
 		}
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "interface"
+		if _, ok := i["interface"]; ok {
+			v := flattenSystemStandaloneClusterClusterPeerInterface(i["interface"], d, pre_append)
+			tmp["interface"] = fortiAPISubPartPatch(v, "SystemStandaloneCluster-ClusterPeer-Interface")
+		}
+
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "ike_heartbeat_interval"
 		if _, ok := i["ike-heartbeat-interval"]; ok {
 			v := flattenSystemStandaloneClusterClusterPeerIkeHeartbeatInterval(i["ike-heartbeat-interval"], d, pre_append)
@@ -491,6 +511,12 @@ func flattenSystemStandaloneClusterClusterPeer(v interface{}, d *schema.Resource
 			tmp["session_sync_filter"] = fortiAPISubPartPatch(v, "SystemStandaloneCluster-ClusterPeer-SessionSyncFilter")
 		}
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "source_ip"
+		if _, ok := i["source-ip"]; ok {
+			v := flattenSystemStandaloneClusterClusterPeerSourceIp(i["source-ip"], d, pre_append)
+			tmp["source_ip"] = fortiAPISubPartPatch(v, "SystemStandaloneCluster-ClusterPeer-SourceIp")
+		}
+
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "sync_id"
 		if _, ok := i["sync-id"]; ok {
 			v := flattenSystemStandaloneClusterClusterPeerSyncId(i["sync-id"], d, pre_append)
@@ -523,6 +549,10 @@ func flattenSystemStandaloneClusterClusterPeerHbInterval(v interface{}, d *schem
 
 func flattenSystemStandaloneClusterClusterPeerHbLostThreshold(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
+}
+
+func flattenSystemStandaloneClusterClusterPeerInterface(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
 }
 
 func flattenSystemStandaloneClusterClusterPeerIkeHeartbeatInterval(v interface{}, d *schema.ResourceData, pre string) interface{} {
@@ -688,6 +718,10 @@ func flattenSystemStandaloneClusterClusterPeerSessionSyncFilterSrcintf(v interfa
 	return flattenStringList(v)
 }
 
+func flattenSystemStandaloneClusterClusterPeerSourceIp(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenSystemStandaloneClusterClusterPeerSyncId(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -791,6 +825,10 @@ func flattenSystemStandaloneClusterMonitorPrefixVrf(v interface{}, d *schema.Res
 
 func flattenSystemStandaloneClusterPingsvrMonitorInterface(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return flattenStringList(v)
+}
+
+func flattenSystemStandaloneClusterSessionSync(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
 }
 
 func flattenSystemStandaloneClusterSessionSyncDev(v interface{}, d *schema.ResourceData, pre string) interface{} {
@@ -940,6 +978,16 @@ func refreshObjectSystemStandaloneCluster(d *schema.ResourceData, o map[string]i
 		}
 	}
 
+	if err = d.Set("session_sync", flattenSystemStandaloneClusterSessionSync(o["session-sync"], d, "session_sync")); err != nil {
+		if vv, ok := fortiAPIPatch(o["session-sync"], "SystemStandaloneCluster-SessionSync"); ok {
+			if err = d.Set("session_sync", vv); err != nil {
+				return fmt.Errorf("Error reading session_sync: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading session_sync: %v", err)
+		}
+	}
+
 	if err = d.Set("session_sync_dev", flattenSystemStandaloneClusterSessionSyncDev(o["session-sync-dev"], d, "session_sync_dev")); err != nil {
 		if vv, ok := fortiAPIPatch(o["session-sync-dev"], "SystemStandaloneCluster-SessionSyncDev"); ok {
 			if err = d.Set("session_sync_dev", vv); err != nil {
@@ -1012,6 +1060,11 @@ func expandSystemStandaloneClusterClusterPeer(d *schema.ResourceData, v interfac
 			tmp["hb-lost-threshold"], _ = expandSystemStandaloneClusterClusterPeerHbLostThreshold(d, i["hb_lost_threshold"], pre_append)
 		}
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "interface"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["interface"], _ = expandSystemStandaloneClusterClusterPeerInterface(d, i["interface"], pre_append)
+		}
+
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "ike_heartbeat_interval"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
 			tmp["ike-heartbeat-interval"], _ = expandSystemStandaloneClusterClusterPeerIkeHeartbeatInterval(d, i["ike_heartbeat_interval"], pre_append)
@@ -1062,6 +1115,11 @@ func expandSystemStandaloneClusterClusterPeer(d *schema.ResourceData, v interfac
 			}
 		}
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "source_ip"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["source-ip"], _ = expandSystemStandaloneClusterClusterPeerSourceIp(d, i["source_ip"], pre_append)
+		}
+
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "sync_id"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
 			tmp["sync-id"], _ = expandSystemStandaloneClusterClusterPeerSyncId(d, i["sync_id"], pre_append)
@@ -1092,6 +1150,10 @@ func expandSystemStandaloneClusterClusterPeerHbInterval(d *schema.ResourceData, 
 
 func expandSystemStandaloneClusterClusterPeerHbLostThreshold(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
+}
+
+func expandSystemStandaloneClusterClusterPeerInterface(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
 }
 
 func expandSystemStandaloneClusterClusterPeerIkeHeartbeatInterval(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
@@ -1248,6 +1310,10 @@ func expandSystemStandaloneClusterClusterPeerSessionSyncFilterSrcintf(d *schema.
 	return expandStringList(v.(*schema.Set).List()), nil
 }
 
+func expandSystemStandaloneClusterClusterPeerSourceIp(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandSystemStandaloneClusterClusterPeerSyncId(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -1346,6 +1412,10 @@ func expandSystemStandaloneClusterPingsvrMonitorInterface(d *schema.ResourceData
 
 func expandSystemStandaloneClusterPsksecret(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandSystemStandaloneClusterSessionSync(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
 }
 
 func expandSystemStandaloneClusterSessionSyncDev(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
@@ -1467,6 +1537,15 @@ func getObjectSystemStandaloneCluster(d *schema.ResourceData, bemptysontable boo
 			return &obj, err
 		} else if t != nil {
 			obj["psksecret"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("session_sync"); ok || d.HasChange("session_sync") {
+		t, err := expandSystemStandaloneClusterSessionSync(d, v, "session_sync")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["session-sync"] = t
 		}
 	}
 

@@ -116,6 +116,12 @@ func resourceRouterBgpNeighborGroup() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"adv_evpn_route": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Computed: true,
+			},
 			"advertisement_interval": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
@@ -289,6 +295,10 @@ func resourceRouterBgpNeighborGroup() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
+			"display_options": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+			},
 			"distribute_list_in": &schema.Schema{
 				Type:     schema.TypeSet,
 				Elem:     &schema.Schema{Type: schema.TypeString},
@@ -352,6 +362,10 @@ func resourceRouterBgpNeighborGroup() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"enforce_preferred_source": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 			"filter_list_in": &schema.Schema{
 				Type:     schema.TypeSet,
 				Elem:     &schema.Schema{Type: schema.TypeString},
@@ -399,6 +413,18 @@ func resourceRouterBgpNeighborGroup() *schema.Resource {
 				Elem:     &schema.Schema{Type: schema.TypeString},
 				Optional: true,
 				Computed: true,
+			},
+			"graceful_shutdown_community": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"graceful_shutdown_delay": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+			},
+			"graceful_shutdown_local_preference": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
 			},
 			"holdtime_timer": &schema.Schema{
 				Type:     schema.TypeInt,
@@ -520,6 +546,14 @@ func resourceRouterBgpNeighborGroup() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+			},
+			"next_hop_self_rr_vpnv4": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"next_hop_self_rr_vpnv6": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
 			},
 			"next_hop_self_rr6": &schema.Schema{
 				Type:     schema.TypeString,
@@ -892,6 +926,10 @@ func resourceRouterBgpNeighborGroup() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"use_sdwan": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 			"weight": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
@@ -1145,6 +1183,10 @@ func flattenRouterBgpNeighborGroupAdvAdditionalPath62edl(v interface{}, d *schem
 	return v
 }
 
+func flattenRouterBgpNeighborGroupAdvEvpnRoute2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
 func flattenRouterBgpNeighborGroupAdvertisementInterval2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -1281,6 +1323,10 @@ func flattenRouterBgpNeighborGroupDescription2edl(v interface{}, d *schema.Resou
 	return v
 }
 
+func flattenRouterBgpNeighborGroupDisplayOptions2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenRouterBgpNeighborGroupDistributeListIn2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return flattenStringList(v)
 }
@@ -1325,6 +1371,10 @@ func flattenRouterBgpNeighborGroupEbgpMultihopTtl2edl(v interface{}, d *schema.R
 	return v
 }
 
+func flattenRouterBgpNeighborGroupEnforcePreferredSource2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenRouterBgpNeighborGroupFilterListIn2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return flattenStringList(v)
 }
@@ -1355,6 +1405,18 @@ func flattenRouterBgpNeighborGroupFilterListOutVpnv62edl(v interface{}, d *schem
 
 func flattenRouterBgpNeighborGroupFilterListOut62edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return flattenStringList(v)
+}
+
+func flattenRouterBgpNeighborGroupGracefulShutdownCommunity2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenRouterBgpNeighborGroupGracefulShutdownDelay2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenRouterBgpNeighborGroupGracefulShutdownLocalPreference2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
 }
 
 func flattenRouterBgpNeighborGroupHoldtimeTimer2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
@@ -1454,6 +1516,14 @@ func flattenRouterBgpNeighborGroupNextHopSelf2edl(v interface{}, d *schema.Resou
 }
 
 func flattenRouterBgpNeighborGroupNextHopSelfRr2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenRouterBgpNeighborGroupNextHopSelfRrVpnv42edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenRouterBgpNeighborGroupNextHopSelfRrVpnv62edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -1729,6 +1799,10 @@ func flattenRouterBgpNeighborGroupUpdateSource2edl(v interface{}, d *schema.Reso
 	return flattenStringList(v)
 }
 
+func flattenRouterBgpNeighborGroupUseSdwan2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenRouterBgpNeighborGroupWeight2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -1863,6 +1937,16 @@ func refreshObjectRouterBgpNeighborGroup(d *schema.ResourceData, o map[string]in
 			}
 		} else {
 			return fmt.Errorf("Error reading adv_additional_path6: %v", err)
+		}
+	}
+
+	if err = d.Set("adv_evpn_route", flattenRouterBgpNeighborGroupAdvEvpnRoute2edl(o["adv-evpn-route"], d, "adv_evpn_route")); err != nil {
+		if vv, ok := fortiAPIPatch(o["adv-evpn-route"], "RouterBgpNeighborGroup-AdvEvpnRoute"); ok {
+			if err = d.Set("adv_evpn_route", vv); err != nil {
+				return fmt.Errorf("Error reading adv_evpn_route: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading adv_evpn_route: %v", err)
 		}
 	}
 
@@ -2206,6 +2290,16 @@ func refreshObjectRouterBgpNeighborGroup(d *schema.ResourceData, o map[string]in
 		}
 	}
 
+	if err = d.Set("display_options", flattenRouterBgpNeighborGroupDisplayOptions2edl(o["display-options"], d, "display_options")); err != nil {
+		if vv, ok := fortiAPIPatch(o["display-options"], "RouterBgpNeighborGroup-DisplayOptions"); ok {
+			if err = d.Set("display_options", vv); err != nil {
+				return fmt.Errorf("Error reading display_options: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading display_options: %v", err)
+		}
+	}
+
 	if err = d.Set("distribute_list_in", flattenRouterBgpNeighborGroupDistributeListIn2edl(o["distribute-list-in"], d, "distribute_list_in")); err != nil {
 		if vv, ok := fortiAPIPatch(o["distribute-list-in"], "RouterBgpNeighborGroup-DistributeListIn"); ok {
 			if err = d.Set("distribute_list_in", vv); err != nil {
@@ -2316,6 +2410,16 @@ func refreshObjectRouterBgpNeighborGroup(d *schema.ResourceData, o map[string]in
 		}
 	}
 
+	if err = d.Set("enforce_preferred_source", flattenRouterBgpNeighborGroupEnforcePreferredSource2edl(o["enforce-preferred-source"], d, "enforce_preferred_source")); err != nil {
+		if vv, ok := fortiAPIPatch(o["enforce-preferred-source"], "RouterBgpNeighborGroup-EnforcePreferredSource"); ok {
+			if err = d.Set("enforce_preferred_source", vv); err != nil {
+				return fmt.Errorf("Error reading enforce_preferred_source: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading enforce_preferred_source: %v", err)
+		}
+	}
+
 	if err = d.Set("filter_list_in", flattenRouterBgpNeighborGroupFilterListIn2edl(o["filter-list-in"], d, "filter_list_in")); err != nil {
 		if vv, ok := fortiAPIPatch(o["filter-list-in"], "RouterBgpNeighborGroup-FilterListIn"); ok {
 			if err = d.Set("filter_list_in", vv); err != nil {
@@ -2393,6 +2497,36 @@ func refreshObjectRouterBgpNeighborGroup(d *schema.ResourceData, o map[string]in
 			}
 		} else {
 			return fmt.Errorf("Error reading filter_list_out6: %v", err)
+		}
+	}
+
+	if err = d.Set("graceful_shutdown_community", flattenRouterBgpNeighborGroupGracefulShutdownCommunity2edl(o["graceful-shutdown-community"], d, "graceful_shutdown_community")); err != nil {
+		if vv, ok := fortiAPIPatch(o["graceful-shutdown-community"], "RouterBgpNeighborGroup-GracefulShutdownCommunity"); ok {
+			if err = d.Set("graceful_shutdown_community", vv); err != nil {
+				return fmt.Errorf("Error reading graceful_shutdown_community: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading graceful_shutdown_community: %v", err)
+		}
+	}
+
+	if err = d.Set("graceful_shutdown_delay", flattenRouterBgpNeighborGroupGracefulShutdownDelay2edl(o["graceful-shutdown-delay"], d, "graceful_shutdown_delay")); err != nil {
+		if vv, ok := fortiAPIPatch(o["graceful-shutdown-delay"], "RouterBgpNeighborGroup-GracefulShutdownDelay"); ok {
+			if err = d.Set("graceful_shutdown_delay", vv); err != nil {
+				return fmt.Errorf("Error reading graceful_shutdown_delay: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading graceful_shutdown_delay: %v", err)
+		}
+	}
+
+	if err = d.Set("graceful_shutdown_local_preference", flattenRouterBgpNeighborGroupGracefulShutdownLocalPreference2edl(o["graceful-shutdown-local-preference"], d, "graceful_shutdown_local_preference")); err != nil {
+		if vv, ok := fortiAPIPatch(o["graceful-shutdown-local-preference"], "RouterBgpNeighborGroup-GracefulShutdownLocalPreference"); ok {
+			if err = d.Set("graceful_shutdown_local_preference", vv); err != nil {
+				return fmt.Errorf("Error reading graceful_shutdown_local_preference: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading graceful_shutdown_local_preference: %v", err)
 		}
 	}
 
@@ -2643,6 +2777,26 @@ func refreshObjectRouterBgpNeighborGroup(d *schema.ResourceData, o map[string]in
 			}
 		} else {
 			return fmt.Errorf("Error reading next_hop_self_rr: %v", err)
+		}
+	}
+
+	if err = d.Set("next_hop_self_rr_vpnv4", flattenRouterBgpNeighborGroupNextHopSelfRrVpnv42edl(o["next-hop-self-rr-vpnv4"], d, "next_hop_self_rr_vpnv4")); err != nil {
+		if vv, ok := fortiAPIPatch(o["next-hop-self-rr-vpnv4"], "RouterBgpNeighborGroup-NextHopSelfRrVpnv4"); ok {
+			if err = d.Set("next_hop_self_rr_vpnv4", vv); err != nil {
+				return fmt.Errorf("Error reading next_hop_self_rr_vpnv4: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading next_hop_self_rr_vpnv4: %v", err)
+		}
+	}
+
+	if err = d.Set("next_hop_self_rr_vpnv6", flattenRouterBgpNeighborGroupNextHopSelfRrVpnv62edl(o["next-hop-self-rr-vpnv6"], d, "next_hop_self_rr_vpnv6")); err != nil {
+		if vv, ok := fortiAPIPatch(o["next-hop-self-rr-vpnv6"], "RouterBgpNeighborGroup-NextHopSelfRrVpnv6"); ok {
+			if err = d.Set("next_hop_self_rr_vpnv6", vv); err != nil {
+				return fmt.Errorf("Error reading next_hop_self_rr_vpnv6: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading next_hop_self_rr_vpnv6: %v", err)
 		}
 	}
 
@@ -3326,6 +3480,16 @@ func refreshObjectRouterBgpNeighborGroup(d *schema.ResourceData, o map[string]in
 		}
 	}
 
+	if err = d.Set("use_sdwan", flattenRouterBgpNeighborGroupUseSdwan2edl(o["use-sdwan"], d, "use_sdwan")); err != nil {
+		if vv, ok := fortiAPIPatch(o["use-sdwan"], "RouterBgpNeighborGroup-UseSdwan"); ok {
+			if err = d.Set("use_sdwan", vv); err != nil {
+				return fmt.Errorf("Error reading use_sdwan: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading use_sdwan: %v", err)
+		}
+	}
+
 	if err = d.Set("weight", flattenRouterBgpNeighborGroupWeight2edl(o["weight"], d, "weight")); err != nil {
 		if vv, ok := fortiAPIPatch(o["weight"], "RouterBgpNeighborGroup-Weight"); ok {
 			if err = d.Set("weight", vv); err != nil {
@@ -3395,6 +3559,10 @@ func expandRouterBgpNeighborGroupAdvAdditionalPathVpnv62edl(d *schema.ResourceDa
 
 func expandRouterBgpNeighborGroupAdvAdditionalPath62edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
+}
+
+func expandRouterBgpNeighborGroupAdvEvpnRoute2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
 }
 
 func expandRouterBgpNeighborGroupAdvertisementInterval2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
@@ -3533,6 +3701,10 @@ func expandRouterBgpNeighborGroupDescription2edl(d *schema.ResourceData, v inter
 	return v, nil
 }
 
+func expandRouterBgpNeighborGroupDisplayOptions2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandRouterBgpNeighborGroupDistributeListIn2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return expandStringList(v.(*schema.Set).List()), nil
 }
@@ -3577,6 +3749,10 @@ func expandRouterBgpNeighborGroupEbgpMultihopTtl2edl(d *schema.ResourceData, v i
 	return v, nil
 }
 
+func expandRouterBgpNeighborGroupEnforcePreferredSource2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandRouterBgpNeighborGroupFilterListIn2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return expandStringList(v.(*schema.Set).List()), nil
 }
@@ -3607,6 +3783,18 @@ func expandRouterBgpNeighborGroupFilterListOutVpnv62edl(d *schema.ResourceData, 
 
 func expandRouterBgpNeighborGroupFilterListOut62edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandRouterBgpNeighborGroupGracefulShutdownCommunity2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandRouterBgpNeighborGroupGracefulShutdownDelay2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandRouterBgpNeighborGroupGracefulShutdownLocalPreference2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
 }
 
 func expandRouterBgpNeighborGroupHoldtimeTimer2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
@@ -3706,6 +3894,14 @@ func expandRouterBgpNeighborGroupNextHopSelf2edl(d *schema.ResourceData, v inter
 }
 
 func expandRouterBgpNeighborGroupNextHopSelfRr2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandRouterBgpNeighborGroupNextHopSelfRrVpnv42edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandRouterBgpNeighborGroupNextHopSelfRrVpnv62edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -3985,6 +4181,10 @@ func expandRouterBgpNeighborGroupUpdateSource2edl(d *schema.ResourceData, v inte
 	return expandStringList(v.(*schema.Set).List()), nil
 }
 
+func expandRouterBgpNeighborGroupUseSdwan2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandRouterBgpNeighborGroupWeight2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -4106,6 +4306,15 @@ func getObjectRouterBgpNeighborGroup(d *schema.ResourceData) (*map[string]interf
 			return &obj, err
 		} else if t != nil {
 			obj["adv-additional-path6"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("adv_evpn_route"); ok || d.HasChange("adv_evpn_route") {
+		t, err := expandRouterBgpNeighborGroupAdvEvpnRoute2edl(d, v, "adv_evpn_route")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["adv-evpn-route"] = t
 		}
 	}
 
@@ -4415,6 +4624,15 @@ func getObjectRouterBgpNeighborGroup(d *schema.ResourceData) (*map[string]interf
 		}
 	}
 
+	if v, ok := d.GetOk("display_options"); ok || d.HasChange("display_options") {
+		t, err := expandRouterBgpNeighborGroupDisplayOptions2edl(d, v, "display_options")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["display-options"] = t
+		}
+	}
+
 	if v, ok := d.GetOk("distribute_list_in"); ok || d.HasChange("distribute_list_in") {
 		t, err := expandRouterBgpNeighborGroupDistributeListIn2edl(d, v, "distribute_list_in")
 		if err != nil {
@@ -4514,6 +4732,15 @@ func getObjectRouterBgpNeighborGroup(d *schema.ResourceData) (*map[string]interf
 		}
 	}
 
+	if v, ok := d.GetOk("enforce_preferred_source"); ok || d.HasChange("enforce_preferred_source") {
+		t, err := expandRouterBgpNeighborGroupEnforcePreferredSource2edl(d, v, "enforce_preferred_source")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["enforce-preferred-source"] = t
+		}
+	}
+
 	if v, ok := d.GetOk("filter_list_in"); ok || d.HasChange("filter_list_in") {
 		t, err := expandRouterBgpNeighborGroupFilterListIn2edl(d, v, "filter_list_in")
 		if err != nil {
@@ -4583,6 +4810,33 @@ func getObjectRouterBgpNeighborGroup(d *schema.ResourceData) (*map[string]interf
 			return &obj, err
 		} else if t != nil {
 			obj["filter-list-out6"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("graceful_shutdown_community"); ok || d.HasChange("graceful_shutdown_community") {
+		t, err := expandRouterBgpNeighborGroupGracefulShutdownCommunity2edl(d, v, "graceful_shutdown_community")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["graceful-shutdown-community"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("graceful_shutdown_delay"); ok || d.HasChange("graceful_shutdown_delay") {
+		t, err := expandRouterBgpNeighborGroupGracefulShutdownDelay2edl(d, v, "graceful_shutdown_delay")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["graceful-shutdown-delay"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("graceful_shutdown_local_preference"); ok || d.HasChange("graceful_shutdown_local_preference") {
+		t, err := expandRouterBgpNeighborGroupGracefulShutdownLocalPreference2edl(d, v, "graceful_shutdown_local_preference")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["graceful-shutdown-local-preference"] = t
 		}
 	}
 
@@ -4808,6 +5062,24 @@ func getObjectRouterBgpNeighborGroup(d *schema.ResourceData) (*map[string]interf
 			return &obj, err
 		} else if t != nil {
 			obj["next-hop-self-rr"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("next_hop_self_rr_vpnv4"); ok || d.HasChange("next_hop_self_rr_vpnv4") {
+		t, err := expandRouterBgpNeighborGroupNextHopSelfRrVpnv42edl(d, v, "next_hop_self_rr_vpnv4")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["next-hop-self-rr-vpnv4"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("next_hop_self_rr_vpnv6"); ok || d.HasChange("next_hop_self_rr_vpnv6") {
+		t, err := expandRouterBgpNeighborGroupNextHopSelfRrVpnv62edl(d, v, "next_hop_self_rr_vpnv6")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["next-hop-self-rr-vpnv6"] = t
 		}
 	}
 
@@ -5429,6 +5701,15 @@ func getObjectRouterBgpNeighborGroup(d *schema.ResourceData) (*map[string]interf
 			return &obj, err
 		} else if t != nil {
 			obj["update-source"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("use_sdwan"); ok || d.HasChange("use_sdwan") {
+		t, err := expandRouterBgpNeighborGroupUseSdwan2edl(d, v, "use_sdwan")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["use-sdwan"] = t
 		}
 	}
 

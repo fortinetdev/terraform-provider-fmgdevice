@@ -2,6 +2,7 @@ package auth
 
 import (
 	"fmt"
+	"log"
 	"os"
 )
 
@@ -15,6 +16,7 @@ type Auth struct {
 	Refresh       bool
 	FMGType       string
 	UpdateIfExist bool
+	HTTPProxy     string
 
 	LogSession    bool
 	Session       string
@@ -24,7 +26,7 @@ type Auth struct {
 }
 
 // NewAuth inits Auth object with the given metadata
-func NewAuth(hostname, user, passwd, cabundle, session, token, fmgCloudToken, fmgtype string, logsession, cleanSession bool, updateIfExist bool) *Auth {
+func NewAuth(hostname, user, passwd, cabundle, session, token, fmgCloudToken, fmgtype string, logsession, cleanSession bool, updateIfExist bool, httpproxy string) *Auth {
 	return &Auth{
 		Hostname:      hostname,
 		User:          user,
@@ -32,6 +34,7 @@ func NewAuth(hostname, user, passwd, cabundle, session, token, fmgCloudToken, fm
 		CABundle:      cabundle,
 		FMGType:       fmgtype,
 		UpdateIfExist: updateIfExist,
+		HTTPProxy:     httpproxy,
 
 		LogSession:    logsession,
 		Session:       session,
@@ -119,4 +122,21 @@ func (m *Auth) GetEnvInsecure() (bool, error) {
 	}
 
 	return false, nil
+}
+
+// GetEnvHTTPProxy gets HTTP_PROXY or HTTPS_PROXY from OS environment
+// It returns the HTTP_PROXY or HTTPS_PROXY
+func (m *Auth) GetEnvHTTPProxy() (string, error) {
+	c := os.Getenv("HTTPS_PROXY")
+
+	if c == "" {
+		c = os.Getenv("HTTP_PROXY")
+	}
+
+	m.HTTPProxy = c
+	if c == "" {
+		log.Print("[WARNING] Did not find environment variable for HTTPS_PROXY or HTTP_PROXY!")
+	}
+
+	return c, nil
 }

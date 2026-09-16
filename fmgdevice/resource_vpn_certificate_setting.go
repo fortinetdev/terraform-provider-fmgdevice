@@ -166,6 +166,10 @@ func resourceVpnCertificateSetting() *schema.Resource {
 					},
 				},
 			},
+			"csr_include_device_sn": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 			"interface": &schema.Schema{
 				Type:     schema.TypeSet,
 				Elem:     &schema.Schema{Type: schema.TypeString},
@@ -498,6 +502,10 @@ func flattenVpnCertificateSettingCrlVerificationLeafCrlAbsence(v interface{}, d 
 	return v
 }
 
+func flattenVpnCertificateSettingCsrIncludeDeviceSn(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenVpnCertificateSettingInterface(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return flattenStringList(v)
 }
@@ -756,6 +764,16 @@ func refreshObjectVpnCertificateSetting(d *schema.ResourceData, o map[string]int
 					return fmt.Errorf("Error reading crl_verification: %v", err)
 				}
 			}
+		}
+	}
+
+	if err = d.Set("csr_include_device_sn", flattenVpnCertificateSettingCsrIncludeDeviceSn(o["csr-include-device-sn"], d, "csr_include_device_sn")); err != nil {
+		if vv, ok := fortiAPIPatch(o["csr-include-device-sn"], "VpnCertificateSetting-CsrIncludeDeviceSn"); ok {
+			if err = d.Set("csr_include_device_sn", vv); err != nil {
+				return fmt.Errorf("Error reading csr_include_device_sn: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading csr_include_device_sn: %v", err)
 		}
 	}
 
@@ -1034,6 +1052,10 @@ func expandVpnCertificateSettingCrlVerificationLeafCrlAbsence(d *schema.Resource
 	return v, nil
 }
 
+func expandVpnCertificateSettingCsrIncludeDeviceSn(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandVpnCertificateSettingInterface(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return expandStringList(v.(*schema.Set).List()), nil
 }
@@ -1264,6 +1286,15 @@ func getObjectVpnCertificateSetting(d *schema.ResourceData, bemptysontable bool)
 			return &obj, err
 		} else if t != nil {
 			obj["crl-verification"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("csr_include_device_sn"); ok || d.HasChange("csr_include_device_sn") {
+		t, err := expandVpnCertificateSettingCsrIncludeDeviceSn(d, v, "csr_include_device_sn")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["csr-include-device-sn"] = t
 		}
 	}
 

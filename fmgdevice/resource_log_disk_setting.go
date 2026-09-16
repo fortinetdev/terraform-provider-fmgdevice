@@ -148,6 +148,10 @@ func resourceLogDiskSetting() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
+			"upload_file_format": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 			"upload_ssl_conn": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -418,6 +422,10 @@ func flattenLogDiskSettingUploadDestination(v interface{}, d *schema.ResourceDat
 	return v
 }
 
+func flattenLogDiskSettingUploadFileFormat(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenLogDiskSettingUploadSslConn(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -667,6 +675,16 @@ func refreshObjectLogDiskSetting(d *schema.ResourceData, o map[string]interface{
 		}
 	}
 
+	if err = d.Set("upload_file_format", flattenLogDiskSettingUploadFileFormat(o["upload-file-format"], d, "upload_file_format")); err != nil {
+		if vv, ok := fortiAPIPatch(o["upload-file-format"], "LogDiskSetting-UploadFileFormat"); ok {
+			if err = d.Set("upload_file_format", vv); err != nil {
+				return fmt.Errorf("Error reading upload_file_format: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading upload_file_format: %v", err)
+		}
+	}
+
 	if err = d.Set("upload_ssl_conn", flattenLogDiskSettingUploadSslConn(o["upload-ssl-conn"], d, "upload_ssl_conn")); err != nil {
 		if vv, ok := fortiAPIPatch(o["upload-ssl-conn"], "LogDiskSetting-UploadSslConn"); ok {
 			if err = d.Set("upload_ssl_conn", vv); err != nil {
@@ -847,6 +865,10 @@ func expandLogDiskSettingUploadDeleteFiles(d *schema.ResourceData, v interface{}
 }
 
 func expandLogDiskSettingUploadDestination(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandLogDiskSettingUploadFileFormat(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -1079,6 +1101,15 @@ func getObjectLogDiskSetting(d *schema.ResourceData, bemptysontable bool) (*map[
 			return &obj, err
 		} else if t != nil {
 			obj["upload-destination"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("upload_file_format"); ok || d.HasChange("upload_file_format") {
+		t, err := expandLogDiskSettingUploadFileFormat(d, v, "upload_file_format")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["upload-file-format"] = t
 		}
 	}
 

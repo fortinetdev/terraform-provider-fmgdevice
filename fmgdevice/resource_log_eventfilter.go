@@ -71,6 +71,10 @@ func resourceLogEventfilter() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"ftnt_sec_mod": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 			"ha": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -150,6 +154,10 @@ func resourceLogEventfilter() *schema.Resource {
 				Optional: true,
 			},
 			"iptables": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"nftables": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 			},
@@ -321,6 +329,10 @@ func flattenLogEventfilterFortiextender(v interface{}, d *schema.ResourceData, p
 	return v
 }
 
+func flattenLogEventfilterFtntSecMod(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenLogEventfilterHa(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -389,6 +401,10 @@ func flattenLogEventfilterIptables(v interface{}, d *schema.ResourceData, pre st
 	return v
 }
 
+func flattenLogEventfilterNftables(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenLogEventfilterWcs(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -447,6 +463,16 @@ func refreshObjectLogEventfilter(d *schema.ResourceData, o map[string]interface{
 			}
 		} else {
 			return fmt.Errorf("Error reading fortiextender: %v", err)
+		}
+	}
+
+	if err = d.Set("ftnt_sec_mod", flattenLogEventfilterFtntSecMod(o["ftnt-sec-mod"], d, "ftnt_sec_mod")); err != nil {
+		if vv, ok := fortiAPIPatch(o["ftnt-sec-mod"], "LogEventfilter-FtntSecMod"); ok {
+			if err = d.Set("ftnt_sec_mod", vv); err != nil {
+				return fmt.Errorf("Error reading ftnt_sec_mod: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading ftnt_sec_mod: %v", err)
 		}
 	}
 
@@ -620,6 +646,16 @@ func refreshObjectLogEventfilter(d *schema.ResourceData, o map[string]interface{
 		}
 	}
 
+	if err = d.Set("nftables", flattenLogEventfilterNftables(o["nftables"], d, "nftables")); err != nil {
+		if vv, ok := fortiAPIPatch(o["nftables"], "LogEventfilter-Nftables"); ok {
+			if err = d.Set("nftables", vv); err != nil {
+				return fmt.Errorf("Error reading nftables: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading nftables: %v", err)
+		}
+	}
+
 	if err = d.Set("wcs", flattenLogEventfilterWcs(o["wcs"], d, "wcs")); err != nil {
 		if vv, ok := fortiAPIPatch(o["wcs"], "LogEventfilter-Wcs"); ok {
 			if err = d.Set("wcs", vv); err != nil {
@@ -666,6 +702,10 @@ func expandLogEventfilterEvent(d *schema.ResourceData, v interface{}, pre string
 }
 
 func expandLogEventfilterFortiextender(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandLogEventfilterFtntSecMod(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -737,6 +777,10 @@ func expandLogEventfilterIptables(d *schema.ResourceData, v interface{}, pre str
 	return v, nil
 }
 
+func expandLogEventfilterNftables(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandLogEventfilterWcs(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -790,6 +834,15 @@ func getObjectLogEventfilter(d *schema.ResourceData, bemptysontable bool) (*map[
 			return &obj, err
 		} else if t != nil {
 			obj["fortiextender"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("ftnt_sec_mod"); ok || d.HasChange("ftnt_sec_mod") {
+		t, err := expandLogEventfilterFtntSecMod(d, v, "ftnt_sec_mod")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["ftnt-sec-mod"] = t
 		}
 	}
 
@@ -943,6 +996,15 @@ func getObjectLogEventfilter(d *schema.ResourceData, bemptysontable bool) (*map[
 			return &obj, err
 		} else if t != nil {
 			obj["iptables"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("nftables"); ok || d.HasChange("nftables") {
+		t, err := expandLogEventfilterNftables(d, v, "nftables")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["nftables"] = t
 		}
 	}
 

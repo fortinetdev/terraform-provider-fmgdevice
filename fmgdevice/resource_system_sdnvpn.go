@@ -122,6 +122,10 @@ func resourceSystemSdnVpn() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"rtbl_id": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 			"sdn": &schema.Schema{
 				Type:     schema.TypeSet,
 				Elem:     &schema.Schema{Type: schema.TypeString},
@@ -392,6 +396,10 @@ func flattenSystemSdnVpnRoutingType(v interface{}, d *schema.ResourceData, pre s
 	return v
 }
 
+func flattenSystemSdnVpnRtblId(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenSystemSdnVpnSdn(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return flattenStringList(v)
 }
@@ -575,6 +583,16 @@ func refreshObjectSystemSdnVpn(d *schema.ResourceData, o map[string]interface{})
 		}
 	}
 
+	if err = d.Set("rtbl_id", flattenSystemSdnVpnRtblId(o["rtbl_id"], d, "rtbl_id")); err != nil {
+		if vv, ok := fortiAPIPatch(o["rtbl_id"], "SystemSdnVpn-RtblId"); ok {
+			if err = d.Set("rtbl_id", vv); err != nil {
+				return fmt.Errorf("Error reading rtbl_id: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading rtbl_id: %v", err)
+		}
+	}
+
 	if err = d.Set("sdn", flattenSystemSdnVpnSdn(o["sdn"], d, "sdn")); err != nil {
 		if vv, ok := fortiAPIPatch(o["sdn"], "SystemSdnVpn-Sdn"); ok {
 			if err = d.Set("sdn", vv); err != nil {
@@ -741,6 +759,10 @@ func expandSystemSdnVpnRemoteType(d *schema.ResourceData, v interface{}, pre str
 }
 
 func expandSystemSdnVpnRoutingType(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemSdnVpnRtblId(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -919,6 +941,15 @@ func getObjectSystemSdnVpn(d *schema.ResourceData) (*map[string]interface{}, err
 			return &obj, err
 		} else if t != nil {
 			obj["routing-type"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("rtbl_id"); ok || d.HasChange("rtbl_id") {
+		t, err := expandSystemSdnVpnRtblId(d, v, "rtbl_id")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["rtbl_id"] = t
 		}
 	}
 

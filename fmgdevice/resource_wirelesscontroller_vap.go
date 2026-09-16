@@ -348,6 +348,11 @@ func resourceWirelessControllerVap() *schema.Resource {
 				Type:     schema.TypeInt,
 				Optional: true,
 			},
+			"captive_portal_dynamic_redirect_url": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
 			"captive_portal_fw_accounting": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -369,6 +374,11 @@ func resourceWirelessControllerVap() *schema.Resource {
 				Computed: true,
 			},
 			"dhcp_option82_circuit_id_insertion": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+			"dhcp_option82_delimiter": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
@@ -667,6 +677,10 @@ func resourceWirelessControllerVap() *schema.Resource {
 							Type:     schema.TypeInt,
 							Optional: true,
 						},
+						"captive_portal_dynamic_redirect_url": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
 						"captive_portal_fw_accounting": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
@@ -714,6 +728,10 @@ func resourceWirelessControllerVap() *schema.Resource {
 							Optional: true,
 						},
 						"dhcp_option82_circuit_id_insertion": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"dhcp_option82_delimiter": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
 						},
@@ -1154,6 +1172,14 @@ func resourceWirelessControllerVap() *schema.Resource {
 							Optional: true,
 						},
 						"radio_sensitivity": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"radius_auth_surviv_intv": &schema.Schema{
+							Type:     schema.TypeInt,
+							Optional: true,
+						},
+						"radius_auth_survivability": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
 						},
@@ -1997,6 +2023,16 @@ func resourceWirelessControllerVap() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"radius_auth_surviv_intv": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+				Computed: true,
+			},
+			"radius_auth_survivability": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
 			"radius_mac_auth": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -2738,6 +2774,10 @@ func flattenWirelessControllerVapCaptivePortalAuthTimeout(v interface{}, d *sche
 	return v
 }
 
+func flattenWirelessControllerVapCaptivePortalDynamicRedirectUrl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenWirelessControllerVapCaptivePortalFwAccounting(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -2755,6 +2795,10 @@ func flattenWirelessControllerVapDhcpOption43Insertion(v interface{}, d *schema.
 }
 
 func flattenWirelessControllerVapDhcpOption82CircuitIdInsertion(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return convintflist2str(v, d.Get(pre))
+}
+
+func flattenWirelessControllerVapDhcpOption82Delimiter(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -2763,7 +2807,7 @@ func flattenWirelessControllerVapDhcpOption82Insertion(v interface{}, d *schema.
 }
 
 func flattenWirelessControllerVapDhcpOption82RemoteIdInsertion(v interface{}, d *schema.ResourceData, pre string) interface{} {
-	return v
+	return convintflist2str(v, d.Get(pre))
 }
 
 func flattenWirelessControllerVapDomainNameStripping(v interface{}, d *schema.ResourceData, pre string) interface{} {
@@ -3117,6 +3161,12 @@ func flattenWirelessControllerVapDynamicMapping(v interface{}, d *schema.Resourc
 			tmp["captive_portal_auth_timeout"] = fortiAPISubPartPatch(v, "WirelessControllerVap-DynamicMapping-CaptivePortalAuthTimeout")
 		}
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "captive_portal_dynamic_redirect_url"
+		if _, ok := i["captive-portal-dynamic-redirect-url"]; ok {
+			v := flattenWirelessControllerVapDynamicMappingCaptivePortalDynamicRedirectUrl(i["captive-portal-dynamic-redirect-url"], d, pre_append)
+			tmp["captive_portal_dynamic_redirect_url"] = fortiAPISubPartPatch(v, "WirelessControllerVap-DynamicMapping-CaptivePortalDynamicRedirectUrl")
+		}
+
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "captive_portal_fw_accounting"
 		if _, ok := i["captive-portal-fw-accounting"]; ok {
 			v := flattenWirelessControllerVapDynamicMappingCaptivePortalFwAccounting(i["captive-portal-fw-accounting"], d, pre_append)
@@ -3169,6 +3219,12 @@ func flattenWirelessControllerVapDynamicMapping(v interface{}, d *schema.Resourc
 		if _, ok := i["dhcp-option82-circuit-id-insertion"]; ok {
 			v := flattenWirelessControllerVapDynamicMappingDhcpOption82CircuitIdInsertion(i["dhcp-option82-circuit-id-insertion"], d, pre_append)
 			tmp["dhcp_option82_circuit_id_insertion"] = fortiAPISubPartPatch(v, "WirelessControllerVap-DynamicMapping-DhcpOption82CircuitIdInsertion")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "dhcp_option82_delimiter"
+		if _, ok := i["dhcp-option82-delimiter"]; ok {
+			v := flattenWirelessControllerVapDynamicMappingDhcpOption82Delimiter(i["dhcp-option82-delimiter"], d, pre_append)
+			tmp["dhcp_option82_delimiter"] = fortiAPISubPartPatch(v, "WirelessControllerVap-DynamicMapping-DhcpOption82Delimiter")
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "dhcp_option82_insertion"
@@ -3721,6 +3777,18 @@ func flattenWirelessControllerVapDynamicMapping(v interface{}, d *schema.Resourc
 		if _, ok := i["radio-sensitivity"]; ok {
 			v := flattenWirelessControllerVapDynamicMappingRadioSensitivity(i["radio-sensitivity"], d, pre_append)
 			tmp["radio_sensitivity"] = fortiAPISubPartPatch(v, "WirelessControllerVap-DynamicMapping-RadioSensitivity")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "radius_auth_surviv_intv"
+		if _, ok := i["radius-auth-surviv-intv"]; ok {
+			v := flattenWirelessControllerVapDynamicMappingRadiusAuthSurvivIntv(i["radius-auth-surviv-intv"], d, pre_append)
+			tmp["radius_auth_surviv_intv"] = fortiAPISubPartPatch(v, "WirelessControllerVap-DynamicMapping-RadiusAuthSurvivIntv")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "radius_auth_survivability"
+		if _, ok := i["radius-auth-survivability"]; ok {
+			v := flattenWirelessControllerVapDynamicMappingRadiusAuthSurvivability(i["radius-auth-survivability"], d, pre_append)
+			tmp["radius_auth_survivability"] = fortiAPISubPartPatch(v, "WirelessControllerVap-DynamicMapping-RadiusAuthSurvivability")
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "radius_mac_auth"
@@ -4318,6 +4386,10 @@ func flattenWirelessControllerVapDynamicMappingCaptivePortalAuthTimeout(v interf
 	return v
 }
 
+func flattenWirelessControllerVapDynamicMappingCaptivePortalDynamicRedirectUrl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenWirelessControllerVapDynamicMappingCaptivePortalFwAccounting(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -4351,6 +4423,10 @@ func flattenWirelessControllerVapDynamicMappingDhcpOption43Insertion(v interface
 }
 
 func flattenWirelessControllerVapDynamicMappingDhcpOption82CircuitIdInsertion(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return convintflist2str(v, d.Get(pre))
+}
+
+func flattenWirelessControllerVapDynamicMappingDhcpOption82Delimiter(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -4359,7 +4435,7 @@ func flattenWirelessControllerVapDynamicMappingDhcpOption82Insertion(v interface
 }
 
 func flattenWirelessControllerVapDynamicMappingDhcpOption82RemoteIdInsertion(v interface{}, d *schema.ResourceData, pre string) interface{} {
-	return v
+	return convintflist2str(v, d.Get(pre))
 }
 
 func flattenWirelessControllerVapDynamicMappingDomainNameStripping(v interface{}, d *schema.ResourceData, pre string) interface{} {
@@ -4814,6 +4890,14 @@ func flattenWirelessControllerVapDynamicMappingRadio5GThreshold(v interface{}, d
 }
 
 func flattenWirelessControllerVapDynamicMappingRadioSensitivity(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWirelessControllerVapDynamicMappingRadiusAuthSurvivIntv(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWirelessControllerVapDynamicMappingRadiusAuthSurvivability(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -5654,6 +5738,14 @@ func flattenWirelessControllerVapRadio5GThreshold(v interface{}, d *schema.Resou
 }
 
 func flattenWirelessControllerVapRadioSensitivity(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWirelessControllerVapRadiusAuthSurvivIntv(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWirelessControllerVapRadiusAuthSurvivability(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -6534,6 +6626,16 @@ func refreshObjectWirelessControllerVap(d *schema.ResourceData, o map[string]int
 		}
 	}
 
+	if err = d.Set("captive_portal_dynamic_redirect_url", flattenWirelessControllerVapCaptivePortalDynamicRedirectUrl(o["captive-portal-dynamic-redirect-url"], d, "captive_portal_dynamic_redirect_url")); err != nil {
+		if vv, ok := fortiAPIPatch(o["captive-portal-dynamic-redirect-url"], "WirelessControllerVap-CaptivePortalDynamicRedirectUrl"); ok {
+			if err = d.Set("captive_portal_dynamic_redirect_url", vv); err != nil {
+				return fmt.Errorf("Error reading captive_portal_dynamic_redirect_url: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading captive_portal_dynamic_redirect_url: %v", err)
+		}
+	}
+
 	if err = d.Set("captive_portal_fw_accounting", flattenWirelessControllerVapCaptivePortalFwAccounting(o["captive-portal-fw-accounting"], d, "captive_portal_fw_accounting")); err != nil {
 		if vv, ok := fortiAPIPatch(o["captive-portal-fw-accounting"], "WirelessControllerVap-CaptivePortalFwAccounting"); ok {
 			if err = d.Set("captive_portal_fw_accounting", vv); err != nil {
@@ -6581,6 +6683,16 @@ func refreshObjectWirelessControllerVap(d *schema.ResourceData, o map[string]int
 			}
 		} else {
 			return fmt.Errorf("Error reading dhcp_option82_circuit_id_insertion: %v", err)
+		}
+	}
+
+	if err = d.Set("dhcp_option82_delimiter", flattenWirelessControllerVapDhcpOption82Delimiter(o["dhcp-option82-delimiter"], d, "dhcp_option82_delimiter")); err != nil {
+		if vv, ok := fortiAPIPatch(o["dhcp-option82-delimiter"], "WirelessControllerVap-DhcpOption82Delimiter"); ok {
+			if err = d.Set("dhcp_option82_delimiter", vv); err != nil {
+				return fmt.Errorf("Error reading dhcp_option82_delimiter: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading dhcp_option82_delimiter: %v", err)
 		}
 	}
 
@@ -7614,6 +7726,26 @@ func refreshObjectWirelessControllerVap(d *schema.ResourceData, o map[string]int
 		}
 	}
 
+	if err = d.Set("radius_auth_surviv_intv", flattenWirelessControllerVapRadiusAuthSurvivIntv(o["radius-auth-surviv-intv"], d, "radius_auth_surviv_intv")); err != nil {
+		if vv, ok := fortiAPIPatch(o["radius-auth-surviv-intv"], "WirelessControllerVap-RadiusAuthSurvivIntv"); ok {
+			if err = d.Set("radius_auth_surviv_intv", vv); err != nil {
+				return fmt.Errorf("Error reading radius_auth_surviv_intv: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading radius_auth_surviv_intv: %v", err)
+		}
+	}
+
+	if err = d.Set("radius_auth_survivability", flattenWirelessControllerVapRadiusAuthSurvivability(o["radius-auth-survivability"], d, "radius_auth_survivability")); err != nil {
+		if vv, ok := fortiAPIPatch(o["radius-auth-survivability"], "WirelessControllerVap-RadiusAuthSurvivability"); ok {
+			if err = d.Set("radius_auth_survivability", vv); err != nil {
+				return fmt.Errorf("Error reading radius_auth_survivability: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading radius_auth_survivability: %v", err)
+		}
+	}
+
 	if err = d.Set("radius_mac_auth", flattenWirelessControllerVapRadiusMacAuth(o["radius-mac-auth"], d, "radius_mac_auth")); err != nil {
 		if vv, ok := fortiAPIPatch(o["radius-mac-auth"], "WirelessControllerVap-RadiusMacAuth"); ok {
 			if err = d.Set("radius_mac_auth", vv); err != nil {
@@ -8433,6 +8565,10 @@ func expandWirelessControllerVapCaptivePortalAuthTimeout(d *schema.ResourceData,
 	return v, nil
 }
 
+func expandWirelessControllerVapCaptivePortalDynamicRedirectUrl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandWirelessControllerVapCaptivePortalFwAccounting(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -8450,6 +8586,10 @@ func expandWirelessControllerVapDhcpOption43Insertion(d *schema.ResourceData, v 
 }
 
 func expandWirelessControllerVapDhcpOption82CircuitIdInsertion(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return convstr2list(v, nil), nil
+}
+
+func expandWirelessControllerVapDhcpOption82Delimiter(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -8458,7 +8598,7 @@ func expandWirelessControllerVapDhcpOption82Insertion(d *schema.ResourceData, v 
 }
 
 func expandWirelessControllerVapDhcpOption82RemoteIdInsertion(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
-	return v, nil
+	return convstr2list(v, nil), nil
 }
 
 func expandWirelessControllerVapDomainNameStripping(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
@@ -8758,6 +8898,11 @@ func expandWirelessControllerVapDynamicMapping(d *schema.ResourceData, v interfa
 			tmp["captive-portal-auth-timeout"], _ = expandWirelessControllerVapDynamicMappingCaptivePortalAuthTimeout(d, i["captive_portal_auth_timeout"], pre_append)
 		}
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "captive_portal_dynamic_redirect_url"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["captive-portal-dynamic-redirect-url"], _ = expandWirelessControllerVapDynamicMappingCaptivePortalDynamicRedirectUrl(d, i["captive_portal_dynamic_redirect_url"], pre_append)
+		}
+
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "captive_portal_fw_accounting"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
 			tmp["captive-portal-fw-accounting"], _ = expandWirelessControllerVapDynamicMappingCaptivePortalFwAccounting(d, i["captive_portal_fw_accounting"], pre_append)
@@ -8811,6 +8956,11 @@ func expandWirelessControllerVapDynamicMapping(d *schema.ResourceData, v interfa
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "dhcp_option82_circuit_id_insertion"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
 			tmp["dhcp-option82-circuit-id-insertion"], _ = expandWirelessControllerVapDynamicMappingDhcpOption82CircuitIdInsertion(d, i["dhcp_option82_circuit_id_insertion"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "dhcp_option82_delimiter"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["dhcp-option82-delimiter"], _ = expandWirelessControllerVapDynamicMappingDhcpOption82Delimiter(d, i["dhcp_option82_delimiter"], pre_append)
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "dhcp_option82_insertion"
@@ -9286,6 +9436,16 @@ func expandWirelessControllerVapDynamicMapping(d *schema.ResourceData, v interfa
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "radio_sensitivity"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
 			tmp["radio-sensitivity"], _ = expandWirelessControllerVapDynamicMappingRadioSensitivity(d, i["radio_sensitivity"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "radius_auth_surviv_intv"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["radius-auth-surviv-intv"], _ = expandWirelessControllerVapDynamicMappingRadiusAuthSurvivIntv(d, i["radius_auth_surviv_intv"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "radius_auth_survivability"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["radius-auth-survivability"], _ = expandWirelessControllerVapDynamicMappingRadiusAuthSurvivability(d, i["radius_auth_survivability"], pre_append)
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "radius_mac_auth"
@@ -9827,6 +9987,10 @@ func expandWirelessControllerVapDynamicMappingCaptivePortalAuthTimeout(d *schema
 	return v, nil
 }
 
+func expandWirelessControllerVapDynamicMappingCaptivePortalDynamicRedirectUrl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandWirelessControllerVapDynamicMappingCaptivePortalFwAccounting(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -9868,6 +10032,10 @@ func expandWirelessControllerVapDynamicMappingDhcpOption43Insertion(d *schema.Re
 }
 
 func expandWirelessControllerVapDynamicMappingDhcpOption82CircuitIdInsertion(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return convstr2list(v, nil), nil
+}
+
+func expandWirelessControllerVapDynamicMappingDhcpOption82Delimiter(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -9876,7 +10044,7 @@ func expandWirelessControllerVapDynamicMappingDhcpOption82Insertion(d *schema.Re
 }
 
 func expandWirelessControllerVapDynamicMappingDhcpOption82RemoteIdInsertion(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
-	return v, nil
+	return convstr2list(v, nil), nil
 }
 
 func expandWirelessControllerVapDynamicMappingDomainNameStripping(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
@@ -10327,6 +10495,14 @@ func expandWirelessControllerVapDynamicMappingRadio5GThreshold(d *schema.Resourc
 }
 
 func expandWirelessControllerVapDynamicMappingRadioSensitivity(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWirelessControllerVapDynamicMappingRadiusAuthSurvivIntv(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWirelessControllerVapDynamicMappingRadiusAuthSurvivability(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -11159,6 +11335,14 @@ func expandWirelessControllerVapRadioSensitivity(d *schema.ResourceData, v inter
 	return v, nil
 }
 
+func expandWirelessControllerVapRadiusAuthSurvivIntv(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWirelessControllerVapRadiusAuthSurvivability(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandWirelessControllerVapRadiusMacAuth(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -11984,6 +12168,15 @@ func getObjectWirelessControllerVap(d *schema.ResourceData) (*map[string]interfa
 		}
 	}
 
+	if v, ok := d.GetOk("captive_portal_dynamic_redirect_url"); ok || d.HasChange("captive_portal_dynamic_redirect_url") {
+		t, err := expandWirelessControllerVapCaptivePortalDynamicRedirectUrl(d, v, "captive_portal_dynamic_redirect_url")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["captive-portal-dynamic-redirect-url"] = t
+		}
+	}
+
 	if v, ok := d.GetOk("captive_portal_fw_accounting"); ok || d.HasChange("captive_portal_fw_accounting") {
 		t, err := expandWirelessControllerVapCaptivePortalFwAccounting(d, v, "captive_portal_fw_accounting")
 		if err != nil {
@@ -12026,6 +12219,15 @@ func getObjectWirelessControllerVap(d *schema.ResourceData) (*map[string]interfa
 			return &obj, err
 		} else if t != nil {
 			obj["dhcp-option82-circuit-id-insertion"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("dhcp_option82_delimiter"); ok || d.HasChange("dhcp_option82_delimiter") {
+		t, err := expandWirelessControllerVapDhcpOption82Delimiter(d, v, "dhcp_option82_delimiter")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["dhcp-option82-delimiter"] = t
 		}
 	}
 
@@ -12908,6 +13110,24 @@ func getObjectWirelessControllerVap(d *schema.ResourceData) (*map[string]interfa
 			return &obj, err
 		} else if t != nil {
 			obj["radio-sensitivity"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("radius_auth_surviv_intv"); ok || d.HasChange("radius_auth_surviv_intv") {
+		t, err := expandWirelessControllerVapRadiusAuthSurvivIntv(d, v, "radius_auth_surviv_intv")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["radius-auth-surviv-intv"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("radius_auth_survivability"); ok || d.HasChange("radius_auth_survivability") {
+		t, err := expandWirelessControllerVapRadiusAuthSurvivability(d, v, "radius_auth_survivability")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["radius-auth-survivability"] = t
 		}
 	}
 

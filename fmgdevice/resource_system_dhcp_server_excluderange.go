@@ -71,6 +71,16 @@ func resourceSystemDhcpServerExcludeRange() *schema.Resource {
 				Type:     schema.TypeInt,
 				Optional: true,
 			},
+			"oui_match": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"oui_string": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Computed: true,
+			},
 			"start_ip": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -97,6 +107,10 @@ func resourceSystemDhcpServerExcludeRange() *schema.Resource {
 				Elem:     &schema.Schema{Type: schema.TypeString},
 				Optional: true,
 				Computed: true,
+			},
+			"vendor": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
 			},
 		},
 	}
@@ -206,14 +220,21 @@ func resourceSystemDhcpServerExcludeRangeUpdate(d *schema.ResourceData, m interf
 
 	wsParams["adom"] = adomv
 
-	_, err = c.UpdateSystemDhcpServerExcludeRange(obj, mkey, paradict, wsParams)
+	v, err := c.UpdateSystemDhcpServerExcludeRange(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemDhcpServerExcludeRange resource: %v", err)
 	}
 
 	log.Printf(strconv.Itoa(c.Retries))
 
-	d.SetId(strconv.Itoa(getIntKey(d, "fosid")))
+	if v != nil && v["id"] != nil {
+		if vidn, ok := v["id"].(float64); ok {
+			d.SetId(strconv.Itoa(int(vidn)))
+			return resourceSystemDhcpServerExcludeRangeRead(d, m)
+		} else {
+			return fmt.Errorf("Error updating SystemDhcpServerExcludeRange resource: %v", err)
+		}
+	}
 
 	return resourceSystemDhcpServerExcludeRangeRead(d, m)
 }
@@ -331,6 +352,14 @@ func flattenSystemDhcpServerExcludeRangeLeaseTime2edl(v interface{}, d *schema.R
 	return v
 }
 
+func flattenSystemDhcpServerExcludeRangeOuiMatch2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemDhcpServerExcludeRangeOuiString2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
 func flattenSystemDhcpServerExcludeRangeStartIp2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -349,6 +378,10 @@ func flattenSystemDhcpServerExcludeRangeVciMatch2edl(v interface{}, d *schema.Re
 
 func flattenSystemDhcpServerExcludeRangeVciString2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return flattenStringList(v)
+}
+
+func flattenSystemDhcpServerExcludeRangeVendor2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
 }
 
 func refreshObjectSystemDhcpServerExcludeRange(d *schema.ResourceData, o map[string]interface{}) error {
@@ -381,6 +414,26 @@ func refreshObjectSystemDhcpServerExcludeRange(d *schema.ResourceData, o map[str
 			}
 		} else {
 			return fmt.Errorf("Error reading lease_time: %v", err)
+		}
+	}
+
+	if err = d.Set("oui_match", flattenSystemDhcpServerExcludeRangeOuiMatch2edl(o["oui-match"], d, "oui_match")); err != nil {
+		if vv, ok := fortiAPIPatch(o["oui-match"], "SystemDhcpServerExcludeRange-OuiMatch"); ok {
+			if err = d.Set("oui_match", vv); err != nil {
+				return fmt.Errorf("Error reading oui_match: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading oui_match: %v", err)
+		}
+	}
+
+	if err = d.Set("oui_string", flattenSystemDhcpServerExcludeRangeOuiString2edl(o["oui-string"], d, "oui_string")); err != nil {
+		if vv, ok := fortiAPIPatch(o["oui-string"], "SystemDhcpServerExcludeRange-OuiString"); ok {
+			if err = d.Set("oui_string", vv); err != nil {
+				return fmt.Errorf("Error reading oui_string: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading oui_string: %v", err)
 		}
 	}
 
@@ -434,6 +487,16 @@ func refreshObjectSystemDhcpServerExcludeRange(d *schema.ResourceData, o map[str
 		}
 	}
 
+	if err = d.Set("vendor", flattenSystemDhcpServerExcludeRangeVendor2edl(o["vendor"], d, "vendor")); err != nil {
+		if vv, ok := fortiAPIPatch(o["vendor"], "SystemDhcpServerExcludeRange-Vendor"); ok {
+			if err = d.Set("vendor", vv); err != nil {
+				return fmt.Errorf("Error reading vendor: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading vendor: %v", err)
+		}
+	}
+
 	return nil
 }
 
@@ -455,6 +518,14 @@ func expandSystemDhcpServerExcludeRangeLeaseTime2edl(d *schema.ResourceData, v i
 	return v, nil
 }
 
+func expandSystemDhcpServerExcludeRangeOuiMatch2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemDhcpServerExcludeRangeOuiString2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
 func expandSystemDhcpServerExcludeRangeStartIp2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -473,6 +544,10 @@ func expandSystemDhcpServerExcludeRangeVciMatch2edl(d *schema.ResourceData, v in
 
 func expandSystemDhcpServerExcludeRangeVciString2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandSystemDhcpServerExcludeRangeVendor2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
 }
 
 func getObjectSystemDhcpServerExcludeRange(d *schema.ResourceData) (*map[string]interface{}, error) {
@@ -502,6 +577,24 @@ func getObjectSystemDhcpServerExcludeRange(d *schema.ResourceData) (*map[string]
 			return &obj, err
 		} else if t != nil {
 			obj["lease-time"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("oui_match"); ok || d.HasChange("oui_match") {
+		t, err := expandSystemDhcpServerExcludeRangeOuiMatch2edl(d, v, "oui_match")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["oui-match"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("oui_string"); ok || d.HasChange("oui_string") {
+		t, err := expandSystemDhcpServerExcludeRangeOuiString2edl(d, v, "oui_string")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["oui-string"] = t
 		}
 	}
 
@@ -547,6 +640,15 @@ func getObjectSystemDhcpServerExcludeRange(d *schema.ResourceData) (*map[string]
 			return &obj, err
 		} else if t != nil {
 			obj["vci-string"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("vendor"); ok || d.HasChange("vendor") {
+		t, err := expandSystemDhcpServerExcludeRangeVendor2edl(d, v, "vendor")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["vendor"] = t
 		}
 	}
 

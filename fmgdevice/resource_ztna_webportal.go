@@ -180,6 +180,10 @@ func resourceZtnaWebPortal() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
+			"ak_manager": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 			"bookmarks": &schema.Schema{
 				Type:     schema.TypeSet,
 				Elem:     &schema.Schema{Type: schema.TypeString},
@@ -492,6 +496,10 @@ func flattenZtnaWebPortalWindowsForticlientDownloadUrl(v interface{}, d *schema.
 	return v
 }
 
+func flattenZtnaWebPortalAkManager(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenZtnaWebPortalBookmarks(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return flattenStringList(v)
 }
@@ -757,6 +765,16 @@ func refreshObjectZtnaWebPortal(d *schema.ResourceData, o map[string]interface{}
 		}
 	}
 
+	if err = d.Set("ak_manager", flattenZtnaWebPortalAkManager(o["ak-manager"], d, "ak_manager")); err != nil {
+		if vv, ok := fortiAPIPatch(o["ak-manager"], "ZtnaWebPortal-AkManager"); ok {
+			if err = d.Set("ak_manager", vv); err != nil {
+				return fmt.Errorf("Error reading ak_manager: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading ak_manager: %v", err)
+		}
+	}
+
 	if err = d.Set("bookmarks", flattenZtnaWebPortalBookmarks(o["bookmarks"], d, "bookmarks")); err != nil {
 		if vv, ok := fortiAPIPatch(o["bookmarks"], "ZtnaWebPortal-Bookmarks"); ok {
 			if err = d.Set("bookmarks", vv); err != nil {
@@ -893,6 +911,10 @@ func expandZtnaWebPortalVip6(d *schema.ResourceData, v interface{}, pre string) 
 }
 
 func expandZtnaWebPortalWindowsForticlientDownloadUrl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandZtnaWebPortalAkManager(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -1133,6 +1155,15 @@ func getObjectZtnaWebPortal(d *schema.ResourceData) (*map[string]interface{}, er
 			return &obj, err
 		} else if t != nil {
 			obj["windows-forticlient-download-url"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("ak_manager"); ok || d.HasChange("ak_manager") {
+		t, err := expandZtnaWebPortalAkManager(d, v, "ak_manager")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["ak-manager"] = t
 		}
 	}
 

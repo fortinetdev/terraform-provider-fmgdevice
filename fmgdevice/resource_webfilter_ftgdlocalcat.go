@@ -65,6 +65,12 @@ func resourceWebfilterFtgdLocalCat() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"urlfilter_table": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Computed: true,
+			},
 		},
 	}
 }
@@ -273,6 +279,10 @@ func flattenWebfilterFtgdLocalCatStatus(v interface{}, d *schema.ResourceData, p
 	return v
 }
 
+func flattenWebfilterFtgdLocalCatUrlfilterTable(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
 func refreshObjectWebfilterFtgdLocalCat(d *schema.ResourceData, o map[string]interface{}) error {
 	var err error
 
@@ -306,6 +316,16 @@ func refreshObjectWebfilterFtgdLocalCat(d *schema.ResourceData, o map[string]int
 		}
 	}
 
+	if err = d.Set("urlfilter_table", flattenWebfilterFtgdLocalCatUrlfilterTable(o["urlfilter-table"], d, "urlfilter_table")); err != nil {
+		if vv, ok := fortiAPIPatch(o["urlfilter-table"], "WebfilterFtgdLocalCat-UrlfilterTable"); ok {
+			if err = d.Set("urlfilter_table", vv); err != nil {
+				return fmt.Errorf("Error reading urlfilter_table: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading urlfilter_table: %v", err)
+		}
+	}
+
 	return nil
 }
 
@@ -325,6 +345,10 @@ func expandWebfilterFtgdLocalCatId(d *schema.ResourceData, v interface{}, pre st
 
 func expandWebfilterFtgdLocalCatStatus(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
+}
+
+func expandWebfilterFtgdLocalCatUrlfilterTable(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
 }
 
 func getObjectWebfilterFtgdLocalCat(d *schema.ResourceData) (*map[string]interface{}, error) {
@@ -354,6 +378,15 @@ func getObjectWebfilterFtgdLocalCat(d *schema.ResourceData) (*map[string]interfa
 			return &obj, err
 		} else if t != nil {
 			obj["status"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("urlfilter_table"); ok || d.HasChange("urlfilter_table") {
+		t, err := expandWebfilterFtgdLocalCatUrlfilterTable(d, v, "urlfilter_table")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["urlfilter-table"] = t
 		}
 	}
 

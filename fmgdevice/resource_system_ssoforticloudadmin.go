@@ -51,6 +51,16 @@ func resourceSystemSsoForticloudAdmin() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"gui_custom_theme": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Computed: true,
+			},
+			"gui_dashboard_id": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+			},
 			"gui_default_dashboard_template": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -63,9 +73,47 @@ func resourceSystemSsoForticloudAdmin() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
+			"gui_llm_provider": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"gui_theme": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"gui_theme_type": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 			"name": &schema.Schema{
 				Type:     schema.TypeString,
 				ForceNew: true,
+				Optional: true,
+			},
+			"openai_api_key": &schema.Schema{
+				Type:      schema.TypeSet,
+				Elem:      &schema.Schema{Type: schema.TypeString},
+				Optional:  true,
+				Sensitive: true,
+				Computed:  true,
+			},
+			"openai_api_key_part2": &schema.Schema{
+				Type:      schema.TypeSet,
+				Elem:      &schema.Schema{Type: schema.TypeString},
+				Optional:  true,
+				Sensitive: true,
+				Computed:  true,
+			},
+			"openai_model": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"openai_org_id": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"openai_project_id": &schema.Schema{
+				Type:     schema.TypeString,
 				Optional: true,
 			},
 			"vdom": &schema.Schema{
@@ -248,6 +296,14 @@ func flattenSystemSsoForticloudAdminAccprofile(v interface{}, d *schema.Resource
 	return flattenStringList(v)
 }
 
+func flattenSystemSsoForticloudAdminGuiCustomTheme(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
+func flattenSystemSsoForticloudAdminGuiDashboardId(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenSystemSsoForticloudAdminGuiDefaultDashboardTemplate(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -260,7 +316,31 @@ func flattenSystemSsoForticloudAdminGuiIgnoreReleaseOverviewVersion(v interface{
 	return v
 }
 
+func flattenSystemSsoForticloudAdminGuiLlmProvider(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemSsoForticloudAdminGuiTheme(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemSsoForticloudAdminGuiThemeType(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenSystemSsoForticloudAdminName(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemSsoForticloudAdminOpenaiModel(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemSsoForticloudAdminOpenaiOrgId(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemSsoForticloudAdminOpenaiProjectId(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -278,6 +358,26 @@ func refreshObjectSystemSsoForticloudAdmin(d *schema.ResourceData, o map[string]
 			}
 		} else {
 			return fmt.Errorf("Error reading accprofile: %v", err)
+		}
+	}
+
+	if err = d.Set("gui_custom_theme", flattenSystemSsoForticloudAdminGuiCustomTheme(o["gui-custom-theme"], d, "gui_custom_theme")); err != nil {
+		if vv, ok := fortiAPIPatch(o["gui-custom-theme"], "SystemSsoForticloudAdmin-GuiCustomTheme"); ok {
+			if err = d.Set("gui_custom_theme", vv); err != nil {
+				return fmt.Errorf("Error reading gui_custom_theme: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading gui_custom_theme: %v", err)
+		}
+	}
+
+	if err = d.Set("gui_dashboard_id", flattenSystemSsoForticloudAdminGuiDashboardId(o["gui-dashboard-id"], d, "gui_dashboard_id")); err != nil {
+		if vv, ok := fortiAPIPatch(o["gui-dashboard-id"], "SystemSsoForticloudAdmin-GuiDashboardId"); ok {
+			if err = d.Set("gui_dashboard_id", vv); err != nil {
+				return fmt.Errorf("Error reading gui_dashboard_id: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading gui_dashboard_id: %v", err)
 		}
 	}
 
@@ -311,6 +411,36 @@ func refreshObjectSystemSsoForticloudAdmin(d *schema.ResourceData, o map[string]
 		}
 	}
 
+	if err = d.Set("gui_llm_provider", flattenSystemSsoForticloudAdminGuiLlmProvider(o["gui-llm-provider"], d, "gui_llm_provider")); err != nil {
+		if vv, ok := fortiAPIPatch(o["gui-llm-provider"], "SystemSsoForticloudAdmin-GuiLlmProvider"); ok {
+			if err = d.Set("gui_llm_provider", vv); err != nil {
+				return fmt.Errorf("Error reading gui_llm_provider: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading gui_llm_provider: %v", err)
+		}
+	}
+
+	if err = d.Set("gui_theme", flattenSystemSsoForticloudAdminGuiTheme(o["gui-theme"], d, "gui_theme")); err != nil {
+		if vv, ok := fortiAPIPatch(o["gui-theme"], "SystemSsoForticloudAdmin-GuiTheme"); ok {
+			if err = d.Set("gui_theme", vv); err != nil {
+				return fmt.Errorf("Error reading gui_theme: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading gui_theme: %v", err)
+		}
+	}
+
+	if err = d.Set("gui_theme_type", flattenSystemSsoForticloudAdminGuiThemeType(o["gui-theme-type"], d, "gui_theme_type")); err != nil {
+		if vv, ok := fortiAPIPatch(o["gui-theme-type"], "SystemSsoForticloudAdmin-GuiThemeType"); ok {
+			if err = d.Set("gui_theme_type", vv); err != nil {
+				return fmt.Errorf("Error reading gui_theme_type: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading gui_theme_type: %v", err)
+		}
+	}
+
 	if err = d.Set("name", flattenSystemSsoForticloudAdminName(o["name"], d, "name")); err != nil {
 		if vv, ok := fortiAPIPatch(o["name"], "SystemSsoForticloudAdmin-Name"); ok {
 			if err = d.Set("name", vv); err != nil {
@@ -318,6 +448,36 @@ func refreshObjectSystemSsoForticloudAdmin(d *schema.ResourceData, o map[string]
 			}
 		} else {
 			return fmt.Errorf("Error reading name: %v", err)
+		}
+	}
+
+	if err = d.Set("openai_model", flattenSystemSsoForticloudAdminOpenaiModel(o["openai-model"], d, "openai_model")); err != nil {
+		if vv, ok := fortiAPIPatch(o["openai-model"], "SystemSsoForticloudAdmin-OpenaiModel"); ok {
+			if err = d.Set("openai_model", vv); err != nil {
+				return fmt.Errorf("Error reading openai_model: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading openai_model: %v", err)
+		}
+	}
+
+	if err = d.Set("openai_org_id", flattenSystemSsoForticloudAdminOpenaiOrgId(o["openai-org-id"], d, "openai_org_id")); err != nil {
+		if vv, ok := fortiAPIPatch(o["openai-org-id"], "SystemSsoForticloudAdmin-OpenaiOrgId"); ok {
+			if err = d.Set("openai_org_id", vv); err != nil {
+				return fmt.Errorf("Error reading openai_org_id: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading openai_org_id: %v", err)
+		}
+	}
+
+	if err = d.Set("openai_project_id", flattenSystemSsoForticloudAdminOpenaiProjectId(o["openai-project-id"], d, "openai_project_id")); err != nil {
+		if vv, ok := fortiAPIPatch(o["openai-project-id"], "SystemSsoForticloudAdmin-OpenaiProjectId"); ok {
+			if err = d.Set("openai_project_id", vv); err != nil {
+				return fmt.Errorf("Error reading openai_project_id: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading openai_project_id: %v", err)
 		}
 	}
 
@@ -344,6 +504,14 @@ func expandSystemSsoForticloudAdminAccprofile(d *schema.ResourceData, v interfac
 	return expandStringList(v.(*schema.Set).List()), nil
 }
 
+func expandSystemSsoForticloudAdminGuiCustomTheme(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandSystemSsoForticloudAdminGuiDashboardId(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandSystemSsoForticloudAdminGuiDefaultDashboardTemplate(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -356,7 +524,39 @@ func expandSystemSsoForticloudAdminGuiIgnoreReleaseOverviewVersion(d *schema.Res
 	return v, nil
 }
 
+func expandSystemSsoForticloudAdminGuiLlmProvider(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemSsoForticloudAdminGuiTheme(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemSsoForticloudAdminGuiThemeType(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandSystemSsoForticloudAdminName(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemSsoForticloudAdminOpenaiApiKey(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandSystemSsoForticloudAdminOpenaiApiKeyPart2(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandSystemSsoForticloudAdminOpenaiModel(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemSsoForticloudAdminOpenaiOrgId(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemSsoForticloudAdminOpenaiProjectId(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -373,6 +573,24 @@ func getObjectSystemSsoForticloudAdmin(d *schema.ResourceData) (*map[string]inte
 			return &obj, err
 		} else if t != nil {
 			obj["accprofile"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("gui_custom_theme"); ok || d.HasChange("gui_custom_theme") {
+		t, err := expandSystemSsoForticloudAdminGuiCustomTheme(d, v, "gui_custom_theme")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["gui-custom-theme"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("gui_dashboard_id"); ok || d.HasChange("gui_dashboard_id") {
+		t, err := expandSystemSsoForticloudAdminGuiDashboardId(d, v, "gui_dashboard_id")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["gui-dashboard-id"] = t
 		}
 	}
 
@@ -403,12 +621,84 @@ func getObjectSystemSsoForticloudAdmin(d *schema.ResourceData) (*map[string]inte
 		}
 	}
 
+	if v, ok := d.GetOk("gui_llm_provider"); ok || d.HasChange("gui_llm_provider") {
+		t, err := expandSystemSsoForticloudAdminGuiLlmProvider(d, v, "gui_llm_provider")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["gui-llm-provider"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("gui_theme"); ok || d.HasChange("gui_theme") {
+		t, err := expandSystemSsoForticloudAdminGuiTheme(d, v, "gui_theme")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["gui-theme"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("gui_theme_type"); ok || d.HasChange("gui_theme_type") {
+		t, err := expandSystemSsoForticloudAdminGuiThemeType(d, v, "gui_theme_type")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["gui-theme-type"] = t
+		}
+	}
+
 	if v, ok := d.GetOk("name"); ok || d.HasChange("name") {
 		t, err := expandSystemSsoForticloudAdminName(d, v, "name")
 		if err != nil {
 			return &obj, err
 		} else if t != nil {
 			obj["name"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("openai_api_key"); ok || d.HasChange("openai_api_key") {
+		t, err := expandSystemSsoForticloudAdminOpenaiApiKey(d, v, "openai_api_key")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["openai-api-key"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("openai_api_key_part2"); ok || d.HasChange("openai_api_key_part2") {
+		t, err := expandSystemSsoForticloudAdminOpenaiApiKeyPart2(d, v, "openai_api_key_part2")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["openai-api-key-part2"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("openai_model"); ok || d.HasChange("openai_model") {
+		t, err := expandSystemSsoForticloudAdminOpenaiModel(d, v, "openai_model")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["openai-model"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("openai_org_id"); ok || d.HasChange("openai_org_id") {
+		t, err := expandSystemSsoForticloudAdminOpenaiOrgId(d, v, "openai_org_id")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["openai-org-id"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("openai_project_id"); ok || d.HasChange("openai_project_id") {
+		t, err := expandSystemSsoForticloudAdminOpenaiProjectId(d, v, "openai_project_id")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["openai-project-id"] = t
 		}
 	}
 

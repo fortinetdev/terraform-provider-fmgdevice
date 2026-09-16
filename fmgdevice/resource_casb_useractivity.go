@@ -279,6 +279,65 @@ func resourceCasbUserActivity() *schema.Resource {
 								},
 							},
 						},
+						"tenant_session_extraction": &schema.Schema{
+							Type:     schema.TypeList,
+							Optional: true,
+							MaxItems: 1,
+							Computed: true,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"filters": &schema.Schema{
+										Type:     schema.TypeList,
+										Optional: true,
+										Elem: &schema.Resource{
+											Schema: map[string]*schema.Schema{
+												"body_type": &schema.Schema{
+													Type:     schema.TypeString,
+													Optional: true,
+												},
+												"cookie_name": &schema.Schema{
+													Type:     schema.TypeString,
+													Optional: true,
+												},
+												"direction": &schema.Schema{
+													Type:     schema.TypeString,
+													Optional: true,
+												},
+												"header_name": &schema.Schema{
+													Type:     schema.TypeString,
+													Optional: true,
+												},
+												"id": &schema.Schema{
+													Type:     schema.TypeInt,
+													Optional: true,
+												},
+												"place": &schema.Schema{
+													Type:     schema.TypeString,
+													Optional: true,
+												},
+											},
+										},
+									},
+									"jq": &schema.Schema{
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+									"session_match": &schema.Schema{
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+									"session_source": &schema.Schema{
+										Type:     schema.TypeString,
+										Optional: true,
+										Computed: true,
+									},
+									"status": &schema.Schema{
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+								},
+							},
+						},
 					},
 				},
 			},
@@ -761,6 +820,12 @@ func flattenCasbUserActivityMatch(v interface{}, d *schema.ResourceData, pre str
 			tmp["tenant_extraction"] = fortiAPISubPartPatch(v, "CasbUserActivity-Match-TenantExtraction")
 		}
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "tenant_session_extraction"
+		if _, ok := i["tenant-session-extraction"]; ok {
+			v := flattenCasbUserActivityMatchTenantSessionExtraction(i["tenant-session-extraction"], d, pre_append)
+			tmp["tenant_session_extraction"] = fortiAPISubPartPatch(v, "CasbUserActivity-Match-TenantSessionExtraction")
+		}
+
 		if len(tmp) > 0 {
 			result = append(result, tmp)
 		}
@@ -1039,6 +1104,149 @@ func flattenCasbUserActivityMatchTenantExtractionStatus(v interface{}, d *schema
 }
 
 func flattenCasbUserActivityMatchTenantExtractionType(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenCasbUserActivityMatchTenantSessionExtraction(v interface{}, d *schema.ResourceData, pre string) []map[string]interface{} {
+	if v == nil {
+		return nil
+	}
+
+	i := v.(map[string]interface{})
+	result := make(map[string]interface{})
+
+	pre_append := "" // complex
+	pre_append = pre + ".0." + "filters"
+	if _, ok := i["filters"]; ok {
+		result["filters"] = flattenCasbUserActivityMatchTenantSessionExtractionFilters(i["filters"], d, pre_append)
+	}
+
+	pre_append = pre + ".0." + "jq"
+	if _, ok := i["jq"]; ok {
+		result["jq"] = flattenCasbUserActivityMatchTenantSessionExtractionJq(i["jq"], d, pre_append)
+	}
+
+	pre_append = pre + ".0." + "session_match"
+	if _, ok := i["session-match"]; ok {
+		result["session_match"] = flattenCasbUserActivityMatchTenantSessionExtractionSessionMatch(i["session-match"], d, pre_append)
+	}
+
+	pre_append = pre + ".0." + "session_source"
+	if _, ok := i["session-source"]; ok {
+		result["session_source"] = flattenCasbUserActivityMatchTenantSessionExtractionSessionSource(i["session-source"], d, pre_append)
+	}
+
+	pre_append = pre + ".0." + "status"
+	if _, ok := i["status"]; ok {
+		result["status"] = flattenCasbUserActivityMatchTenantSessionExtractionStatus(i["status"], d, pre_append)
+	}
+
+	lastresult := []map[string]interface{}{result}
+	return lastresult
+}
+
+func flattenCasbUserActivityMatchTenantSessionExtractionFilters(v interface{}, d *schema.ResourceData, pre string) []map[string]interface{} {
+	if v == nil {
+		return nil
+	}
+
+	l := v.([]interface{})
+	if len(l) == 0 || l[0] == nil {
+		return nil
+	}
+
+	result := make([]map[string]interface{}, 0, len(l))
+
+	con := 0
+	for _, r := range l {
+		tmp := make(map[string]interface{})
+		i := r.(map[string]interface{})
+
+		pre_append := "" // table
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "body_type"
+		if _, ok := i["body-type"]; ok {
+			v := flattenCasbUserActivityMatchTenantSessionExtractionFiltersBodyType(i["body-type"], d, pre_append)
+			tmp["body_type"] = fortiAPISubPartPatch(v, "CasbUserActivityMatchTenantSessionExtraction-Filters-BodyType")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "cookie_name"
+		if _, ok := i["cookie-name"]; ok {
+			v := flattenCasbUserActivityMatchTenantSessionExtractionFiltersCookieName(i["cookie-name"], d, pre_append)
+			tmp["cookie_name"] = fortiAPISubPartPatch(v, "CasbUserActivityMatchTenantSessionExtraction-Filters-CookieName")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "direction"
+		if _, ok := i["direction"]; ok {
+			v := flattenCasbUserActivityMatchTenantSessionExtractionFiltersDirection(i["direction"], d, pre_append)
+			tmp["direction"] = fortiAPISubPartPatch(v, "CasbUserActivityMatchTenantSessionExtraction-Filters-Direction")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "header_name"
+		if _, ok := i["header-name"]; ok {
+			v := flattenCasbUserActivityMatchTenantSessionExtractionFiltersHeaderName(i["header-name"], d, pre_append)
+			tmp["header_name"] = fortiAPISubPartPatch(v, "CasbUserActivityMatchTenantSessionExtraction-Filters-HeaderName")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "id"
+		if _, ok := i["id"]; ok {
+			v := flattenCasbUserActivityMatchTenantSessionExtractionFiltersId(i["id"], d, pre_append)
+			tmp["id"] = fortiAPISubPartPatch(v, "CasbUserActivityMatchTenantSessionExtraction-Filters-Id")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "place"
+		if _, ok := i["place"]; ok {
+			v := flattenCasbUserActivityMatchTenantSessionExtractionFiltersPlace(i["place"], d, pre_append)
+			tmp["place"] = fortiAPISubPartPatch(v, "CasbUserActivityMatchTenantSessionExtraction-Filters-Place")
+		}
+
+		if len(tmp) > 0 {
+			result = append(result, tmp)
+		}
+
+		con += 1
+	}
+
+	return result
+}
+
+func flattenCasbUserActivityMatchTenantSessionExtractionFiltersBodyType(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenCasbUserActivityMatchTenantSessionExtractionFiltersCookieName(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenCasbUserActivityMatchTenantSessionExtractionFiltersDirection(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenCasbUserActivityMatchTenantSessionExtractionFiltersHeaderName(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenCasbUserActivityMatchTenantSessionExtractionFiltersId(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenCasbUserActivityMatchTenantSessionExtractionFiltersPlace(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenCasbUserActivityMatchTenantSessionExtractionJq(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenCasbUserActivityMatchTenantSessionExtractionSessionMatch(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenCasbUserActivityMatchTenantSessionExtractionSessionSource(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenCasbUserActivityMatchTenantSessionExtractionStatus(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -1451,6 +1659,16 @@ func expandCasbUserActivityMatch(d *schema.ResourceData, v interface{}, pre stri
 			}
 		}
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "tenant_session_extraction"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			t, err := expandCasbUserActivityMatchTenantSessionExtraction(d, i["tenant_session_extraction"], pre_append)
+			if err != nil {
+				return result, err
+			} else if t != nil {
+				tmp["tenant-session-extraction"] = t
+			}
+		}
+
 		if len(tmp) > 0 {
 			result = append(result, tmp)
 		}
@@ -1705,6 +1923,139 @@ func expandCasbUserActivityMatchTenantExtractionStatus(d *schema.ResourceData, v
 }
 
 func expandCasbUserActivityMatchTenantExtractionType(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandCasbUserActivityMatchTenantSessionExtraction(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	l := v.([]interface{})
+	if len(l) == 0 || l[0] == nil {
+		return nil, nil
+	}
+
+	i := l[0].(map[string]interface{})
+	result := make(map[string]interface{})
+
+	pre_append := "" // complex
+	pre_append = pre + ".0." + "filters"
+	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+		t, err := expandCasbUserActivityMatchTenantSessionExtractionFilters(d, i["filters"], pre_append)
+		if err != nil {
+			return result, err
+		} else if t != nil {
+			result["filters"] = t
+		}
+	}
+	pre_append = pre + ".0." + "jq"
+	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+		result["jq"], _ = expandCasbUserActivityMatchTenantSessionExtractionJq(d, i["jq"], pre_append)
+	}
+	pre_append = pre + ".0." + "session_match"
+	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+		result["session-match"], _ = expandCasbUserActivityMatchTenantSessionExtractionSessionMatch(d, i["session_match"], pre_append)
+	}
+	pre_append = pre + ".0." + "session_source"
+	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+		result["session-source"], _ = expandCasbUserActivityMatchTenantSessionExtractionSessionSource(d, i["session_source"], pre_append)
+	}
+	pre_append = pre + ".0." + "status"
+	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+		result["status"], _ = expandCasbUserActivityMatchTenantSessionExtractionStatus(d, i["status"], pre_append)
+	}
+
+	return result, nil
+}
+
+func expandCasbUserActivityMatchTenantSessionExtractionFilters(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	l := v.([]interface{})
+	result := make([]map[string]interface{}, 0, len(l))
+
+	if len(l) == 0 || l[0] == nil {
+		return result, nil
+	}
+
+	con := 0
+	for _, r := range l {
+		tmp := make(map[string]interface{})
+		i := r.(map[string]interface{})
+		pre_append := "" // table
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "body_type"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["body-type"], _ = expandCasbUserActivityMatchTenantSessionExtractionFiltersBodyType(d, i["body_type"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "cookie_name"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["cookie-name"], _ = expandCasbUserActivityMatchTenantSessionExtractionFiltersCookieName(d, i["cookie_name"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "direction"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["direction"], _ = expandCasbUserActivityMatchTenantSessionExtractionFiltersDirection(d, i["direction"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "header_name"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["header-name"], _ = expandCasbUserActivityMatchTenantSessionExtractionFiltersHeaderName(d, i["header_name"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "id"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["id"], _ = expandCasbUserActivityMatchTenantSessionExtractionFiltersId(d, i["id"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "place"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["place"], _ = expandCasbUserActivityMatchTenantSessionExtractionFiltersPlace(d, i["place"], pre_append)
+		}
+
+		if len(tmp) > 0 {
+			result = append(result, tmp)
+		}
+
+		con += 1
+	}
+
+	return result, nil
+}
+
+func expandCasbUserActivityMatchTenantSessionExtractionFiltersBodyType(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandCasbUserActivityMatchTenantSessionExtractionFiltersCookieName(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandCasbUserActivityMatchTenantSessionExtractionFiltersDirection(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandCasbUserActivityMatchTenantSessionExtractionFiltersHeaderName(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandCasbUserActivityMatchTenantSessionExtractionFiltersId(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandCasbUserActivityMatchTenantSessionExtractionFiltersPlace(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandCasbUserActivityMatchTenantSessionExtractionJq(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandCasbUserActivityMatchTenantSessionExtractionSessionMatch(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandCasbUserActivityMatchTenantSessionExtractionSessionSource(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandCasbUserActivityMatchTenantSessionExtractionStatus(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 

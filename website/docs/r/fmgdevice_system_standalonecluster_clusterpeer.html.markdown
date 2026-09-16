@@ -39,6 +39,7 @@ The following arguments are supported:
 * `down_intfs_before_sess_sync` - List of interfaces to be turned down before session synchronization is complete.
 * `hb_interval` - Heartbeat interval (1 - 20 (100*ms). Increase to reduce false positives.
 * `hb_lost_threshold` - Lost heartbeat threshold (1 - 60). Increase to reduce false positives.
+* `interface` - Outgoing interface for peer connections.
 * `ike_heartbeat_interval` - Ike-Heartbeat-Interval.
 * `ike_monitor` - Ike-Monitor. Valid values: `disable`, `enable`.
 
@@ -52,6 +53,7 @@ The following arguments are supported:
 * `secondary_add_ipsec_routes` - Enable/disable IKE route announcement on the backup unit. Valid values: `disable`, `enable`.
 
 * `session_sync_filter` - Session-Sync-Filter. The structure of `session_sync_filter` block is documented below.
+* `source_ip` - Source IP address to use for peer connections.
 * `sync_id` - Sync ID.
 * `syncvd` - Sessions from these VDOMs are synchronized using this session synchronization configuration.
 

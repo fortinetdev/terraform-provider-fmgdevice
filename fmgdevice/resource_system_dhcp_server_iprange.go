@@ -71,6 +71,16 @@ func resourceSystemDhcpServerIpRange() *schema.Resource {
 				Type:     schema.TypeInt,
 				Optional: true,
 			},
+			"oui_match": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"oui_string": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Computed: true,
+			},
 			"start_ip": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -97,6 +107,10 @@ func resourceSystemDhcpServerIpRange() *schema.Resource {
 				Elem:     &schema.Schema{Type: schema.TypeString},
 				Optional: true,
 				Computed: true,
+			},
+			"vendor": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
 			},
 		},
 	}
@@ -206,14 +220,21 @@ func resourceSystemDhcpServerIpRangeUpdate(d *schema.ResourceData, m interface{}
 
 	wsParams["adom"] = adomv
 
-	_, err = c.UpdateSystemDhcpServerIpRange(obj, mkey, paradict, wsParams)
+	v, err := c.UpdateSystemDhcpServerIpRange(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemDhcpServerIpRange resource: %v", err)
 	}
 
 	log.Printf(strconv.Itoa(c.Retries))
 
-	d.SetId(strconv.Itoa(getIntKey(d, "fosid")))
+	if v != nil && v["id"] != nil {
+		if vidn, ok := v["id"].(float64); ok {
+			d.SetId(strconv.Itoa(int(vidn)))
+			return resourceSystemDhcpServerIpRangeRead(d, m)
+		} else {
+			return fmt.Errorf("Error updating SystemDhcpServerIpRange resource: %v", err)
+		}
+	}
 
 	return resourceSystemDhcpServerIpRangeRead(d, m)
 }
@@ -331,6 +352,14 @@ func flattenSystemDhcpServerIpRangeLeaseTime2edl(v interface{}, d *schema.Resour
 	return v
 }
 
+func flattenSystemDhcpServerIpRangeOuiMatch2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemDhcpServerIpRangeOuiString2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
 func flattenSystemDhcpServerIpRangeStartIp2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -349,6 +378,10 @@ func flattenSystemDhcpServerIpRangeVciMatch2edl(v interface{}, d *schema.Resourc
 
 func flattenSystemDhcpServerIpRangeVciString2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return flattenStringList(v)
+}
+
+func flattenSystemDhcpServerIpRangeVendor2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
 }
 
 func refreshObjectSystemDhcpServerIpRange(d *schema.ResourceData, o map[string]interface{}) error {
@@ -381,6 +414,26 @@ func refreshObjectSystemDhcpServerIpRange(d *schema.ResourceData, o map[string]i
 			}
 		} else {
 			return fmt.Errorf("Error reading lease_time: %v", err)
+		}
+	}
+
+	if err = d.Set("oui_match", flattenSystemDhcpServerIpRangeOuiMatch2edl(o["oui-match"], d, "oui_match")); err != nil {
+		if vv, ok := fortiAPIPatch(o["oui-match"], "SystemDhcpServerIpRange-OuiMatch"); ok {
+			if err = d.Set("oui_match", vv); err != nil {
+				return fmt.Errorf("Error reading oui_match: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading oui_match: %v", err)
+		}
+	}
+
+	if err = d.Set("oui_string", flattenSystemDhcpServerIpRangeOuiString2edl(o["oui-string"], d, "oui_string")); err != nil {
+		if vv, ok := fortiAPIPatch(o["oui-string"], "SystemDhcpServerIpRange-OuiString"); ok {
+			if err = d.Set("oui_string", vv); err != nil {
+				return fmt.Errorf("Error reading oui_string: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading oui_string: %v", err)
 		}
 	}
 
@@ -434,6 +487,16 @@ func refreshObjectSystemDhcpServerIpRange(d *schema.ResourceData, o map[string]i
 		}
 	}
 
+	if err = d.Set("vendor", flattenSystemDhcpServerIpRangeVendor2edl(o["vendor"], d, "vendor")); err != nil {
+		if vv, ok := fortiAPIPatch(o["vendor"], "SystemDhcpServerIpRange-Vendor"); ok {
+			if err = d.Set("vendor", vv); err != nil {
+				return fmt.Errorf("Error reading vendor: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading vendor: %v", err)
+		}
+	}
+
 	return nil
 }
 
@@ -455,6 +518,14 @@ func expandSystemDhcpServerIpRangeLeaseTime2edl(d *schema.ResourceData, v interf
 	return v, nil
 }
 
+func expandSystemDhcpServerIpRangeOuiMatch2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemDhcpServerIpRangeOuiString2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
 func expandSystemDhcpServerIpRangeStartIp2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -473,6 +544,10 @@ func expandSystemDhcpServerIpRangeVciMatch2edl(d *schema.ResourceData, v interfa
 
 func expandSystemDhcpServerIpRangeVciString2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandSystemDhcpServerIpRangeVendor2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
 }
 
 func getObjectSystemDhcpServerIpRange(d *schema.ResourceData) (*map[string]interface{}, error) {
@@ -502,6 +577,24 @@ func getObjectSystemDhcpServerIpRange(d *schema.ResourceData) (*map[string]inter
 			return &obj, err
 		} else if t != nil {
 			obj["lease-time"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("oui_match"); ok || d.HasChange("oui_match") {
+		t, err := expandSystemDhcpServerIpRangeOuiMatch2edl(d, v, "oui_match")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["oui-match"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("oui_string"); ok || d.HasChange("oui_string") {
+		t, err := expandSystemDhcpServerIpRangeOuiString2edl(d, v, "oui_string")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["oui-string"] = t
 		}
 	}
 
@@ -547,6 +640,15 @@ func getObjectSystemDhcpServerIpRange(d *schema.ResourceData) (*map[string]inter
 			return &obj, err
 		} else if t != nil {
 			obj["vci-string"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("vendor"); ok || d.HasChange("vendor") {
+		t, err := expandSystemDhcpServerIpRangeVendor2edl(d, v, "vendor")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["vendor"] = t
 		}
 	}
 

@@ -48,6 +48,7 @@ The following arguments are supported:
 * `branch_name` - Branch name.
 * `health_checks` - Underlying health checks.
 * `loopback_address_block` - IPv4 address and subnet mask for hub's loopback address, syntax: X.X.X.X/24.
+* `loopback_address_block_ipam` - IPAM firewall address that will be used for hub's loopback address.
 * `loopback_advertised_subnet` - Loopback advertised subnet reference.
 * `loopback_interface` - Loopback interface.
 * `overlays` - Overlays. The structure of `overlays` block is documented below.
@@ -86,6 +87,7 @@ The `overlays` block supports:
 * `name` - Overlay name.
 * `overlay_policy` - The overlay policy to allow ADVPN thru traffic.
 * `overlay_tunnel_block` - IPv4 address and subnet mask for the overlay tunnel , syntax: X.X.X.X/24.
+* `overlay_tunnel_block_ipam` - Source for the overlay tunnel, obtained from the firewall addresses managed by IPAM
 * `remote_gw` - IP address of the hub gateway (Set by hub).
 * `route_policy` - Underlying router policy.
 * `sdwan_member` - Reference to SD-WAN member entry.

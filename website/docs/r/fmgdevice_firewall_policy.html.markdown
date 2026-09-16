@@ -9,6 +9,11 @@ description: |-
 # fmgdevice_firewall_policy
 <i>This object will be purged after policy copy and install.</i> Configure IPv4/IPv6 policies.
 
+~> The following variables have sub resource. Avoid using them together, otherwise conflicts and overwrites may occur.
+>- `fabric_policy`: `fmgdevice_firewall_policy_fabricpolicy`
+
+
+
 ## Argument Reference
 
 
@@ -52,7 +57,9 @@ The following arguments are supported:
 * `cgn_sw_eif_ctrl` - Enable/disable software endpoint independent filtering control. Valid values: `disable`, `enable`.
 
 * `comments` - Comment.
+* `creation_time` - The date and time that the policy was created.
 * `custom_log_fields` - Custom fields to append to log messages for this policy.
+* `custom_tags` - Custom tags.
 * `decrypted_traffic_mirror` - Decrypted traffic mirror.
 * `delay_tcp_npu_session` - Enable TCP NPU session delay to guarantee packet order of 3-way handshake. Valid values: `disable`, `enable`.
 
@@ -87,6 +94,13 @@ The following arguments are supported:
 * `email_collect` - Enable/disable email collection. Valid values: `disable`, `enable`.
 
 * `emailfilter_profile` - Name of an existing email filter profile.
+* `fabric_force_sync` - Enable/disable forced synchronization of configuration objects from the root FortiGate unit to the downstream devices.  Configuration conflict check is skipped. Valid values: `disable`, `enable`.
+
+* `fabric_object` - Security Fabric global object setting. Valid values: `disable`, `enable`.
+
+* `fabric_object_source` - Source of truth for fabric object. Valid values: `member`, `local`, `root`.
+
+* `fabric_policy` - Fabric-Policy. The structure of `fabric_policy` block is documented below.
 * `fec` - Enable/disable Forward Error Correction on traffic matching this policy on a FEC device. Valid values: `disable`, `enable`.
 
 * `file_filter_profile` - Name of an existing file-filter profile.
@@ -257,6 +271,8 @@ The following arguments are supported:
 * `sgt` - Security group tags.
 * `sgt_check` - Enable/disable security group tags (SGT) check. Valid values: `disable`, `enable`.
 
+* `skip_vrf_match` - Enable/disable skipping VRF matching on reply direction. Valid values: `disable`, `enable`.
+
 * `src_vendor_mac` - Vendor MAC source ID.
 * `srcaddr` - Source IPv4 address and address group names.
 * `srcaddr_negate` - When enabled srcaddr specifies what the source address must NOT be. Valid values: `disable`, `enable`.
@@ -318,6 +334,7 @@ The following arguments are supported:
 * `webfilter_profile` - Name of an existing Web filter profile.
 * `webproxy_forward_server` - Webproxy forward server name.
 * `webproxy_profile` - Webproxy profile name.
+* `ztna_destination` - Configure ZTNA destinations. Must be used with ZTNA traffic-forward-proxy.
 * `wsso` - Enable/disable WiFi Single Sign On (WSSO). Valid values: `disable`, `enable`.
 
 * `ztna_device_ownership` - Enable/disable zero trust device ownership. Valid values: `disable`, `enable`.
@@ -326,6 +343,7 @@ The following arguments are supported:
 * `ztna_ems_tag_negate` - When enabled ztna-ems-tag specifies what the tags must NOT be. Valid values: `disable`, `enable`.
 
 * `ztna_ems_tag_secondary` - Source ztna-ems-tag-secondary names.
+* `ztna_ems_tag6` - Source ZTNA FortiClient EMS tag IPv6 names.
 * `ztna_geo_tag` - Source ztna-geo-tag names.
 * `ztna_policy_redirect` - Redirect ZTNA traffic to matching Access-Proxy proxy-policy. Valid values: `disable`, `enable`.
 
@@ -375,6 +393,11 @@ The following arguments are supported:
 * `url_category` - Url-Category.
 * `url_risk` - Url-Risk.
 * `ztna_proxy` - Ztna-Proxy.
+
+The `fabric_policy` block supports:
+
+* `from` - From device.
+* `to` - To device.
 
 
 ## Attribute Reference

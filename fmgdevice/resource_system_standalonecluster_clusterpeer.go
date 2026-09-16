@@ -61,6 +61,12 @@ func resourceSystemStandaloneClusterClusterPeer() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"interface": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Computed: true,
+			},
 			"ike_heartbeat_interval": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
@@ -167,6 +173,10 @@ func resourceSystemStandaloneClusterClusterPeer() *schema.Resource {
 						},
 					},
 				},
+			},
+			"source_ip": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
 			},
 			"sync_id": &schema.Schema{
 				Type:     schema.TypeInt,
@@ -362,6 +372,10 @@ func flattenSystemStandaloneClusterClusterPeerHbLostThreshold2edl(v interface{},
 	return v
 }
 
+func flattenSystemStandaloneClusterClusterPeerInterface2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
 func flattenSystemStandaloneClusterClusterPeerIkeHeartbeatInterval2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -525,6 +539,10 @@ func flattenSystemStandaloneClusterClusterPeerSessionSyncFilterSrcintf2edl(v int
 	return flattenStringList(v)
 }
 
+func flattenSystemStandaloneClusterClusterPeerSourceIp2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenSystemStandaloneClusterClusterPeerSyncId2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -563,6 +581,16 @@ func refreshObjectSystemStandaloneClusterClusterPeer(d *schema.ResourceData, o m
 			}
 		} else {
 			return fmt.Errorf("Error reading hb_lost_threshold: %v", err)
+		}
+	}
+
+	if err = d.Set("interface", flattenSystemStandaloneClusterClusterPeerInterface2edl(o["interface"], d, "interface")); err != nil {
+		if vv, ok := fortiAPIPatch(o["interface"], "SystemStandaloneClusterClusterPeer-Interface"); ok {
+			if err = d.Set("interface", vv); err != nil {
+				return fmt.Errorf("Error reading interface: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading interface: %v", err)
 		}
 	}
 
@@ -670,6 +698,16 @@ func refreshObjectSystemStandaloneClusterClusterPeer(d *schema.ResourceData, o m
 		}
 	}
 
+	if err = d.Set("source_ip", flattenSystemStandaloneClusterClusterPeerSourceIp2edl(o["source-ip"], d, "source_ip")); err != nil {
+		if vv, ok := fortiAPIPatch(o["source-ip"], "SystemStandaloneClusterClusterPeer-SourceIp"); ok {
+			if err = d.Set("source_ip", vv); err != nil {
+				return fmt.Errorf("Error reading source_ip: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading source_ip: %v", err)
+		}
+	}
+
 	if err = d.Set("sync_id", flattenSystemStandaloneClusterClusterPeerSyncId2edl(o["sync-id"], d, "sync_id")); err != nil {
 		if vv, ok := fortiAPIPatch(o["sync-id"], "SystemStandaloneClusterClusterPeer-SyncId"); ok {
 			if err = d.Set("sync_id", vv); err != nil {
@@ -709,6 +747,10 @@ func expandSystemStandaloneClusterClusterPeerHbInterval2edl(d *schema.ResourceDa
 
 func expandSystemStandaloneClusterClusterPeerHbLostThreshold2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
+}
+
+func expandSystemStandaloneClusterClusterPeerInterface2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
 }
 
 func expandSystemStandaloneClusterClusterPeerIkeHeartbeatInterval2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
@@ -865,6 +907,10 @@ func expandSystemStandaloneClusterClusterPeerSessionSyncFilterSrcintf2edl(d *sch
 	return expandStringList(v.(*schema.Set).List()), nil
 }
 
+func expandSystemStandaloneClusterClusterPeerSourceIp2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandSystemStandaloneClusterClusterPeerSyncId2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -900,6 +946,15 @@ func getObjectSystemStandaloneClusterClusterPeer(d *schema.ResourceData) (*map[s
 			return &obj, err
 		} else if t != nil {
 			obj["hb-lost-threshold"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("interface"); ok || d.HasChange("interface") {
+		t, err := expandSystemStandaloneClusterClusterPeerInterface2edl(d, v, "interface")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["interface"] = t
 		}
 	}
 
@@ -981,6 +1036,15 @@ func getObjectSystemStandaloneClusterClusterPeer(d *schema.ResourceData) (*map[s
 			return &obj, err
 		} else if t != nil {
 			obj["session-sync-filter"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("source_ip"); ok || d.HasChange("source_ip") {
+		t, err := expandSystemStandaloneClusterClusterPeerSourceIp2edl(d, v, "source_ip")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["source-ip"] = t
 		}
 	}
 

@@ -158,6 +158,18 @@ func resourceAuthenticationScheme() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
+			"bearer_format": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"bearer_header": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"bearer_type": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 			"captcha": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -464,6 +476,18 @@ func flattenAuthenticationSchemeAuthUserHeader(v interface{}, d *schema.Resource
 	return v
 }
 
+func flattenAuthenticationSchemeBearerFormat(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenAuthenticationSchemeBearerHeader(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenAuthenticationSchemeBearerType(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenAuthenticationSchemeCaptcha(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -695,6 +719,36 @@ func refreshObjectAuthenticationScheme(d *schema.ResourceData, o map[string]inte
 		}
 	}
 
+	if err = d.Set("bearer_format", flattenAuthenticationSchemeBearerFormat(o["bearer-format"], d, "bearer_format")); err != nil {
+		if vv, ok := fortiAPIPatch(o["bearer-format"], "AuthenticationScheme-BearerFormat"); ok {
+			if err = d.Set("bearer_format", vv); err != nil {
+				return fmt.Errorf("Error reading bearer_format: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading bearer_format: %v", err)
+		}
+	}
+
+	if err = d.Set("bearer_header", flattenAuthenticationSchemeBearerHeader(o["bearer-header"], d, "bearer_header")); err != nil {
+		if vv, ok := fortiAPIPatch(o["bearer-header"], "AuthenticationScheme-BearerHeader"); ok {
+			if err = d.Set("bearer_header", vv); err != nil {
+				return fmt.Errorf("Error reading bearer_header: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading bearer_header: %v", err)
+		}
+	}
+
+	if err = d.Set("bearer_type", flattenAuthenticationSchemeBearerType(o["bearer-type"], d, "bearer_type")); err != nil {
+		if vv, ok := fortiAPIPatch(o["bearer-type"], "AuthenticationScheme-BearerType"); ok {
+			if err = d.Set("bearer_type", vv); err != nil {
+				return fmt.Errorf("Error reading bearer_type: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading bearer_type: %v", err)
+		}
+	}
+
 	if err = d.Set("captcha", flattenAuthenticationSchemeCaptcha(o["captcha"], d, "captcha")); err != nil {
 		if vv, ok := fortiAPIPatch(o["captcha"], "AuthenticationScheme-Captcha"); ok {
 			if err = d.Set("captcha", vv); err != nil {
@@ -851,6 +905,18 @@ func expandAuthenticationSchemeUserDatabase(d *schema.ResourceData, v interface{
 }
 
 func expandAuthenticationSchemeAuthUserHeader(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandAuthenticationSchemeBearerFormat(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandAuthenticationSchemeBearerHeader(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandAuthenticationSchemeBearerType(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -1062,6 +1128,33 @@ func getObjectAuthenticationScheme(d *schema.ResourceData) (*map[string]interfac
 			return &obj, err
 		} else if t != nil {
 			obj["auth-user-header"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("bearer_format"); ok || d.HasChange("bearer_format") {
+		t, err := expandAuthenticationSchemeBearerFormat(d, v, "bearer_format")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["bearer-format"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("bearer_header"); ok || d.HasChange("bearer_header") {
+		t, err := expandAuthenticationSchemeBearerHeader(d, v, "bearer_header")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["bearer-header"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("bearer_type"); ok || d.HasChange("bearer_type") {
+		t, err := expandAuthenticationSchemeBearerType(d, v, "bearer_type")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["bearer-type"] = t
 		}
 	}
 

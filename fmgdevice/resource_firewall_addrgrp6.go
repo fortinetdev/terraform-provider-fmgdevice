@@ -55,11 +55,25 @@ func resourceFirewallAddrgrp6() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
+			"category": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 			"color": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
 			},
 			"comment": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"custom_tags": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Computed: true,
+			},
+			"display_with": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 			},
@@ -88,11 +102,25 @@ func resourceFirewallAddrgrp6() *schema.Resource {
 								},
 							},
 						},
+						"category": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
 						"color": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
 						},
 						"comment": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"custom_tags": &schema.Schema{
+							Type:     schema.TypeSet,
+							Elem:     &schema.Schema{Type: schema.TypeString},
+							Optional: true,
+							Computed: true,
+						},
+						"display_with": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
 						},
@@ -106,7 +134,15 @@ func resourceFirewallAddrgrp6() *schema.Resource {
 							Optional: true,
 							Computed: true,
 						},
+						"fabric_force_sync": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
 						"fabric_object": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"fabric_object_source": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
 						},
@@ -125,6 +161,10 @@ func resourceFirewallAddrgrp6() *schema.Resource {
 							Elem:     &schema.Schema{Type: schema.TypeString},
 							Optional: true,
 							Computed: true,
+						},
+						"type": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
 						},
 						"uuid": &schema.Schema{
 							Type:     schema.TypeString,
@@ -149,10 +189,18 @@ func resourceFirewallAddrgrp6() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"fabric_force_sync": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 			"fabric_object": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+			},
+			"fabric_object_source": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
 			},
 			"global_object": &schema.Schema{
 				Type:     schema.TypeInt,
@@ -191,6 +239,10 @@ func resourceFirewallAddrgrp6() *schema.Resource {
 						},
 					},
 				},
+			},
+			"type": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
 			},
 			"uuid": &schema.Schema{
 				Type:     schema.TypeString,
@@ -406,11 +458,23 @@ func flattenFirewallAddrgrp6ImageBase64(v interface{}, d *schema.ResourceData, p
 	return v
 }
 
+func flattenFirewallAddrgrp6Category(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenFirewallAddrgrp6Color(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
 func flattenFirewallAddrgrp6Comment(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenFirewallAddrgrp6CustomTags(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
+func flattenFirewallAddrgrp6DisplayWith(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -445,6 +509,12 @@ func flattenFirewallAddrgrp6DynamicMapping(v interface{}, d *schema.ResourceData
 			tmp["_scope"] = fortiAPISubPartPatch(v, "FirewallAddrgrp6-DynamicMapping-Scope")
 		}
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "category"
+		if _, ok := i["category"]; ok {
+			v := flattenFirewallAddrgrp6DynamicMappingCategory(i["category"], d, pre_append)
+			tmp["category"] = fortiAPISubPartPatch(v, "FirewallAddrgrp6-DynamicMapping-Category")
+		}
+
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "color"
 		if _, ok := i["color"]; ok {
 			v := flattenFirewallAddrgrp6DynamicMappingColor(i["color"], d, pre_append)
@@ -455,6 +525,18 @@ func flattenFirewallAddrgrp6DynamicMapping(v interface{}, d *schema.ResourceData
 		if _, ok := i["comment"]; ok {
 			v := flattenFirewallAddrgrp6DynamicMappingComment(i["comment"], d, pre_append)
 			tmp["comment"] = fortiAPISubPartPatch(v, "FirewallAddrgrp6-DynamicMapping-Comment")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "custom_tags"
+		if _, ok := i["custom-tags"]; ok {
+			v := flattenFirewallAddrgrp6DynamicMappingCustomTags(i["custom-tags"], d, pre_append)
+			tmp["custom_tags"] = fortiAPISubPartPatch(v, "FirewallAddrgrp6-DynamicMapping-CustomTags")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "display_with"
+		if _, ok := i["display-with"]; ok {
+			v := flattenFirewallAddrgrp6DynamicMappingDisplayWith(i["display-with"], d, pre_append)
+			tmp["display_with"] = fortiAPISubPartPatch(v, "FirewallAddrgrp6-DynamicMapping-DisplayWith")
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "exclude"
@@ -469,10 +551,22 @@ func flattenFirewallAddrgrp6DynamicMapping(v interface{}, d *schema.ResourceData
 			tmp["exclude_member"] = fortiAPISubPartPatch(v, "FirewallAddrgrp6-DynamicMapping-ExcludeMember")
 		}
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "fabric_force_sync"
+		if _, ok := i["fabric-force-sync"]; ok {
+			v := flattenFirewallAddrgrp6DynamicMappingFabricForceSync(i["fabric-force-sync"], d, pre_append)
+			tmp["fabric_force_sync"] = fortiAPISubPartPatch(v, "FirewallAddrgrp6-DynamicMapping-FabricForceSync")
+		}
+
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "fabric_object"
 		if _, ok := i["fabric-object"]; ok {
 			v := flattenFirewallAddrgrp6DynamicMappingFabricObject(i["fabric-object"], d, pre_append)
 			tmp["fabric_object"] = fortiAPISubPartPatch(v, "FirewallAddrgrp6-DynamicMapping-FabricObject")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "fabric_object_source"
+		if _, ok := i["fabric-object-source"]; ok {
+			v := flattenFirewallAddrgrp6DynamicMappingFabricObjectSource(i["fabric-object-source"], d, pre_append)
+			tmp["fabric_object_source"] = fortiAPISubPartPatch(v, "FirewallAddrgrp6-DynamicMapping-FabricObjectSource")
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "global_object"
@@ -491,6 +585,12 @@ func flattenFirewallAddrgrp6DynamicMapping(v interface{}, d *schema.ResourceData
 		if _, ok := i["tags"]; ok {
 			v := flattenFirewallAddrgrp6DynamicMappingTags(i["tags"], d, pre_append)
 			tmp["tags"] = fortiAPISubPartPatch(v, "FirewallAddrgrp6-DynamicMapping-Tags")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "type"
+		if _, ok := i["type"]; ok {
+			v := flattenFirewallAddrgrp6DynamicMappingType(i["type"], d, pre_append)
+			tmp["type"] = fortiAPISubPartPatch(v, "FirewallAddrgrp6-DynamicMapping-Type")
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "uuid"
@@ -568,11 +668,23 @@ func flattenFirewallAddrgrp6DynamicMappingScopeVdom(v interface{}, d *schema.Res
 	return v
 }
 
+func flattenFirewallAddrgrp6DynamicMappingCategory(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenFirewallAddrgrp6DynamicMappingColor(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
 func flattenFirewallAddrgrp6DynamicMappingComment(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenFirewallAddrgrp6DynamicMappingCustomTags(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
+func flattenFirewallAddrgrp6DynamicMappingDisplayWith(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -584,7 +696,15 @@ func flattenFirewallAddrgrp6DynamicMappingExcludeMember(v interface{}, d *schema
 	return flattenStringList(v)
 }
 
+func flattenFirewallAddrgrp6DynamicMappingFabricForceSync(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenFirewallAddrgrp6DynamicMappingFabricObject(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenFirewallAddrgrp6DynamicMappingFabricObjectSource(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -598,6 +718,10 @@ func flattenFirewallAddrgrp6DynamicMappingMember(v interface{}, d *schema.Resour
 
 func flattenFirewallAddrgrp6DynamicMappingTags(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return flattenStringList(v)
+}
+
+func flattenFirewallAddrgrp6DynamicMappingType(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
 }
 
 func flattenFirewallAddrgrp6DynamicMappingUuid(v interface{}, d *schema.ResourceData, pre string) interface{} {
@@ -616,7 +740,15 @@ func flattenFirewallAddrgrp6ExcludeMember(v interface{}, d *schema.ResourceData,
 	return flattenStringList(v)
 }
 
+func flattenFirewallAddrgrp6FabricForceSync(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenFirewallAddrgrp6FabricObject(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenFirewallAddrgrp6FabricObjectSource(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -691,6 +823,10 @@ func flattenFirewallAddrgrp6TaggingTags(v interface{}, d *schema.ResourceData, p
 	return flattenStringList(v)
 }
 
+func flattenFirewallAddrgrp6Type(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenFirewallAddrgrp6Uuid(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -716,6 +852,16 @@ func refreshObjectFirewallAddrgrp6(d *schema.ResourceData, o map[string]interfac
 		}
 	}
 
+	if err = d.Set("category", flattenFirewallAddrgrp6Category(o["category"], d, "category")); err != nil {
+		if vv, ok := fortiAPIPatch(o["category"], "FirewallAddrgrp6-Category"); ok {
+			if err = d.Set("category", vv); err != nil {
+				return fmt.Errorf("Error reading category: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading category: %v", err)
+		}
+	}
+
 	if err = d.Set("color", flattenFirewallAddrgrp6Color(o["color"], d, "color")); err != nil {
 		if vv, ok := fortiAPIPatch(o["color"], "FirewallAddrgrp6-Color"); ok {
 			if err = d.Set("color", vv); err != nil {
@@ -733,6 +879,26 @@ func refreshObjectFirewallAddrgrp6(d *schema.ResourceData, o map[string]interfac
 			}
 		} else {
 			return fmt.Errorf("Error reading comment: %v", err)
+		}
+	}
+
+	if err = d.Set("custom_tags", flattenFirewallAddrgrp6CustomTags(o["custom-tags"], d, "custom_tags")); err != nil {
+		if vv, ok := fortiAPIPatch(o["custom-tags"], "FirewallAddrgrp6-CustomTags"); ok {
+			if err = d.Set("custom_tags", vv); err != nil {
+				return fmt.Errorf("Error reading custom_tags: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading custom_tags: %v", err)
+		}
+	}
+
+	if err = d.Set("display_with", flattenFirewallAddrgrp6DisplayWith(o["display-with"], d, "display_with")); err != nil {
+		if vv, ok := fortiAPIPatch(o["display-with"], "FirewallAddrgrp6-DisplayWith"); ok {
+			if err = d.Set("display_with", vv); err != nil {
+				return fmt.Errorf("Error reading display_with: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading display_with: %v", err)
 		}
 	}
 
@@ -780,6 +946,16 @@ func refreshObjectFirewallAddrgrp6(d *schema.ResourceData, o map[string]interfac
 		}
 	}
 
+	if err = d.Set("fabric_force_sync", flattenFirewallAddrgrp6FabricForceSync(o["fabric-force-sync"], d, "fabric_force_sync")); err != nil {
+		if vv, ok := fortiAPIPatch(o["fabric-force-sync"], "FirewallAddrgrp6-FabricForceSync"); ok {
+			if err = d.Set("fabric_force_sync", vv); err != nil {
+				return fmt.Errorf("Error reading fabric_force_sync: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading fabric_force_sync: %v", err)
+		}
+	}
+
 	if err = d.Set("fabric_object", flattenFirewallAddrgrp6FabricObject(o["fabric-object"], d, "fabric_object")); err != nil {
 		if vv, ok := fortiAPIPatch(o["fabric-object"], "FirewallAddrgrp6-FabricObject"); ok {
 			if err = d.Set("fabric_object", vv); err != nil {
@@ -787,6 +963,16 @@ func refreshObjectFirewallAddrgrp6(d *schema.ResourceData, o map[string]interfac
 			}
 		} else {
 			return fmt.Errorf("Error reading fabric_object: %v", err)
+		}
+	}
+
+	if err = d.Set("fabric_object_source", flattenFirewallAddrgrp6FabricObjectSource(o["fabric-object-source"], d, "fabric_object_source")); err != nil {
+		if vv, ok := fortiAPIPatch(o["fabric-object-source"], "FirewallAddrgrp6-FabricObjectSource"); ok {
+			if err = d.Set("fabric_object_source", vv); err != nil {
+				return fmt.Errorf("Error reading fabric_object_source: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading fabric_object_source: %v", err)
 		}
 	}
 
@@ -844,6 +1030,16 @@ func refreshObjectFirewallAddrgrp6(d *schema.ResourceData, o map[string]interfac
 		}
 	}
 
+	if err = d.Set("type", flattenFirewallAddrgrp6Type(o["type"], d, "type")); err != nil {
+		if vv, ok := fortiAPIPatch(o["type"], "FirewallAddrgrp6-Type"); ok {
+			if err = d.Set("type", vv); err != nil {
+				return fmt.Errorf("Error reading type: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading type: %v", err)
+		}
+	}
+
 	if err = d.Set("uuid", flattenFirewallAddrgrp6Uuid(o["uuid"], d, "uuid")); err != nil {
 		if vv, ok := fortiAPIPatch(o["uuid"], "FirewallAddrgrp6-Uuid"); ok {
 			if err = d.Set("uuid", vv); err != nil {
@@ -877,11 +1073,23 @@ func expandFirewallAddrgrp6ImageBase64(d *schema.ResourceData, v interface{}, pr
 	return v, nil
 }
 
+func expandFirewallAddrgrp6Category(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandFirewallAddrgrp6Color(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
 func expandFirewallAddrgrp6Comment(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandFirewallAddrgrp6CustomTags(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandFirewallAddrgrp6DisplayWith(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -914,6 +1122,11 @@ func expandFirewallAddrgrp6DynamicMapping(d *schema.ResourceData, v interface{},
 			}
 		}
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "category"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["category"], _ = expandFirewallAddrgrp6DynamicMappingCategory(d, i["category"], pre_append)
+		}
+
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "color"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
 			tmp["color"], _ = expandFirewallAddrgrp6DynamicMappingColor(d, i["color"], pre_append)
@@ -922,6 +1135,16 @@ func expandFirewallAddrgrp6DynamicMapping(d *schema.ResourceData, v interface{},
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "comment"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
 			tmp["comment"], _ = expandFirewallAddrgrp6DynamicMappingComment(d, i["comment"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "custom_tags"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["custom-tags"], _ = expandFirewallAddrgrp6DynamicMappingCustomTags(d, i["custom_tags"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "display_with"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["display-with"], _ = expandFirewallAddrgrp6DynamicMappingDisplayWith(d, i["display_with"], pre_append)
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "exclude"
@@ -934,9 +1157,19 @@ func expandFirewallAddrgrp6DynamicMapping(d *schema.ResourceData, v interface{},
 			tmp["exclude-member"], _ = expandFirewallAddrgrp6DynamicMappingExcludeMember(d, i["exclude_member"], pre_append)
 		}
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "fabric_force_sync"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["fabric-force-sync"], _ = expandFirewallAddrgrp6DynamicMappingFabricForceSync(d, i["fabric_force_sync"], pre_append)
+		}
+
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "fabric_object"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
 			tmp["fabric-object"], _ = expandFirewallAddrgrp6DynamicMappingFabricObject(d, i["fabric_object"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "fabric_object_source"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["fabric-object-source"], _ = expandFirewallAddrgrp6DynamicMappingFabricObjectSource(d, i["fabric_object_source"], pre_append)
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "global_object"
@@ -952,6 +1185,11 @@ func expandFirewallAddrgrp6DynamicMapping(d *schema.ResourceData, v interface{},
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "tags"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
 			tmp["tags"], _ = expandFirewallAddrgrp6DynamicMappingTags(d, i["tags"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "type"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["type"], _ = expandFirewallAddrgrp6DynamicMappingType(d, i["type"], pre_append)
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "uuid"
@@ -1020,11 +1258,23 @@ func expandFirewallAddrgrp6DynamicMappingScopeVdom(d *schema.ResourceData, v int
 	return v, nil
 }
 
+func expandFirewallAddrgrp6DynamicMappingCategory(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandFirewallAddrgrp6DynamicMappingColor(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
 func expandFirewallAddrgrp6DynamicMappingComment(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandFirewallAddrgrp6DynamicMappingCustomTags(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandFirewallAddrgrp6DynamicMappingDisplayWith(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -1036,7 +1286,15 @@ func expandFirewallAddrgrp6DynamicMappingExcludeMember(d *schema.ResourceData, v
 	return expandStringList(v.(*schema.Set).List()), nil
 }
 
+func expandFirewallAddrgrp6DynamicMappingFabricForceSync(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandFirewallAddrgrp6DynamicMappingFabricObject(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandFirewallAddrgrp6DynamicMappingFabricObjectSource(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -1050,6 +1308,10 @@ func expandFirewallAddrgrp6DynamicMappingMember(d *schema.ResourceData, v interf
 
 func expandFirewallAddrgrp6DynamicMappingTags(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandFirewallAddrgrp6DynamicMappingType(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
 }
 
 func expandFirewallAddrgrp6DynamicMappingUuid(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
@@ -1068,7 +1330,15 @@ func expandFirewallAddrgrp6ExcludeMember(d *schema.ResourceData, v interface{}, 
 	return expandStringList(v.(*schema.Set).List()), nil
 }
 
+func expandFirewallAddrgrp6FabricForceSync(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandFirewallAddrgrp6FabricObject(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandFirewallAddrgrp6FabricObjectSource(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -1135,6 +1405,10 @@ func expandFirewallAddrgrp6TaggingTags(d *schema.ResourceData, v interface{}, pr
 	return expandStringList(v.(*schema.Set).List()), nil
 }
 
+func expandFirewallAddrgrp6Type(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandFirewallAddrgrp6Uuid(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -1155,6 +1429,15 @@ func getObjectFirewallAddrgrp6(d *schema.ResourceData) (*map[string]interface{},
 		}
 	}
 
+	if v, ok := d.GetOk("category"); ok || d.HasChange("category") {
+		t, err := expandFirewallAddrgrp6Category(d, v, "category")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["category"] = t
+		}
+	}
+
 	if v, ok := d.GetOk("color"); ok || d.HasChange("color") {
 		t, err := expandFirewallAddrgrp6Color(d, v, "color")
 		if err != nil {
@@ -1170,6 +1453,24 @@ func getObjectFirewallAddrgrp6(d *schema.ResourceData) (*map[string]interface{},
 			return &obj, err
 		} else if t != nil {
 			obj["comment"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("custom_tags"); ok || d.HasChange("custom_tags") {
+		t, err := expandFirewallAddrgrp6CustomTags(d, v, "custom_tags")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["custom-tags"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("display_with"); ok || d.HasChange("display_with") {
+		t, err := expandFirewallAddrgrp6DisplayWith(d, v, "display_with")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["display-with"] = t
 		}
 	}
 
@@ -1200,12 +1501,30 @@ func getObjectFirewallAddrgrp6(d *schema.ResourceData) (*map[string]interface{},
 		}
 	}
 
+	if v, ok := d.GetOk("fabric_force_sync"); ok || d.HasChange("fabric_force_sync") {
+		t, err := expandFirewallAddrgrp6FabricForceSync(d, v, "fabric_force_sync")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["fabric-force-sync"] = t
+		}
+	}
+
 	if v, ok := d.GetOk("fabric_object"); ok || d.HasChange("fabric_object") {
 		t, err := expandFirewallAddrgrp6FabricObject(d, v, "fabric_object")
 		if err != nil {
 			return &obj, err
 		} else if t != nil {
 			obj["fabric-object"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("fabric_object_source"); ok || d.HasChange("fabric_object_source") {
+		t, err := expandFirewallAddrgrp6FabricObjectSource(d, v, "fabric_object_source")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["fabric-object-source"] = t
 		}
 	}
 
@@ -1242,6 +1561,15 @@ func getObjectFirewallAddrgrp6(d *schema.ResourceData) (*map[string]interface{},
 			return &obj, err
 		} else if t != nil {
 			obj["tagging"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("type"); ok || d.HasChange("type") {
+		t, err := expandFirewallAddrgrp6Type(d, v, "type")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["type"] = t
 		}
 	}
 

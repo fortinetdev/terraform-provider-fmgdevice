@@ -216,14 +216,21 @@ func resourceIcapLocalServerIcapServiceUpdate(d *schema.ResourceData, m interfac
 
 	wsParams["adom"] = adomv
 
-	_, err = c.UpdateIcapLocalServerIcapService(obj, mkey, paradict, wsParams)
+	v, err := c.UpdateIcapLocalServerIcapService(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating IcapLocalServerIcapService resource: %v", err)
 	}
 
 	log.Printf(strconv.Itoa(c.Retries))
 
-	d.SetId(strconv.Itoa(getIntKey(d, "service_id")))
+	if v != nil && v["service-id"] != nil {
+		if vidn, ok := v["service-id"].(float64); ok {
+			d.SetId(strconv.Itoa(int(vidn)))
+			return resourceIcapLocalServerIcapServiceRead(d, m)
+		} else {
+			return fmt.Errorf("Error updating IcapLocalServerIcapService resource: %v", err)
+		}
+	}
 
 	return resourceIcapLocalServerIcapServiceRead(d, m)
 }

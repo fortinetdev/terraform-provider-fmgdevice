@@ -60,6 +60,22 @@ func resourceSystemIpamRules() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"dhcp_template": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Computed: true,
+			},
+			"item_name": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Computed: true,
+			},
+			"item_type": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 			"interface": &schema.Schema{
 				Type:     schema.TypeSet,
 				Elem:     &schema.Schema{Type: schema.TypeString},
@@ -79,6 +95,12 @@ func resourceSystemIpamRules() *schema.Resource {
 			},
 			"role": &schema.Schema{
 				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+			"vdom": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
 				Optional: true,
 				Computed: true,
 			},
@@ -264,6 +286,18 @@ func flattenSystemIpamRulesDhcp2edl(v interface{}, d *schema.ResourceData, pre s
 	return v
 }
 
+func flattenSystemIpamRulesDhcpTemplate2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
+func flattenSystemIpamRulesItemName2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
+func flattenSystemIpamRulesItemType2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenSystemIpamRulesInterface2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return flattenStringList(v)
 }
@@ -278,6 +312,10 @@ func flattenSystemIpamRulesPool2edl(v interface{}, d *schema.ResourceData, pre s
 
 func flattenSystemIpamRulesRole2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
+}
+
+func flattenSystemIpamRulesVdom2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
 }
 
 func refreshObjectSystemIpamRules(d *schema.ResourceData, o map[string]interface{}) error {
@@ -310,6 +348,36 @@ func refreshObjectSystemIpamRules(d *schema.ResourceData, o map[string]interface
 			}
 		} else {
 			return fmt.Errorf("Error reading dhcp: %v", err)
+		}
+	}
+
+	if err = d.Set("dhcp_template", flattenSystemIpamRulesDhcpTemplate2edl(o["dhcp-template"], d, "dhcp_template")); err != nil {
+		if vv, ok := fortiAPIPatch(o["dhcp-template"], "SystemIpamRules-DhcpTemplate"); ok {
+			if err = d.Set("dhcp_template", vv); err != nil {
+				return fmt.Errorf("Error reading dhcp_template: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading dhcp_template: %v", err)
+		}
+	}
+
+	if err = d.Set("item_name", flattenSystemIpamRulesItemName2edl(o["item-name"], d, "item_name")); err != nil {
+		if vv, ok := fortiAPIPatch(o["item-name"], "SystemIpamRules-ItemName"); ok {
+			if err = d.Set("item_name", vv); err != nil {
+				return fmt.Errorf("Error reading item_name: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading item_name: %v", err)
+		}
+	}
+
+	if err = d.Set("item_type", flattenSystemIpamRulesItemType2edl(o["item-type"], d, "item_type")); err != nil {
+		if vv, ok := fortiAPIPatch(o["item-type"], "SystemIpamRules-ItemType"); ok {
+			if err = d.Set("item_type", vv); err != nil {
+				return fmt.Errorf("Error reading item_type: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading item_type: %v", err)
 		}
 	}
 
@@ -353,6 +421,16 @@ func refreshObjectSystemIpamRules(d *schema.ResourceData, o map[string]interface
 		}
 	}
 
+	if err = d.Set("vdom", flattenSystemIpamRulesVdom2edl(o["vdom"], d, "vdom")); err != nil {
+		if vv, ok := fortiAPIPatch(o["vdom"], "SystemIpamRules-Vdom"); ok {
+			if err = d.Set("vdom", vv); err != nil {
+				return fmt.Errorf("Error reading vdom: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading vdom: %v", err)
+		}
+	}
+
 	return nil
 }
 
@@ -374,6 +452,18 @@ func expandSystemIpamRulesDhcp2edl(d *schema.ResourceData, v interface{}, pre st
 	return v, nil
 }
 
+func expandSystemIpamRulesDhcpTemplate2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandSystemIpamRulesItemName2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandSystemIpamRulesItemType2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandSystemIpamRulesInterface2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return expandStringList(v.(*schema.Set).List()), nil
 }
@@ -388,6 +478,10 @@ func expandSystemIpamRulesPool2edl(d *schema.ResourceData, v interface{}, pre st
 
 func expandSystemIpamRulesRole2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
+}
+
+func expandSystemIpamRulesVdom2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
 }
 
 func getObjectSystemIpamRules(d *schema.ResourceData) (*map[string]interface{}, error) {
@@ -417,6 +511,33 @@ func getObjectSystemIpamRules(d *schema.ResourceData) (*map[string]interface{}, 
 			return &obj, err
 		} else if t != nil {
 			obj["dhcp"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("dhcp_template"); ok || d.HasChange("dhcp_template") {
+		t, err := expandSystemIpamRulesDhcpTemplate2edl(d, v, "dhcp_template")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["dhcp-template"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("item_name"); ok || d.HasChange("item_name") {
+		t, err := expandSystemIpamRulesItemName2edl(d, v, "item_name")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["item-name"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("item_type"); ok || d.HasChange("item_type") {
+		t, err := expandSystemIpamRulesItemType2edl(d, v, "item_type")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["item-type"] = t
 		}
 	}
 
@@ -453,6 +574,15 @@ func getObjectSystemIpamRules(d *schema.ResourceData) (*map[string]interface{}, 
 			return &obj, err
 		} else if t != nil {
 			obj["role"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("vdom"); ok || d.HasChange("vdom") {
+		t, err := expandSystemIpamRulesVdom2edl(d, v, "vdom")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["vdom"] = t
 		}
 	}
 

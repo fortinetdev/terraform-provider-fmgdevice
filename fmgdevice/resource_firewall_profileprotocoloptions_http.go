@@ -160,6 +160,12 @@ func resourceFirewallProfileProtocolOptionsHttp() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"streaming_content_scan_type": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Computed: true,
+			},
 			"strip_x_forwarded_for": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -475,6 +481,10 @@ func flattenFirewallProfileProtocolOptionsHttpStreamingContentBypass2edl(v inter
 	return v
 }
 
+func flattenFirewallProfileProtocolOptionsHttpStreamingContentScanType2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
 func flattenFirewallProfileProtocolOptionsHttpStripXForwardedFor2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -758,6 +768,16 @@ func refreshObjectFirewallProfileProtocolOptionsHttp(d *schema.ResourceData, o m
 		}
 	}
 
+	if err = d.Set("streaming_content_scan_type", flattenFirewallProfileProtocolOptionsHttpStreamingContentScanType2edl(o["streaming-content-scan-type"], d, "streaming_content_scan_type")); err != nil {
+		if vv, ok := fortiAPIPatch(o["streaming-content-scan-type"], "FirewallProfileProtocolOptionsHttp-StreamingContentScanType"); ok {
+			if err = d.Set("streaming_content_scan_type", vv); err != nil {
+				return fmt.Errorf("Error reading streaming_content_scan_type: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading streaming_content_scan_type: %v", err)
+		}
+	}
+
 	if err = d.Set("strip_x_forwarded_for", flattenFirewallProfileProtocolOptionsHttpStripXForwardedFor2edl(o["strip-x-forwarded-for"], d, "strip_x_forwarded_for")); err != nil {
 		if vv, ok := fortiAPIPatch(o["strip-x-forwarded-for"], "FirewallProfileProtocolOptionsHttp-StripXForwardedFor"); ok {
 			if err = d.Set("strip_x_forwarded_for", vv); err != nil {
@@ -1003,6 +1023,10 @@ func expandFirewallProfileProtocolOptionsHttpStreamBasedUncompressedLimit2edl(d 
 
 func expandFirewallProfileProtocolOptionsHttpStreamingContentBypass2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
+}
+
+func expandFirewallProfileProtocolOptionsHttpStreamingContentScanType2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
 }
 
 func expandFirewallProfileProtocolOptionsHttpStripXForwardedFor2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
@@ -1263,6 +1287,15 @@ func getObjectFirewallProfileProtocolOptionsHttp(d *schema.ResourceData, bemptys
 			return &obj, err
 		} else if t != nil {
 			obj["streaming-content-bypass"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("streaming_content_scan_type"); ok || d.HasChange("streaming_content_scan_type") {
+		t, err := expandFirewallProfileProtocolOptionsHttpStreamingContentScanType2edl(d, v, "streaming_content_scan_type")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["streaming-content-scan-type"] = t
 		}
 	}
 

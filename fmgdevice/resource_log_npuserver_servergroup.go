@@ -70,6 +70,14 @@ func resourceLogNpuServerServerGroup() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
+			"rsso_ipv4_prefix_length": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+			},
+			"rsso_ipv6_prefix_length": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+			},
 			"server_number": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
@@ -276,6 +284,14 @@ func flattenLogNpuServerServerGroupLogUserInfo2edl(v interface{}, d *schema.Reso
 	return v
 }
 
+func flattenLogNpuServerServerGroupRssoIpv4PrefixLength2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenLogNpuServerServerGroupRssoIpv6PrefixLength2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenLogNpuServerServerGroupServerNumber2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -351,6 +367,26 @@ func refreshObjectLogNpuServerServerGroup(d *schema.ResourceData, o map[string]i
 		}
 	}
 
+	if err = d.Set("rsso_ipv4_prefix_length", flattenLogNpuServerServerGroupRssoIpv4PrefixLength2edl(o["rsso-ipv4-prefix-length"], d, "rsso_ipv4_prefix_length")); err != nil {
+		if vv, ok := fortiAPIPatch(o["rsso-ipv4-prefix-length"], "LogNpuServerServerGroup-RssoIpv4PrefixLength"); ok {
+			if err = d.Set("rsso_ipv4_prefix_length", vv); err != nil {
+				return fmt.Errorf("Error reading rsso_ipv4_prefix_length: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading rsso_ipv4_prefix_length: %v", err)
+		}
+	}
+
+	if err = d.Set("rsso_ipv6_prefix_length", flattenLogNpuServerServerGroupRssoIpv6PrefixLength2edl(o["rsso-ipv6-prefix-length"], d, "rsso_ipv6_prefix_length")); err != nil {
+		if vv, ok := fortiAPIPatch(o["rsso-ipv6-prefix-length"], "LogNpuServerServerGroup-RssoIpv6PrefixLength"); ok {
+			if err = d.Set("rsso_ipv6_prefix_length", vv); err != nil {
+				return fmt.Errorf("Error reading rsso_ipv6_prefix_length: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading rsso_ipv6_prefix_length: %v", err)
+		}
+	}
+
 	if err = d.Set("server_number", flattenLogNpuServerServerGroupServerNumber2edl(o["server-number"], d, "server_number")); err != nil {
 		if vv, ok := fortiAPIPatch(o["server-number"], "LogNpuServerServerGroup-ServerNumber"); ok {
 			if err = d.Set("server_number", vv); err != nil {
@@ -411,6 +447,14 @@ func expandLogNpuServerServerGroupLogTxMode2edl(d *schema.ResourceData, v interf
 }
 
 func expandLogNpuServerServerGroupLogUserInfo2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandLogNpuServerServerGroupRssoIpv4PrefixLength2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandLogNpuServerServerGroupRssoIpv6PrefixLength2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -480,6 +524,24 @@ func getObjectLogNpuServerServerGroup(d *schema.ResourceData) (*map[string]inter
 			return &obj, err
 		} else if t != nil {
 			obj["log-user-info"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("rsso_ipv4_prefix_length"); ok || d.HasChange("rsso_ipv4_prefix_length") {
+		t, err := expandLogNpuServerServerGroupRssoIpv4PrefixLength2edl(d, v, "rsso_ipv4_prefix_length")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["rsso-ipv4-prefix-length"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("rsso_ipv6_prefix_length"); ok || d.HasChange("rsso_ipv6_prefix_length") {
+		t, err := expandLogNpuServerServerGroupRssoIpv6PrefixLength2edl(d, v, "rsso_ipv6_prefix_length")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["rsso-ipv6-prefix-length"] = t
 		}
 	}
 

@@ -38,14 +38,29 @@ The following arguments are supported:
 * `device_name` - FortiManager managed device name. This variable is used in the request URL. If not specified, it will inherit the variable `device_name` of the provider.
 * `device_vdom` - FortiManager managed device vdom. This variable is used in the request URL. If not specified, it will inherit the variable `device_vdom` of the provider.
 
+* `bsr_allow_quick_refresh` - Enable/disable accept BSR quick refresh packets from neighbors. Valid values: `disable`, `enable`.
+
+* `bsr_candidate` - Enable/disable allowing this router to become a bootstrap router (BSR). Valid values: `disable`, `enable`.
+
+* `bsr_hash` - BSR hash length (0 - 128, default = 126).
+* `bsr_interface` - Interface to advertise as candidate BSR.
+* `bsr_priority` - BSR priority (0 - 255, default = 0).
+* `cisco_crp_prefix` - Enable/disable making candidate RP compatible with old Cisco IOS. Valid values: `disable`, `enable`.
+
+* `cisco_ignore_rp_set_priority` - Use only hash for RP selection (compatibility with old Cisco IOS). Valid values: `disable`, `enable`.
+
 * `pim_use_sdwan` - Enable/disable use of SDWAN when checking RPF neighbor and sending of REG packet. Valid values: `disable`, `enable`.
 
 * `register_rate_limit` - Limit of packets/sec per source registered through this RP (0 means unlimited).
 * `rp_address` - Rp-Address. The structure of `rp_address` block is documented below.
+* `spt_threshold` - Enable/disable switching to source specific trees. Valid values: `disable`, `enable`.
+
+* `spt_threshold_group` - Groups allowed to switch to source tree.
 * `dynamic_sort_subtable` - true or false, set this parameter to true when using dynamic for_each + toset to configure and sort sub-tables, please do not set this parameter when configuring static sub-tables.
 
 The `rp_address` block supports:
 
+* `group` - Groups to use this RP.
 * `id` - ID of the entry.
 * `ip6_address` - RP router IPv6 address.
 

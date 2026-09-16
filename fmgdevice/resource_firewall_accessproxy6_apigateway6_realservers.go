@@ -280,14 +280,21 @@ func resourceFirewallAccessProxy6ApiGateway6RealserversUpdate(d *schema.Resource
 
 	wsParams["adom"] = adomv
 
-	_, err = c.UpdateFirewallAccessProxy6ApiGateway6Realservers(obj, mkey, paradict, wsParams)
+	v, err := c.UpdateFirewallAccessProxy6ApiGateway6Realservers(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating FirewallAccessProxy6ApiGateway6Realservers resource: %v", err)
 	}
 
 	log.Printf(strconv.Itoa(c.Retries))
 
-	d.SetId(strconv.Itoa(getIntKey(d, "fosid")))
+	if v != nil && v["id"] != nil {
+		if vidn, ok := v["id"].(float64); ok {
+			d.SetId(strconv.Itoa(int(vidn)))
+			return resourceFirewallAccessProxy6ApiGateway6RealserversRead(d, m)
+		} else {
+			return fmt.Errorf("Error updating FirewallAccessProxy6ApiGateway6Realservers resource: %v", err)
+		}
+	}
 
 	return resourceFirewallAccessProxy6ApiGateway6RealserversRead(d, m)
 }

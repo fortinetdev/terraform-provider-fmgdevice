@@ -194,14 +194,21 @@ func resourceRouterAccessListRuleUpdate(d *schema.ResourceData, m interface{}) e
 
 	wsParams["adom"] = adomv
 
-	_, err = c.UpdateRouterAccessListRule(obj, mkey, paradict, wsParams)
+	v, err := c.UpdateRouterAccessListRule(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating RouterAccessListRule resource: %v", err)
 	}
 
 	log.Printf(strconv.Itoa(c.Retries))
 
-	d.SetId(strconv.Itoa(getIntKey(d, "fosid")))
+	if v != nil && v["id"] != nil {
+		if vidn, ok := v["id"].(float64); ok {
+			d.SetId(strconv.Itoa(int(vidn)))
+			return resourceRouterAccessListRuleRead(d, m)
+		} else {
+			return fmt.Errorf("Error updating RouterAccessListRule resource: %v", err)
+		}
+	}
 
 	return resourceRouterAccessListRuleRead(d, m)
 }

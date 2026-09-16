@@ -134,6 +134,24 @@ func resourceSystemAccprofile() *schema.Resource {
 					},
 				},
 			},
+			"gui_ai_assistant": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"gui_custom_theme": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Computed: true,
+			},
+			"gui_theme": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"gui_theme_type": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 			"loggrp": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -681,6 +699,22 @@ func flattenSystemAccprofileFwgrpPermissionSchedule(v interface{}, d *schema.Res
 }
 
 func flattenSystemAccprofileFwgrpPermissionService(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemAccprofileGuiAiAssistant(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemAccprofileGuiCustomTheme(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
+func flattenSystemAccprofileGuiTheme(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemAccprofileGuiThemeType(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -1235,6 +1269,46 @@ func refreshObjectSystemAccprofile(d *schema.ResourceData, o map[string]interfac
 		}
 	}
 
+	if err = d.Set("gui_ai_assistant", flattenSystemAccprofileGuiAiAssistant(o["gui-ai-assistant"], d, "gui_ai_assistant")); err != nil {
+		if vv, ok := fortiAPIPatch(o["gui-ai-assistant"], "SystemAccprofile-GuiAiAssistant"); ok {
+			if err = d.Set("gui_ai_assistant", vv); err != nil {
+				return fmt.Errorf("Error reading gui_ai_assistant: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading gui_ai_assistant: %v", err)
+		}
+	}
+
+	if err = d.Set("gui_custom_theme", flattenSystemAccprofileGuiCustomTheme(o["gui-custom-theme"], d, "gui_custom_theme")); err != nil {
+		if vv, ok := fortiAPIPatch(o["gui-custom-theme"], "SystemAccprofile-GuiCustomTheme"); ok {
+			if err = d.Set("gui_custom_theme", vv); err != nil {
+				return fmt.Errorf("Error reading gui_custom_theme: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading gui_custom_theme: %v", err)
+		}
+	}
+
+	if err = d.Set("gui_theme", flattenSystemAccprofileGuiTheme(o["gui-theme"], d, "gui_theme")); err != nil {
+		if vv, ok := fortiAPIPatch(o["gui-theme"], "SystemAccprofile-GuiTheme"); ok {
+			if err = d.Set("gui_theme", vv); err != nil {
+				return fmt.Errorf("Error reading gui_theme: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading gui_theme: %v", err)
+		}
+	}
+
+	if err = d.Set("gui_theme_type", flattenSystemAccprofileGuiThemeType(o["gui-theme-type"], d, "gui_theme_type")); err != nil {
+		if vv, ok := fortiAPIPatch(o["gui-theme-type"], "SystemAccprofile-GuiThemeType"); ok {
+			if err = d.Set("gui_theme_type", vv); err != nil {
+				return fmt.Errorf("Error reading gui_theme_type: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading gui_theme_type: %v", err)
+		}
+	}
+
 	if err = d.Set("loggrp", flattenSystemAccprofileLoggrp(o["loggrp"], d, "loggrp")); err != nil {
 		if vv, ok := fortiAPIPatch(o["loggrp"], "SystemAccprofile-Loggrp"); ok {
 			if err = d.Set("loggrp", vv); err != nil {
@@ -1589,6 +1663,22 @@ func expandSystemAccprofileFwgrpPermissionSchedule(d *schema.ResourceData, v int
 }
 
 func expandSystemAccprofileFwgrpPermissionService(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemAccprofileGuiAiAssistant(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemAccprofileGuiCustomTheme(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandSystemAccprofileGuiTheme(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemAccprofileGuiThemeType(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -2086,6 +2176,42 @@ func getObjectSystemAccprofile(d *schema.ResourceData) (*map[string]interface{},
 			return &obj, err
 		} else if t != nil {
 			obj["fwgrp-permission"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("gui_ai_assistant"); ok || d.HasChange("gui_ai_assistant") {
+		t, err := expandSystemAccprofileGuiAiAssistant(d, v, "gui_ai_assistant")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["gui-ai-assistant"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("gui_custom_theme"); ok || d.HasChange("gui_custom_theme") {
+		t, err := expandSystemAccprofileGuiCustomTheme(d, v, "gui_custom_theme")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["gui-custom-theme"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("gui_theme"); ok || d.HasChange("gui_theme") {
+		t, err := expandSystemAccprofileGuiTheme(d, v, "gui_theme")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["gui-theme"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("gui_theme_type"); ok || d.HasChange("gui_theme_type") {
+		t, err := expandSystemAccprofileGuiThemeType(d, v, "gui_theme_type")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["gui-theme-type"] = t
 		}
 	}
 

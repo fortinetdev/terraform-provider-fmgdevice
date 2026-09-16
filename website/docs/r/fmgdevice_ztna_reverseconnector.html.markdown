@@ -19,14 +19,23 @@ The following arguments are supported:
 
 * `address` - Connector service edge adress(IP or FQDN).
 * `certificate` - The name of the certificate to use for SSL handshake.
+* `default_incoming_vip` - Default Incoming Virtual IP name.
 * `health_check_interval` - Health check interval in seconds (0 - 600, default = 60, 0 = disable).
+* `interface` - Specify outgoing interface to reach server.
+* `interface_select_method` - Specify how to select outgoing interface to reach server. Valid values: `auto`, `sdwan`, `specify`.
+
 * `name` - Reverse-Connector name
 * `port` - Port number that traffic uses to connect to connector service edge(0 - 65535;).
+* `source_ip` - FortiGate IPv4 address to be used for ZTNA reverse-connector connection.
+* `source_ip_interface` - Source interface to be used for ZTNA reverse-connector connection.
 * `ssl_max_version` - Highest TLS version acceptable from a server. Valid values: `tls-1.1`, `tls-1.2`, `tls-1.3`.
+
+* `ssl_min_version` - Lowest SSL/TLS version acceptable from a server. Valid values: `tls-1.1`, `tls-1.2`, `tls-1.3`.
 
 * `status` - Reverse-Connector status. Valid values: `disable`, `enable`.
 
 * `trusted_server_ca` - Trusted Server CA certificate used by SSL connection.
+* `vrf_select` - VRF ID used for connection to server.
 
 
 ## Attribute Reference

@@ -77,6 +77,12 @@ func resourceSystemPcpServerPools() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"client6_prefix": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Computed: true,
+			},
 			"description": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -130,6 +136,10 @@ func resourceSystemPcpServerPools() *schema.Resource {
 			"name": &schema.Schema{
 				Type:     schema.TypeString,
 				ForceNew: true,
+				Optional: true,
+			},
+			"nat46": &schema.Schema{
+				Type:     schema.TypeString,
 				Optional: true,
 			},
 			"recycle_delay": &schema.Schema{
@@ -363,6 +373,10 @@ func flattenSystemPcpServerPoolsClientSubnet2edl(v interface{}, d *schema.Resour
 	return flattenStringList(v)
 }
 
+func flattenSystemPcpServerPoolsClient6Prefix2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
 func flattenSystemPcpServerPoolsDescription2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -404,6 +418,10 @@ func flattenSystemPcpServerPoolsMulticastAnnouncement2edl(v interface{}, d *sche
 }
 
 func flattenSystemPcpServerPoolsName2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemPcpServerPoolsNat462edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -469,6 +487,16 @@ func refreshObjectSystemPcpServerPools(d *schema.ResourceData, o map[string]inte
 			}
 		} else {
 			return fmt.Errorf("Error reading client_subnet: %v", err)
+		}
+	}
+
+	if err = d.Set("client6_prefix", flattenSystemPcpServerPoolsClient6Prefix2edl(o["client6-prefix"], d, "client6_prefix")); err != nil {
+		if vv, ok := fortiAPIPatch(o["client6-prefix"], "SystemPcpServerPools-Client6Prefix"); ok {
+			if err = d.Set("client6_prefix", vv); err != nil {
+				return fmt.Errorf("Error reading client6_prefix: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading client6_prefix: %v", err)
 		}
 	}
 
@@ -582,6 +610,16 @@ func refreshObjectSystemPcpServerPools(d *schema.ResourceData, o map[string]inte
 		}
 	}
 
+	if err = d.Set("nat46", flattenSystemPcpServerPoolsNat462edl(o["nat46"], d, "nat46")); err != nil {
+		if vv, ok := fortiAPIPatch(o["nat46"], "SystemPcpServerPools-Nat46"); ok {
+			if err = d.Set("nat46", vv); err != nil {
+				return fmt.Errorf("Error reading nat46: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading nat46: %v", err)
+		}
+	}
+
 	if err = d.Set("recycle_delay", flattenSystemPcpServerPoolsRecycleDelay2edl(o["recycle-delay"], d, "recycle_delay")); err != nil {
 		if vv, ok := fortiAPIPatch(o["recycle-delay"], "SystemPcpServerPools-RecycleDelay"); ok {
 			if err = d.Set("recycle_delay", vv); err != nil {
@@ -641,6 +679,10 @@ func expandSystemPcpServerPoolsClientSubnet2edl(d *schema.ResourceData, v interf
 	return expandStringList(v.(*schema.Set).List()), nil
 }
 
+func expandSystemPcpServerPoolsClient6Prefix2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
 func expandSystemPcpServerPoolsDescription2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -682,6 +724,10 @@ func expandSystemPcpServerPoolsMulticastAnnouncement2edl(d *schema.ResourceData,
 }
 
 func expandSystemPcpServerPoolsName2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemPcpServerPoolsNat462edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -742,6 +788,15 @@ func getObjectSystemPcpServerPools(d *schema.ResourceData) (*map[string]interfac
 			return &obj, err
 		} else if t != nil {
 			obj["client-subnet"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("client6_prefix"); ok || d.HasChange("client6_prefix") {
+		t, err := expandSystemPcpServerPoolsClient6Prefix2edl(d, v, "client6_prefix")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["client6-prefix"] = t
 		}
 	}
 
@@ -841,6 +896,15 @@ func getObjectSystemPcpServerPools(d *schema.ResourceData) (*map[string]interfac
 			return &obj, err
 		} else if t != nil {
 			obj["name"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("nat46"); ok || d.HasChange("nat46") {
+		t, err := expandSystemPcpServerPoolsNat462edl(d, v, "nat46")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["nat46"] = t
 		}
 	}
 

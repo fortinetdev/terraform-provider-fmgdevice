@@ -175,14 +175,21 @@ func resourceWirelessControllerSnmpCommunityHostsUpdate(d *schema.ResourceData, 
 
 	wsParams["adom"] = adomv
 
-	_, err = c.UpdateWirelessControllerSnmpCommunityHosts(obj, mkey, paradict, wsParams)
+	v, err := c.UpdateWirelessControllerSnmpCommunityHosts(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating WirelessControllerSnmpCommunityHosts resource: %v", err)
 	}
 
 	log.Printf(strconv.Itoa(c.Retries))
 
-	d.SetId(strconv.Itoa(getIntKey(d, "fosid")))
+	if v != nil && v["id"] != nil {
+		if vidn, ok := v["id"].(float64); ok {
+			d.SetId(strconv.Itoa(int(vidn)))
+			return resourceWirelessControllerSnmpCommunityHostsRead(d, m)
+		} else {
+			return fmt.Errorf("Error updating WirelessControllerSnmpCommunityHosts resource: %v", err)
+		}
+	}
 
 	return resourceWirelessControllerSnmpCommunityHostsRead(d, m)
 }

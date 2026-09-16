@@ -141,6 +141,8 @@ The following arguments are supported:
 * `fec_receive_timeout` - Timeout in milliseconds before dropping Forward Error Correction packets (1 - 1000).
 * `fec_redundant` - Number of redundant Forward Error Correction packets (1 - 5 for reed-solomon, 1 for xor).
 * `fec_send_timeout` - Timeout in milliseconds before sending Forward Error Correction packets (1 - 1000).
+* `fec_separate_redundant_tunnel` - Enable/disable Forward Error Correction redundancy on separate tunnel. Valid values: `disable`, `enable`.
+
 * `fgsp_sync` - Enable/disable IPsec syncing of tunnels for FGSP IPsec. Valid values: `disable`, `enable`.
 
 * `forticlient_enforcement` - Enable/disable FortiClient enforcement. Valid values: `disable`, `enable`.
@@ -283,6 +285,8 @@ The following arguments are supported:
 * `wizard_type` - GUI VPN Wizard Type. Valid values: `custom`, `dialup-forticlient`, `dialup-ios`, `dialup-android`, `dialup-cisco`, `static-fortigate`, `static-cisco`, `dialup-windows`, `dialup-fortigate`, `dialup-cisco-fw`, `simplified-static-fortigate`, `hub-fortigate-auto-discovery`, `spoke-fortigate-auto-discovery`.
 
 * `xauthtype` - XAuth type. Valid values: `disable`, `client`, `pap`, `chap`, `auto`.
+
+* `ztna_cert_scim_authorization` - Enable/disable SCIM authorization based on the ZTNA peer certificate identity. Valid values: `user-name`, `display-name`, `external-id`, `email`, `disable`.
 
 * `dynamic_sort_subtable` - true or false, set this parameter to true when using dynamic for_each + toset to configure and sort sub-tables, please do not set this parameter when configuring static sub-tables.
 

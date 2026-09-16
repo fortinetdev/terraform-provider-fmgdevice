@@ -34,11 +34,13 @@ The following arguments are supported:
 * `interface` - Specify outgoing interface to reach server.
 * `interface_select_method` - Specify how to select outgoing interface to reach server. Valid values: `auto`, `sdwan`, `specify`.
 
+* `port` - Server listen port.
 * `server` - Address of TACACS+ server.
 * `server_key` - Key to access the TACACS+ server.
 * `source_ip` - Source IP address for communication to TACACS+ server.
 * `status` - Enable/disable TACACS+ accounting. Valid values: `disable`, `enable`.
 
+* `timeout` - connection time-out in seconds.
 * `vrf_select` - VRF ID used for connection to server.
 
 

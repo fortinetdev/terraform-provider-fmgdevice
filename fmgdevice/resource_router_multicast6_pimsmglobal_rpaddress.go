@@ -51,6 +51,12 @@ func resourceRouterMulticast6PimSmGlobalRpAddress() *schema.Resource {
 				Computed: true,
 				ForceNew: true,
 			},
+			"group": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Computed: true,
+			},
 			"fosid": &schema.Schema{
 				Type:     schema.TypeInt,
 				ForceNew: true,
@@ -257,6 +263,10 @@ func resourceRouterMulticast6PimSmGlobalRpAddressRead(d *schema.ResourceData, m 
 	return nil
 }
 
+func flattenRouterMulticast6PimSmGlobalRpAddressGroup3rdl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
 func flattenRouterMulticast6PimSmGlobalRpAddressId3rdl(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -267,6 +277,16 @@ func flattenRouterMulticast6PimSmGlobalRpAddressIp6Address3rdl(v interface{}, d 
 
 func refreshObjectRouterMulticast6PimSmGlobalRpAddress(d *schema.ResourceData, o map[string]interface{}) error {
 	var err error
+
+	if err = d.Set("group", flattenRouterMulticast6PimSmGlobalRpAddressGroup3rdl(o["group"], d, "group")); err != nil {
+		if vv, ok := fortiAPIPatch(o["group"], "RouterMulticast6PimSmGlobalRpAddress-Group"); ok {
+			if err = d.Set("group", vv); err != nil {
+				return fmt.Errorf("Error reading group: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading group: %v", err)
+		}
+	}
 
 	if err = d.Set("fosid", flattenRouterMulticast6PimSmGlobalRpAddressId3rdl(o["id"], d, "fosid")); err != nil {
 		if vv, ok := fortiAPIPatch(o["id"], "RouterMulticast6PimSmGlobalRpAddress-Id"); ok {
@@ -297,6 +317,10 @@ func flattenRouterMulticast6PimSmGlobalRpAddressFortiTestDebug(d *schema.Resourc
 	log.Printf("ER List: %v", e)
 }
 
+func expandRouterMulticast6PimSmGlobalRpAddressGroup3rdl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
 func expandRouterMulticast6PimSmGlobalRpAddressId3rdl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -307,6 +331,15 @@ func expandRouterMulticast6PimSmGlobalRpAddressIp6Address3rdl(d *schema.Resource
 
 func getObjectRouterMulticast6PimSmGlobalRpAddress(d *schema.ResourceData) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
+
+	if v, ok := d.GetOk("group"); ok || d.HasChange("group") {
+		t, err := expandRouterMulticast6PimSmGlobalRpAddressGroup3rdl(d, v, "group")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["group"] = t
+		}
+	}
 
 	if v, ok := d.GetOk("fosid"); ok || d.HasChange("fosid") {
 		t, err := expandRouterMulticast6PimSmGlobalRpAddressId3rdl(d, v, "fosid")

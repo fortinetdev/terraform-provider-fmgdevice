@@ -17,6 +17,8 @@ The following arguments are supported:
 * `device_name` - FortiManager managed device name. This variable is used in the request URL. If not specified, it will inherit the variable `device_name` of the provider.
 * `device_vdom` - FortiManager managed device vdom. This variable is used in the request URL. If not specified, it will inherit the variable `device_vdom` of the provider.
 
+* `allow_mac_move` - Enable/disable MAC move (default = enable). Valid values: `disable`, `enable`.
+
 * `auth_fail_vlan` - Enable to allow limited access to clients that cannot authenticate. Valid values: `disable`, `enable`.
 
 * `auth_fail_vlan_id` - VLAN ID on which authentication failed.
@@ -31,9 +33,12 @@ The following arguments are supported:
 * `authserver_timeout_vlan` - Enable/disable the authentication server timeout VLAN to allow limited access when RADIUS is unavailable. Valid values: `disable`, `enable`.
 
 * `authserver_timeout_vlanid` - Authentication server timeout VLAN name.
+* `client_limit` - Configure the maximum number of endpoint devices this FortiGate unit will accept while configured in MAC mode.
 * `dacl` - Enable/disable dynamic access control list on this interface. Valid values: `disable`, `enable`.
 
 * `eap_auto_untagged_vlans` - Enable/disable automatic inclusion of untagged VLANs. Valid values: `disable`, `enable`.
+
+* `eap_egress_tagged` - Enable/disable egress frame tag (default = disable). Valid values: `disable`, `enable`.
 
 * `eap_passthru` - Enable/disable EAP pass-through mode, allowing protocols (such as LLDP) to pass through ports for more flexible authentication. Valid values: `disable`, `enable`.
 

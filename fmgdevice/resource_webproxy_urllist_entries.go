@@ -184,14 +184,21 @@ func resourceWebProxyUrlListEntriesUpdate(d *schema.ResourceData, m interface{})
 
 	wsParams["adom"] = adomv
 
-	_, err = c.UpdateWebProxyUrlListEntries(obj, mkey, paradict, wsParams)
+	v, err := c.UpdateWebProxyUrlListEntries(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating WebProxyUrlListEntries resource: %v", err)
 	}
 
 	log.Printf(strconv.Itoa(c.Retries))
 
-	d.SetId(strconv.Itoa(getIntKey(d, "fosid")))
+	if v != nil && v["id"] != nil {
+		if vidn, ok := v["id"].(float64); ok {
+			d.SetId(strconv.Itoa(int(vidn)))
+			return resourceWebProxyUrlListEntriesRead(d, m)
+		} else {
+			return fmt.Errorf("Error updating WebProxyUrlListEntries resource: %v", err)
+		}
+	}
 
 	return resourceWebProxyUrlListEntriesRead(d, m)
 }

@@ -126,6 +126,10 @@ func resourceLlmProfile() *schema.Resource {
 				ForceNew: true,
 				Optional: true,
 			},
+			"replace_api_key": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 			"response": &schema.Schema{
 				Type:     schema.TypeList,
 				Optional: true,
@@ -483,6 +487,10 @@ func flattenLlmProfileName(v interface{}, d *schema.ResourceData, pre string) in
 	return v
 }
 
+func flattenLlmProfileReplaceApiKey(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenLlmProfileResponse(v interface{}, d *schema.ResourceData, pre string) []map[string]interface{} {
 	if v == nil {
 		return nil
@@ -649,6 +657,16 @@ func refreshObjectLlmProfile(d *schema.ResourceData, o map[string]interface{}) e
 		}
 	}
 
+	if err = d.Set("replace_api_key", flattenLlmProfileReplaceApiKey(o["replace-api-key"], d, "replace_api_key")); err != nil {
+		if vv, ok := fortiAPIPatch(o["replace-api-key"], "LlmProfile-ReplaceApiKey"); ok {
+			if err = d.Set("replace_api_key", vv); err != nil {
+				return fmt.Errorf("Error reading replace_api_key: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading replace_api_key: %v", err)
+		}
+	}
+
 	if isImportTable() {
 		if err = d.Set("response", flattenLlmProfileResponse(o["response"], d, "response")); err != nil {
 			if vv, ok := fortiAPIPatch(o["response"], "LlmProfile-Response"); ok {
@@ -806,6 +824,10 @@ func expandLlmProfileName(d *schema.ResourceData, v interface{}, pre string) (in
 	return v, nil
 }
 
+func expandLlmProfileReplaceApiKey(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandLlmProfileResponse(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	l := v.([]interface{})
 	if len(l) == 0 || l[0] == nil {
@@ -917,6 +939,15 @@ func getObjectLlmProfile(d *schema.ResourceData) (*map[string]interface{}, error
 			return &obj, err
 		} else if t != nil {
 			obj["name"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("replace_api_key"); ok || d.HasChange("replace_api_key") {
+		t, err := expandLlmProfileReplaceApiKey(d, v, "replace_api_key")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["replace-api-key"] = t
 		}
 	}
 

@@ -72,11 +72,16 @@ The `rules` block supports:
 * `device` - Configure serial number or wildcard of FortiGate to match.
 * `dhcp` - Enable/disable DHCP server for matching IPAM interfaces. Valid values: `disable`, `enable`.
 
+* `dhcp_template` - DHCP template for assingned interface.
+* `item_name` - Configure name or wildcard of item to match.
+* `item_type` - Configure whether item is an interface or an address. Valid values: `interface`, `address`.
+
 * `interface` - Configure name or wildcard of interface to match.
 * `name` - IPAM rule name.
 * `pool` - Configure name of IPAM pool to use.
 * `role` - Configure role of interface to match. Valid values: `any`, `lan`, `wan`, `dmz`, `undefined`.
 
+* `vdom` - Configure which VDOMs have access to this IPAM rule.
 
 
 ## Attribute Reference

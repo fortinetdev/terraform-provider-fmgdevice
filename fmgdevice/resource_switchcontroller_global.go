@@ -176,6 +176,10 @@ func resourceSwitchControllerGlobal() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"switch_custom_cmd": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 			"switch_on_deauth": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -484,6 +488,10 @@ func flattenSwitchControllerGlobalSnDnsResolution(v interface{}, d *schema.Resou
 	return v
 }
 
+func flattenSwitchControllerGlobalSwitchCustomCmd(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenSwitchControllerGlobalSwitchOnDeauth(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -755,6 +763,16 @@ func refreshObjectSwitchControllerGlobal(d *schema.ResourceData, o map[string]in
 		}
 	}
 
+	if err = d.Set("switch_custom_cmd", flattenSwitchControllerGlobalSwitchCustomCmd(o["switch-custom-cmd"], d, "switch_custom_cmd")); err != nil {
+		if vv, ok := fortiAPIPatch(o["switch-custom-cmd"], "SwitchControllerGlobal-SwitchCustomCmd"); ok {
+			if err = d.Set("switch_custom_cmd", vv); err != nil {
+				return fmt.Errorf("Error reading switch_custom_cmd: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading switch_custom_cmd: %v", err)
+		}
+	}
+
 	if err = d.Set("switch_on_deauth", flattenSwitchControllerGlobalSwitchOnDeauth(o["switch-on-deauth"], d, "switch_on_deauth")); err != nil {
 		if vv, ok := fortiAPIPatch(o["switch-on-deauth"], "SwitchControllerGlobal-SwitchOnDeauth"); ok {
 			if err = d.Set("switch_on_deauth", vv); err != nil {
@@ -941,6 +959,10 @@ func expandSwitchControllerGlobalQuarantineMode(d *schema.ResourceData, v interf
 }
 
 func expandSwitchControllerGlobalSnDnsResolution(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSwitchControllerGlobalSwitchCustomCmd(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -1175,6 +1197,15 @@ func getObjectSwitchControllerGlobal(d *schema.ResourceData, bemptysontable bool
 			return &obj, err
 		} else if t != nil {
 			obj["sn-dns-resolution"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("switch_custom_cmd"); ok || d.HasChange("switch_custom_cmd") {
+		t, err := expandSwitchControllerGlobalSwitchCustomCmd(d, v, "switch_custom_cmd")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["switch-custom-cmd"] = t
 		}
 	}
 

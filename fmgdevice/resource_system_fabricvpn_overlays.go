@@ -102,6 +102,12 @@ func resourceSystemFabricVpnOverlays() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"overlay_tunnel_block_ipam": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Computed: true,
+			},
 			"remote_gw": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -329,6 +335,10 @@ func flattenSystemFabricVpnOverlaysOverlayTunnelBlock2edl(v interface{}, d *sche
 	return flattenStringList(v)
 }
 
+func flattenSystemFabricVpnOverlaysOverlayTunnelBlockIpam2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
 func flattenSystemFabricVpnOverlaysRemoteGw2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -444,6 +454,16 @@ func refreshObjectSystemFabricVpnOverlays(d *schema.ResourceData, o map[string]i
 		}
 	}
 
+	if err = d.Set("overlay_tunnel_block_ipam", flattenSystemFabricVpnOverlaysOverlayTunnelBlockIpam2edl(o["overlay-tunnel-block-ipam"], d, "overlay_tunnel_block_ipam")); err != nil {
+		if vv, ok := fortiAPIPatch(o["overlay-tunnel-block-ipam"], "SystemFabricVpnOverlays-OverlayTunnelBlockIpam"); ok {
+			if err = d.Set("overlay_tunnel_block_ipam", vv); err != nil {
+				return fmt.Errorf("Error reading overlay_tunnel_block_ipam: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading overlay_tunnel_block_ipam: %v", err)
+		}
+	}
+
 	if err = d.Set("remote_gw", flattenSystemFabricVpnOverlaysRemoteGw2edl(o["remote-gw"], d, "remote_gw")); err != nil {
 		if vv, ok := fortiAPIPatch(o["remote-gw"], "SystemFabricVpnOverlays-RemoteGw"); ok {
 			if err = d.Set("remote_gw", vv); err != nil {
@@ -521,6 +541,10 @@ func expandSystemFabricVpnOverlaysOverlayPolicy2edl(d *schema.ResourceData, v in
 
 func expandSystemFabricVpnOverlaysOverlayTunnelBlock2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return expandStringList(v.([]interface{})), nil
+}
+
+func expandSystemFabricVpnOverlaysOverlayTunnelBlockIpam2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
 }
 
 func expandSystemFabricVpnOverlaysRemoteGw2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
@@ -625,6 +649,15 @@ func getObjectSystemFabricVpnOverlays(d *schema.ResourceData) (*map[string]inter
 			return &obj, err
 		} else if t != nil {
 			obj["overlay-tunnel-block"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("overlay_tunnel_block_ipam"); ok || d.HasChange("overlay_tunnel_block_ipam") {
+		t, err := expandSystemFabricVpnOverlaysOverlayTunnelBlockIpam2edl(d, v, "overlay_tunnel_block_ipam")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["overlay-tunnel-block-ipam"] = t
 		}
 	}
 

@@ -72,6 +72,12 @@ func resourceLogSyslogd2OverrideSetting() *schema.Resource {
 					},
 				},
 			},
+			"custom_log_format": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Computed: true,
+			},
 			"enc_algorithm": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -385,6 +391,10 @@ func flattenLogSyslogd2OverrideSettingCustomFieldNameName(v interface{}, d *sche
 	return v
 }
 
+func flattenLogSyslogd2OverrideSettingCustomLogFormat(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
 func flattenLogSyslogd2OverrideSettingEncAlgorithm(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -560,6 +570,16 @@ func refreshObjectLogSyslogd2OverrideSetting(d *schema.ResourceData, o map[strin
 					return fmt.Errorf("Error reading custom_field_name: %v", err)
 				}
 			}
+		}
+	}
+
+	if err = d.Set("custom_log_format", flattenLogSyslogd2OverrideSettingCustomLogFormat(o["custom-log-format"], d, "custom_log_format")); err != nil {
+		if vv, ok := fortiAPIPatch(o["custom-log-format"], "LogSyslogd2OverrideSetting-CustomLogFormat"); ok {
+			if err = d.Set("custom_log_format", vv); err != nil {
+				return fmt.Errorf("Error reading custom_log_format: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading custom_log_format: %v", err)
 		}
 	}
 
@@ -821,6 +841,10 @@ func expandLogSyslogd2OverrideSettingCustomFieldNameName(d *schema.ResourceData,
 	return v, nil
 }
 
+func expandLogSyslogd2OverrideSettingCustomLogFormat(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
 func expandLogSyslogd2OverrideSettingEncAlgorithm(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -971,6 +995,15 @@ func getObjectLogSyslogd2OverrideSetting(d *schema.ResourceData, bemptysontable 
 			} else if t != nil {
 				obj["custom-field-name"] = t
 			}
+		}
+	}
+
+	if v, ok := d.GetOk("custom_log_format"); ok || d.HasChange("custom_log_format") {
+		t, err := expandLogSyslogd2OverrideSettingCustomLogFormat(d, v, "custom_log_format")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["custom-log-format"] = t
 		}
 	}
 

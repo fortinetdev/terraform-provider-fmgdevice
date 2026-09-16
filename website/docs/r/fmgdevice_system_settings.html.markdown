@@ -100,9 +100,13 @@ The following arguments are supported:
 * `gateway6` - Transparent mode IPv6 default gateway IP address.
 * `gtp_asym_fgsp` - Enable/disable GTP asymmetric traffic handling on FGSP. Valid values: `disable`, `enable`.
 
+* `gtp_fgsp_s10_only` - Enable/disable synchronization over FGSP of only GTP tunnels created by the S10 interface. Valid values: `disable`, `enable`.
+
 * `gtp_monitor_mode` - Enable/disable GTP monitor mode (VDOM level). Valid values: `disable`, `enable`.
 
 * `gui_advanced_policy` - Enable/disable advanced policy configuration on the GUI. Valid values: `disable`, `enable`.
+
+* `gui_advanced_switch_features` - Enable/disable advanced switching features on the GUI. Valid values: `disable`, `enable`.
 
 * `gui_advanced_wireless_features` - Enable/disable advanced wireless features in GUI. Valid values: `disable`, `enable`.
 
@@ -185,7 +189,11 @@ The following arguments are supported:
 
 * `gui_policy_based_ipsec` - Enable/disable policy-based IPsec VPN on the GUI. Valid values: `disable`, `enable`.
 
+* `gui_policy_custom_tags` - Enable/disable Allow configuring custom tags for polices on the GUI. Valid values: `disable`, `enable`.
+
 * `gui_policy_disclaimer` - Enable/disable policy disclaimer on the GUI. Valid values: `disable`, `enable`.
+
+* `gui_reverse_connector` - Enable/disable Enable ZTNA Reverse Proxy Connector on the GUI. Valid values: `disable`, `enable`.
 
 * `gui_replacement_message_groups` - Enable/disable replacement message groups on the GUI. Valid values: `disable`, `enable`.
 
@@ -245,9 +253,12 @@ The following arguments are supported:
 
 * `ike_dn_format` - Configure IKE ASN.1 Distinguished Name format conventions. Valid values: `with-space`, `no-space`.
 
+* `ike_extra_ports` - Extra UDP ports for the IKE daemon to listen on other than 500 and 4500 (maximum 3).
 * `ike_policy_route` - Enable/disable IKE Policy Based Routing (PBR). Valid values: `disable`, `enable`.
 
 * `ike_port` - UDP port for IKE/IPsec traffic (default 500).
+* `ike_proposal_visibility` - Enable/disable display only recommended proposals in IPsec tunnel configuration. Valid values: `recommended`, `all`.
+
 * `ike_quick_crash_detect` - Enable/disable IKE quick crash detection (RFC 6290). Valid values: `disable`, `enable`.
 
 * `ike_session_resume` - Enable/disable IKEv2 session resumption (RFC 5723). Valid values: `disable`, `enable`.
@@ -255,6 +266,10 @@ The following arguments are supported:
 * `implicit_allow_dns` - Enable/disable implicitly allowing DNS traffic. Valid values: `disable`, `enable`.
 
 * `ike_tcp_port` - TCP port for IKE/IPsec traffic (default 4500).
+* `ike_tcp_service` - Enable/disable IKE TCP service. Valid values: `disable`, `enable`.
+
+* `ike_tls_service` - Enable/disable IKE TLS service. Valid values: `disable`, `enable`.
+
 * `internet_service_app_ctrl_size` - Maximum number of tuple entries (protocol, port, IP address, application ID) stored by the FortiGate unit (0 - 4294967295, default = 32768). A smaller value limits the FortiGate unit from learning about internet applications.
 * `internet_service_database_cache` - Enable/disable Internet Service database caching. Valid values: `disable`, `enable`.
 
@@ -319,6 +334,8 @@ The following arguments are supported:
 * `sip_udp_port` - UDP port the SIP proxy monitors for SIP traffic (0 - 65535, default = 5060).
 * `snat_hairpin_traffic` - Enable/disable source NAT (SNAT) for hairpin traffic. Valid values: `disable`, `enable`.
 
+* `src_check_reply` - Enable/disable source verification for reply packets. Valid values: `disable`, `enable`.
+
 * `status` - Enable/disable this VDOM. Valid values: `disable`, `enable`.
 
 * `strict_src_check` - Enable/disable strict source verification. Valid values: `disable`, `enable`.
@@ -338,6 +355,8 @@ The following arguments are supported:
 * `vpn_stats_log` - Enable/disable periodic VPN log statistics for one or more types of VPN. Separate names with a space. Valid values: `ipsec`, `pptp`, `l2tp`, `ssl`.
 
 * `vpn_stats_period` - Period to send VPN log statistics (0 or 60 - 86400 sec).
+* `vrf_local_ip_isolation` - Enable/disable VRF local IP address isolation. Valid values: `disable`, `enable`.
+
 * `wccp_cache_engine` - Enable/disable WCCP cache engine. Valid values: `disable`, `enable`.
 
 * `forward_domain` - Forward-Domain. Valid values: `disable`, `enable`.

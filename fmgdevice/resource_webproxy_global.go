@@ -176,6 +176,10 @@ func resourceWebProxyGlobal() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"ssl_bypass_cache": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 			"ssl_ca_cert": &schema.Schema{
 				Type:     schema.TypeSet,
 				Elem:     &schema.Schema{Type: schema.TypeString},
@@ -493,6 +497,10 @@ func flattenWebProxyGlobalSrcAffinityExemptAddr(v interface{}, d *schema.Resourc
 
 func flattenWebProxyGlobalSrcAffinityExemptAddr6(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return flattenStringList(v)
+}
+
+func flattenWebProxyGlobalSslBypassCache(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
 }
 
 func flattenWebProxyGlobalSslCaCert(v interface{}, d *schema.ResourceData, pre string) interface{} {
@@ -816,6 +824,16 @@ func refreshObjectWebProxyGlobal(d *schema.ResourceData, o map[string]interface{
 		}
 	}
 
+	if err = d.Set("ssl_bypass_cache", flattenWebProxyGlobalSslBypassCache(o["ssl-bypass-cache"], d, "ssl_bypass_cache")); err != nil {
+		if vv, ok := fortiAPIPatch(o["ssl-bypass-cache"], "WebProxyGlobal-SslBypassCache"); ok {
+			if err = d.Set("ssl_bypass_cache", vv); err != nil {
+				return fmt.Errorf("Error reading ssl_bypass_cache: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading ssl_bypass_cache: %v", err)
+		}
+	}
+
 	if err = d.Set("ssl_ca_cert", flattenWebProxyGlobalSslCaCert(o["ssl-ca-cert"], d, "ssl_ca_cert")); err != nil {
 		if vv, ok := fortiAPIPatch(o["ssl-ca-cert"], "WebProxyGlobal-SslCaCert"); ok {
 			if err = d.Set("ssl_ca_cert", vv); err != nil {
@@ -1093,6 +1111,10 @@ func expandWebProxyGlobalSrcAffinityExemptAddr(d *schema.ResourceData, v interfa
 
 func expandWebProxyGlobalSrcAffinityExemptAddr6(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandWebProxyGlobalSslBypassCache(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
 }
 
 func expandWebProxyGlobalSslCaCert(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
@@ -1388,6 +1410,15 @@ func getObjectWebProxyGlobal(d *schema.ResourceData, bemptysontable bool) (*map[
 			return &obj, err
 		} else if t != nil {
 			obj["src-affinity-exempt-addr6"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("ssl_bypass_cache"); ok || d.HasChange("ssl_bypass_cache") {
+		t, err := expandWebProxyGlobalSslBypassCache(d, v, "ssl_bypass_cache")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["ssl-bypass-cache"] = t
 		}
 	}
 

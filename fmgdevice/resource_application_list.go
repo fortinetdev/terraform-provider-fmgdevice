@@ -130,6 +130,11 @@ func resourceApplicationList() *schema.Resource {
 							Optional: true,
 							Computed: true,
 						},
+						"classification": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+							Computed: true,
+						},
 						"exclusion": &schema.Schema{
 							Type:     schema.TypeSet,
 							Elem:     &schema.Schema{Type: schema.TypeInt},
@@ -286,6 +291,21 @@ func resourceApplicationList() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"fabric_force_sync": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+			"fabric_object": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+			"fabric_object_source": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
 			"force_inclusion_ssl_di_sigs": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -336,6 +356,11 @@ func resourceApplicationList() *schema.Resource {
 				Computed: true,
 			},
 			"unknown_application_log": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+			"uuid": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
@@ -673,6 +698,12 @@ func flattenApplicationListEntries(v interface{}, d *schema.ResourceData, pre st
 			tmp["category"] = fortiAPISubPartPatch(v, "ApplicationList-Entries-Category")
 		}
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "classification"
+		if _, ok := i["classification"]; ok {
+			v := flattenApplicationListEntriesClassification(i["classification"], d, pre_append)
+			tmp["classification"] = fortiAPISubPartPatch(v, "ApplicationList-Entries-Classification")
+		}
+
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "exclusion"
 		if _, ok := i["exclusion"]; ok {
 			v := flattenApplicationListEntriesExclusion(i["exclusion"], d, pre_append)
@@ -829,6 +860,10 @@ func flattenApplicationListEntriesBehavior(v interface{}, d *schema.ResourceData
 
 func flattenApplicationListEntriesCategory(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return flattenStringList(v)
+}
+
+func flattenApplicationListEntriesClassification(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
 }
 
 func flattenApplicationListEntriesExclusion(v interface{}, d *schema.ResourceData, pre string) interface{} {
@@ -1033,6 +1068,18 @@ func flattenApplicationListExtendedLog(v interface{}, d *schema.ResourceData, pr
 	return v
 }
 
+func flattenApplicationListFabricForceSync(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenApplicationListFabricObject(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenApplicationListFabricObjectSource(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenApplicationListForceInclusionSslDiSigs(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -1070,6 +1117,10 @@ func flattenApplicationListUnknownApplicationAction(v interface{}, d *schema.Res
 }
 
 func flattenApplicationListUnknownApplicationLog(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenApplicationListUuid(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -1188,6 +1239,36 @@ func refreshObjectApplicationList(d *schema.ResourceData, o map[string]interface
 		}
 	}
 
+	if err = d.Set("fabric_force_sync", flattenApplicationListFabricForceSync(o["fabric-force-sync"], d, "fabric_force_sync")); err != nil {
+		if vv, ok := fortiAPIPatch(o["fabric-force-sync"], "ApplicationList-FabricForceSync"); ok {
+			if err = d.Set("fabric_force_sync", vv); err != nil {
+				return fmt.Errorf("Error reading fabric_force_sync: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading fabric_force_sync: %v", err)
+		}
+	}
+
+	if err = d.Set("fabric_object", flattenApplicationListFabricObject(o["fabric-object"], d, "fabric_object")); err != nil {
+		if vv, ok := fortiAPIPatch(o["fabric-object"], "ApplicationList-FabricObject"); ok {
+			if err = d.Set("fabric_object", vv); err != nil {
+				return fmt.Errorf("Error reading fabric_object: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading fabric_object: %v", err)
+		}
+	}
+
+	if err = d.Set("fabric_object_source", flattenApplicationListFabricObjectSource(o["fabric-object-source"], d, "fabric_object_source")); err != nil {
+		if vv, ok := fortiAPIPatch(o["fabric-object-source"], "ApplicationList-FabricObjectSource"); ok {
+			if err = d.Set("fabric_object_source", vv); err != nil {
+				return fmt.Errorf("Error reading fabric_object_source: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading fabric_object_source: %v", err)
+		}
+	}
+
 	if err = d.Set("force_inclusion_ssl_di_sigs", flattenApplicationListForceInclusionSslDiSigs(o["force-inclusion-ssl-di-sigs"], d, "force_inclusion_ssl_di_sigs")); err != nil {
 		if vv, ok := fortiAPIPatch(o["force-inclusion-ssl-di-sigs"], "ApplicationList-ForceInclusionSslDiSigs"); ok {
 			if err = d.Set("force_inclusion_ssl_di_sigs", vv); err != nil {
@@ -1285,6 +1366,16 @@ func refreshObjectApplicationList(d *schema.ResourceData, o map[string]interface
 			}
 		} else {
 			return fmt.Errorf("Error reading unknown_application_log: %v", err)
+		}
+	}
+
+	if err = d.Set("uuid", flattenApplicationListUuid(o["uuid"], d, "uuid")); err != nil {
+		if vv, ok := fortiAPIPatch(o["uuid"], "ApplicationList-Uuid"); ok {
+			if err = d.Set("uuid", vv); err != nil {
+				return fmt.Errorf("Error reading uuid: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading uuid: %v", err)
 		}
 	}
 
@@ -1409,6 +1500,11 @@ func expandApplicationListEntries(d *schema.ResourceData, v interface{}, pre str
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "category"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
 			tmp["category"], _ = expandApplicationListEntriesCategory(d, i["category"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "classification"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["classification"], _ = expandApplicationListEntriesClassification(d, i["classification"], pre_append)
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "exclusion"
@@ -1550,6 +1646,10 @@ func expandApplicationListEntriesBehavior(d *schema.ResourceData, v interface{},
 
 func expandApplicationListEntriesCategory(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandApplicationListEntriesClassification(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
 }
 
 func expandApplicationListEntriesExclusion(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
@@ -1743,6 +1843,18 @@ func expandApplicationListExtendedLog(d *schema.ResourceData, v interface{}, pre
 	return v, nil
 }
 
+func expandApplicationListFabricForceSync(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandApplicationListFabricObject(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandApplicationListFabricObjectSource(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandApplicationListForceInclusionSslDiSigs(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -1780,6 +1892,10 @@ func expandApplicationListUnknownApplicationAction(d *schema.ResourceData, v int
 }
 
 func expandApplicationListUnknownApplicationLog(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandApplicationListUuid(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -1855,6 +1971,33 @@ func getObjectApplicationList(d *schema.ResourceData) (*map[string]interface{}, 
 			return &obj, err
 		} else if t != nil {
 			obj["extended-log"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("fabric_force_sync"); ok || d.HasChange("fabric_force_sync") {
+		t, err := expandApplicationListFabricForceSync(d, v, "fabric_force_sync")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["fabric-force-sync"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("fabric_object"); ok || d.HasChange("fabric_object") {
+		t, err := expandApplicationListFabricObject(d, v, "fabric_object")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["fabric-object"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("fabric_object_source"); ok || d.HasChange("fabric_object_source") {
+		t, err := expandApplicationListFabricObjectSource(d, v, "fabric_object_source")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["fabric-object-source"] = t
 		}
 	}
 
@@ -1945,6 +2088,15 @@ func getObjectApplicationList(d *schema.ResourceData) (*map[string]interface{}, 
 			return &obj, err
 		} else if t != nil {
 			obj["unknown-application-log"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("uuid"); ok || d.HasChange("uuid") {
+		t, err := expandApplicationListUuid(d, v, "uuid")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["uuid"] = t
 		}
 	}
 

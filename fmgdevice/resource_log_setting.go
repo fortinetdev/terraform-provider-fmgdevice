@@ -66,6 +66,10 @@ func resourceLogSetting() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"detailed_svc_name": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 			"expolicy_implicit_log": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -188,6 +192,10 @@ func resourceLogSetting() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+			},
+			"tacacs_accounting_server_alternate": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
 			},
 			"user_anonymize": &schema.Schema{
 				Type:     schema.TypeString,
@@ -360,6 +368,10 @@ func flattenLogSettingDaemonLog(v interface{}, d *schema.ResourceData, pre strin
 	return v
 }
 
+func flattenLogSettingDetailedSvcName(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenLogSettingExpolicyImplicitLog(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -460,6 +472,10 @@ func flattenLogSettingSyslogOverride(v interface{}, d *schema.ResourceData, pre 
 	return v
 }
 
+func flattenLogSettingTacacsAccountingServerAlternate(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenLogSettingUserAnonymize(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -512,6 +528,16 @@ func refreshObjectLogSetting(d *schema.ResourceData, o map[string]interface{}) e
 			}
 		} else {
 			return fmt.Errorf("Error reading daemon_log: %v", err)
+		}
+	}
+
+	if err = d.Set("detailed_svc_name", flattenLogSettingDetailedSvcName(o["detailed-svc-name"], d, "detailed_svc_name")); err != nil {
+		if vv, ok := fortiAPIPatch(o["detailed-svc-name"], "LogSetting-DetailedSvcName"); ok {
+			if err = d.Set("detailed_svc_name", vv); err != nil {
+				return fmt.Errorf("Error reading detailed_svc_name: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading detailed_svc_name: %v", err)
 		}
 	}
 
@@ -765,6 +791,16 @@ func refreshObjectLogSetting(d *schema.ResourceData, o map[string]interface{}) e
 		}
 	}
 
+	if err = d.Set("tacacs_accounting_server_alternate", flattenLogSettingTacacsAccountingServerAlternate(o["tacacs-accounting-server-alternate"], d, "tacacs_accounting_server_alternate")); err != nil {
+		if vv, ok := fortiAPIPatch(o["tacacs-accounting-server-alternate"], "LogSetting-TacacsAccountingServerAlternate"); ok {
+			if err = d.Set("tacacs_accounting_server_alternate", vv); err != nil {
+				return fmt.Errorf("Error reading tacacs_accounting_server_alternate: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading tacacs_accounting_server_alternate: %v", err)
+		}
+	}
+
 	if err = d.Set("user_anonymize", flattenLogSettingUserAnonymize(o["user-anonymize"], d, "user_anonymize")); err != nil {
 		if vv, ok := fortiAPIPatch(o["user-anonymize"], "LogSetting-UserAnonymize"); ok {
 			if err = d.Set("user_anonymize", vv); err != nil {
@@ -817,6 +853,10 @@ func expandLogSettingCustomLogFields(d *schema.ResourceData, v interface{}, pre 
 }
 
 func expandLogSettingDaemonLog(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandLogSettingDetailedSvcName(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -920,6 +960,10 @@ func expandLogSettingSyslogOverride(d *schema.ResourceData, v interface{}, pre s
 	return v, nil
 }
 
+func expandLogSettingTacacsAccountingServerAlternate(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandLogSettingUserAnonymize(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -968,6 +1012,15 @@ func getObjectLogSetting(d *schema.ResourceData, bemptysontable bool) (*map[stri
 			return &obj, err
 		} else if t != nil {
 			obj["daemon-log"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("detailed_svc_name"); ok || d.HasChange("detailed_svc_name") {
+		t, err := expandLogSettingDetailedSvcName(d, v, "detailed_svc_name")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["detailed-svc-name"] = t
 		}
 	}
 
@@ -1193,6 +1246,15 @@ func getObjectLogSetting(d *schema.ResourceData, bemptysontable bool) (*map[stri
 			return &obj, err
 		} else if t != nil {
 			obj["syslog-override"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("tacacs_accounting_server_alternate"); ok || d.HasChange("tacacs_accounting_server_alternate") {
+		t, err := expandLogSettingTacacsAccountingServerAlternate(d, v, "tacacs_accounting_server_alternate")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["tacacs-accounting-server-alternate"] = t
 		}
 	}
 

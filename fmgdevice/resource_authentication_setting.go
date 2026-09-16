@@ -131,6 +131,10 @@ func resourceAuthenticationSetting() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"ems_root_ca": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 			"ip_auth_cookie": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -160,6 +164,10 @@ func resourceAuthenticationSetting() *schema.Resource {
 			},
 			"log_auth_request": &schema.Schema{
 				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"max_redirection_url_length": &schema.Schema{
+				Type:     schema.TypeInt,
 				Optional: true,
 			},
 			"rewrite_https_port": &schema.Schema{
@@ -370,6 +378,10 @@ func flattenAuthenticationSettingDevRange(v interface{}, d *schema.ResourceData,
 	return flattenStringList(v)
 }
 
+func flattenAuthenticationSettingEmsRootCa(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenAuthenticationSettingIpAuthCookie(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -391,6 +403,10 @@ func flattenAuthenticationSettingUserCertCa(v interface{}, d *schema.ResourceDat
 }
 
 func flattenAuthenticationSettingLogAuthRequest(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenAuthenticationSettingMaxRedirectionUrlLength(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -561,6 +577,16 @@ func refreshObjectAuthenticationSetting(d *schema.ResourceData, o map[string]int
 		}
 	}
 
+	if err = d.Set("ems_root_ca", flattenAuthenticationSettingEmsRootCa(o["ems-root-ca"], d, "ems_root_ca")); err != nil {
+		if vv, ok := fortiAPIPatch(o["ems-root-ca"], "AuthenticationSetting-EmsRootCa"); ok {
+			if err = d.Set("ems_root_ca", vv); err != nil {
+				return fmt.Errorf("Error reading ems_root_ca: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading ems_root_ca: %v", err)
+		}
+	}
+
 	if err = d.Set("ip_auth_cookie", flattenAuthenticationSettingIpAuthCookie(o["ip-auth-cookie"], d, "ip_auth_cookie")); err != nil {
 		if vv, ok := fortiAPIPatch(o["ip-auth-cookie"], "AuthenticationSetting-IpAuthCookie"); ok {
 			if err = d.Set("ip_auth_cookie", vv); err != nil {
@@ -618,6 +644,16 @@ func refreshObjectAuthenticationSetting(d *schema.ResourceData, o map[string]int
 			}
 		} else {
 			return fmt.Errorf("Error reading log_auth_request: %v", err)
+		}
+	}
+
+	if err = d.Set("max_redirection_url_length", flattenAuthenticationSettingMaxRedirectionUrlLength(o["max-redirection-url-length"], d, "max_redirection_url_length")); err != nil {
+		if vv, ok := fortiAPIPatch(o["max-redirection-url-length"], "AuthenticationSetting-MaxRedirectionUrlLength"); ok {
+			if err = d.Set("max_redirection_url_length", vv); err != nil {
+				return fmt.Errorf("Error reading max_redirection_url_length: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading max_redirection_url_length: %v", err)
 		}
 	}
 
@@ -704,6 +740,10 @@ func expandAuthenticationSettingDevRange(d *schema.ResourceData, v interface{}, 
 	return expandStringList(v.(*schema.Set).List()), nil
 }
 
+func expandAuthenticationSettingEmsRootCa(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandAuthenticationSettingIpAuthCookie(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -725,6 +765,10 @@ func expandAuthenticationSettingUserCertCa(d *schema.ResourceData, v interface{}
 }
 
 func expandAuthenticationSettingLogAuthRequest(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandAuthenticationSettingMaxRedirectionUrlLength(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -879,6 +923,15 @@ func getObjectAuthenticationSetting(d *schema.ResourceData, bemptysontable bool)
 		}
 	}
 
+	if v, ok := d.GetOk("ems_root_ca"); ok || d.HasChange("ems_root_ca") {
+		t, err := expandAuthenticationSettingEmsRootCa(d, v, "ems_root_ca")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["ems-root-ca"] = t
+		}
+	}
+
 	if v, ok := d.GetOk("ip_auth_cookie"); ok || d.HasChange("ip_auth_cookie") {
 		t, err := expandAuthenticationSettingIpAuthCookie(d, v, "ip_auth_cookie")
 		if err != nil {
@@ -930,6 +983,15 @@ func getObjectAuthenticationSetting(d *schema.ResourceData, bemptysontable bool)
 			return &obj, err
 		} else if t != nil {
 			obj["log-auth-request"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("max_redirection_url_length"); ok || d.HasChange("max_redirection_url_length") {
+		t, err := expandAuthenticationSettingMaxRedirectionUrlLength(d, v, "max_redirection_url_length")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["max-redirection-url-length"] = t
 		}
 	}
 

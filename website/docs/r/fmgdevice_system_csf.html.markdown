@@ -11,7 +11,9 @@ Add this FortiGate to a Security Fabric or set up a new Security Fabric on this 
 
 ~> The following variables have sub resource. Avoid using them together, otherwise conflicts and overwrites may occur.
 >- `fabric_connector`: `fmgdevice_system_csf_fabricconnector`
+>- `fabric_datasource_exemption`: `fmgdevice_system_csf_fabricdatasourceexemption`
 >- `fabric_device`: `fmgdevice_system_csf_fabricdevice`
+>- `shared_objects`: `fmgdevice_system_csf_sharedobjects`
 >- `trusted_list`: `fmgdevice_system_csf_trustedlist`
 
 
@@ -40,6 +42,8 @@ The following arguments are supported:
 
 * `authorization_request_type` - Authorization request type. Valid values: `certificate`, `serial`.
 
+* `autoclear_removed_shared_objects` - Control system behavior for deleted shared objects. Valid values: `disable`, `enable`.
+
 * `certificate` - Certificate.
 * `configuration_sync` - Configuration sync mode. Valid values: `default`, `local`.
 
@@ -47,6 +51,9 @@ The following arguments are supported:
 
 * `downstream_accprofile` - Default access profile for requests from downstream devices.
 * `fabric_connector` - Fabric-Connector. The structure of `fabric_connector` block is documented below.
+* `fabric_datasource_exemption` - Fabric-Datasource-Exemption. The structure of `fabric_datasource_exemption` block is documented below.
+* `fabric_object_change_auto_cascade` - Enable/disable the cascade mode for fabric objects datasource check. Valid values: `disable`, `enable`.
+
 * `fabric_device` - Fabric-Device. The structure of `fabric_device` block is documented below.
 * `fabric_object_unification` - Fabric CMDB Object Unification. Valid values: `default`, `local`.
 
@@ -68,11 +75,14 @@ The following arguments are supported:
 * `management_port` - Overriding port for management connection (Overrides admin port).
 * `saml_configuration_sync` - SAML setting configuration synchronization. Valid values: `default`, `local`.
 
+* `shared_objects` - Shared-Objects. The structure of `shared_objects` block is documented below.
 * `source_ip` - Source IP address for communication with the upstream FortiGate.
 * `status` - Enable/disable Security Fabric. Valid values: `disable`, `enable`.
 
 * `trusted_list` - Trusted-List. The structure of `trusted_list` block is documented below.
 * `uid` - Unique ID of the current CSF node
+* `upload_shared_objects` - Configure uploading shared objects entries to the tree. Valid values: `disable`, `enable`.
+
 * `upstream` - IP/FQDN of the FortiGate upstream from this FortiGate in the Security Fabric.
 * `upstream_ip` - IP address of the FortiGate upstream from this FortiGate in the Security Fabric.
 * `upstream_interface` - Specify outgoing interface to reach server.
@@ -92,6 +102,12 @@ The `fabric_connector` block supports:
 * `serial` - Serial.
 * `vdom` - Virtual domains that the connector has access to. If none are set, the connector will only have access to the VDOM that it joins the Security Fabric through.
 
+The `fabric_datasource_exemption` block supports:
+
+* `name` - Name.
+* `status` - Enable/disable the fabric datasource check on the target table. Valid values: `disable`, `enable`.
+
+
 The `fabric_device` block supports:
 
 * `access_token` - Device access token.
@@ -99,10 +115,28 @@ The `fabric_device` block supports:
 * `https_port` - HTTPS port for fabric device.
 * `name` - Device name.
 
+The `shared_objects` block supports:
+
+* `name` - UID of the source device.
+* `objects` - Objects. The structure of `objects` block is documented below.
+* `trusted_list_entry` - Trusted list entry name.
+
+The `objects` block supports:
+
+* `keys` - Keys. The structure of `keys` block is documented below.
+* `pathname` - CMDB path and object name.
+
+The `keys` block supports:
+
+* `name` - key.
+
 The `trusted_list` block supports:
 
 * `action` - Security fabric authorization action. Valid values: `deny`, `accept`.
 
+* `ca` - Name of a CA on the downstream's certificat chain.
+* `ca_fingerprint` - SHA512 fingerprint of a CA on the downstream's certificate chain.
+* `cn` - Certificate CNs used by HA members.
 * `authorization_type` - Authorization type. Valid values: `certificate`, `serial`.
 
 * `certificate` - Certificate.
@@ -110,7 +144,12 @@ The `trusted_list` block supports:
 
 * `ha_members` - HA members.
 * `index` - Index of the downstream in tree.
+* `last_use_time` - Time when an CSF member authorized by this entry was last observed.
 * `name` - Name.
+* `role` - Device role to this member. Valid values: `downstream`, `upstream`.
+
+* `upgraded` - Updrade triggered for upstream auth. Valid values: `no`, `yes`.
+
 * `serial` - Serial.
 * `guaranteed_seats` - Guaranteed-Seats.
 * `preferred_seats` - Preferred-Seats.

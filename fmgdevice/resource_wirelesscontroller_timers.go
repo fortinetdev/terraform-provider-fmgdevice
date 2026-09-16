@@ -102,6 +102,14 @@ func resourceWirelessControllerTimers() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"keep_alive_interval": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+			},
+			"max_retransmit_interval": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+			},
 			"nat_session_keep_alive": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
@@ -332,6 +340,14 @@ func flattenWirelessControllerTimersIpsecIntfCleanup(v interface{}, d *schema.Re
 	return v
 }
 
+func flattenWirelessControllerTimersKeepAliveInterval(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWirelessControllerTimersMaxRetransmitInterval(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenWirelessControllerTimersNatSessionKeepAlive(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -514,6 +530,26 @@ func refreshObjectWirelessControllerTimers(d *schema.ResourceData, o map[string]
 			}
 		} else {
 			return fmt.Errorf("Error reading ipsec_intf_cleanup: %v", err)
+		}
+	}
+
+	if err = d.Set("keep_alive_interval", flattenWirelessControllerTimersKeepAliveInterval(o["keep-alive-interval"], d, "keep_alive_interval")); err != nil {
+		if vv, ok := fortiAPIPatch(o["keep-alive-interval"], "WirelessControllerTimers-KeepAliveInterval"); ok {
+			if err = d.Set("keep_alive_interval", vv); err != nil {
+				return fmt.Errorf("Error reading keep_alive_interval: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading keep_alive_interval: %v", err)
+		}
+	}
+
+	if err = d.Set("max_retransmit_interval", flattenWirelessControllerTimersMaxRetransmitInterval(o["max-retransmit-interval"], d, "max_retransmit_interval")); err != nil {
+		if vv, ok := fortiAPIPatch(o["max-retransmit-interval"], "WirelessControllerTimers-MaxRetransmitInterval"); ok {
+			if err = d.Set("max_retransmit_interval", vv); err != nil {
+				return fmt.Errorf("Error reading max_retransmit_interval: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading max_retransmit_interval: %v", err)
 		}
 	}
 
@@ -708,6 +744,14 @@ func expandWirelessControllerTimersIpsecIntfCleanup(d *schema.ResourceData, v in
 	return v, nil
 }
 
+func expandWirelessControllerTimersKeepAliveInterval(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWirelessControllerTimersMaxRetransmitInterval(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandWirelessControllerTimersNatSessionKeepAlive(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -877,6 +921,24 @@ func getObjectWirelessControllerTimers(d *schema.ResourceData, bemptysontable bo
 			return &obj, err
 		} else if t != nil {
 			obj["ipsec-intf-cleanup"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("keep_alive_interval"); ok || d.HasChange("keep_alive_interval") {
+		t, err := expandWirelessControllerTimersKeepAliveInterval(d, v, "keep_alive_interval")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["keep-alive-interval"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("max_retransmit_interval"); ok || d.HasChange("max_retransmit_interval") {
+		t, err := expandWirelessControllerTimersMaxRetransmitInterval(d, v, "max_retransmit_interval")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["max-retransmit-interval"] = t
 		}
 	}
 

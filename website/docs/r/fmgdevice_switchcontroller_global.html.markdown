@@ -77,6 +77,8 @@ The following arguments are supported:
 
 * `sn_dns_resolution` - Enable/disable DNS resolution of the FortiSwitch unit's IP address with switch name. Valid values: `disable`, `enable`.
 
+* `switch_custom_cmd` - Configure push method for switch bound custom command. Valid values: `on-replay`, `on-any`.
+
 * `switch_on_deauth` - No-operation/Factory-reset the managed FortiSwitch on deauthorization. Valid values: `no-op`, `factory-reset`.
 
 * `update_user_device` - Control which sources update the device user list. Valid values: `mac-cache`, `lldp`, `dhcp-snooping`, `l2-db`, `l3-db`.

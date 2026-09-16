@@ -17,6 +17,7 @@ The following arguments are supported:
 * `device_name` - FortiManager managed device name. This variable is used in the request URL. If not specified, it will inherit the variable `device_name` of the provider.
 
 * `image_base64` - Image data.
+* `image_in_use` - True if the image is used by a replacemsg object.
 * `image_type` - Image type. Valid values: `gif`, `jpg`, `tiff`, `png`.
 
 * `name` - Image name.

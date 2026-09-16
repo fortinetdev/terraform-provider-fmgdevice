@@ -219,6 +219,12 @@ func resourceRouterMulticastInterface() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"update_source": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Computed: true,
+			},
 			"dynamic_sort_subtable": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -633,6 +639,10 @@ func flattenRouterMulticastInterfaceTtlThreshold2edl(v interface{}, d *schema.Re
 	return v
 }
 
+func flattenRouterMulticastInterfaceUpdateSource2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
 func refreshObjectRouterMulticastInterface(d *schema.ResourceData, o map[string]interface{}) error {
 	var err error
 
@@ -888,6 +898,16 @@ func refreshObjectRouterMulticastInterface(d *schema.ResourceData, o map[string]
 		}
 	}
 
+	if err = d.Set("update_source", flattenRouterMulticastInterfaceUpdateSource2edl(o["update-source"], d, "update_source")); err != nil {
+		if vv, ok := fortiAPIPatch(o["update-source"], "RouterMulticastInterface-UpdateSource"); ok {
+			if err = d.Set("update_source", vv); err != nil {
+				return fmt.Errorf("Error reading update_source: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading update_source: %v", err)
+		}
+	}
+
 	return nil
 }
 
@@ -1096,6 +1116,10 @@ func expandRouterMulticastInterfaceTtlThreshold2edl(d *schema.ResourceData, v in
 	return v, nil
 }
 
+func expandRouterMulticastInterfaceUpdateSource2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
 func getObjectRouterMulticastInterface(d *schema.ResourceData) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
@@ -1294,6 +1318,15 @@ func getObjectRouterMulticastInterface(d *schema.ResourceData) (*map[string]inte
 			return &obj, err
 		} else if t != nil {
 			obj["ttl-threshold"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("update_source"); ok || d.HasChange("update_source") {
+		t, err := expandRouterMulticastInterfaceUpdateSource2edl(d, v, "update_source")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["update-source"] = t
 		}
 	}
 

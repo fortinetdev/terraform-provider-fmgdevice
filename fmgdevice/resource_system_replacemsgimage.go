@@ -49,6 +49,10 @@ func resourceSystemReplacemsgImage() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
+			"image_in_use": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 			"image_type": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -233,6 +237,10 @@ func flattenSystemReplacemsgImageImageBase64(v interface{}, d *schema.ResourceDa
 	return v
 }
 
+func flattenSystemReplacemsgImageImageInUse(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenSystemReplacemsgImageImageType(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -251,6 +259,16 @@ func refreshObjectSystemReplacemsgImage(d *schema.ResourceData, o map[string]int
 			}
 		} else {
 			return fmt.Errorf("Error reading image_base64: %v", err)
+		}
+	}
+
+	if err = d.Set("image_in_use", flattenSystemReplacemsgImageImageInUse(o["image-in-use"], d, "image_in_use")); err != nil {
+		if vv, ok := fortiAPIPatch(o["image-in-use"], "SystemReplacemsgImage-ImageInUse"); ok {
+			if err = d.Set("image_in_use", vv); err != nil {
+				return fmt.Errorf("Error reading image_in_use: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading image_in_use: %v", err)
 		}
 	}
 
@@ -287,6 +305,10 @@ func expandSystemReplacemsgImageImageBase64(d *schema.ResourceData, v interface{
 	return v, nil
 }
 
+func expandSystemReplacemsgImageImageInUse(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandSystemReplacemsgImageImageType(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -304,6 +326,15 @@ func getObjectSystemReplacemsgImage(d *schema.ResourceData) (*map[string]interfa
 			return &obj, err
 		} else if t != nil {
 			obj["image-base64"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("image_in_use"); ok || d.HasChange("image_in_use") {
+		t, err := expandSystemReplacemsgImageImageInUse(d, v, "image_in_use")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["image-in-use"] = t
 		}
 	}
 

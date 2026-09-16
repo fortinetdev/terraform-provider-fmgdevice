@@ -51,6 +51,10 @@ func resourceSwitchControllerManagedSwitch8021XSettings() *schema.Resource {
 				Required: true,
 				ForceNew: true,
 			},
+			"allow_mac_move": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 			"link_down_auth": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -60,6 +64,10 @@ func resourceSwitchControllerManagedSwitch8021XSettings() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+			},
+			"mab_entry_as": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
 			},
 			"mab_reauth": &schema.Schema{
 				Type:     schema.TypeString,
@@ -261,11 +269,19 @@ func resourceSwitchControllerManagedSwitch8021XSettingsRead(d *schema.ResourceDa
 	return nil
 }
 
+func flattenSwitchControllerManagedSwitch8021XSettingsAllowMacMove2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenSwitchControllerManagedSwitch8021XSettingsLinkDownAuth2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
 func flattenSwitchControllerManagedSwitch8021XSettingsLocalOverride2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSwitchControllerManagedSwitch8021XSettingsMabEntryAs2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -308,6 +324,16 @@ func flattenSwitchControllerManagedSwitch8021XSettingsTxPeriod2edl(v interface{}
 func refreshObjectSwitchControllerManagedSwitch8021XSettings(d *schema.ResourceData, o map[string]interface{}) error {
 	var err error
 
+	if err = d.Set("allow_mac_move", flattenSwitchControllerManagedSwitch8021XSettingsAllowMacMove2edl(o["allow-mac-move"], d, "allow_mac_move")); err != nil {
+		if vv, ok := fortiAPIPatch(o["allow-mac-move"], "SwitchControllerManagedSwitch8021XSettings-AllowMacMove"); ok {
+			if err = d.Set("allow_mac_move", vv); err != nil {
+				return fmt.Errorf("Error reading allow_mac_move: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading allow_mac_move: %v", err)
+		}
+	}
+
 	if err = d.Set("link_down_auth", flattenSwitchControllerManagedSwitch8021XSettingsLinkDownAuth2edl(o["link-down-auth"], d, "link_down_auth")); err != nil {
 		if vv, ok := fortiAPIPatch(o["link-down-auth"], "SwitchControllerManagedSwitch8021XSettings-LinkDownAuth"); ok {
 			if err = d.Set("link_down_auth", vv); err != nil {
@@ -325,6 +351,16 @@ func refreshObjectSwitchControllerManagedSwitch8021XSettings(d *schema.ResourceD
 			}
 		} else {
 			return fmt.Errorf("Error reading local_override: %v", err)
+		}
+	}
+
+	if err = d.Set("mab_entry_as", flattenSwitchControllerManagedSwitch8021XSettingsMabEntryAs2edl(o["mab-entry-as"], d, "mab_entry_as")); err != nil {
+		if vv, ok := fortiAPIPatch(o["mab-entry-as"], "SwitchControllerManagedSwitch8021XSettings-MabEntryAs"); ok {
+			if err = d.Set("mab_entry_as", vv); err != nil {
+				return fmt.Errorf("Error reading mab_entry_as: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading mab_entry_as: %v", err)
 		}
 	}
 
@@ -427,11 +463,19 @@ func flattenSwitchControllerManagedSwitch8021XSettingsFortiTestDebug(d *schema.R
 	log.Printf("ER List: %v", e)
 }
 
+func expandSwitchControllerManagedSwitch8021XSettingsAllowMacMove2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandSwitchControllerManagedSwitch8021XSettingsLinkDownAuth2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
 func expandSwitchControllerManagedSwitch8021XSettingsLocalOverride2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSwitchControllerManagedSwitch8021XSettingsMabEntryAs2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -474,6 +518,15 @@ func expandSwitchControllerManagedSwitch8021XSettingsTxPeriod2edl(d *schema.Reso
 func getObjectSwitchControllerManagedSwitch8021XSettings(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
+	if v, ok := d.GetOk("allow_mac_move"); ok || d.HasChange("allow_mac_move") {
+		t, err := expandSwitchControllerManagedSwitch8021XSettingsAllowMacMove2edl(d, v, "allow_mac_move")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["allow-mac-move"] = t
+		}
+	}
+
 	if v, ok := d.GetOk("link_down_auth"); ok || d.HasChange("link_down_auth") {
 		t, err := expandSwitchControllerManagedSwitch8021XSettingsLinkDownAuth2edl(d, v, "link_down_auth")
 		if err != nil {
@@ -489,6 +542,15 @@ func getObjectSwitchControllerManagedSwitch8021XSettings(d *schema.ResourceData,
 			return &obj, err
 		} else if t != nil {
 			obj["local-override"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("mab_entry_as"); ok || d.HasChange("mab_entry_as") {
+		t, err := expandSwitchControllerManagedSwitch8021XSettingsMabEntryAs2edl(d, v, "mab_entry_as")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["mab-entry-as"] = t
 		}
 	}
 

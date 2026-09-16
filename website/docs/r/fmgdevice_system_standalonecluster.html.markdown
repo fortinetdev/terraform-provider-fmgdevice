@@ -80,6 +80,8 @@ The following arguments are supported:
 * `monitor_prefix` - Monitor-Prefix. The structure of `monitor_prefix` block is documented below.
 * `pingsvr_monitor_interface` - List of pingsvr monitor interface to check for remote IP monitoring.
 * `psksecret` - Pre-shared secret for session synchronization (ASCII string or hexadecimal encoded with a leading 0x).
+* `session_sync` - Enable/disable session synchronization. Valid values: `disable`, `enable`.
+
 * `session_sync_dev` - Offload session-sync process to kernel and sync sessions using connected interface(s) directly.
 * `standalone_group_id` - Cluster group ID (0 - 255). Must be the same for all members.
 * `utm_traffic_bounce` - Enable/disable UTM related traffic bounce. Valid values: `disable`, `enable`.
@@ -91,6 +93,7 @@ The `cluster_peer` block supports:
 * `down_intfs_before_sess_sync` - List of interfaces to be turned down before session synchronization is complete.
 * `hb_interval` - Heartbeat interval (1 - 20 (100*ms). Increase to reduce false positives.
 * `hb_lost_threshold` - Lost heartbeat threshold (1 - 60). Increase to reduce false positives.
+* `interface` - Outgoing interface for peer connections.
 * `ike_heartbeat_interval` - Ike-Heartbeat-Interval.
 * `ike_monitor` - Ike-Monitor. Valid values: `disable`, `enable`.
 
@@ -104,6 +107,7 @@ The `cluster_peer` block supports:
 * `secondary_add_ipsec_routes` - Enable/disable IKE route announcement on the backup unit. Valid values: `disable`, `enable`.
 
 * `session_sync_filter` - Session-Sync-Filter. The structure of `session_sync_filter` block is documented below.
+* `source_ip` - Source IP address to use for peer connections.
 * `sync_id` - Sync ID.
 * `syncvd` - Sessions from these VDOMs are synchronized using this session synchronization configuration.
 

@@ -56,6 +56,8 @@ The following arguments are supported:
 * `client_options` - Client-Options. The structure of `client_options` block is documented below.
 * `dhcp6_client_options` - Dhcp6-Client-Options. Valid values: `rapid`, `iapd`, `iana`, `dns`, `dnsname`.
 
+* `dhcp6_egress_cos` - CoS in VLAN tag for outgoing DHCPv6 packets. Valid values: `cos0`, `cos1`, `cos2`, `cos3`, `cos4`, `cos5`, `cos6`, `cos7`.
+
 * `dhcp6_iapd_list` - Dhcp6-Iapd-List. The structure of `dhcp6_iapd_list` block is documented below.
 * `dhcp6_information_request` - Enable/disable DHCPv6 information request. Valid values: `disable`, `enable`.
 
@@ -89,10 +91,12 @@ The following arguments are supported:
 * `ip6_dnssl_list` - Ip6-Dnssl-List. The structure of `ip6_dnssl_list` block is documented below.
 * `ip6_extra_addr` - Ip6-Extra-Addr. The structure of `ip6_extra_addr` block is documented below.
 * `ip6_hop_limit` - Hop limit (0 means unspecified).
+* `ip6_link_local` - IPv6 link-local address of interface.
 * `ip6_link_mtu` - IPv6 link MTU.
 * `ip6_manage_flag` - Enable/disable the managed flag. Valid values: `disable`, `enable`.
 
 * `ip6_max_interval` - IPv6 maximum interval (4 to 1800 sec).
+* `ip6_mgmt_address` - High Availability in-band management IPv6 address of this interface and should be in the same subnet with primary IPv6 address
 * `ip6_min_interval` - IPv6 minimum interval (3 to 1350 sec).
 * `ip6_mode` - Addressing mode (static, DHCP, delegated). Valid values: `static`, `dhcp`, `pppoe`, `delegated`.
 

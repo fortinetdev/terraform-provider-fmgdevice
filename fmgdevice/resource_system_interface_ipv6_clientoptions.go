@@ -170,14 +170,21 @@ func resourceSystemInterfaceIpv6ClientOptionsUpdate(d *schema.ResourceData, m in
 
 	wsParams["adom"] = adomv
 
-	_, err = c.UpdateSystemInterfaceIpv6ClientOptions(obj, mkey, paradict, wsParams)
+	v, err := c.UpdateSystemInterfaceIpv6ClientOptions(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating SystemInterfaceIpv6ClientOptions resource: %v", err)
 	}
 
 	log.Printf(strconv.Itoa(c.Retries))
 
-	d.SetId(strconv.Itoa(getIntKey(d, "fosid")))
+	if v != nil && v["id"] != nil {
+		if vidn, ok := v["id"].(float64); ok {
+			d.SetId(strconv.Itoa(int(vidn)))
+			return resourceSystemInterfaceIpv6ClientOptionsRead(d, m)
+		} else {
+			return fmt.Errorf("Error updating SystemInterfaceIpv6ClientOptions resource: %v", err)
+		}
+	}
 
 	return resourceSystemInterfaceIpv6ClientOptionsRead(d, m)
 }

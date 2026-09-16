@@ -102,6 +102,12 @@ func resourceSystemFabricVpn() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"loopback_address_block_ipam": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Computed: true,
+			},
 			"loopback_advertised_subnet": &schema.Schema{
 				Type:     schema.TypeSet,
 				Elem:     &schema.Schema{Type: schema.TypeString},
@@ -171,6 +177,12 @@ func resourceSystemFabricVpn() *schema.Resource {
 						},
 						"overlay_tunnel_block": &schema.Schema{
 							Type:     schema.TypeList,
+							Elem:     &schema.Schema{Type: schema.TypeString},
+							Optional: true,
+							Computed: true,
+						},
+						"overlay_tunnel_block_ipam": &schema.Schema{
+							Type:     schema.TypeSet,
 							Elem:     &schema.Schema{Type: schema.TypeString},
 							Optional: true,
 							Computed: true,
@@ -461,6 +473,10 @@ func flattenSystemFabricVpnLoopbackAddressBlock(v interface{}, d *schema.Resourc
 	return flattenStringList(v)
 }
 
+func flattenSystemFabricVpnLoopbackAddressBlockIpam(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
 func flattenSystemFabricVpnLoopbackAdvertisedSubnet(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return flattenStringList(v)
 }
@@ -548,6 +564,12 @@ func flattenSystemFabricVpnOverlays(v interface{}, d *schema.ResourceData, pre s
 			tmp["overlay_tunnel_block"] = fortiAPISubPartPatch(v, "SystemFabricVpn-Overlays-OverlayTunnelBlock")
 		}
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "overlay_tunnel_block_ipam"
+		if _, ok := i["overlay-tunnel-block-ipam"]; ok {
+			v := flattenSystemFabricVpnOverlaysOverlayTunnelBlockIpam(i["overlay-tunnel-block-ipam"], d, pre_append)
+			tmp["overlay_tunnel_block_ipam"] = fortiAPISubPartPatch(v, "SystemFabricVpn-Overlays-OverlayTunnelBlockIpam")
+		}
+
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "remote_gw"
 		if _, ok := i["remote-gw"]; ok {
 			v := flattenSystemFabricVpnOverlaysRemoteGw(i["remote-gw"], d, pre_append)
@@ -613,6 +635,10 @@ func flattenSystemFabricVpnOverlaysOverlayPolicy(v interface{}, d *schema.Resour
 }
 
 func flattenSystemFabricVpnOverlaysOverlayTunnelBlock(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
+func flattenSystemFabricVpnOverlaysOverlayTunnelBlockIpam(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return flattenStringList(v)
 }
 
@@ -720,6 +746,16 @@ func refreshObjectSystemFabricVpn(d *schema.ResourceData, o map[string]interface
 			}
 		} else {
 			return fmt.Errorf("Error reading loopback_address_block: %v", err)
+		}
+	}
+
+	if err = d.Set("loopback_address_block_ipam", flattenSystemFabricVpnLoopbackAddressBlockIpam(o["loopback-address-block-ipam"], d, "loopback_address_block_ipam")); err != nil {
+		if vv, ok := fortiAPIPatch(o["loopback-address-block-ipam"], "SystemFabricVpn-LoopbackAddressBlockIpam"); ok {
+			if err = d.Set("loopback_address_block_ipam", vv); err != nil {
+				return fmt.Errorf("Error reading loopback_address_block_ipam: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading loopback_address_block_ipam: %v", err)
 		}
 	}
 
@@ -930,6 +966,10 @@ func expandSystemFabricVpnLoopbackAddressBlock(d *schema.ResourceData, v interfa
 	return expandStringList(v.([]interface{})), nil
 }
 
+func expandSystemFabricVpnLoopbackAddressBlockIpam(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
 func expandSystemFabricVpnLoopbackAdvertisedSubnet(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return expandStringList(v.(*schema.Set).List()), nil
 }
@@ -1002,6 +1042,11 @@ func expandSystemFabricVpnOverlays(d *schema.ResourceData, v interface{}, pre st
 			tmp["overlay-tunnel-block"], _ = expandSystemFabricVpnOverlaysOverlayTunnelBlock(d, i["overlay_tunnel_block"], pre_append)
 		}
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "overlay_tunnel_block_ipam"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["overlay-tunnel-block-ipam"], _ = expandSystemFabricVpnOverlaysOverlayTunnelBlockIpam(d, i["overlay_tunnel_block_ipam"], pre_append)
+		}
+
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "remote_gw"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
 			tmp["remote-gw"], _ = expandSystemFabricVpnOverlaysRemoteGw(d, i["remote_gw"], pre_append)
@@ -1065,6 +1110,10 @@ func expandSystemFabricVpnOverlaysOverlayPolicy(d *schema.ResourceData, v interf
 
 func expandSystemFabricVpnOverlaysOverlayTunnelBlock(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return expandStringList(v.([]interface{})), nil
+}
+
+func expandSystemFabricVpnOverlaysOverlayTunnelBlockIpam(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
 }
 
 func expandSystemFabricVpnOverlaysRemoteGw(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
@@ -1156,6 +1205,15 @@ func getObjectSystemFabricVpn(d *schema.ResourceData, bemptysontable bool) (*map
 			return &obj, err
 		} else if t != nil {
 			obj["loopback-address-block"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("loopback_address_block_ipam"); ok || d.HasChange("loopback_address_block_ipam") {
+		t, err := expandSystemFabricVpnLoopbackAddressBlockIpam(d, v, "loopback_address_block_ipam")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["loopback-address-block-ipam"] = t
 		}
 	}
 

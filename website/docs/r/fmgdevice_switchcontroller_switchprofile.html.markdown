@@ -37,6 +37,9 @@ The following arguments are supported:
 * `login_passwd_override` - Enable/disable overriding the admin administrator password for a managed FortiSwitch with the FortiGate admin administrator account password. Valid values: `disable`, `enable`.
 
 * `name` - FortiSwitch Profile name.
+* `private_data_encryption` - Enable/disable private data encryption for non-admin passwords. Valid values: `disable`, `enable`.
+
+* `private_data_encryption_key` - Private data encryption key length (32 hexadecimal numbers).
 * `revision_backup_on_logout` - Enable/disable automatic revision backup upon logout from FortiSwitch. Valid values: `disable`, `enable`.
 
 * `revision_backup_on_upgrade` - Enable/disable automatic revision backup upon FortiSwitch image upgrade. Valid values: `disable`, `enable`.

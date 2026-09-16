@@ -147,6 +147,11 @@ func resourceZtnaWebPortalBookmarkBookmarks() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
+			"verify_cert": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
 			"vnc_keyboard_layout": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -445,6 +450,10 @@ func flattenZtnaWebPortalBookmarkBookmarksUrl2edl(v interface{}, d *schema.Resou
 	return v
 }
 
+func flattenZtnaWebPortalBookmarkBookmarksVerifyCert2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenZtnaWebPortalBookmarkBookmarksVncKeyboardLayout2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -646,6 +655,16 @@ func refreshObjectZtnaWebPortalBookmarkBookmarks(d *schema.ResourceData, o map[s
 		}
 	}
 
+	if err = d.Set("verify_cert", flattenZtnaWebPortalBookmarkBookmarksVerifyCert2edl(o["verify-cert"], d, "verify_cert")); err != nil {
+		if vv, ok := fortiAPIPatch(o["verify-cert"], "ZtnaWebPortalBookmarkBookmarks-VerifyCert"); ok {
+			if err = d.Set("verify_cert", vv); err != nil {
+				return fmt.Errorf("Error reading verify_cert: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading verify_cert: %v", err)
+		}
+	}
+
 	if err = d.Set("vnc_keyboard_layout", flattenZtnaWebPortalBookmarkBookmarksVncKeyboardLayout2edl(o["vnc-keyboard-layout"], d, "vnc_keyboard_layout")); err != nil {
 		if vv, ok := fortiAPIPatch(o["vnc-keyboard-layout"], "ZtnaWebPortalBookmarkBookmarks-VncKeyboardLayout"); ok {
 			if err = d.Set("vnc_keyboard_layout", vv); err != nil {
@@ -752,6 +771,10 @@ func expandZtnaWebPortalBookmarkBookmarksSso2edl(d *schema.ResourceData, v inter
 }
 
 func expandZtnaWebPortalBookmarkBookmarksUrl2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandZtnaWebPortalBookmarkBookmarksVerifyCert2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -943,6 +966,15 @@ func getObjectZtnaWebPortalBookmarkBookmarks(d *schema.ResourceData) (*map[strin
 			return &obj, err
 		} else if t != nil {
 			obj["url"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("verify_cert"); ok || d.HasChange("verify_cert") {
+		t, err := expandZtnaWebPortalBookmarkBookmarksVerifyCert2edl(d, v, "verify_cert")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["verify-cert"] = t
 		}
 	}
 

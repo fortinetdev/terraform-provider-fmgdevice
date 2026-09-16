@@ -38,6 +38,7 @@ The following arguments are supported:
 * `backdoor` - Enable/disable route as backdoor. Valid values: `disable`, `enable`.
 
 * `fosid` - ID.
+* `internet_service_name` - Name of internet service.
 * `network_import_check` - Configure insurance of BGP network route existence in IGP. Valid values: `disable`, `enable`, `global`.
 
 * `prefix` - Network prefix.

@@ -173,6 +173,8 @@ The following arguments are supported:
 * `fec_receive_timeout` - Timeout in milliseconds before dropping Forward Error Correction packets (1 - 1000).
 * `fec_redundant` - Number of redundant Forward Error Correction packets (1 - 5 for reed-solomon, 1 for xor).
 * `fec_send_timeout` - Timeout in milliseconds before sending Forward Error Correction packets (1 - 1000).
+* `fec_separate_redundant_tunnel` - Enable/disable Forward Error Correction redundancy on separate tunnel. Valid values: `disable`, `enable`.
+
 * `fgsp_sync` - Enable/disable IPsec syncing of tunnels for FGSP IPsec. Valid values: `disable`, `enable`.
 
 * `forticlient_enforcement` - Enable/disable FortiClient enforcement. Valid values: `disable`, `enable`.
@@ -256,6 +258,7 @@ The following arguments are supported:
 * `monitor_hold_down_weekday` - Day of the week to recover once primary re-establishes. Valid values: `sunday`, `monday`, `tuesday`, `wednesday`, `thursday`, `friday`, `saturday`, `everyday`.
 
 * `monitor_min` - Minimum number of links to become degraded before activating this interface.  Zero (0) means all links must be down before activating this interface.
+* `multipath` - Configure the number of additional security associations (SAs) on a phase1 interface for each phase2 interface (0 - 31, default = 0).
 * `name` - IPsec remote gateway name.
 * `nattraversal` - Enable/disable NAT traversal. Valid values: `disable`, `enable`, `forced`.
 
@@ -343,6 +346,8 @@ The following arguments are supported:
 * `wizard_type` - GUI VPN Wizard Type. Valid values: `custom`, `dialup-forticlient`, `dialup-ios`, `dialup-android`, `dialup-cisco`, `static-fortigate`, `static-cisco`, `dialup-windows`, `dialup-fortigate`, `dialup-cisco-fw`, `simplified-static-fortigate`, `hub-fortigate-auto-discovery`, `spoke-fortigate-auto-discovery`, `static-fortiproxy`, `dialup-fortiproxy`, `simplified-static-fortiproxy`, `hub-fortiproxy-auto-discovery`, `spoke-fortiproxy-auto-discovery`.
 
 * `xauthtype` - XAuth type. Valid values: `disable`, `client`, `pap`, `chap`, `auto`.
+
+* `ztna_cert_scim_authorization` - Enable/disable SCIM authorization based on the ZTNA peer certificate identity. Valid values: `user-name`, `display-name`, `external-id`, `email`, `disable`.
 
 * `mobike` - Mobike. Valid values: `disable`, `enable`.
 

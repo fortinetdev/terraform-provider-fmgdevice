@@ -35,7 +35,10 @@ The following arguments are supported:
 
 * `name` - Distribute list entry name.
 * `route_map` - Route map name.
+* `route_map_evpn` - Route map name for EVPN redistribution.
 * `status` - Status. Valid values: `disable`, `enable`.
+
+* `status_evpn` - EVPN redistribution status. Valid values: `disable`, `enable`.
 
 
 

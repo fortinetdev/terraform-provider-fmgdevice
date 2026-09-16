@@ -60,6 +60,8 @@ The following arguments are supported:
 * `max_sta_cap_wtp` - Maximum number of station cap's wtp info stored on the controller (1 - 16, default = 8).
 * `max_sta_offline` - Maximum number of station offline stored on the controller (default = 0).
 * `max_sta_offline_ip2mac` - Maximum number of station offline ip2mac stored on the controller (default = 0).
+* `max_vap_per_radio` - Maximum number of SSIDs supported on the radio (default = 8). Valid values: `8`, `16`.
+
 * `max_wids_entry` - Maximum number of wids entries stored on the controller (default = 0).
 * `mesh_eth_type` - Mesh Ethernet identifier included in backhaul packets (0 - 65535, default = 8755).
 * `nac_interval` - Interval in seconds between two WiFi network access control (NAC) checks (10 - 600, default = 120).

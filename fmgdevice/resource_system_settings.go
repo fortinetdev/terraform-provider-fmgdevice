@@ -256,6 +256,10 @@ func resourceSystemSettings() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
+			"gtp_fgsp_s10_only": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 			"gtp_monitor_mode": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -264,6 +268,10 @@ func resourceSystemSettings() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+			},
+			"gui_advanced_switch_features": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
 			},
 			"gui_advanced_wireless_features": &schema.Schema{
 				Type:     schema.TypeString,
@@ -467,10 +475,18 @@ func resourceSystemSettings() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"gui_policy_custom_tags": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 			"gui_policy_disclaimer": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+			},
+			"gui_reverse_connector": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
 			},
 			"gui_replacement_message_groups": &schema.Schema{
 				Type:     schema.TypeString,
@@ -615,6 +631,12 @@ func resourceSystemSettings() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"ike_extra_ports": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeInt},
+				Optional: true,
+				Computed: true,
+			},
 			"ike_policy_route": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -624,6 +646,10 @@ func resourceSystemSettings() *schema.Resource {
 				Type:     schema.TypeInt,
 				Optional: true,
 				Computed: true,
+			},
+			"ike_proposal_visibility": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
 			},
 			"ike_quick_crash_detect": &schema.Schema{
 				Type:     schema.TypeString,
@@ -643,6 +669,14 @@ func resourceSystemSettings() *schema.Resource {
 				Type:     schema.TypeInt,
 				Optional: true,
 				Computed: true,
+			},
+			"ike_tcp_service": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"ike_tls_service": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
 			},
 			"internet_service_app_ctrl_size": &schema.Schema{
 				Type:     schema.TypeInt,
@@ -838,6 +872,10 @@ func resourceSystemSettings() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"src_check_reply": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 			"status": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -886,6 +924,10 @@ func resourceSystemSettings() *schema.Resource {
 				Type:     schema.TypeInt,
 				Optional: true,
 				Computed: true,
+			},
+			"vrf_local_ip_isolation": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
 			},
 			"wccp_cache_engine": &schema.Schema{
 				Type:     schema.TypeString,
@@ -1204,11 +1246,19 @@ func flattenSystemSettingsGtpAsymFgsp(v interface{}, d *schema.ResourceData, pre
 	return v
 }
 
+func flattenSystemSettingsGtpFgspS10Only(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenSystemSettingsGtpMonitorMode(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
 func flattenSystemSettingsGuiAdvancedPolicy(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemSettingsGuiAdvancedSwitchFeatures(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -1376,7 +1426,15 @@ func flattenSystemSettingsGuiPolicyBasedIpsec(v interface{}, d *schema.ResourceD
 	return v
 }
 
+func flattenSystemSettingsGuiPolicyCustomTags(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenSystemSettingsGuiPolicyDisclaimer(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemSettingsGuiReverseConnector(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -1496,11 +1554,19 @@ func flattenSystemSettingsIkeDnFormat(v interface{}, d *schema.ResourceData, pre
 	return v
 }
 
+func flattenSystemSettingsIkeExtraPorts(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenIntegerList(v)
+}
+
 func flattenSystemSettingsIkePolicyRoute(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
 func flattenSystemSettingsIkePort(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemSettingsIkeProposalVisibility(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -1517,6 +1583,14 @@ func flattenSystemSettingsImplicitAllowDns(v interface{}, d *schema.ResourceData
 }
 
 func flattenSystemSettingsIkeTcpPort(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemSettingsIkeTcpService(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemSettingsIkeTlsService(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -1676,6 +1750,10 @@ func flattenSystemSettingsSnatHairpinTraffic(v interface{}, d *schema.ResourceDa
 	return v
 }
 
+func flattenSystemSettingsSrcCheckReply(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenSystemSettingsStatus(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -1713,6 +1791,10 @@ func flattenSystemSettingsVpnStatsLog(v interface{}, d *schema.ResourceData, pre
 }
 
 func flattenSystemSettingsVpnStatsPeriod(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemSettingsVrfLocalIpIsolation(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -2147,6 +2229,16 @@ func refreshObjectSystemSettings(d *schema.ResourceData, o map[string]interface{
 		}
 	}
 
+	if err = d.Set("gtp_fgsp_s10_only", flattenSystemSettingsGtpFgspS10Only(o["gtp-fgsp-s10-only"], d, "gtp_fgsp_s10_only")); err != nil {
+		if vv, ok := fortiAPIPatch(o["gtp-fgsp-s10-only"], "SystemSettings-GtpFgspS10Only"); ok {
+			if err = d.Set("gtp_fgsp_s10_only", vv); err != nil {
+				return fmt.Errorf("Error reading gtp_fgsp_s10_only: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading gtp_fgsp_s10_only: %v", err)
+		}
+	}
+
 	if err = d.Set("gtp_monitor_mode", flattenSystemSettingsGtpMonitorMode(o["gtp-monitor-mode"], d, "gtp_monitor_mode")); err != nil {
 		if vv, ok := fortiAPIPatch(o["gtp-monitor-mode"], "SystemSettings-GtpMonitorMode"); ok {
 			if err = d.Set("gtp_monitor_mode", vv); err != nil {
@@ -2164,6 +2256,16 @@ func refreshObjectSystemSettings(d *schema.ResourceData, o map[string]interface{
 			}
 		} else {
 			return fmt.Errorf("Error reading gui_advanced_policy: %v", err)
+		}
+	}
+
+	if err = d.Set("gui_advanced_switch_features", flattenSystemSettingsGuiAdvancedSwitchFeatures(o["gui-advanced-switch-features"], d, "gui_advanced_switch_features")); err != nil {
+		if vv, ok := fortiAPIPatch(o["gui-advanced-switch-features"], "SystemSettings-GuiAdvancedSwitchFeatures"); ok {
+			if err = d.Set("gui_advanced_switch_features", vv); err != nil {
+				return fmt.Errorf("Error reading gui_advanced_switch_features: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading gui_advanced_switch_features: %v", err)
 		}
 	}
 
@@ -2577,6 +2679,16 @@ func refreshObjectSystemSettings(d *schema.ResourceData, o map[string]interface{
 		}
 	}
 
+	if err = d.Set("gui_policy_custom_tags", flattenSystemSettingsGuiPolicyCustomTags(o["gui-policy-custom-tags"], d, "gui_policy_custom_tags")); err != nil {
+		if vv, ok := fortiAPIPatch(o["gui-policy-custom-tags"], "SystemSettings-GuiPolicyCustomTags"); ok {
+			if err = d.Set("gui_policy_custom_tags", vv); err != nil {
+				return fmt.Errorf("Error reading gui_policy_custom_tags: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading gui_policy_custom_tags: %v", err)
+		}
+	}
+
 	if err = d.Set("gui_policy_disclaimer", flattenSystemSettingsGuiPolicyDisclaimer(o["gui-policy-disclaimer"], d, "gui_policy_disclaimer")); err != nil {
 		if vv, ok := fortiAPIPatch(o["gui-policy-disclaimer"], "SystemSettings-GuiPolicyDisclaimer"); ok {
 			if err = d.Set("gui_policy_disclaimer", vv); err != nil {
@@ -2584,6 +2696,16 @@ func refreshObjectSystemSettings(d *schema.ResourceData, o map[string]interface{
 			}
 		} else {
 			return fmt.Errorf("Error reading gui_policy_disclaimer: %v", err)
+		}
+	}
+
+	if err = d.Set("gui_reverse_connector", flattenSystemSettingsGuiReverseConnector(o["gui-reverse-connector"], d, "gui_reverse_connector")); err != nil {
+		if vv, ok := fortiAPIPatch(o["gui-reverse-connector"], "SystemSettings-GuiReverseConnector"); ok {
+			if err = d.Set("gui_reverse_connector", vv); err != nil {
+				return fmt.Errorf("Error reading gui_reverse_connector: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading gui_reverse_connector: %v", err)
 		}
 	}
 
@@ -2877,6 +2999,16 @@ func refreshObjectSystemSettings(d *schema.ResourceData, o map[string]interface{
 		}
 	}
 
+	if err = d.Set("ike_extra_ports", flattenSystemSettingsIkeExtraPorts(o["ike-extra-ports"], d, "ike_extra_ports")); err != nil {
+		if vv, ok := fortiAPIPatch(o["ike-extra-ports"], "SystemSettings-IkeExtraPorts"); ok {
+			if err = d.Set("ike_extra_ports", vv); err != nil {
+				return fmt.Errorf("Error reading ike_extra_ports: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading ike_extra_ports: %v", err)
+		}
+	}
+
 	if err = d.Set("ike_policy_route", flattenSystemSettingsIkePolicyRoute(o["ike-policy-route"], d, "ike_policy_route")); err != nil {
 		if vv, ok := fortiAPIPatch(o["ike-policy-route"], "SystemSettings-IkePolicyRoute"); ok {
 			if err = d.Set("ike_policy_route", vv); err != nil {
@@ -2894,6 +3026,16 @@ func refreshObjectSystemSettings(d *schema.ResourceData, o map[string]interface{
 			}
 		} else {
 			return fmt.Errorf("Error reading ike_port: %v", err)
+		}
+	}
+
+	if err = d.Set("ike_proposal_visibility", flattenSystemSettingsIkeProposalVisibility(o["ike-proposal-visibility"], d, "ike_proposal_visibility")); err != nil {
+		if vv, ok := fortiAPIPatch(o["ike-proposal-visibility"], "SystemSettings-IkeProposalVisibility"); ok {
+			if err = d.Set("ike_proposal_visibility", vv); err != nil {
+				return fmt.Errorf("Error reading ike_proposal_visibility: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading ike_proposal_visibility: %v", err)
 		}
 	}
 
@@ -2934,6 +3076,26 @@ func refreshObjectSystemSettings(d *schema.ResourceData, o map[string]interface{
 			}
 		} else {
 			return fmt.Errorf("Error reading ike_tcp_port: %v", err)
+		}
+	}
+
+	if err = d.Set("ike_tcp_service", flattenSystemSettingsIkeTcpService(o["ike-tcp-service"], d, "ike_tcp_service")); err != nil {
+		if vv, ok := fortiAPIPatch(o["ike-tcp-service"], "SystemSettings-IkeTcpService"); ok {
+			if err = d.Set("ike_tcp_service", vv); err != nil {
+				return fmt.Errorf("Error reading ike_tcp_service: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading ike_tcp_service: %v", err)
+		}
+	}
+
+	if err = d.Set("ike_tls_service", flattenSystemSettingsIkeTlsService(o["ike-tls-service"], d, "ike_tls_service")); err != nil {
+		if vv, ok := fortiAPIPatch(o["ike-tls-service"], "SystemSettings-IkeTlsService"); ok {
+			if err = d.Set("ike_tls_service", vv); err != nil {
+				return fmt.Errorf("Error reading ike_tls_service: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading ike_tls_service: %v", err)
 		}
 	}
 
@@ -3327,6 +3489,16 @@ func refreshObjectSystemSettings(d *schema.ResourceData, o map[string]interface{
 		}
 	}
 
+	if err = d.Set("src_check_reply", flattenSystemSettingsSrcCheckReply(o["src-check-reply"], d, "src_check_reply")); err != nil {
+		if vv, ok := fortiAPIPatch(o["src-check-reply"], "SystemSettings-SrcCheckReply"); ok {
+			if err = d.Set("src_check_reply", vv); err != nil {
+				return fmt.Errorf("Error reading src_check_reply: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading src_check_reply: %v", err)
+		}
+	}
+
 	if err = d.Set("status", flattenSystemSettingsStatus(o["status"], d, "status")); err != nil {
 		if vv, ok := fortiAPIPatch(o["status"], "SystemSettings-Status"); ok {
 			if err = d.Set("status", vv); err != nil {
@@ -3424,6 +3596,16 @@ func refreshObjectSystemSettings(d *schema.ResourceData, o map[string]interface{
 			}
 		} else {
 			return fmt.Errorf("Error reading vpn_stats_period: %v", err)
+		}
+	}
+
+	if err = d.Set("vrf_local_ip_isolation", flattenSystemSettingsVrfLocalIpIsolation(o["vrf-local-ip-isolation"], d, "vrf_local_ip_isolation")); err != nil {
+		if vv, ok := fortiAPIPatch(o["vrf-local-ip-isolation"], "SystemSettings-VrfLocalIpIsolation"); ok {
+			if err = d.Set("vrf_local_ip_isolation", vv); err != nil {
+				return fmt.Errorf("Error reading vrf_local_ip_isolation: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading vrf_local_ip_isolation: %v", err)
 		}
 	}
 
@@ -3624,11 +3806,19 @@ func expandSystemSettingsGtpAsymFgsp(d *schema.ResourceData, v interface{}, pre 
 	return v, nil
 }
 
+func expandSystemSettingsGtpFgspS10Only(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandSystemSettingsGtpMonitorMode(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
 func expandSystemSettingsGuiAdvancedPolicy(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemSettingsGuiAdvancedSwitchFeatures(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -3796,7 +3986,15 @@ func expandSystemSettingsGuiPolicyBasedIpsec(d *schema.ResourceData, v interface
 	return v, nil
 }
 
+func expandSystemSettingsGuiPolicyCustomTags(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandSystemSettingsGuiPolicyDisclaimer(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemSettingsGuiReverseConnector(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -3916,11 +4114,19 @@ func expandSystemSettingsIkeDnFormat(d *schema.ResourceData, v interface{}, pre 
 	return v, nil
 }
 
+func expandSystemSettingsIkeExtraPorts(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandIntegerList(v.(*schema.Set).List()), nil
+}
+
 func expandSystemSettingsIkePolicyRoute(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
 func expandSystemSettingsIkePort(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemSettingsIkeProposalVisibility(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -3937,6 +4143,14 @@ func expandSystemSettingsImplicitAllowDns(d *schema.ResourceData, v interface{},
 }
 
 func expandSystemSettingsIkeTcpPort(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemSettingsIkeTcpService(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemSettingsIkeTlsService(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -4096,6 +4310,10 @@ func expandSystemSettingsSnatHairpinTraffic(d *schema.ResourceData, v interface{
 	return v, nil
 }
 
+func expandSystemSettingsSrcCheckReply(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandSystemSettingsStatus(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -4133,6 +4351,10 @@ func expandSystemSettingsVpnStatsLog(d *schema.ResourceData, v interface{}, pre 
 }
 
 func expandSystemSettingsVpnStatsPeriod(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemSettingsVrfLocalIpIsolation(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -4525,6 +4747,15 @@ func getObjectSystemSettings(d *schema.ResourceData, bemptysontable bool) (*map[
 		}
 	}
 
+	if v, ok := d.GetOk("gtp_fgsp_s10_only"); ok || d.HasChange("gtp_fgsp_s10_only") {
+		t, err := expandSystemSettingsGtpFgspS10Only(d, v, "gtp_fgsp_s10_only")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["gtp-fgsp-s10-only"] = t
+		}
+	}
+
 	if v, ok := d.GetOk("gtp_monitor_mode"); ok || d.HasChange("gtp_monitor_mode") {
 		t, err := expandSystemSettingsGtpMonitorMode(d, v, "gtp_monitor_mode")
 		if err != nil {
@@ -4540,6 +4771,15 @@ func getObjectSystemSettings(d *schema.ResourceData, bemptysontable bool) (*map[
 			return &obj, err
 		} else if t != nil {
 			obj["gui-advanced-policy"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("gui_advanced_switch_features"); ok || d.HasChange("gui_advanced_switch_features") {
+		t, err := expandSystemSettingsGuiAdvancedSwitchFeatures(d, v, "gui_advanced_switch_features")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["gui-advanced-switch-features"] = t
 		}
 	}
 
@@ -4912,12 +5152,30 @@ func getObjectSystemSettings(d *schema.ResourceData, bemptysontable bool) (*map[
 		}
 	}
 
+	if v, ok := d.GetOk("gui_policy_custom_tags"); ok || d.HasChange("gui_policy_custom_tags") {
+		t, err := expandSystemSettingsGuiPolicyCustomTags(d, v, "gui_policy_custom_tags")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["gui-policy-custom-tags"] = t
+		}
+	}
+
 	if v, ok := d.GetOk("gui_policy_disclaimer"); ok || d.HasChange("gui_policy_disclaimer") {
 		t, err := expandSystemSettingsGuiPolicyDisclaimer(d, v, "gui_policy_disclaimer")
 		if err != nil {
 			return &obj, err
 		} else if t != nil {
 			obj["gui-policy-disclaimer"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("gui_reverse_connector"); ok || d.HasChange("gui_reverse_connector") {
+		t, err := expandSystemSettingsGuiReverseConnector(d, v, "gui_reverse_connector")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["gui-reverse-connector"] = t
 		}
 	}
 
@@ -5182,6 +5440,15 @@ func getObjectSystemSettings(d *schema.ResourceData, bemptysontable bool) (*map[
 		}
 	}
 
+	if v, ok := d.GetOk("ike_extra_ports"); ok || d.HasChange("ike_extra_ports") {
+		t, err := expandSystemSettingsIkeExtraPorts(d, v, "ike_extra_ports")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["ike-extra-ports"] = t
+		}
+	}
+
 	if v, ok := d.GetOk("ike_policy_route"); ok || d.HasChange("ike_policy_route") {
 		t, err := expandSystemSettingsIkePolicyRoute(d, v, "ike_policy_route")
 		if err != nil {
@@ -5197,6 +5464,15 @@ func getObjectSystemSettings(d *schema.ResourceData, bemptysontable bool) (*map[
 			return &obj, err
 		} else if t != nil {
 			obj["ike-port"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("ike_proposal_visibility"); ok || d.HasChange("ike_proposal_visibility") {
+		t, err := expandSystemSettingsIkeProposalVisibility(d, v, "ike_proposal_visibility")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["ike-proposal-visibility"] = t
 		}
 	}
 
@@ -5233,6 +5509,24 @@ func getObjectSystemSettings(d *schema.ResourceData, bemptysontable bool) (*map[
 			return &obj, err
 		} else if t != nil {
 			obj["ike-tcp-port"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("ike_tcp_service"); ok || d.HasChange("ike_tcp_service") {
+		t, err := expandSystemSettingsIkeTcpService(d, v, "ike_tcp_service")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["ike-tcp-service"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("ike_tls_service"); ok || d.HasChange("ike_tls_service") {
+		t, err := expandSystemSettingsIkeTlsService(d, v, "ike_tls_service")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["ike-tls-service"] = t
 		}
 	}
 
@@ -5587,6 +5881,15 @@ func getObjectSystemSettings(d *schema.ResourceData, bemptysontable bool) (*map[
 		}
 	}
 
+	if v, ok := d.GetOk("src_check_reply"); ok || d.HasChange("src_check_reply") {
+		t, err := expandSystemSettingsSrcCheckReply(d, v, "src_check_reply")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["src-check-reply"] = t
+		}
+	}
+
 	if v, ok := d.GetOk("status"); ok || d.HasChange("status") {
 		t, err := expandSystemSettingsStatus(d, v, "status")
 		if err != nil {
@@ -5674,6 +5977,15 @@ func getObjectSystemSettings(d *schema.ResourceData, bemptysontable bool) (*map[
 			return &obj, err
 		} else if t != nil {
 			obj["vpn-stats-period"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("vrf_local_ip_isolation"); ok || d.HasChange("vrf_local_ip_isolation") {
+		t, err := expandSystemSettingsVrfLocalIpIsolation(d, v, "vrf_local_ip_isolation")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["vrf-local-ip-isolation"] = t
 		}
 	}
 

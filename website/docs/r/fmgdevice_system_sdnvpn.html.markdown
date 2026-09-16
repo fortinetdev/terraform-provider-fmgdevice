@@ -35,6 +35,7 @@ The following arguments are supported:
 
 * `routing_type` - Type of routing. Valid values: `static`, `dynamic`.
 
+* `rtbl_id` - VPC route table id.
 * `sdn` - SDN connector name.
 * `status` - Status.
 * `subnet_id` - AWS subnet id for TGW route propagation.

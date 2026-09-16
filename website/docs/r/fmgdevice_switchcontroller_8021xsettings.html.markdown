@@ -17,7 +17,11 @@ The following arguments are supported:
 * `device_name` - FortiManager managed device name. This variable is used in the request URL. If not specified, it will inherit the variable `device_name` of the provider.
 * `device_vdom` - FortiManager managed device vdom. This variable is used in the request URL. If not specified, it will inherit the variable `device_vdom` of the provider.
 
+* `allow_mac_move` - Enable/disable MAC move (default = enable). Valid values: `disable`, `enable`.
+
 * `link_down_auth` - Interface-reauthentication state to set if a link is down. Valid values: `set-unauth`, `no-action`.
+
+* `mab_entry_as` - Configure MAB MAC entry as static or dynamic (default = static). Valid values: `dynamic`, `static`.
 
 * `mab_reauth` - Enable/disable MAB re-authentication. Valid values: `disable`, `enable`.
 

@@ -59,6 +59,14 @@ func resourceSystem5GModemModem1() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"gps_antenna_type": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"esim": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 			"gps_service": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -298,6 +306,14 @@ func flattenSystem5GModemModem1DefaultNetmask2edl(v interface{}, d *schema.Resou
 	return v
 }
 
+func flattenSystem5GModemModem1GpsAntennaType2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystem5GModemModem1Esim2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenSystem5GModemModem1GpsService2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -458,6 +474,26 @@ func refreshObjectSystem5GModemModem1(d *schema.ResourceData, o map[string]inter
 		}
 	}
 
+	if err = d.Set("gps_antenna_type", flattenSystem5GModemModem1GpsAntennaType2edl(o["gps-antenna-type"], d, "gps_antenna_type")); err != nil {
+		if vv, ok := fortiAPIPatch(o["gps-antenna-type"], "System5GModemModem1-GpsAntennaType"); ok {
+			if err = d.Set("gps_antenna_type", vv); err != nil {
+				return fmt.Errorf("Error reading gps_antenna_type: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading gps_antenna_type: %v", err)
+		}
+	}
+
+	if err = d.Set("esim", flattenSystem5GModemModem1Esim2edl(o["esim"], d, "esim")); err != nil {
+		if vv, ok := fortiAPIPatch(o["esim"], "System5GModemModem1-Esim"); ok {
+			if err = d.Set("esim", vv); err != nil {
+				return fmt.Errorf("Error reading esim: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading esim: %v", err)
+		}
+	}
+
 	if err = d.Set("gps_service", flattenSystem5GModemModem1GpsService2edl(o["gps-service"], d, "gps_service")); err != nil {
 		if vv, ok := fortiAPIPatch(o["gps-service"], "System5GModemModem1-GpsService"); ok {
 			if err = d.Set("gps_service", vv); err != nil {
@@ -584,6 +620,14 @@ func expandSystem5GModemModem1DefaultGateway2edl(d *schema.ResourceData, v inter
 }
 
 func expandSystem5GModemModem1DefaultNetmask2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystem5GModemModem1GpsAntennaType2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystem5GModemModem1Esim2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -745,6 +789,24 @@ func getObjectSystem5GModemModem1(d *schema.ResourceData, bemptysontable bool) (
 			return &obj, err
 		} else if t != nil {
 			obj["default-netmask"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("gps_antenna_type"); ok || d.HasChange("gps_antenna_type") {
+		t, err := expandSystem5GModemModem1GpsAntennaType2edl(d, v, "gps_antenna_type")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["gps-antenna-type"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("esim"); ok || d.HasChange("esim") {
+		t, err := expandSystem5GModemModem1Esim2edl(d, v, "esim")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["esim"] = t
 		}
 	}
 

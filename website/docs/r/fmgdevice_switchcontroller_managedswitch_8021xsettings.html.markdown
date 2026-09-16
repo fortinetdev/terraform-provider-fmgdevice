@@ -22,9 +22,13 @@ The following arguments are supported:
 * `device_vdom` - FortiManager managed device vdom. This variable is used in the request URL. If not specified, it will inherit the variable `device_vdom` of the provider.
 * `managed_switch` - Managed Switch.
 
+* `allow_mac_move` - Enable/disable MAC move (default = enable). Valid values: `disable`, `enable`.
+
 * `link_down_auth` - Authentication state to set if a link is down. Valid values: `set-unauth`, `no-action`.
 
 * `local_override` - Enable to override global 802.1X settings on individual FortiSwitches. Valid values: `disable`, `enable`.
+
+* `mab_entry_as` - Configure MAB MAC entry as static or dynamic (default = static). Valid values: `dynamic`, `static`.
 
 * `mab_reauth` - Enable or disable MAB reauthentication settings. Valid values: `disable`, `enable`.
 

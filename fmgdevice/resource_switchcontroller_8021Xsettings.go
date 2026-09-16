@@ -46,10 +46,18 @@ func resourceSwitchController8021XSettings() *schema.Resource {
 				Computed: true,
 				ForceNew: true,
 			},
+			"allow_mac_move": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 			"link_down_auth": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+			},
+			"mab_entry_as": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
 			},
 			"mab_reauth": &schema.Schema{
 				Type:     schema.TypeString,
@@ -236,7 +244,15 @@ func resourceSwitchController8021XSettingsRead(d *schema.ResourceData, m interfa
 	return nil
 }
 
+func flattenSwitchController8021XSettingsAllowMacMove(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenSwitchController8021XSettingsLinkDownAuth(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSwitchController8021XSettingsMabEntryAs(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -279,6 +295,16 @@ func flattenSwitchController8021XSettingsTxPeriod(v interface{}, d *schema.Resou
 func refreshObjectSwitchController8021XSettings(d *schema.ResourceData, o map[string]interface{}) error {
 	var err error
 
+	if err = d.Set("allow_mac_move", flattenSwitchController8021XSettingsAllowMacMove(o["allow-mac-move"], d, "allow_mac_move")); err != nil {
+		if vv, ok := fortiAPIPatch(o["allow-mac-move"], "SwitchController8021XSettings-AllowMacMove"); ok {
+			if err = d.Set("allow_mac_move", vv); err != nil {
+				return fmt.Errorf("Error reading allow_mac_move: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading allow_mac_move: %v", err)
+		}
+	}
+
 	if err = d.Set("link_down_auth", flattenSwitchController8021XSettingsLinkDownAuth(o["link-down-auth"], d, "link_down_auth")); err != nil {
 		if vv, ok := fortiAPIPatch(o["link-down-auth"], "SwitchController8021XSettings-LinkDownAuth"); ok {
 			if err = d.Set("link_down_auth", vv); err != nil {
@@ -286,6 +312,16 @@ func refreshObjectSwitchController8021XSettings(d *schema.ResourceData, o map[st
 			}
 		} else {
 			return fmt.Errorf("Error reading link_down_auth: %v", err)
+		}
+	}
+
+	if err = d.Set("mab_entry_as", flattenSwitchController8021XSettingsMabEntryAs(o["mab-entry-as"], d, "mab_entry_as")); err != nil {
+		if vv, ok := fortiAPIPatch(o["mab-entry-as"], "SwitchController8021XSettings-MabEntryAs"); ok {
+			if err = d.Set("mab_entry_as", vv); err != nil {
+				return fmt.Errorf("Error reading mab_entry_as: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading mab_entry_as: %v", err)
 		}
 	}
 
@@ -388,7 +424,15 @@ func flattenSwitchController8021XSettingsFortiTestDebug(d *schema.ResourceData, 
 	log.Printf("ER List: %v", e)
 }
 
+func expandSwitchController8021XSettingsAllowMacMove(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandSwitchController8021XSettingsLinkDownAuth(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSwitchController8021XSettingsMabEntryAs(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -431,12 +475,30 @@ func expandSwitchController8021XSettingsTxPeriod(d *schema.ResourceData, v inter
 func getObjectSwitchController8021XSettings(d *schema.ResourceData, bemptysontable bool) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
+	if v, ok := d.GetOk("allow_mac_move"); ok || d.HasChange("allow_mac_move") {
+		t, err := expandSwitchController8021XSettingsAllowMacMove(d, v, "allow_mac_move")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["allow-mac-move"] = t
+		}
+	}
+
 	if v, ok := d.GetOk("link_down_auth"); ok || d.HasChange("link_down_auth") {
 		t, err := expandSwitchController8021XSettingsLinkDownAuth(d, v, "link_down_auth")
 		if err != nil {
 			return &obj, err
 		} else if t != nil {
 			obj["link-down-auth"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("mab_entry_as"); ok || d.HasChange("mab_entry_as") {
+		t, err := expandSwitchController8021XSettingsMabEntryAs(d, v, "mab_entry_as")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["mab-entry-as"] = t
 		}
 	}
 

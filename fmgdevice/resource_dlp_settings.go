@@ -60,6 +60,34 @@ func resourceDlpSettings() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"ocr": &schema.Schema{
+				Type:     schema.TypeList,
+				Optional: true,
+				MaxItems: 1,
+				Computed: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"confidence": &schema.Schema{
+							Type:     schema.TypeInt,
+							Optional: true,
+						},
+						"filetype_ignore_list": &schema.Schema{
+							Type:     schema.TypeSet,
+							Elem:     &schema.Schema{Type: schema.TypeString},
+							Optional: true,
+							Computed: true,
+						},
+						"max_file_size": &schema.Schema{
+							Type:     schema.TypeInt,
+							Optional: true,
+						},
+						"scan": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+					},
+				},
+			},
 			"size": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
@@ -204,6 +232,55 @@ func flattenDlpSettingsDbMode(v interface{}, d *schema.ResourceData, pre string)
 	return v
 }
 
+func flattenDlpSettingsOcr(v interface{}, d *schema.ResourceData, pre string) []map[string]interface{} {
+	if v == nil {
+		return nil
+	}
+
+	i := v.(map[string]interface{})
+	result := make(map[string]interface{})
+
+	pre_append := "" // complex
+	pre_append = pre + ".0." + "confidence"
+	if _, ok := i["confidence"]; ok {
+		result["confidence"] = flattenDlpSettingsOcrConfidence(i["confidence"], d, pre_append)
+	}
+
+	pre_append = pre + ".0." + "filetype_ignore_list"
+	if _, ok := i["filetype-ignore-list"]; ok {
+		result["filetype_ignore_list"] = flattenDlpSettingsOcrFiletypeIgnoreList(i["filetype-ignore-list"], d, pre_append)
+	}
+
+	pre_append = pre + ".0." + "max_file_size"
+	if _, ok := i["max-file-size"]; ok {
+		result["max_file_size"] = flattenDlpSettingsOcrMaxFileSize(i["max-file-size"], d, pre_append)
+	}
+
+	pre_append = pre + ".0." + "scan"
+	if _, ok := i["scan"]; ok {
+		result["scan"] = flattenDlpSettingsOcrScan(i["scan"], d, pre_append)
+	}
+
+	lastresult := []map[string]interface{}{result}
+	return lastresult
+}
+
+func flattenDlpSettingsOcrConfidence(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenDlpSettingsOcrFiletypeIgnoreList(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
+func flattenDlpSettingsOcrMaxFileSize(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenDlpSettingsOcrScan(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenDlpSettingsSize(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -255,6 +332,30 @@ func refreshObjectDlpSettings(d *schema.ResourceData, o map[string]interface{}) 
 		}
 	}
 
+	if isImportTable() {
+		if err = d.Set("ocr", flattenDlpSettingsOcr(o["ocr"], d, "ocr")); err != nil {
+			if vv, ok := fortiAPIPatch(o["ocr"], "DlpSettings-Ocr"); ok {
+				if err = d.Set("ocr", vv); err != nil {
+					return fmt.Errorf("Error reading ocr: %v", err)
+				}
+			} else {
+				return fmt.Errorf("Error reading ocr: %v", err)
+			}
+		}
+	} else {
+		if _, ok := d.GetOk("ocr"); ok {
+			if err = d.Set("ocr", flattenDlpSettingsOcr(o["ocr"], d, "ocr")); err != nil {
+				if vv, ok := fortiAPIPatch(o["ocr"], "DlpSettings-Ocr"); ok {
+					if err = d.Set("ocr", vv); err != nil {
+						return fmt.Errorf("Error reading ocr: %v", err)
+					}
+				} else {
+					return fmt.Errorf("Error reading ocr: %v", err)
+				}
+			}
+		}
+	}
+
 	if err = d.Set("size", flattenDlpSettingsSize(o["size"], d, "size")); err != nil {
 		if vv, ok := fortiAPIPatch(o["size"], "DlpSettings-Size"); ok {
 			if err = d.Set("size", vv); err != nil {
@@ -297,6 +398,52 @@ func expandDlpSettingsConfigBuilderTimeout(d *schema.ResourceData, v interface{}
 }
 
 func expandDlpSettingsDbMode(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandDlpSettingsOcr(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	l := v.([]interface{})
+	if len(l) == 0 || l[0] == nil {
+		return nil, nil
+	}
+
+	i := l[0].(map[string]interface{})
+	result := make(map[string]interface{})
+
+	pre_append := "" // complex
+	pre_append = pre + ".0." + "confidence"
+	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+		result["confidence"], _ = expandDlpSettingsOcrConfidence(d, i["confidence"], pre_append)
+	}
+	pre_append = pre + ".0." + "filetype_ignore_list"
+	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+		result["filetype-ignore-list"], _ = expandDlpSettingsOcrFiletypeIgnoreList(d, i["filetype_ignore_list"], pre_append)
+	}
+	pre_append = pre + ".0." + "max_file_size"
+	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+		result["max-file-size"], _ = expandDlpSettingsOcrMaxFileSize(d, i["max_file_size"], pre_append)
+	}
+	pre_append = pre + ".0." + "scan"
+	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+		result["scan"], _ = expandDlpSettingsOcrScan(d, i["scan"], pre_append)
+	}
+
+	return result, nil
+}
+
+func expandDlpSettingsOcrConfidence(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandDlpSettingsOcrFiletypeIgnoreList(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandDlpSettingsOcrMaxFileSize(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandDlpSettingsOcrScan(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -344,6 +491,15 @@ func getObjectDlpSettings(d *schema.ResourceData, bemptysontable bool) (*map[str
 			return &obj, err
 		} else if t != nil {
 			obj["db-mode"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("ocr"); ok || d.HasChange("ocr") {
+		t, err := expandDlpSettingsOcr(d, v, "ocr")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["ocr"] = t
 		}
 	}
 

@@ -42,6 +42,8 @@ The following arguments are supported:
 * `echo_interval` - Time between echo requests sent by the managed WTP, AP, or FortiAP (1 - 255 sec, default = 30).
 * `fake_ap_log` - Time between recording logs about fake APs if periodic fake AP logging is configured (0 - 1440 min, default = 1).
 * `ipsec_intf_cleanup` - Time period to keep IPsec VPN interfaces up after WTP sessions are disconnected (30 - 3600 sec, default = 120).
+* `keep_alive_interval` - Time between data keep alive message sent by the managed WTP, AP, or FortiAP (1 - 255 sec, default = 0 which means the interval is derived from the echo-interval setting).
+* `max_retransmit_interval` - Maximal time to retransmit a control packet by the managed WTP, AP, or FortiAP (2 - 255 sec, default = 0 which means the interval is derived from the echo-interval setting).
 * `nat_session_keep_alive` - Maximal time in seconds between control requests sent by the managed WTP, AP, or FortiAP (0 - 255 sec, default = 0).
 * `radio_stats_interval` - Time between running radio reports (1 - 255 sec, default = 15).
 * `rogue_ap_cleanup` - Time period in minutes to keep rogue AP after it is gone (default = 0).

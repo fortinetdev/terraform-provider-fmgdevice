@@ -53,6 +53,7 @@ The following arguments are supported:
 * `tod_hour` - Hour of the day on which to scan the server (0 - 23, default = 1).
 * `tod_min` - Minute of the hour on which to scan the server (0 - 59).
 * `username` - User name required to log into the file server.
+* `uuid` - Universally Unique Identifier (UUID; automatically assigned but can be manually reset).
 * `vdom` - Select the VDOM that can communicate with the file server. Valid values: `mgmt`, `current`.
 
 * `weekday` - Day of the week on which to scan the server. Valid values: `sunday`, `monday`, `tuesday`, `wednesday`, `thursday`, `friday`, `saturday`.

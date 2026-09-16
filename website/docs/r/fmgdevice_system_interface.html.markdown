@@ -58,6 +58,8 @@ The following arguments are supported:
 
 * `ap_discover` - Enable/disable automatic registration of unknown FortiAP devices. Valid values: `disable`, `enable`.
 
+* `arp_egress_cos` - CoS in VLAN tag for outgoing ARP packets. Valid values: `cos0`, `cos1`, `cos2`, `cos3`, `cos4`, `cos5`, `cos6`, `cos7`.
+
 * `arpforward` - Enable/disable ARP forwarding. Valid values: `disable`, `enable`.
 
 * `atm_protocol` - ATM protocol. Valid values: `none`, `ipoa`.
@@ -100,6 +102,8 @@ The following arguments are supported:
 * `dhcp_classless_route_addition` - Enable/disable addition of classless static routes retrieved from DHCP server. Valid values: `disable`, `enable`.
 
 * `dhcp_client_identifier` - DHCP client identifier.
+* `dhcp_egress_cos` - CoS in VLAN tag for outgoing DHCP packets. Valid values: `cos0`, `cos1`, `cos2`, `cos3`, `cos4`, `cos5`, `cos6`, `cos7`.
+
 * `dhcp_relay_agent_option` - Enable/disable DHCP relay agent option. Valid values: `disable`, `enable`.
 
 * `dhcp_relay_allow_no_end_option` - Enable/disable relaying DHCP messages with no end option. Valid values: `disable`, `enable`.
@@ -189,6 +193,8 @@ The following arguments are supported:
 * `idle_timeout` - PPPoE auto disconnect after idle timeout seconds, 0 means no timeout.
 * `ike_saml_server` - Configure IKE authentication SAML server.
 * `inbandwidth` - Bandwidth limit for incoming traffic (0 - 80000000 kbps), 0 means unlimited.
+* `inbandwidth_source` - Determine which inbandwidth values to use for setting shaper. Valid values: `default`, `measured`.
+
 * `ingress_cos` - Override incoming CoS in user VLAN tag on VLAN interface or assign a priority VLAN tag on physical interface. Valid values: `disable`, `cos0`, `cos1`, `cos2`, `cos3`, `cos4`, `cos5`, `cos6`, `cos7`.
 
 * `ingress_shaping_profile` - Incoming traffic shaping profile.
@@ -199,6 +205,8 @@ The following arguments are supported:
 * `internal` - Implicitly created.
 * `ip` - Interface IPv4 address and subnet mask, syntax: X.X.X.X/24.
 * `ip_managed_by_fortiipam` - Enable/disable automatic IP address assignment of this interface by FortiIPAM. Valid values: `disable`, `enable`, `inherit-global`.
+
+* `ipam_conflicts` - Configure behavior for this interface on how to handle IPAM conflict detections. Valid values: `disable`, `enable`.
 
 * `ipmac` - Enable/disable IP/MAC binding. Valid values: `disable`, `enable`.
 
@@ -268,6 +276,8 @@ The following arguments are supported:
 * `netflow_sampler_id` - Netflow sampler ID.
 * `np_qos_profile` - NP QoS profile ID.
 * `outbandwidth` - Bandwidth limit for outgoing traffic (0 - 80000000 kbps).
+* `outbandwidth_source` - Determine which outbandwidth values to use for setting shaper. Valid values: `default`, `measured`.
+
 * `padt_retry_timeout` - PPPoE Active Discovery Terminate (PADT) used to terminate sessions after an idle time.
 * `password` - PPPoE account's password.
 * `phy_mode` - DSL physical mode. Valid values: `auto`, `adsl`, `vdsl`, `adsl-auto`, `vdsl2`, `adsl2+`, `adsl2`, `g.dmt`, `g-dmt`, `t1.413`, `t1-413`, `g.lite`, `g-lite`.
@@ -398,6 +408,7 @@ The following arguments are supported:
 * `switch_controller_dynamic` - Integrated FortiLink settings for managed FortiSwitch.
 * `switch_controller_feature` - Interface's purpose when assigning traffic (read only). Valid values: `none`, `default-vlan`, `quarantine`, `sniffer`, `voice`, `camera`, `rspan`, `video`, `nac`, `nac-segment`.
 
+* `switch_controller_fortilink_settings` - Integrated FortiLink settings for managed FortiSwitch.
 * `switch_controller_igmp_snooping` - Switch controller IGMP snooping. Valid values: `disable`, `enable`.
 
 * `switch_controller_igmp_snooping_fast_leave` - Switch controller IGMP snooping fast-leave. Valid values: `disable`, `enable`.
@@ -438,6 +449,7 @@ The following arguments are supported:
 * `trust_ip6_1` - Trusted IPv6 host for dedicated management traffic (::/0 for all hosts).
 * `trust_ip6_2` - Trusted IPv6 host for dedicated management traffic (::/0 for all hosts).
 * `trust_ip6_3` - Trusted IPv6 host for dedicated management traffic (::/0 for all hosts).
+* `tx_queue_len` - TX queue length.
 * `type` - Interface type. Valid values: `physical`, `vlan`, `aggregate`, `redundant`, `tunnel`, `wireless`, `vdom-link`, `loopback`, `switch`, `hard-switch`, `hdlc`, `vap-switch`, `wl-mesh`, `fortilink`, `switch-vlan`, `fctrl-trunk`, `tdm`, `fext-wan`, `vxlan`, `emac-vlan`, `geneve`, `ssl`, `lan-extension`.
 
 * `username` - Username of the PPPoE account, provided by your ISP.
@@ -536,6 +548,8 @@ The `ipv6` block supports:
 * `client_options` - Client-Options. The structure of `client_options` block is documented below.
 * `dhcp6_client_options` - Dhcp6-Client-Options. Valid values: `rapid`, `iapd`, `iana`, `dns`, `dnsname`.
 
+* `dhcp6_egress_cos` - CoS in VLAN tag for outgoing DHCPv6 packets. Valid values: `cos0`, `cos1`, `cos2`, `cos3`, `cos4`, `cos5`, `cos6`, `cos7`.
+
 * `dhcp6_iapd_list` - Dhcp6-Iapd-List. The structure of `dhcp6_iapd_list` block is documented below.
 * `dhcp6_information_request` - Enable/disable DHCPv6 information request. Valid values: `disable`, `enable`.
 
@@ -569,10 +583,12 @@ The `ipv6` block supports:
 * `ip6_dnssl_list` - Ip6-Dnssl-List. The structure of `ip6_dnssl_list` block is documented below.
 * `ip6_extra_addr` - Ip6-Extra-Addr. The structure of `ip6_extra_addr` block is documented below.
 * `ip6_hop_limit` - Hop limit (0 means unspecified).
+* `ip6_link_local` - IPv6 link-local address of interface.
 * `ip6_link_mtu` - IPv6 link MTU.
 * `ip6_manage_flag` - Enable/disable the managed flag. Valid values: `disable`, `enable`.
 
 * `ip6_max_interval` - IPv6 maximum interval (4 to 1800 sec).
+* `ip6_mgmt_address` - High Availability in-band management IPv6 address of this interface and should be in the same subnet with primary IPv6 address
 * `ip6_min_interval` - IPv6 minimum interval (3 to 1350 sec).
 * `ip6_mode` - Addressing mode (static, DHCP, delegated). Valid values: `static`, `dhcp`, `pppoe`, `delegated`.
 
@@ -713,9 +729,12 @@ The `mirroring_filter` block supports:
 * `dbg_dump` - Debug mirroring filter, driver dump data/mask pdq.
 * `filter_dport` - Destinatin port of mirroring filter.
 * `filter_dstip` - Destinatin IP and mask of mirroring filter.
+* `filter_dstip6` - Destinatin IP and mask of mirroring filter.
+* `filter_ethtype` - Ethtype of mirroring filter.
 * `filter_protocol` - Protocol of mirroring filter.
 * `filter_sport` - Source port of mirroring filter.
 * `filter_srcip` - Source IP and mask of mirroring filter.
+* `filter_srcip6` - Source IP and mask of mirroring filter.
 
 The `phy_setting` block supports:
 

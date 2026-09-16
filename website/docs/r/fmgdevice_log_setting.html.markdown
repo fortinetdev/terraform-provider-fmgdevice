@@ -37,6 +37,8 @@ The following arguments are supported:
 * `custom_log_fields` - Custom fields to append to all log messages.
 * `daemon_log` - Enable/disable daemon logging. Valid values: `disable`, `enable`.
 
+* `detailed_svc_name` - Enable/disable logging of the specific service name or the top-most service group name. Valid values: `disable`, `enable`.
+
 * `expolicy_implicit_log` - Enable/disable explicit proxy firewall implicit policy logging. Valid values: `disable`, `enable`.
 
 * `extended_log` - Enable/disable extended traffic logging. Valid values: `disable`, `enable`.
@@ -86,6 +88,8 @@ The following arguments are supported:
 * `rest_api_set` - Enable/disable REST API POST/PUT/DELETE request logging. Valid values: `disable`, `enable`.
 
 * `syslog_override` - Enable/disable override Syslog settings. Valid values: `disable`, `enable`.
+
+* `tacacs_accounting_server_alternate` - Enable/disable TACACS Acounting Server alternating. Valid values: `disable`, `enable`.
 
 * `user_anonymize` - Enable/disable anonymizing user names in log messages. Valid values: `disable`, `enable`.
 

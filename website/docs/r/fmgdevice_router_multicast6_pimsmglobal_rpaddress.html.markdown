@@ -32,6 +32,7 @@ The following arguments are supported:
 * `device_name` - FortiManager managed device name. This variable is used in the request URL. If not specified, it will inherit the variable `device_name` of the provider.
 * `device_vdom` - FortiManager managed device vdom. This variable is used in the request URL. If not specified, it will inherit the variable `device_vdom` of the provider.
 
+* `group` - Groups to use this RP.
 * `fosid` - ID of the entry.
 * `ip6_address` - RP router IPv6 address.
 

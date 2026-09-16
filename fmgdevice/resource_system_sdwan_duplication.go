@@ -74,6 +74,12 @@ func resourceSystemSdwanDuplication() *schema.Resource {
 				ForceNew: true,
 				Optional: true,
 			},
+			"members": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Computed: true,
+			},
 			"packet_de_duplication": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -118,6 +124,14 @@ func resourceSystemSdwanDuplication() *schema.Resource {
 				Elem:     &schema.Schema{Type: schema.TypeString},
 				Optional: true,
 				Computed: true,
+			},
+			"tos": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"tos_mask": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
 			},
 		},
 	}
@@ -331,6 +345,10 @@ func flattenSystemSdwanDuplicationId2edl(v interface{}, d *schema.ResourceData, 
 	return v
 }
 
+func flattenSystemSdwanDuplicationMembers2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
 func flattenSystemSdwanDuplicationPacketDeDuplication2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -361,6 +379,14 @@ func flattenSystemSdwanDuplicationSrcaddr62edl(v interface{}, d *schema.Resource
 
 func flattenSystemSdwanDuplicationSrcintf2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return flattenStringList(v)
+}
+
+func flattenSystemSdwanDuplicationTos2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemSdwanDuplicationTosMask2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
 }
 
 func refreshObjectSystemSdwanDuplication(d *schema.ResourceData, o map[string]interface{}) error {
@@ -403,6 +429,16 @@ func refreshObjectSystemSdwanDuplication(d *schema.ResourceData, o map[string]in
 			}
 		} else {
 			return fmt.Errorf("Error reading fosid: %v", err)
+		}
+	}
+
+	if err = d.Set("members", flattenSystemSdwanDuplicationMembers2edl(o["members"], d, "members")); err != nil {
+		if vv, ok := fortiAPIPatch(o["members"], "SystemSdwanDuplication-Members"); ok {
+			if err = d.Set("members", vv); err != nil {
+				return fmt.Errorf("Error reading members: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading members: %v", err)
 		}
 	}
 
@@ -486,6 +522,26 @@ func refreshObjectSystemSdwanDuplication(d *schema.ResourceData, o map[string]in
 		}
 	}
 
+	if err = d.Set("tos", flattenSystemSdwanDuplicationTos2edl(o["tos"], d, "tos")); err != nil {
+		if vv, ok := fortiAPIPatch(o["tos"], "SystemSdwanDuplication-Tos"); ok {
+			if err = d.Set("tos", vv); err != nil {
+				return fmt.Errorf("Error reading tos: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading tos: %v", err)
+		}
+	}
+
+	if err = d.Set("tos_mask", flattenSystemSdwanDuplicationTosMask2edl(o["tos-mask"], d, "tos_mask")); err != nil {
+		if vv, ok := fortiAPIPatch(o["tos-mask"], "SystemSdwanDuplication-TosMask"); ok {
+			if err = d.Set("tos_mask", vv); err != nil {
+				return fmt.Errorf("Error reading tos_mask: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading tos_mask: %v", err)
+		}
+	}
+
 	return nil
 }
 
@@ -509,6 +565,10 @@ func expandSystemSdwanDuplicationDstintf2edl(d *schema.ResourceData, v interface
 
 func expandSystemSdwanDuplicationId2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
+}
+
+func expandSystemSdwanDuplicationMembers2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
 }
 
 func expandSystemSdwanDuplicationPacketDeDuplication2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
@@ -541,6 +601,14 @@ func expandSystemSdwanDuplicationSrcaddr62edl(d *schema.ResourceData, v interfac
 
 func expandSystemSdwanDuplicationSrcintf2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandSystemSdwanDuplicationTos2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemSdwanDuplicationTosMask2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
 }
 
 func getObjectSystemSdwanDuplication(d *schema.ResourceData) (*map[string]interface{}, error) {
@@ -579,6 +647,15 @@ func getObjectSystemSdwanDuplication(d *schema.ResourceData) (*map[string]interf
 			return &obj, err
 		} else if t != nil {
 			obj["id"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("members"); ok || d.HasChange("members") {
+		t, err := expandSystemSdwanDuplicationMembers2edl(d, v, "members")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["members"] = t
 		}
 	}
 
@@ -651,6 +728,24 @@ func getObjectSystemSdwanDuplication(d *schema.ResourceData) (*map[string]interf
 			return &obj, err
 		} else if t != nil {
 			obj["srcintf"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("tos"); ok || d.HasChange("tos") {
+		t, err := expandSystemSdwanDuplicationTos2edl(d, v, "tos")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["tos"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("tos_mask"); ok || d.HasChange("tos_mask") {
+		t, err := expandSystemSdwanDuplicationTosMask2edl(d, v, "tos_mask")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["tos-mask"] = t
 		}
 	}
 

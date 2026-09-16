@@ -61,6 +61,13 @@ The following arguments are supported:
 * `fwgrp` - Administrator access to the Firewall configuration. Valid values: `none`, `read`, `read-write`, `custom`.
 
 * `fwgrp_permission` - Fwgrp-Permission. The structure of `fwgrp_permission` block is documented below.
+* `gui_ai_assistant` - Enable/disable permission to use AI assistant. Valid values: `disable`, `enable`.
+
+* `gui_custom_theme` - Custom theme that overrides the default FortiGate theme.
+* `gui_theme` - Predefined theme that overrides the default FortiGate theme. Valid values: `melongene`, `mariner`, `neutrino`, `jade`, `graphite`, `dark-matter`, `onyx`, `eclipse`, `retro`, `jet-stream`, `security-fabric`, `none`.
+
+* `gui_theme_type` - Use predefined themes or custom themes. Valid values: `predefined`, `custom`.
+
 * `loggrp` - Administrator access to Logging and Reporting including viewing log messages. Valid values: `none`, `read`, `read-write`, `custom`.
 
 * `loggrp_permission` - Loggrp-Permission. The structure of `loggrp_permission` block is documented below.

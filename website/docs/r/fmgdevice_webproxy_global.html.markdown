@@ -69,6 +69,8 @@ The following arguments are supported:
 
 * `src_affinity_exempt_addr` - IPv4 source addresses to exempt proxy affinity.
 * `src_affinity_exempt_addr6` - IPv6 source addresses to exempt proxy affinity.
+* `ssl_bypass_cache` - Enable/disable SSL bypass cache. Valid values: `disable`, `enable`.
+
 * `ssl_ca_cert` - SSL CA certificate for SSL interception.
 * `ssl_cert` - SSL certificate for SSL interception.
 * `strict_web_check` - Enable/disable strict web checking to block web sites that send incorrect headers that don't conform to HTTP 1.1. Valid values: `disable`, `enable`.

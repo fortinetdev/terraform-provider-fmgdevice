@@ -174,14 +174,21 @@ func resourceLogSyslogd2OverrideSettingLogTemplatesUpdate(d *schema.ResourceData
 
 	wsParams["adom"] = adomv
 
-	_, err = c.UpdateLogSyslogd2OverrideSettingLogTemplates(obj, mkey, paradict, wsParams)
+	v, err := c.UpdateLogSyslogd2OverrideSettingLogTemplates(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating LogSyslogd2OverrideSettingLogTemplates resource: %v", err)
 	}
 
 	log.Printf(strconv.Itoa(c.Retries))
 
-	d.SetId(strconv.Itoa(getIntKey(d, "fosid")))
+	if v != nil && v["id"] != nil {
+		if vidn, ok := v["id"].(float64); ok {
+			d.SetId(strconv.Itoa(int(vidn)))
+			return resourceLogSyslogd2OverrideSettingLogTemplatesRead(d, m)
+		} else {
+			return fmt.Errorf("Error updating LogSyslogd2OverrideSettingLogTemplates resource: %v", err)
+		}
+	}
 
 	return resourceLogSyslogd2OverrideSettingLogTemplatesRead(d, m)
 }

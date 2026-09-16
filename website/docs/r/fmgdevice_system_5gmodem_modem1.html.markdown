@@ -42,6 +42,10 @@ The following arguments are supported:
 
 * `default_netmask` - Modem interface default netmask. Valid values: `auto`, `custom`.
 
+* `gps_antenna_type` - GPS antenna type used on the GNSS port (default = passive). Valid values: `active`, `passive`.
+
+* `esim` - enable/disable eSIM on SLOT-2. Valid values: `disable`, `enable`.
+
 * `gps_service` - Enable/disable Modem online mode. Valid values: `disable`, `enable`.
 
 * `intferface` - Modem interface.

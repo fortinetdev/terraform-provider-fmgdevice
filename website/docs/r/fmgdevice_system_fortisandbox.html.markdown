@@ -32,6 +32,10 @@ The following arguments are supported:
 * `ca` - The CA that signs remote FortiSandbox certificate, empty for no check.
 * `certificate_verification` - Enable/disable identity verification of FortiSandbox by use of certificate. Valid values: `disable`, `enable`.
 
+* `cn_list` - The CN list of remote server certificate, case sensitive, empty for no check.
+* `default` - Set as default FortiSandbox. Valid values: `enable`.
+
+* `device` - Device Name.
 * `cn` - The CN of remote server certificate, case sensitive, empty for no check.
 * `email` - Notifier email address.
 * `enc_algorithm` - Configure the level of SSL protection for secure communication with FortiSandbox. Valid values: `default`, `high`, `low`, `disable`.

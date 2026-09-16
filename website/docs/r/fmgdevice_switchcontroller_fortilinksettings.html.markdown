@@ -48,6 +48,7 @@ The following arguments are supported:
 
 * `access_vlan_mode` - Intra VLAN traffic behavior with loss of connection to the FortiGate. Valid values: `legacy`, `fail-open`, `fail-close`.
 
+* `admin_policy` - FortiSwitch's admin security-policy applied to all switch on this Fortilink interface.
 * `fortilink` - FortiLink interface to which this fortilink-setting belongs.
 * `inactive_timer` - Time interval(minutes) to be included in the inactive devices expiry calculation (mac age-out + inactive-time + periodic scan interval).
 * `link_down_flush` - Clear NAC and dynamic devices on switch ports on link down event. Valid values: `disable`, `enable`.

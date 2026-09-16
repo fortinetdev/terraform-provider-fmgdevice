@@ -164,6 +164,18 @@ func resourceUserLdap() *schema.Resource {
 							Type:     schema.TypeString,
 							Optional: true,
 						},
+						"fabric_force_sync": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"fabric_object": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"fabric_object_source": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
 						"filter": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
@@ -323,6 +335,11 @@ func resourceUserLdap() *schema.Resource {
 							Type:     schema.TypeString,
 							Optional: true,
 						},
+						"uuid": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+							Computed: true,
+						},
 						"validate_server_certificate": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
@@ -333,6 +350,18 @@ func resourceUserLdap() *schema.Resource {
 						},
 					},
 				},
+			},
+			"fabric_force_sync": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"fabric_object": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"fabric_object_source": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
 			},
 			"group_filter": &schema.Schema{
 				Type:     schema.TypeString,
@@ -489,6 +518,11 @@ func resourceUserLdap() *schema.Resource {
 			"username": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+			},
+			"uuid": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
 			},
 			"account_key_upn_san": &schema.Schema{
 				Type:     schema.TypeString,
@@ -839,6 +873,24 @@ func flattenUserLdapDynamicMapping(v interface{}, d *schema.ResourceData, pre st
 			tmp["dn"] = fortiAPISubPartPatch(v, "UserLdap-DynamicMapping-Dn")
 		}
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "fabric_force_sync"
+		if _, ok := i["fabric-force-sync"]; ok {
+			v := flattenUserLdapDynamicMappingFabricForceSync(i["fabric-force-sync"], d, pre_append)
+			tmp["fabric_force_sync"] = fortiAPISubPartPatch(v, "UserLdap-DynamicMapping-FabricForceSync")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "fabric_object"
+		if _, ok := i["fabric-object"]; ok {
+			v := flattenUserLdapDynamicMappingFabricObject(i["fabric-object"], d, pre_append)
+			tmp["fabric_object"] = fortiAPISubPartPatch(v, "UserLdap-DynamicMapping-FabricObject")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "fabric_object_source"
+		if _, ok := i["fabric-object-source"]; ok {
+			v := flattenUserLdapDynamicMappingFabricObjectSource(i["fabric-object-source"], d, pre_append)
+			tmp["fabric_object_source"] = fortiAPISubPartPatch(v, "UserLdap-DynamicMapping-FabricObjectSource")
+		}
+
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "filter"
 		if _, ok := i["filter"]; ok {
 			v := flattenUserLdapDynamicMappingFilter(i["filter"], d, pre_append)
@@ -1055,6 +1107,12 @@ func flattenUserLdapDynamicMapping(v interface{}, d *schema.ResourceData, pre st
 			tmp["username"] = fortiAPISubPartPatch(v, "UserLdap-DynamicMapping-Username")
 		}
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "uuid"
+		if _, ok := i["uuid"]; ok {
+			v := flattenUserLdapDynamicMappingUuid(i["uuid"], d, pre_append)
+			tmp["uuid"] = fortiAPISubPartPatch(v, "UserLdap-DynamicMapping-Uuid")
+		}
+
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "validate_server_certificate"
 		if _, ok := i["validate-server-certificate"]; ok {
 			v := flattenUserLdapDynamicMappingValidateServerCertificate(i["validate-server-certificate"], d, pre_append)
@@ -1167,6 +1225,18 @@ func flattenUserLdapDynamicMappingCnid(v interface{}, d *schema.ResourceData, pr
 }
 
 func flattenUserLdapDynamicMappingDn(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenUserLdapDynamicMappingFabricForceSync(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenUserLdapDynamicMappingFabricObject(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenUserLdapDynamicMappingFabricObjectSource(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -1314,11 +1384,27 @@ func flattenUserLdapDynamicMappingUsername(v interface{}, d *schema.ResourceData
 	return v
 }
 
+func flattenUserLdapDynamicMappingUuid(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenUserLdapDynamicMappingValidateServerCertificate(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
 func flattenUserLdapDynamicMappingVrfSelect(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenUserLdapFabricForceSync(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenUserLdapFabricObject(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenUserLdapFabricObjectSource(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -1443,6 +1529,10 @@ func flattenUserLdapUserInfoExchangeServer(v interface{}, d *schema.ResourceData
 }
 
 func flattenUserLdapUsername(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenUserLdapUuid(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -1584,6 +1674,36 @@ func refreshObjectUserLdap(d *schema.ResourceData, o map[string]interface{}) err
 					return fmt.Errorf("Error reading dynamic_mapping: %v", err)
 				}
 			}
+		}
+	}
+
+	if err = d.Set("fabric_force_sync", flattenUserLdapFabricForceSync(o["fabric-force-sync"], d, "fabric_force_sync")); err != nil {
+		if vv, ok := fortiAPIPatch(o["fabric-force-sync"], "UserLdap-FabricForceSync"); ok {
+			if err = d.Set("fabric_force_sync", vv); err != nil {
+				return fmt.Errorf("Error reading fabric_force_sync: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading fabric_force_sync: %v", err)
+		}
+	}
+
+	if err = d.Set("fabric_object", flattenUserLdapFabricObject(o["fabric-object"], d, "fabric_object")); err != nil {
+		if vv, ok := fortiAPIPatch(o["fabric-object"], "UserLdap-FabricObject"); ok {
+			if err = d.Set("fabric_object", vv); err != nil {
+				return fmt.Errorf("Error reading fabric_object: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading fabric_object: %v", err)
+		}
+	}
+
+	if err = d.Set("fabric_object_source", flattenUserLdapFabricObjectSource(o["fabric-object-source"], d, "fabric_object_source")); err != nil {
+		if vv, ok := fortiAPIPatch(o["fabric-object-source"], "UserLdap-FabricObjectSource"); ok {
+			if err = d.Set("fabric_object_source", vv); err != nil {
+				return fmt.Errorf("Error reading fabric_object_source: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading fabric_object_source: %v", err)
 		}
 	}
 
@@ -1897,6 +2017,16 @@ func refreshObjectUserLdap(d *schema.ResourceData, o map[string]interface{}) err
 		}
 	}
 
+	if err = d.Set("uuid", flattenUserLdapUuid(o["uuid"], d, "uuid")); err != nil {
+		if vv, ok := fortiAPIPatch(o["uuid"], "UserLdap-Uuid"); ok {
+			if err = d.Set("uuid", vv); err != nil {
+				return fmt.Errorf("Error reading uuid: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading uuid: %v", err)
+		}
+	}
+
 	if err = d.Set("account_key_upn_san", flattenUserLdapAccountKeyUpnSan(o["account-key-upn-san"], d, "account_key_upn_san")); err != nil {
 		if vv, ok := fortiAPIPatch(o["account-key-upn-san"], "UserLdap-AccountKeyUpnSan"); ok {
 			if err = d.Set("account_key_upn_san", vv); err != nil {
@@ -2069,6 +2199,21 @@ func expandUserLdapDynamicMapping(d *schema.ResourceData, v interface{}, pre str
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "dn"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
 			tmp["dn"], _ = expandUserLdapDynamicMappingDn(d, i["dn"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "fabric_force_sync"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["fabric-force-sync"], _ = expandUserLdapDynamicMappingFabricForceSync(d, i["fabric_force_sync"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "fabric_object"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["fabric-object"], _ = expandUserLdapDynamicMappingFabricObject(d, i["fabric_object"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "fabric_object_source"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["fabric-object-source"], _ = expandUserLdapDynamicMappingFabricObjectSource(d, i["fabric_object_source"], pre_append)
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "filter"
@@ -2256,6 +2401,11 @@ func expandUserLdapDynamicMapping(d *schema.ResourceData, v interface{}, pre str
 			tmp["username"], _ = expandUserLdapDynamicMappingUsername(d, i["username"], pre_append)
 		}
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "uuid"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["uuid"], _ = expandUserLdapDynamicMappingUuid(d, i["uuid"], pre_append)
+		}
+
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "validate_server_certificate"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
 			tmp["validate-server-certificate"], _ = expandUserLdapDynamicMappingValidateServerCertificate(d, i["validate_server_certificate"], pre_append)
@@ -2359,6 +2509,18 @@ func expandUserLdapDynamicMappingCnid(d *schema.ResourceData, v interface{}, pre
 }
 
 func expandUserLdapDynamicMappingDn(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandUserLdapDynamicMappingFabricForceSync(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandUserLdapDynamicMappingFabricObject(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandUserLdapDynamicMappingFabricObjectSource(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -2510,11 +2672,27 @@ func expandUserLdapDynamicMappingUsername(d *schema.ResourceData, v interface{},
 	return v, nil
 }
 
+func expandUserLdapDynamicMappingUuid(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandUserLdapDynamicMappingValidateServerCertificate(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
 func expandUserLdapDynamicMappingVrfSelect(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandUserLdapFabricForceSync(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandUserLdapFabricObject(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandUserLdapFabricObjectSource(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -2646,6 +2824,10 @@ func expandUserLdapUsername(d *schema.ResourceData, v interface{}, pre string) (
 	return v, nil
 }
 
+func expandUserLdapUuid(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandUserLdapAccountKeyUpnSan(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -2756,6 +2938,33 @@ func getObjectUserLdap(d *schema.ResourceData) (*map[string]interface{}, error) 
 			return &obj, err
 		} else if t != nil {
 			obj["dynamic_mapping"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("fabric_force_sync"); ok || d.HasChange("fabric_force_sync") {
+		t, err := expandUserLdapFabricForceSync(d, v, "fabric_force_sync")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["fabric-force-sync"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("fabric_object"); ok || d.HasChange("fabric_object") {
+		t, err := expandUserLdapFabricObject(d, v, "fabric_object")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["fabric-object"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("fabric_object_source"); ok || d.HasChange("fabric_object_source") {
+		t, err := expandUserLdapFabricObjectSource(d, v, "fabric_object_source")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["fabric-object-source"] = t
 		}
 	}
 
@@ -3044,6 +3253,15 @@ func getObjectUserLdap(d *schema.ResourceData) (*map[string]interface{}, error) 
 			return &obj, err
 		} else if t != nil {
 			obj["username"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("uuid"); ok || d.HasChange("uuid") {
+		t, err := expandUserLdapUuid(d, v, "uuid")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["uuid"] = t
 		}
 	}
 

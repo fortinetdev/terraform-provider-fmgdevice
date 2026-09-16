@@ -51,6 +51,10 @@ func resourceSwitchControllerSecurityPolicy8021X() *schema.Resource {
 				Computed: true,
 				ForceNew: true,
 			},
+			"allow_mac_move": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 			"auth_fail_vlan": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -95,6 +99,10 @@ func resourceSwitchControllerSecurityPolicy8021X() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"client_limit": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+			},
 			"dacl": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -104,6 +112,10 @@ func resourceSwitchControllerSecurityPolicy8021X() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+			},
+			"eap_egress_tagged": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
 			},
 			"eap_passthru": &schema.Schema{
 				Type:     schema.TypeString,
@@ -363,6 +375,10 @@ func resourceSwitchControllerSecurityPolicy8021XRead(d *schema.ResourceData, m i
 	return nil
 }
 
+func flattenSwitchControllerSecurityPolicy8021XAllowMacMove(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenSwitchControllerSecurityPolicy8021XAuthFailVlan(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -399,11 +415,19 @@ func flattenSwitchControllerSecurityPolicy8021XAuthserverTimeoutVlanid(v interfa
 	return flattenStringList(v)
 }
 
+func flattenSwitchControllerSecurityPolicy8021XClientLimit(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenSwitchControllerSecurityPolicy8021XDacl(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
 func flattenSwitchControllerSecurityPolicy8021XEapAutoUntaggedVlans(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSwitchControllerSecurityPolicy8021XEapEgressTagged(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -457,6 +481,16 @@ func flattenSwitchControllerSecurityPolicy8021XUserGroup(v interface{}, d *schem
 
 func refreshObjectSwitchControllerSecurityPolicy8021X(d *schema.ResourceData, o map[string]interface{}) error {
 	var err error
+
+	if err = d.Set("allow_mac_move", flattenSwitchControllerSecurityPolicy8021XAllowMacMove(o["allow-mac-move"], d, "allow_mac_move")); err != nil {
+		if vv, ok := fortiAPIPatch(o["allow-mac-move"], "SwitchControllerSecurityPolicy8021X-AllowMacMove"); ok {
+			if err = d.Set("allow_mac_move", vv); err != nil {
+				return fmt.Errorf("Error reading allow_mac_move: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading allow_mac_move: %v", err)
+		}
+	}
 
 	if err = d.Set("auth_fail_vlan", flattenSwitchControllerSecurityPolicy8021XAuthFailVlan(o["auth-fail-vlan"], d, "auth_fail_vlan")); err != nil {
 		if vv, ok := fortiAPIPatch(o["auth-fail-vlan"], "SwitchControllerSecurityPolicy8021X-AuthFailVlan"); ok {
@@ -548,6 +582,16 @@ func refreshObjectSwitchControllerSecurityPolicy8021X(d *schema.ResourceData, o 
 		}
 	}
 
+	if err = d.Set("client_limit", flattenSwitchControllerSecurityPolicy8021XClientLimit(o["client-limit"], d, "client_limit")); err != nil {
+		if vv, ok := fortiAPIPatch(o["client-limit"], "SwitchControllerSecurityPolicy8021X-ClientLimit"); ok {
+			if err = d.Set("client_limit", vv); err != nil {
+				return fmt.Errorf("Error reading client_limit: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading client_limit: %v", err)
+		}
+	}
+
 	if err = d.Set("dacl", flattenSwitchControllerSecurityPolicy8021XDacl(o["dacl"], d, "dacl")); err != nil {
 		if vv, ok := fortiAPIPatch(o["dacl"], "SwitchControllerSecurityPolicy8021X-Dacl"); ok {
 			if err = d.Set("dacl", vv); err != nil {
@@ -565,6 +609,16 @@ func refreshObjectSwitchControllerSecurityPolicy8021X(d *schema.ResourceData, o 
 			}
 		} else {
 			return fmt.Errorf("Error reading eap_auto_untagged_vlans: %v", err)
+		}
+	}
+
+	if err = d.Set("eap_egress_tagged", flattenSwitchControllerSecurityPolicy8021XEapEgressTagged(o["eap-egress-tagged"], d, "eap_egress_tagged")); err != nil {
+		if vv, ok := fortiAPIPatch(o["eap-egress-tagged"], "SwitchControllerSecurityPolicy8021X-EapEgressTagged"); ok {
+			if err = d.Set("eap_egress_tagged", vv); err != nil {
+				return fmt.Errorf("Error reading eap_egress_tagged: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading eap_egress_tagged: %v", err)
 		}
 	}
 
@@ -697,6 +751,10 @@ func flattenSwitchControllerSecurityPolicy8021XFortiTestDebug(d *schema.Resource
 	log.Printf("ER List: %v", e)
 }
 
+func expandSwitchControllerSecurityPolicy8021XAllowMacMove(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandSwitchControllerSecurityPolicy8021XAuthFailVlan(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -733,11 +791,19 @@ func expandSwitchControllerSecurityPolicy8021XAuthserverTimeoutVlanid(d *schema.
 	return expandStringList(v.(*schema.Set).List()), nil
 }
 
+func expandSwitchControllerSecurityPolicy8021XClientLimit(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandSwitchControllerSecurityPolicy8021XDacl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
 func expandSwitchControllerSecurityPolicy8021XEapAutoUntaggedVlans(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSwitchControllerSecurityPolicy8021XEapEgressTagged(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -791,6 +857,15 @@ func expandSwitchControllerSecurityPolicy8021XUserGroup(d *schema.ResourceData, 
 
 func getObjectSwitchControllerSecurityPolicy8021X(d *schema.ResourceData) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
+
+	if v, ok := d.GetOk("allow_mac_move"); ok || d.HasChange("allow_mac_move") {
+		t, err := expandSwitchControllerSecurityPolicy8021XAllowMacMove(d, v, "allow_mac_move")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["allow-mac-move"] = t
+		}
+	}
 
 	if v, ok := d.GetOk("auth_fail_vlan"); ok || d.HasChange("auth_fail_vlan") {
 		t, err := expandSwitchControllerSecurityPolicy8021XAuthFailVlan(d, v, "auth_fail_vlan")
@@ -873,6 +948,15 @@ func getObjectSwitchControllerSecurityPolicy8021X(d *schema.ResourceData) (*map[
 		}
 	}
 
+	if v, ok := d.GetOk("client_limit"); ok || d.HasChange("client_limit") {
+		t, err := expandSwitchControllerSecurityPolicy8021XClientLimit(d, v, "client_limit")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["client-limit"] = t
+		}
+	}
+
 	if v, ok := d.GetOk("dacl"); ok || d.HasChange("dacl") {
 		t, err := expandSwitchControllerSecurityPolicy8021XDacl(d, v, "dacl")
 		if err != nil {
@@ -888,6 +972,15 @@ func getObjectSwitchControllerSecurityPolicy8021X(d *schema.ResourceData) (*map[
 			return &obj, err
 		} else if t != nil {
 			obj["eap-auto-untagged-vlans"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("eap_egress_tagged"); ok || d.HasChange("eap_egress_tagged") {
+		t, err := expandSwitchControllerSecurityPolicy8021XEapEgressTagged(d, v, "eap_egress_tagged")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["eap-egress-tagged"] = t
 		}
 	}
 

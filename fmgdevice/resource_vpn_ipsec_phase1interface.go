@@ -469,6 +469,10 @@ func resourceVpnIpsecPhase1Interface() *schema.Resource {
 				Type:     schema.TypeInt,
 				Optional: true,
 			},
+			"fec_separate_redundant_tunnel": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 			"fgsp_sync": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -793,6 +797,10 @@ func resourceVpnIpsecPhase1Interface() *schema.Resource {
 				Type:     schema.TypeInt,
 				Optional: true,
 			},
+			"multipath": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+			},
 			"name": &schema.Schema{
 				Type:     schema.TypeString,
 				ForceNew: true,
@@ -1073,6 +1081,10 @@ func resourceVpnIpsecPhase1Interface() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+			},
+			"ztna_cert_scim_authorization": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
 			},
 			"mobike": &schema.Schema{
 				Type:     schema.TypeString,
@@ -1615,6 +1627,10 @@ func flattenVpnIpsecPhase1InterfaceFecSendTimeout(v interface{}, d *schema.Resou
 	return v
 }
 
+func flattenVpnIpsecPhase1InterfaceFecSeparateRedundantTunnel(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenVpnIpsecPhase1InterfaceFgspSync(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -1965,6 +1981,10 @@ func flattenVpnIpsecPhase1InterfaceMonitorMin(v interface{}, d *schema.ResourceD
 	return v
 }
 
+func flattenVpnIpsecPhase1InterfaceMultipath(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenVpnIpsecPhase1InterfaceName(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -2182,6 +2202,10 @@ func flattenVpnIpsecPhase1InterfaceWizardType(v interface{}, d *schema.ResourceD
 }
 
 func flattenVpnIpsecPhase1InterfaceXauthtype(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenVpnIpsecPhase1InterfaceZtnaCertScimAuthorization(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -3036,6 +3060,16 @@ func refreshObjectVpnIpsecPhase1Interface(d *schema.ResourceData, o map[string]i
 		}
 	}
 
+	if err = d.Set("fec_separate_redundant_tunnel", flattenVpnIpsecPhase1InterfaceFecSeparateRedundantTunnel(o["fec-separate-redundant-tunnel"], d, "fec_separate_redundant_tunnel")); err != nil {
+		if vv, ok := fortiAPIPatch(o["fec-separate-redundant-tunnel"], "VpnIpsecPhase1Interface-FecSeparateRedundantTunnel"); ok {
+			if err = d.Set("fec_separate_redundant_tunnel", vv); err != nil {
+				return fmt.Errorf("Error reading fec_separate_redundant_tunnel: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading fec_separate_redundant_tunnel: %v", err)
+		}
+	}
+
 	if err = d.Set("fgsp_sync", flattenVpnIpsecPhase1InterfaceFgspSync(o["fgsp-sync"], d, "fgsp_sync")); err != nil {
 		if vv, ok := fortiAPIPatch(o["fgsp-sync"], "VpnIpsecPhase1Interface-FgspSync"); ok {
 			if err = d.Set("fgsp_sync", vv); err != nil {
@@ -3664,6 +3698,16 @@ func refreshObjectVpnIpsecPhase1Interface(d *schema.ResourceData, o map[string]i
 		}
 	}
 
+	if err = d.Set("multipath", flattenVpnIpsecPhase1InterfaceMultipath(o["multipath"], d, "multipath")); err != nil {
+		if vv, ok := fortiAPIPatch(o["multipath"], "VpnIpsecPhase1Interface-Multipath"); ok {
+			if err = d.Set("multipath", vv); err != nil {
+				return fmt.Errorf("Error reading multipath: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading multipath: %v", err)
+		}
+	}
+
 	if err = d.Set("name", flattenVpnIpsecPhase1InterfaceName(o["name"], d, "name")); err != nil {
 		if vv, ok := fortiAPIPatch(o["name"], "VpnIpsecPhase1Interface-Name"); ok {
 			if err = d.Set("name", vv); err != nil {
@@ -4214,6 +4258,16 @@ func refreshObjectVpnIpsecPhase1Interface(d *schema.ResourceData, o map[string]i
 		}
 	}
 
+	if err = d.Set("ztna_cert_scim_authorization", flattenVpnIpsecPhase1InterfaceZtnaCertScimAuthorization(o["ztna-cert-scim-authorization"], d, "ztna_cert_scim_authorization")); err != nil {
+		if vv, ok := fortiAPIPatch(o["ztna-cert-scim-authorization"], "VpnIpsecPhase1Interface-ZtnaCertScimAuthorization"); ok {
+			if err = d.Set("ztna_cert_scim_authorization", vv); err != nil {
+				return fmt.Errorf("Error reading ztna_cert_scim_authorization: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading ztna_cert_scim_authorization: %v", err)
+		}
+	}
+
 	if err = d.Set("mobike", flattenVpnIpsecPhase1InterfaceMobike(o["mobike"], d, "mobike")); err != nil {
 		if vv, ok := fortiAPIPatch(o["mobike"], "VpnIpsecPhase1Interface-Mobike"); ok {
 			if err = d.Set("mobike", vv); err != nil {
@@ -4573,6 +4627,10 @@ func expandVpnIpsecPhase1InterfaceFecSendTimeout(d *schema.ResourceData, v inter
 	return v, nil
 }
 
+func expandVpnIpsecPhase1InterfaceFecSeparateRedundantTunnel(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandVpnIpsecPhase1InterfaceFgspSync(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -4911,6 +4969,10 @@ func expandVpnIpsecPhase1InterfaceMonitorMin(d *schema.ResourceData, v interface
 	return v, nil
 }
 
+func expandVpnIpsecPhase1InterfaceMultipath(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandVpnIpsecPhase1InterfaceName(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -5140,6 +5202,10 @@ func expandVpnIpsecPhase1InterfaceWizardType(d *schema.ResourceData, v interface
 }
 
 func expandVpnIpsecPhase1InterfaceXauthtype(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandVpnIpsecPhase1InterfaceZtnaCertScimAuthorization(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -5915,6 +5981,15 @@ func getObjectVpnIpsecPhase1Interface(d *schema.ResourceData) (*map[string]inter
 		}
 	}
 
+	if v, ok := d.GetOk("fec_separate_redundant_tunnel"); ok || d.HasChange("fec_separate_redundant_tunnel") {
+		t, err := expandVpnIpsecPhase1InterfaceFecSeparateRedundantTunnel(d, v, "fec_separate_redundant_tunnel")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["fec-separate-redundant-tunnel"] = t
+		}
+	}
+
 	if v, ok := d.GetOk("fgsp_sync"); ok || d.HasChange("fgsp_sync") {
 		t, err := expandVpnIpsecPhase1InterfaceFgspSync(d, v, "fgsp_sync")
 		if err != nil {
@@ -6464,6 +6539,15 @@ func getObjectVpnIpsecPhase1Interface(d *schema.ResourceData) (*map[string]inter
 		}
 	}
 
+	if v, ok := d.GetOk("multipath"); ok || d.HasChange("multipath") {
+		t, err := expandVpnIpsecPhase1InterfaceMultipath(d, v, "multipath")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["multipath"] = t
+		}
+	}
+
 	if v, ok := d.GetOk("name"); ok || d.HasChange("name") {
 		t, err := expandVpnIpsecPhase1InterfaceName(d, v, "name")
 		if err != nil {
@@ -6983,6 +7067,15 @@ func getObjectVpnIpsecPhase1Interface(d *schema.ResourceData) (*map[string]inter
 			return &obj, err
 		} else if t != nil {
 			obj["xauthtype"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("ztna_cert_scim_authorization"); ok || d.HasChange("ztna_cert_scim_authorization") {
+		t, err := expandVpnIpsecPhase1InterfaceZtnaCertScimAuthorization(d, v, "ztna_cert_scim_authorization")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["ztna-cert-scim-authorization"] = t
 		}
 	}
 

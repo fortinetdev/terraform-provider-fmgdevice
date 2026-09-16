@@ -77,6 +77,12 @@ func resourceSystemPcpServer() *schema.Resource {
 							Optional: true,
 							Computed: true,
 						},
+						"client6_prefix": &schema.Schema{
+							Type:     schema.TypeSet,
+							Elem:     &schema.Schema{Type: schema.TypeString},
+							Optional: true,
+							Computed: true,
+						},
 						"description": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
@@ -128,6 +134,10 @@ func resourceSystemPcpServer() *schema.Resource {
 							Computed: true,
 						},
 						"name": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"nat46": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
 						},
@@ -348,6 +358,12 @@ func flattenSystemPcpServerPools(v interface{}, d *schema.ResourceData, pre stri
 			tmp["client_subnet"] = fortiAPISubPartPatch(v, "SystemPcpServer-Pools-ClientSubnet")
 		}
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "client6_prefix"
+		if _, ok := i["client6-prefix"]; ok {
+			v := flattenSystemPcpServerPoolsClient6Prefix(i["client6-prefix"], d, pre_append)
+			tmp["client6_prefix"] = fortiAPISubPartPatch(v, "SystemPcpServer-Pools-Client6Prefix")
+		}
+
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "description"
 		if _, ok := i["description"]; ok {
 			v := flattenSystemPcpServerPoolsDescription(i["description"], d, pre_append)
@@ -414,6 +430,12 @@ func flattenSystemPcpServerPools(v interface{}, d *schema.ResourceData, pre stri
 			tmp["name"] = fortiAPISubPartPatch(v, "SystemPcpServer-Pools-Name")
 		}
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "nat46"
+		if _, ok := i["nat46"]; ok {
+			v := flattenSystemPcpServerPoolsNat46(i["nat46"], d, pre_append)
+			tmp["nat46"] = fortiAPISubPartPatch(v, "SystemPcpServer-Pools-Nat46")
+		}
+
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "recycle_delay"
 		if _, ok := i["recycle-delay"]; ok {
 			v := flattenSystemPcpServerPoolsRecycleDelay(i["recycle-delay"], d, pre_append)
@@ -462,6 +484,10 @@ func flattenSystemPcpServerPoolsClientSubnet(v interface{}, d *schema.ResourceDa
 	return flattenStringList(v)
 }
 
+func flattenSystemPcpServerPoolsClient6Prefix(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
 func flattenSystemPcpServerPoolsDescription(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -503,6 +529,10 @@ func flattenSystemPcpServerPoolsMulticastAnnouncement(v interface{}, d *schema.R
 }
 
 func flattenSystemPcpServerPoolsName(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemPcpServerPoolsNat46(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -611,6 +641,11 @@ func expandSystemPcpServerPools(d *schema.ResourceData, v interface{}, pre strin
 			tmp["client-subnet"], _ = expandSystemPcpServerPoolsClientSubnet(d, i["client_subnet"], pre_append)
 		}
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "client6_prefix"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["client6-prefix"], _ = expandSystemPcpServerPoolsClient6Prefix(d, i["client6_prefix"], pre_append)
+		}
+
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "description"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
 			tmp["description"], _ = expandSystemPcpServerPoolsDescription(d, i["description"], pre_append)
@@ -666,6 +701,11 @@ func expandSystemPcpServerPools(d *schema.ResourceData, v interface{}, pre strin
 			tmp["name"], _ = expandSystemPcpServerPoolsName(d, i["name"], pre_append)
 		}
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "nat46"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["nat46"], _ = expandSystemPcpServerPoolsNat46(d, i["nat46"], pre_append)
+		}
+
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "recycle_delay"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
 			tmp["recycle-delay"], _ = expandSystemPcpServerPoolsRecycleDelay(d, i["recycle_delay"], pre_append)
@@ -711,6 +751,10 @@ func expandSystemPcpServerPoolsClientSubnet(d *schema.ResourceData, v interface{
 	return expandStringList(v.(*schema.Set).List()), nil
 }
 
+func expandSystemPcpServerPoolsClient6Prefix(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
 func expandSystemPcpServerPoolsDescription(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -752,6 +796,10 @@ func expandSystemPcpServerPoolsMulticastAnnouncement(d *schema.ResourceData, v i
 }
 
 func expandSystemPcpServerPoolsName(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemPcpServerPoolsNat46(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 

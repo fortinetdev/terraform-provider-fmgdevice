@@ -60,6 +60,8 @@ The following arguments are supported:
 * `cn_match` - When searching for a matching certificate, control how to do CN value matching with certificate subject name (default = substring). Valid values: `substring`, `value`.
 
 * `crl_verification` - Crl-Verification. The structure of `crl_verification` block is documented below.
+* `csr_include_device_sn` - Enable/disable inclusion of device serial number in CSR (default = enable). Valid values: `disable`, `enable`.
+
 * `interface` - Specify outgoing interface to reach server.
 * `interface_select_method` - Specify how to select outgoing interface to reach server. Valid values: `auto`, `sdwan`, `specify`.
 

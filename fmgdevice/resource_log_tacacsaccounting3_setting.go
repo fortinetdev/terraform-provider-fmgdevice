@@ -57,6 +57,10 @@ func resourceLogTacacsAccounting3Setting() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"port": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+			},
 			"server": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -76,6 +80,10 @@ func resourceLogTacacsAccounting3Setting() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+			},
+			"timeout": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
 			},
 			"vrf_select": &schema.Schema{
 				Type:     schema.TypeInt,
@@ -229,6 +237,10 @@ func flattenLogTacacsAccounting3SettingInterfaceSelectMethod(v interface{}, d *s
 	return v
 }
 
+func flattenLogTacacsAccounting3SettingPort(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenLogTacacsAccounting3SettingServer(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -238,6 +250,10 @@ func flattenLogTacacsAccounting3SettingSourceIp(v interface{}, d *schema.Resourc
 }
 
 func flattenLogTacacsAccounting3SettingStatus(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenLogTacacsAccounting3SettingTimeout(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -265,6 +281,16 @@ func refreshObjectLogTacacsAccounting3Setting(d *schema.ResourceData, o map[stri
 			}
 		} else {
 			return fmt.Errorf("Error reading interface_select_method: %v", err)
+		}
+	}
+
+	if err = d.Set("port", flattenLogTacacsAccounting3SettingPort(o["port"], d, "port")); err != nil {
+		if vv, ok := fortiAPIPatch(o["port"], "LogTacacsAccounting3Setting-Port"); ok {
+			if err = d.Set("port", vv); err != nil {
+				return fmt.Errorf("Error reading port: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading port: %v", err)
 		}
 	}
 
@@ -298,6 +324,16 @@ func refreshObjectLogTacacsAccounting3Setting(d *schema.ResourceData, o map[stri
 		}
 	}
 
+	if err = d.Set("timeout", flattenLogTacacsAccounting3SettingTimeout(o["timeout"], d, "timeout")); err != nil {
+		if vv, ok := fortiAPIPatch(o["timeout"], "LogTacacsAccounting3Setting-Timeout"); ok {
+			if err = d.Set("timeout", vv); err != nil {
+				return fmt.Errorf("Error reading timeout: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading timeout: %v", err)
+		}
+	}
+
 	if err = d.Set("vrf_select", flattenLogTacacsAccounting3SettingVrfSelect(o["vrf-select"], d, "vrf_select")); err != nil {
 		if vv, ok := fortiAPIPatch(o["vrf-select"], "LogTacacsAccounting3Setting-VrfSelect"); ok {
 			if err = d.Set("vrf_select", vv); err != nil {
@@ -325,6 +361,10 @@ func expandLogTacacsAccounting3SettingInterfaceSelectMethod(d *schema.ResourceDa
 	return v, nil
 }
 
+func expandLogTacacsAccounting3SettingPort(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandLogTacacsAccounting3SettingServer(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -338,6 +378,10 @@ func expandLogTacacsAccounting3SettingSourceIp(d *schema.ResourceData, v interfa
 }
 
 func expandLogTacacsAccounting3SettingStatus(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandLogTacacsAccounting3SettingTimeout(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -363,6 +407,15 @@ func getObjectLogTacacsAccounting3Setting(d *schema.ResourceData, bemptysontable
 			return &obj, err
 		} else if t != nil {
 			obj["interface-select-method"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("port"); ok || d.HasChange("port") {
+		t, err := expandLogTacacsAccounting3SettingPort(d, v, "port")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["port"] = t
 		}
 	}
 
@@ -399,6 +452,15 @@ func getObjectLogTacacsAccounting3Setting(d *schema.ResourceData, bemptysontable
 			return &obj, err
 		} else if t != nil {
 			obj["status"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("timeout"); ok || d.HasChange("timeout") {
+		t, err := expandLogTacacsAccounting3SettingTimeout(d, v, "timeout")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["timeout"] = t
 		}
 	}
 

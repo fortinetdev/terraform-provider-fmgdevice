@@ -97,6 +97,18 @@ func resourceFirewallIppool6() *schema.Resource {
 							Type:     schema.TypeString,
 							Optional: true,
 						},
+						"fabric_force_sync": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"fabric_object": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"fabric_object_source": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
 						"internal_prefix": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
@@ -113,6 +125,11 @@ func resourceFirewallIppool6() *schema.Resource {
 							Type:     schema.TypeString,
 							Optional: true,
 						},
+						"uuid": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+							Computed: true,
+						},
 					},
 				},
 			},
@@ -125,6 +142,18 @@ func resourceFirewallIppool6() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+			},
+			"fabric_force_sync": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"fabric_object": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"fabric_object_source": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
 			},
 			"internal_prefix": &schema.Schema{
 				Type:     schema.TypeString,
@@ -146,6 +175,11 @@ func resourceFirewallIppool6() *schema.Resource {
 				Computed: true,
 			},
 			"type": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+			"uuid": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
@@ -408,6 +442,24 @@ func flattenFirewallIppool6DynamicMapping(v interface{}, d *schema.ResourceData,
 			tmp["external_prefix"] = fortiAPISubPartPatch(v, "FirewallIppool6-DynamicMapping-ExternalPrefix")
 		}
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "fabric_force_sync"
+		if _, ok := i["fabric-force-sync"]; ok {
+			v := flattenFirewallIppool6DynamicMappingFabricForceSync(i["fabric-force-sync"], d, pre_append)
+			tmp["fabric_force_sync"] = fortiAPISubPartPatch(v, "FirewallIppool6-DynamicMapping-FabricForceSync")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "fabric_object"
+		if _, ok := i["fabric-object"]; ok {
+			v := flattenFirewallIppool6DynamicMappingFabricObject(i["fabric-object"], d, pre_append)
+			tmp["fabric_object"] = fortiAPISubPartPatch(v, "FirewallIppool6-DynamicMapping-FabricObject")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "fabric_object_source"
+		if _, ok := i["fabric-object-source"]; ok {
+			v := flattenFirewallIppool6DynamicMappingFabricObjectSource(i["fabric-object-source"], d, pre_append)
+			tmp["fabric_object_source"] = fortiAPISubPartPatch(v, "FirewallIppool6-DynamicMapping-FabricObjectSource")
+		}
+
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "internal_prefix"
 		if _, ok := i["internal-prefix"]; ok {
 			v := flattenFirewallIppool6DynamicMappingInternalPrefix(i["internal-prefix"], d, pre_append)
@@ -430,6 +482,12 @@ func flattenFirewallIppool6DynamicMapping(v interface{}, d *schema.ResourceData,
 		if _, ok := i["type"]; ok {
 			v := flattenFirewallIppool6DynamicMappingType(i["type"], d, pre_append)
 			tmp["type"] = fortiAPISubPartPatch(v, "FirewallIppool6-DynamicMapping-Type")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "uuid"
+		if _, ok := i["uuid"]; ok {
+			v := flattenFirewallIppool6DynamicMappingUuid(i["uuid"], d, pre_append)
+			tmp["uuid"] = fortiAPISubPartPatch(v, "FirewallIppool6-DynamicMapping-Uuid")
 		}
 
 		if len(tmp) > 0 {
@@ -507,6 +565,18 @@ func flattenFirewallIppool6DynamicMappingExternalPrefix(v interface{}, d *schema
 	return v
 }
 
+func flattenFirewallIppool6DynamicMappingFabricForceSync(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenFirewallIppool6DynamicMappingFabricObject(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenFirewallIppool6DynamicMappingFabricObjectSource(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenFirewallIppool6DynamicMappingInternalPrefix(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -523,11 +593,27 @@ func flattenFirewallIppool6DynamicMappingType(v interface{}, d *schema.ResourceD
 	return v
 }
 
+func flattenFirewallIppool6DynamicMappingUuid(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenFirewallIppool6Endip(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
 func flattenFirewallIppool6ExternalPrefix(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenFirewallIppool6FabricForceSync(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenFirewallIppool6FabricObject(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenFirewallIppool6FabricObjectSource(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -548,6 +634,10 @@ func flattenFirewallIppool6Startip(v interface{}, d *schema.ResourceData, pre st
 }
 
 func flattenFirewallIppool6Type(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenFirewallIppool6Uuid(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -622,6 +712,36 @@ func refreshObjectFirewallIppool6(d *schema.ResourceData, o map[string]interface
 		}
 	}
 
+	if err = d.Set("fabric_force_sync", flattenFirewallIppool6FabricForceSync(o["fabric-force-sync"], d, "fabric_force_sync")); err != nil {
+		if vv, ok := fortiAPIPatch(o["fabric-force-sync"], "FirewallIppool6-FabricForceSync"); ok {
+			if err = d.Set("fabric_force_sync", vv); err != nil {
+				return fmt.Errorf("Error reading fabric_force_sync: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading fabric_force_sync: %v", err)
+		}
+	}
+
+	if err = d.Set("fabric_object", flattenFirewallIppool6FabricObject(o["fabric-object"], d, "fabric_object")); err != nil {
+		if vv, ok := fortiAPIPatch(o["fabric-object"], "FirewallIppool6-FabricObject"); ok {
+			if err = d.Set("fabric_object", vv); err != nil {
+				return fmt.Errorf("Error reading fabric_object: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading fabric_object: %v", err)
+		}
+	}
+
+	if err = d.Set("fabric_object_source", flattenFirewallIppool6FabricObjectSource(o["fabric-object-source"], d, "fabric_object_source")); err != nil {
+		if vv, ok := fortiAPIPatch(o["fabric-object-source"], "FirewallIppool6-FabricObjectSource"); ok {
+			if err = d.Set("fabric_object_source", vv); err != nil {
+				return fmt.Errorf("Error reading fabric_object_source: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading fabric_object_source: %v", err)
+		}
+	}
+
 	if err = d.Set("internal_prefix", flattenFirewallIppool6InternalPrefix(o["internal-prefix"], d, "internal_prefix")); err != nil {
 		if vv, ok := fortiAPIPatch(o["internal-prefix"], "FirewallIppool6-InternalPrefix"); ok {
 			if err = d.Set("internal_prefix", vv); err != nil {
@@ -669,6 +789,16 @@ func refreshObjectFirewallIppool6(d *schema.ResourceData, o map[string]interface
 			}
 		} else {
 			return fmt.Errorf("Error reading type: %v", err)
+		}
+	}
+
+	if err = d.Set("uuid", flattenFirewallIppool6Uuid(o["uuid"], d, "uuid")); err != nil {
+		if vv, ok := fortiAPIPatch(o["uuid"], "FirewallIppool6-Uuid"); ok {
+			if err = d.Set("uuid", vv); err != nil {
+				return fmt.Errorf("Error reading uuid: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading uuid: %v", err)
 		}
 	}
 
@@ -733,6 +863,21 @@ func expandFirewallIppool6DynamicMapping(d *schema.ResourceData, v interface{}, 
 			tmp["external-prefix"], _ = expandFirewallIppool6DynamicMappingExternalPrefix(d, i["external_prefix"], pre_append)
 		}
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "fabric_force_sync"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["fabric-force-sync"], _ = expandFirewallIppool6DynamicMappingFabricForceSync(d, i["fabric_force_sync"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "fabric_object"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["fabric-object"], _ = expandFirewallIppool6DynamicMappingFabricObject(d, i["fabric_object"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "fabric_object_source"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["fabric-object-source"], _ = expandFirewallIppool6DynamicMappingFabricObjectSource(d, i["fabric_object_source"], pre_append)
+		}
+
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "internal_prefix"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
 			tmp["internal-prefix"], _ = expandFirewallIppool6DynamicMappingInternalPrefix(d, i["internal_prefix"], pre_append)
@@ -751,6 +896,11 @@ func expandFirewallIppool6DynamicMapping(d *schema.ResourceData, v interface{}, 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "type"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
 			tmp["type"], _ = expandFirewallIppool6DynamicMappingType(d, i["type"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "uuid"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["uuid"], _ = expandFirewallIppool6DynamicMappingUuid(d, i["uuid"], pre_append)
 		}
 
 		if len(tmp) > 0 {
@@ -821,6 +971,18 @@ func expandFirewallIppool6DynamicMappingExternalPrefix(d *schema.ResourceData, v
 	return v, nil
 }
 
+func expandFirewallIppool6DynamicMappingFabricForceSync(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandFirewallIppool6DynamicMappingFabricObject(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandFirewallIppool6DynamicMappingFabricObjectSource(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandFirewallIppool6DynamicMappingInternalPrefix(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -837,11 +999,27 @@ func expandFirewallIppool6DynamicMappingType(d *schema.ResourceData, v interface
 	return v, nil
 }
 
+func expandFirewallIppool6DynamicMappingUuid(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandFirewallIppool6Endip(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
 func expandFirewallIppool6ExternalPrefix(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandFirewallIppool6FabricForceSync(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandFirewallIppool6FabricObject(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandFirewallIppool6FabricObjectSource(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -862,6 +1040,10 @@ func expandFirewallIppool6Startip(d *schema.ResourceData, v interface{}, pre str
 }
 
 func expandFirewallIppool6Type(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandFirewallIppool6Uuid(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -913,6 +1095,33 @@ func getObjectFirewallIppool6(d *schema.ResourceData) (*map[string]interface{}, 
 		}
 	}
 
+	if v, ok := d.GetOk("fabric_force_sync"); ok || d.HasChange("fabric_force_sync") {
+		t, err := expandFirewallIppool6FabricForceSync(d, v, "fabric_force_sync")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["fabric-force-sync"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("fabric_object"); ok || d.HasChange("fabric_object") {
+		t, err := expandFirewallIppool6FabricObject(d, v, "fabric_object")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["fabric-object"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("fabric_object_source"); ok || d.HasChange("fabric_object_source") {
+		t, err := expandFirewallIppool6FabricObjectSource(d, v, "fabric_object_source")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["fabric-object-source"] = t
+		}
+	}
+
 	if v, ok := d.GetOk("internal_prefix"); ok || d.HasChange("internal_prefix") {
 		t, err := expandFirewallIppool6InternalPrefix(d, v, "internal_prefix")
 		if err != nil {
@@ -955,6 +1164,15 @@ func getObjectFirewallIppool6(d *schema.ResourceData) (*map[string]interface{}, 
 			return &obj, err
 		} else if t != nil {
 			obj["type"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("uuid"); ok || d.HasChange("uuid") {
+		t, err := expandFirewallIppool6Uuid(d, v, "uuid")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["uuid"] = t
 		}
 	}
 

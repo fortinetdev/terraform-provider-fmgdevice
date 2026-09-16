@@ -65,6 +65,30 @@ func resourceRouterMulticast6Interface() *schema.Resource {
 				ForceNew: true,
 				Optional: true,
 			},
+			"rp_candidate": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"rp_candidate_group": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Computed: true,
+			},
+			"rp_candidate_interval": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+			},
+			"rp_candidate_priority": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+			},
+			"static_group": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Computed: true,
+			},
 		},
 	}
 }
@@ -273,6 +297,26 @@ func flattenRouterMulticast6InterfaceName2edl(v interface{}, d *schema.ResourceD
 	return convintflist2str(v, d.Get(pre))
 }
 
+func flattenRouterMulticast6InterfaceRpCandidate2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenRouterMulticast6InterfaceRpCandidateGroup2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
+func flattenRouterMulticast6InterfaceRpCandidateInterval2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenRouterMulticast6InterfaceRpCandidatePriority2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenRouterMulticast6InterfaceStaticGroup2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
 func refreshObjectRouterMulticast6Interface(d *schema.ResourceData, o map[string]interface{}) error {
 	var err error
 
@@ -306,6 +350,56 @@ func refreshObjectRouterMulticast6Interface(d *schema.ResourceData, o map[string
 		}
 	}
 
+	if err = d.Set("rp_candidate", flattenRouterMulticast6InterfaceRpCandidate2edl(o["rp-candidate"], d, "rp_candidate")); err != nil {
+		if vv, ok := fortiAPIPatch(o["rp-candidate"], "RouterMulticast6Interface-RpCandidate"); ok {
+			if err = d.Set("rp_candidate", vv); err != nil {
+				return fmt.Errorf("Error reading rp_candidate: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading rp_candidate: %v", err)
+		}
+	}
+
+	if err = d.Set("rp_candidate_group", flattenRouterMulticast6InterfaceRpCandidateGroup2edl(o["rp-candidate-group"], d, "rp_candidate_group")); err != nil {
+		if vv, ok := fortiAPIPatch(o["rp-candidate-group"], "RouterMulticast6Interface-RpCandidateGroup"); ok {
+			if err = d.Set("rp_candidate_group", vv); err != nil {
+				return fmt.Errorf("Error reading rp_candidate_group: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading rp_candidate_group: %v", err)
+		}
+	}
+
+	if err = d.Set("rp_candidate_interval", flattenRouterMulticast6InterfaceRpCandidateInterval2edl(o["rp-candidate-interval"], d, "rp_candidate_interval")); err != nil {
+		if vv, ok := fortiAPIPatch(o["rp-candidate-interval"], "RouterMulticast6Interface-RpCandidateInterval"); ok {
+			if err = d.Set("rp_candidate_interval", vv); err != nil {
+				return fmt.Errorf("Error reading rp_candidate_interval: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading rp_candidate_interval: %v", err)
+		}
+	}
+
+	if err = d.Set("rp_candidate_priority", flattenRouterMulticast6InterfaceRpCandidatePriority2edl(o["rp-candidate-priority"], d, "rp_candidate_priority")); err != nil {
+		if vv, ok := fortiAPIPatch(o["rp-candidate-priority"], "RouterMulticast6Interface-RpCandidatePriority"); ok {
+			if err = d.Set("rp_candidate_priority", vv); err != nil {
+				return fmt.Errorf("Error reading rp_candidate_priority: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading rp_candidate_priority: %v", err)
+		}
+	}
+
+	if err = d.Set("static_group", flattenRouterMulticast6InterfaceStaticGroup2edl(o["static-group"], d, "static_group")); err != nil {
+		if vv, ok := fortiAPIPatch(o["static-group"], "RouterMulticast6Interface-StaticGroup"); ok {
+			if err = d.Set("static_group", vv); err != nil {
+				return fmt.Errorf("Error reading static_group: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading static_group: %v", err)
+		}
+	}
+
 	return nil
 }
 
@@ -325,6 +419,26 @@ func expandRouterMulticast6InterfaceHelloInterval2edl(d *schema.ResourceData, v 
 
 func expandRouterMulticast6InterfaceName2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return convstr2list(v, nil), nil
+}
+
+func expandRouterMulticast6InterfaceRpCandidate2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandRouterMulticast6InterfaceRpCandidateGroup2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandRouterMulticast6InterfaceRpCandidateInterval2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandRouterMulticast6InterfaceRpCandidatePriority2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandRouterMulticast6InterfaceStaticGroup2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
 }
 
 func getObjectRouterMulticast6Interface(d *schema.ResourceData) (*map[string]interface{}, error) {
@@ -354,6 +468,51 @@ func getObjectRouterMulticast6Interface(d *schema.ResourceData) (*map[string]int
 			return &obj, err
 		} else if t != nil {
 			obj["name"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("rp_candidate"); ok || d.HasChange("rp_candidate") {
+		t, err := expandRouterMulticast6InterfaceRpCandidate2edl(d, v, "rp_candidate")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["rp-candidate"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("rp_candidate_group"); ok || d.HasChange("rp_candidate_group") {
+		t, err := expandRouterMulticast6InterfaceRpCandidateGroup2edl(d, v, "rp_candidate_group")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["rp-candidate-group"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("rp_candidate_interval"); ok || d.HasChange("rp_candidate_interval") {
+		t, err := expandRouterMulticast6InterfaceRpCandidateInterval2edl(d, v, "rp_candidate_interval")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["rp-candidate-interval"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("rp_candidate_priority"); ok || d.HasChange("rp_candidate_priority") {
+		t, err := expandRouterMulticast6InterfaceRpCandidatePriority2edl(d, v, "rp_candidate_priority")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["rp-candidate-priority"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("static_group"); ok || d.HasChange("static_group") {
+		t, err := expandRouterMulticast6InterfaceStaticGroup2edl(d, v, "static_group")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["static-group"] = t
 		}
 	}
 

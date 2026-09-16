@@ -18,6 +18,7 @@ The following arguments are supported:
 * `device_vdom` - FortiManager managed device vdom. This variable is used in the request URL. If not specified, it will inherit the variable `device_vdom` of the provider.
 
 * `comments` - Comment.
+* `custom_tags` - Custom tags.
 * `dst_addr` - IPv4 Destination address.
 * `dst_addr6` - IPv6 Destination address.
 * `dst_port` - Destination port or port range (1 to 65535, 0 means any port).

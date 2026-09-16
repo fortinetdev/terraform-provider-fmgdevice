@@ -51,6 +51,10 @@ func resourceWirelessControllerWtpProfile() *schema.Resource {
 				Computed: true,
 				ForceNew: true,
 			},
+			"n80211mc_mode": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 			"_is_factory_setting": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -378,6 +382,10 @@ func resourceWirelessControllerWtpProfile() *schema.Resource {
 				Elem:     &schema.Schema{Type: schema.TypeString},
 				Optional: true,
 				Computed: true,
+			},
+			"ipsec_offload": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
 			},
 			"lan": &schema.Schema{
 				Type:     schema.TypeList,
@@ -978,6 +986,10 @@ func resourceWirelessControllerWtpProfile() *schema.Resource {
 							Optional: true,
 							Computed: true,
 						},
+						"cca_threshold": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
 						"channel": &schema.Schema{
 							Type:     schema.TypeSet,
 							Elem:     &schema.Schema{Type: schema.TypeString},
@@ -1240,7 +1252,39 @@ func resourceWirelessControllerWtpProfile() *schema.Resource {
 							Optional: true,
 							Computed: true,
 						},
+						"vap_status": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
 						"vap1": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"vap10": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"vap11": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"vap12": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"vap13": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"vap14": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"vap15": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"vap16": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
 						},
@@ -1269,6 +1313,10 @@ func resourceWirelessControllerWtpProfile() *schema.Resource {
 							Optional: true,
 						},
 						"vap8": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"vap9": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
 						},
@@ -1444,6 +1492,10 @@ func resourceWirelessControllerWtpProfile() *schema.Resource {
 							Optional: true,
 							Computed: true,
 						},
+						"cca_threshold": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
 						"channel": &schema.Schema{
 							Type:     schema.TypeSet,
 							Elem:     &schema.Schema{Type: schema.TypeString},
@@ -1707,7 +1759,39 @@ func resourceWirelessControllerWtpProfile() *schema.Resource {
 							Optional: true,
 							Computed: true,
 						},
+						"vap_status": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
 						"vap1": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"vap10": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"vap11": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"vap12": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"vap13": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"vap14": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"vap15": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"vap16": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
 						},
@@ -1736,6 +1820,10 @@ func resourceWirelessControllerWtpProfile() *schema.Resource {
 							Optional: true,
 						},
 						"vap8": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"vap9": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
 						},
@@ -1911,6 +1999,10 @@ func resourceWirelessControllerWtpProfile() *schema.Resource {
 							Optional: true,
 							Computed: true,
 						},
+						"cca_threshold": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
 						"channel": &schema.Schema{
 							Type:     schema.TypeSet,
 							Elem:     &schema.Schema{Type: schema.TypeString},
@@ -2173,7 +2265,39 @@ func resourceWirelessControllerWtpProfile() *schema.Resource {
 							Optional: true,
 							Computed: true,
 						},
+						"vap_status": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
 						"vap1": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"vap10": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"vap11": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"vap12": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"vap13": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"vap14": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"vap15": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"vap16": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
 						},
@@ -2202,6 +2326,10 @@ func resourceWirelessControllerWtpProfile() *schema.Resource {
 							Optional: true,
 						},
 						"vap8": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"vap9": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
 						},
@@ -2377,6 +2505,10 @@ func resourceWirelessControllerWtpProfile() *schema.Resource {
 							Optional: true,
 							Computed: true,
 						},
+						"cca_threshold": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
 						"channel": &schema.Schema{
 							Type:     schema.TypeSet,
 							Elem:     &schema.Schema{Type: schema.TypeString},
@@ -2639,7 +2771,39 @@ func resourceWirelessControllerWtpProfile() *schema.Resource {
 							Optional: true,
 							Computed: true,
 						},
+						"vap_status": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
 						"vap1": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"vap10": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"vap11": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"vap12": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"vap13": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"vap14": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"vap15": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"vap16": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
 						},
@@ -2668,6 +2832,10 @@ func resourceWirelessControllerWtpProfile() *schema.Resource {
 							Optional: true,
 						},
 						"vap8": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"vap9": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
 						},
@@ -2973,6 +3141,10 @@ func resourceWirelessControllerWtpProfileRead(d *schema.ResourceData, m interfac
 		return fmt.Errorf("Error reading WirelessControllerWtpProfile resource from API: %v", err)
 	}
 	return nil
+}
+
+func flattenWirelessControllerWtpProfile80211McMode(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
 }
 
 func flattenWirelessControllerWtpProfileIsFactorySetting(v interface{}, d *schema.ResourceData, pre string) interface{} {
@@ -3314,6 +3486,10 @@ func flattenWirelessControllerWtpProfileIndoorOutdoorDeployment(v interface{}, d
 
 func flattenWirelessControllerWtpProfileIpFragmentPreventing(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return flattenStringList(v)
+}
+
+func flattenWirelessControllerWtpProfileIpsecOffload(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
 }
 
 func flattenWirelessControllerWtpProfileLan(v interface{}, d *schema.ResourceData, pre string) []map[string]interface{} {
@@ -4198,6 +4374,11 @@ func flattenWirelessControllerWtpProfileRadio1(v interface{}, d *schema.Resource
 		result["call_capacity"] = flattenWirelessControllerWtpProfileRadio1CallCapacity(i["call-capacity"], d, pre_append)
 	}
 
+	pre_append = pre + ".0." + "cca_threshold"
+	if _, ok := i["cca-threshold"]; ok {
+		result["cca_threshold"] = flattenWirelessControllerWtpProfileRadio1CcaThreshold(i["cca-threshold"], d, pre_append)
+	}
+
 	pre_append = pre + ".0." + "channel"
 	if _, ok := i["channel"]; ok {
 		result["channel"] = flattenWirelessControllerWtpProfileRadio1Channel(i["channel"], d, pre_append)
@@ -4448,9 +4629,49 @@ func flattenWirelessControllerWtpProfileRadio1(v interface{}, d *schema.Resource
 		result["vap_all"] = flattenWirelessControllerWtpProfileRadio1VapAll(i["vap-all"], d, pre_append)
 	}
 
+	pre_append = pre + ".0." + "vap_status"
+	if _, ok := i["vap-status"]; ok {
+		result["vap_status"] = flattenWirelessControllerWtpProfileRadio1VapStatus(i["vap-status"], d, pre_append)
+	}
+
 	pre_append = pre + ".0." + "vap1"
 	if _, ok := i["vap1"]; ok {
 		result["vap1"] = flattenWirelessControllerWtpProfileRadio1Vap1(i["vap1"], d, pre_append)
+	}
+
+	pre_append = pre + ".0." + "vap10"
+	if _, ok := i["vap10"]; ok {
+		result["vap10"] = flattenWirelessControllerWtpProfileRadio1Vap10(i["vap10"], d, pre_append)
+	}
+
+	pre_append = pre + ".0." + "vap11"
+	if _, ok := i["vap11"]; ok {
+		result["vap11"] = flattenWirelessControllerWtpProfileRadio1Vap11(i["vap11"], d, pre_append)
+	}
+
+	pre_append = pre + ".0." + "vap12"
+	if _, ok := i["vap12"]; ok {
+		result["vap12"] = flattenWirelessControllerWtpProfileRadio1Vap12(i["vap12"], d, pre_append)
+	}
+
+	pre_append = pre + ".0." + "vap13"
+	if _, ok := i["vap13"]; ok {
+		result["vap13"] = flattenWirelessControllerWtpProfileRadio1Vap13(i["vap13"], d, pre_append)
+	}
+
+	pre_append = pre + ".0." + "vap14"
+	if _, ok := i["vap14"]; ok {
+		result["vap14"] = flattenWirelessControllerWtpProfileRadio1Vap14(i["vap14"], d, pre_append)
+	}
+
+	pre_append = pre + ".0." + "vap15"
+	if _, ok := i["vap15"]; ok {
+		result["vap15"] = flattenWirelessControllerWtpProfileRadio1Vap15(i["vap15"], d, pre_append)
+	}
+
+	pre_append = pre + ".0." + "vap16"
+	if _, ok := i["vap16"]; ok {
+		result["vap16"] = flattenWirelessControllerWtpProfileRadio1Vap16(i["vap16"], d, pre_append)
 	}
 
 	pre_append = pre + ".0." + "vap2"
@@ -4486,6 +4707,11 @@ func flattenWirelessControllerWtpProfileRadio1(v interface{}, d *schema.Resource
 	pre_append = pre + ".0." + "vap8"
 	if _, ok := i["vap8"]; ok {
 		result["vap8"] = flattenWirelessControllerWtpProfileRadio1Vap8(i["vap8"], d, pre_append)
+	}
+
+	pre_append = pre + ".0." + "vap9"
+	if _, ok := i["vap9"]; ok {
+		result["vap9"] = flattenWirelessControllerWtpProfileRadio1Vap9(i["vap9"], d, pre_append)
 	}
 
 	pre_append = pre + ".0." + "vaps"
@@ -4620,6 +4846,10 @@ func flattenWirelessControllerWtpProfileRadio1CallAdmissionControl(v interface{}
 }
 
 func flattenWirelessControllerWtpProfileRadio1CallCapacity(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWirelessControllerWtpProfileRadio1CcaThreshold(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -4823,7 +5053,39 @@ func flattenWirelessControllerWtpProfileRadio1VapAll(v interface{}, d *schema.Re
 	return v
 }
 
+func flattenWirelessControllerWtpProfileRadio1VapStatus(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenWirelessControllerWtpProfileRadio1Vap1(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWirelessControllerWtpProfileRadio1Vap10(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWirelessControllerWtpProfileRadio1Vap11(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWirelessControllerWtpProfileRadio1Vap12(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWirelessControllerWtpProfileRadio1Vap13(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWirelessControllerWtpProfileRadio1Vap14(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWirelessControllerWtpProfileRadio1Vap15(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWirelessControllerWtpProfileRadio1Vap16(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -4852,6 +5114,10 @@ func flattenWirelessControllerWtpProfileRadio1Vap7(v interface{}, d *schema.Reso
 }
 
 func flattenWirelessControllerWtpProfileRadio1Vap8(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWirelessControllerWtpProfileRadio1Vap9(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -5019,6 +5285,11 @@ func flattenWirelessControllerWtpProfileRadio2(v interface{}, d *schema.Resource
 	pre_append = pre + ".0." + "call_capacity"
 	if _, ok := i["call-capacity"]; ok {
 		result["call_capacity"] = flattenWirelessControllerWtpProfileRadio2CallCapacity(i["call-capacity"], d, pre_append)
+	}
+
+	pre_append = pre + ".0." + "cca_threshold"
+	if _, ok := i["cca-threshold"]; ok {
+		result["cca_threshold"] = flattenWirelessControllerWtpProfileRadio2CcaThreshold(i["cca-threshold"], d, pre_append)
 	}
 
 	pre_append = pre + ".0." + "channel"
@@ -5271,9 +5542,49 @@ func flattenWirelessControllerWtpProfileRadio2(v interface{}, d *schema.Resource
 		result["vap_all"] = flattenWirelessControllerWtpProfileRadio2VapAll(i["vap-all"], d, pre_append)
 	}
 
+	pre_append = pre + ".0." + "vap_status"
+	if _, ok := i["vap-status"]; ok {
+		result["vap_status"] = flattenWirelessControllerWtpProfileRadio2VapStatus(i["vap-status"], d, pre_append)
+	}
+
 	pre_append = pre + ".0." + "vap1"
 	if _, ok := i["vap1"]; ok {
 		result["vap1"] = flattenWirelessControllerWtpProfileRadio2Vap1(i["vap1"], d, pre_append)
+	}
+
+	pre_append = pre + ".0." + "vap10"
+	if _, ok := i["vap10"]; ok {
+		result["vap10"] = flattenWirelessControllerWtpProfileRadio2Vap10(i["vap10"], d, pre_append)
+	}
+
+	pre_append = pre + ".0." + "vap11"
+	if _, ok := i["vap11"]; ok {
+		result["vap11"] = flattenWirelessControllerWtpProfileRadio2Vap11(i["vap11"], d, pre_append)
+	}
+
+	pre_append = pre + ".0." + "vap12"
+	if _, ok := i["vap12"]; ok {
+		result["vap12"] = flattenWirelessControllerWtpProfileRadio2Vap12(i["vap12"], d, pre_append)
+	}
+
+	pre_append = pre + ".0." + "vap13"
+	if _, ok := i["vap13"]; ok {
+		result["vap13"] = flattenWirelessControllerWtpProfileRadio2Vap13(i["vap13"], d, pre_append)
+	}
+
+	pre_append = pre + ".0." + "vap14"
+	if _, ok := i["vap14"]; ok {
+		result["vap14"] = flattenWirelessControllerWtpProfileRadio2Vap14(i["vap14"], d, pre_append)
+	}
+
+	pre_append = pre + ".0." + "vap15"
+	if _, ok := i["vap15"]; ok {
+		result["vap15"] = flattenWirelessControllerWtpProfileRadio2Vap15(i["vap15"], d, pre_append)
+	}
+
+	pre_append = pre + ".0." + "vap16"
+	if _, ok := i["vap16"]; ok {
+		result["vap16"] = flattenWirelessControllerWtpProfileRadio2Vap16(i["vap16"], d, pre_append)
 	}
 
 	pre_append = pre + ".0." + "vap2"
@@ -5309,6 +5620,11 @@ func flattenWirelessControllerWtpProfileRadio2(v interface{}, d *schema.Resource
 	pre_append = pre + ".0." + "vap8"
 	if _, ok := i["vap8"]; ok {
 		result["vap8"] = flattenWirelessControllerWtpProfileRadio2Vap8(i["vap8"], d, pre_append)
+	}
+
+	pre_append = pre + ".0." + "vap9"
+	if _, ok := i["vap9"]; ok {
+		result["vap9"] = flattenWirelessControllerWtpProfileRadio2Vap9(i["vap9"], d, pre_append)
 	}
 
 	pre_append = pre + ".0." + "vaps"
@@ -5443,6 +5759,10 @@ func flattenWirelessControllerWtpProfileRadio2CallAdmissionControl(v interface{}
 }
 
 func flattenWirelessControllerWtpProfileRadio2CallCapacity(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWirelessControllerWtpProfileRadio2CcaThreshold(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -5646,7 +5966,39 @@ func flattenWirelessControllerWtpProfileRadio2VapAll(v interface{}, d *schema.Re
 	return v
 }
 
+func flattenWirelessControllerWtpProfileRadio2VapStatus(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenWirelessControllerWtpProfileRadio2Vap1(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWirelessControllerWtpProfileRadio2Vap10(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWirelessControllerWtpProfileRadio2Vap11(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWirelessControllerWtpProfileRadio2Vap12(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWirelessControllerWtpProfileRadio2Vap13(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWirelessControllerWtpProfileRadio2Vap14(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWirelessControllerWtpProfileRadio2Vap15(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWirelessControllerWtpProfileRadio2Vap16(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -5675,6 +6027,10 @@ func flattenWirelessControllerWtpProfileRadio2Vap7(v interface{}, d *schema.Reso
 }
 
 func flattenWirelessControllerWtpProfileRadio2Vap8(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWirelessControllerWtpProfileRadio2Vap9(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -5842,6 +6198,11 @@ func flattenWirelessControllerWtpProfileRadio3(v interface{}, d *schema.Resource
 	pre_append = pre + ".0." + "call_capacity"
 	if _, ok := i["call-capacity"]; ok {
 		result["call_capacity"] = flattenWirelessControllerWtpProfileRadio3CallCapacity(i["call-capacity"], d, pre_append)
+	}
+
+	pre_append = pre + ".0." + "cca_threshold"
+	if _, ok := i["cca-threshold"]; ok {
+		result["cca_threshold"] = flattenWirelessControllerWtpProfileRadio3CcaThreshold(i["cca-threshold"], d, pre_append)
 	}
 
 	pre_append = pre + ".0." + "channel"
@@ -6094,9 +6455,49 @@ func flattenWirelessControllerWtpProfileRadio3(v interface{}, d *schema.Resource
 		result["vap_all"] = flattenWirelessControllerWtpProfileRadio3VapAll(i["vap-all"], d, pre_append)
 	}
 
+	pre_append = pre + ".0." + "vap_status"
+	if _, ok := i["vap-status"]; ok {
+		result["vap_status"] = flattenWirelessControllerWtpProfileRadio3VapStatus(i["vap-status"], d, pre_append)
+	}
+
 	pre_append = pre + ".0." + "vap1"
 	if _, ok := i["vap1"]; ok {
 		result["vap1"] = flattenWirelessControllerWtpProfileRadio3Vap1(i["vap1"], d, pre_append)
+	}
+
+	pre_append = pre + ".0." + "vap10"
+	if _, ok := i["vap10"]; ok {
+		result["vap10"] = flattenWirelessControllerWtpProfileRadio3Vap10(i["vap10"], d, pre_append)
+	}
+
+	pre_append = pre + ".0." + "vap11"
+	if _, ok := i["vap11"]; ok {
+		result["vap11"] = flattenWirelessControllerWtpProfileRadio3Vap11(i["vap11"], d, pre_append)
+	}
+
+	pre_append = pre + ".0." + "vap12"
+	if _, ok := i["vap12"]; ok {
+		result["vap12"] = flattenWirelessControllerWtpProfileRadio3Vap12(i["vap12"], d, pre_append)
+	}
+
+	pre_append = pre + ".0." + "vap13"
+	if _, ok := i["vap13"]; ok {
+		result["vap13"] = flattenWirelessControllerWtpProfileRadio3Vap13(i["vap13"], d, pre_append)
+	}
+
+	pre_append = pre + ".0." + "vap14"
+	if _, ok := i["vap14"]; ok {
+		result["vap14"] = flattenWirelessControllerWtpProfileRadio3Vap14(i["vap14"], d, pre_append)
+	}
+
+	pre_append = pre + ".0." + "vap15"
+	if _, ok := i["vap15"]; ok {
+		result["vap15"] = flattenWirelessControllerWtpProfileRadio3Vap15(i["vap15"], d, pre_append)
+	}
+
+	pre_append = pre + ".0." + "vap16"
+	if _, ok := i["vap16"]; ok {
+		result["vap16"] = flattenWirelessControllerWtpProfileRadio3Vap16(i["vap16"], d, pre_append)
 	}
 
 	pre_append = pre + ".0." + "vap2"
@@ -6132,6 +6533,11 @@ func flattenWirelessControllerWtpProfileRadio3(v interface{}, d *schema.Resource
 	pre_append = pre + ".0." + "vap8"
 	if _, ok := i["vap8"]; ok {
 		result["vap8"] = flattenWirelessControllerWtpProfileRadio3Vap8(i["vap8"], d, pre_append)
+	}
+
+	pre_append = pre + ".0." + "vap9"
+	if _, ok := i["vap9"]; ok {
+		result["vap9"] = flattenWirelessControllerWtpProfileRadio3Vap9(i["vap9"], d, pre_append)
 	}
 
 	pre_append = pre + ".0." + "vaps"
@@ -6266,6 +6672,10 @@ func flattenWirelessControllerWtpProfileRadio3CallAdmissionControl(v interface{}
 }
 
 func flattenWirelessControllerWtpProfileRadio3CallCapacity(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWirelessControllerWtpProfileRadio3CcaThreshold(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -6469,7 +6879,39 @@ func flattenWirelessControllerWtpProfileRadio3VapAll(v interface{}, d *schema.Re
 	return v
 }
 
+func flattenWirelessControllerWtpProfileRadio3VapStatus(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenWirelessControllerWtpProfileRadio3Vap1(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWirelessControllerWtpProfileRadio3Vap10(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWirelessControllerWtpProfileRadio3Vap11(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWirelessControllerWtpProfileRadio3Vap12(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWirelessControllerWtpProfileRadio3Vap13(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWirelessControllerWtpProfileRadio3Vap14(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWirelessControllerWtpProfileRadio3Vap15(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWirelessControllerWtpProfileRadio3Vap16(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -6498,6 +6940,10 @@ func flattenWirelessControllerWtpProfileRadio3Vap7(v interface{}, d *schema.Reso
 }
 
 func flattenWirelessControllerWtpProfileRadio3Vap8(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWirelessControllerWtpProfileRadio3Vap9(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -6665,6 +7111,11 @@ func flattenWirelessControllerWtpProfileRadio4(v interface{}, d *schema.Resource
 	pre_append = pre + ".0." + "call_capacity"
 	if _, ok := i["call-capacity"]; ok {
 		result["call_capacity"] = flattenWirelessControllerWtpProfileRadio4CallCapacity(i["call-capacity"], d, pre_append)
+	}
+
+	pre_append = pre + ".0." + "cca_threshold"
+	if _, ok := i["cca-threshold"]; ok {
+		result["cca_threshold"] = flattenWirelessControllerWtpProfileRadio4CcaThreshold(i["cca-threshold"], d, pre_append)
 	}
 
 	pre_append = pre + ".0." + "channel"
@@ -6917,9 +7368,49 @@ func flattenWirelessControllerWtpProfileRadio4(v interface{}, d *schema.Resource
 		result["vap_all"] = flattenWirelessControllerWtpProfileRadio4VapAll(i["vap-all"], d, pre_append)
 	}
 
+	pre_append = pre + ".0." + "vap_status"
+	if _, ok := i["vap-status"]; ok {
+		result["vap_status"] = flattenWirelessControllerWtpProfileRadio4VapStatus(i["vap-status"], d, pre_append)
+	}
+
 	pre_append = pre + ".0." + "vap1"
 	if _, ok := i["vap1"]; ok {
 		result["vap1"] = flattenWirelessControllerWtpProfileRadio4Vap1(i["vap1"], d, pre_append)
+	}
+
+	pre_append = pre + ".0." + "vap10"
+	if _, ok := i["vap10"]; ok {
+		result["vap10"] = flattenWirelessControllerWtpProfileRadio4Vap10(i["vap10"], d, pre_append)
+	}
+
+	pre_append = pre + ".0." + "vap11"
+	if _, ok := i["vap11"]; ok {
+		result["vap11"] = flattenWirelessControllerWtpProfileRadio4Vap11(i["vap11"], d, pre_append)
+	}
+
+	pre_append = pre + ".0." + "vap12"
+	if _, ok := i["vap12"]; ok {
+		result["vap12"] = flattenWirelessControllerWtpProfileRadio4Vap12(i["vap12"], d, pre_append)
+	}
+
+	pre_append = pre + ".0." + "vap13"
+	if _, ok := i["vap13"]; ok {
+		result["vap13"] = flattenWirelessControllerWtpProfileRadio4Vap13(i["vap13"], d, pre_append)
+	}
+
+	pre_append = pre + ".0." + "vap14"
+	if _, ok := i["vap14"]; ok {
+		result["vap14"] = flattenWirelessControllerWtpProfileRadio4Vap14(i["vap14"], d, pre_append)
+	}
+
+	pre_append = pre + ".0." + "vap15"
+	if _, ok := i["vap15"]; ok {
+		result["vap15"] = flattenWirelessControllerWtpProfileRadio4Vap15(i["vap15"], d, pre_append)
+	}
+
+	pre_append = pre + ".0." + "vap16"
+	if _, ok := i["vap16"]; ok {
+		result["vap16"] = flattenWirelessControllerWtpProfileRadio4Vap16(i["vap16"], d, pre_append)
 	}
 
 	pre_append = pre + ".0." + "vap2"
@@ -6955,6 +7446,11 @@ func flattenWirelessControllerWtpProfileRadio4(v interface{}, d *schema.Resource
 	pre_append = pre + ".0." + "vap8"
 	if _, ok := i["vap8"]; ok {
 		result["vap8"] = flattenWirelessControllerWtpProfileRadio4Vap8(i["vap8"], d, pre_append)
+	}
+
+	pre_append = pre + ".0." + "vap9"
+	if _, ok := i["vap9"]; ok {
+		result["vap9"] = flattenWirelessControllerWtpProfileRadio4Vap9(i["vap9"], d, pre_append)
 	}
 
 	pre_append = pre + ".0." + "vaps"
@@ -7089,6 +7585,10 @@ func flattenWirelessControllerWtpProfileRadio4CallAdmissionControl(v interface{}
 }
 
 func flattenWirelessControllerWtpProfileRadio4CallCapacity(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWirelessControllerWtpProfileRadio4CcaThreshold(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -7292,7 +7792,39 @@ func flattenWirelessControllerWtpProfileRadio4VapAll(v interface{}, d *schema.Re
 	return v
 }
 
+func flattenWirelessControllerWtpProfileRadio4VapStatus(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenWirelessControllerWtpProfileRadio4Vap1(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWirelessControllerWtpProfileRadio4Vap10(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWirelessControllerWtpProfileRadio4Vap11(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWirelessControllerWtpProfileRadio4Vap12(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWirelessControllerWtpProfileRadio4Vap13(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWirelessControllerWtpProfileRadio4Vap14(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWirelessControllerWtpProfileRadio4Vap15(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWirelessControllerWtpProfileRadio4Vap16(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -7321,6 +7853,10 @@ func flattenWirelessControllerWtpProfileRadio4Vap7(v interface{}, d *schema.Reso
 }
 
 func flattenWirelessControllerWtpProfileRadio4Vap8(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWirelessControllerWtpProfileRadio4Vap9(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -7438,6 +7974,16 @@ func refreshObjectWirelessControllerWtpProfile(d *schema.ResourceData, o map[str
 
 	if dssValue := d.Get("dynamic_sort_subtable"); dssValue == "" {
 		d.Set("dynamic_sort_subtable", "false")
+	}
+
+	if err = d.Set("n80211mc_mode", flattenWirelessControllerWtpProfile80211McMode(o["80211mc-mode"], d, "n80211mc_mode")); err != nil {
+		if vv, ok := fortiAPIPatch(o["80211mc-mode"], "WirelessControllerWtpProfile-80211McMode"); ok {
+			if err = d.Set("n80211mc_mode", vv); err != nil {
+				return fmt.Errorf("Error reading n80211mc_mode: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading n80211mc_mode: %v", err)
+		}
 	}
 
 	if err = d.Set("_is_factory_setting", flattenWirelessControllerWtpProfileIsFactorySetting(o["_is_factory_setting"], d, "_is_factory_setting")); err != nil {
@@ -7938,6 +8484,16 @@ func refreshObjectWirelessControllerWtpProfile(d *schema.ResourceData, o map[str
 		}
 	}
 
+	if err = d.Set("ipsec_offload", flattenWirelessControllerWtpProfileIpsecOffload(o["ipsec-offload"], d, "ipsec_offload")); err != nil {
+		if vv, ok := fortiAPIPatch(o["ipsec-offload"], "WirelessControllerWtpProfile-IpsecOffload"); ok {
+			if err = d.Set("ipsec_offload", vv); err != nil {
+				return fmt.Errorf("Error reading ipsec_offload: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading ipsec_offload: %v", err)
+		}
+	}
+
 	if isImportTable() {
 		if err = d.Set("lan", flattenWirelessControllerWtpProfileLan(o["lan"], d, "lan")); err != nil {
 			if vv, ok := fortiAPIPatch(o["lan"], "WirelessControllerWtpProfile-Lan"); ok {
@@ -8339,6 +8895,10 @@ func flattenWirelessControllerWtpProfileFortiTestDebug(d *schema.ResourceData, f
 	log.Printf("ER List: %v", e)
 }
 
+func expandWirelessControllerWtpProfile80211McMode(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandWirelessControllerWtpProfileIsFactorySetting(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -8673,6 +9233,10 @@ func expandWirelessControllerWtpProfileIndoorOutdoorDeployment(d *schema.Resourc
 
 func expandWirelessControllerWtpProfileIpFragmentPreventing(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandWirelessControllerWtpProfileIpsecOffload(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
 }
 
 func expandWirelessControllerWtpProfileLan(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
@@ -9471,6 +10035,10 @@ func expandWirelessControllerWtpProfileRadio1(d *schema.ResourceData, v interfac
 	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
 		result["call-capacity"], _ = expandWirelessControllerWtpProfileRadio1CallCapacity(d, i["call_capacity"], pre_append)
 	}
+	pre_append = pre + ".0." + "cca_threshold"
+	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+		result["cca-threshold"], _ = expandWirelessControllerWtpProfileRadio1CcaThreshold(d, i["cca_threshold"], pre_append)
+	}
 	pre_append = pre + ".0." + "channel"
 	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
 		result["channel"], _ = expandWirelessControllerWtpProfileRadio1Channel(d, i["channel"], pre_append)
@@ -9683,9 +10251,41 @@ func expandWirelessControllerWtpProfileRadio1(d *schema.ResourceData, v interfac
 	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
 		result["vap-all"], _ = expandWirelessControllerWtpProfileRadio1VapAll(d, i["vap_all"], pre_append)
 	}
+	pre_append = pre + ".0." + "vap_status"
+	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+		result["vap-status"], _ = expandWirelessControllerWtpProfileRadio1VapStatus(d, i["vap_status"], pre_append)
+	}
 	pre_append = pre + ".0." + "vap1"
 	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
 		result["vap1"], _ = expandWirelessControllerWtpProfileRadio1Vap1(d, i["vap1"], pre_append)
+	}
+	pre_append = pre + ".0." + "vap10"
+	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+		result["vap10"], _ = expandWirelessControllerWtpProfileRadio1Vap10(d, i["vap10"], pre_append)
+	}
+	pre_append = pre + ".0." + "vap11"
+	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+		result["vap11"], _ = expandWirelessControllerWtpProfileRadio1Vap11(d, i["vap11"], pre_append)
+	}
+	pre_append = pre + ".0." + "vap12"
+	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+		result["vap12"], _ = expandWirelessControllerWtpProfileRadio1Vap12(d, i["vap12"], pre_append)
+	}
+	pre_append = pre + ".0." + "vap13"
+	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+		result["vap13"], _ = expandWirelessControllerWtpProfileRadio1Vap13(d, i["vap13"], pre_append)
+	}
+	pre_append = pre + ".0." + "vap14"
+	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+		result["vap14"], _ = expandWirelessControllerWtpProfileRadio1Vap14(d, i["vap14"], pre_append)
+	}
+	pre_append = pre + ".0." + "vap15"
+	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+		result["vap15"], _ = expandWirelessControllerWtpProfileRadio1Vap15(d, i["vap15"], pre_append)
+	}
+	pre_append = pre + ".0." + "vap16"
+	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+		result["vap16"], _ = expandWirelessControllerWtpProfileRadio1Vap16(d, i["vap16"], pre_append)
 	}
 	pre_append = pre + ".0." + "vap2"
 	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
@@ -9714,6 +10314,10 @@ func expandWirelessControllerWtpProfileRadio1(d *schema.ResourceData, v interfac
 	pre_append = pre + ".0." + "vap8"
 	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
 		result["vap8"], _ = expandWirelessControllerWtpProfileRadio1Vap8(d, i["vap8"], pre_append)
+	}
+	pre_append = pre + ".0." + "vap9"
+	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+		result["vap9"], _ = expandWirelessControllerWtpProfileRadio1Vap9(d, i["vap9"], pre_append)
 	}
 	pre_append = pre + ".0." + "vaps"
 	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
@@ -9844,6 +10448,10 @@ func expandWirelessControllerWtpProfileRadio1CallAdmissionControl(d *schema.Reso
 }
 
 func expandWirelessControllerWtpProfileRadio1CallCapacity(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWirelessControllerWtpProfileRadio1CcaThreshold(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -10059,7 +10667,39 @@ func expandWirelessControllerWtpProfileRadio1VapAll(d *schema.ResourceData, v in
 	return v, nil
 }
 
+func expandWirelessControllerWtpProfileRadio1VapStatus(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandWirelessControllerWtpProfileRadio1Vap1(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWirelessControllerWtpProfileRadio1Vap10(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWirelessControllerWtpProfileRadio1Vap11(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWirelessControllerWtpProfileRadio1Vap12(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWirelessControllerWtpProfileRadio1Vap13(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWirelessControllerWtpProfileRadio1Vap14(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWirelessControllerWtpProfileRadio1Vap15(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWirelessControllerWtpProfileRadio1Vap16(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -10088,6 +10728,10 @@ func expandWirelessControllerWtpProfileRadio1Vap7(d *schema.ResourceData, v inte
 }
 
 func expandWirelessControllerWtpProfileRadio1Vap8(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWirelessControllerWtpProfileRadio1Vap9(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -10228,6 +10872,10 @@ func expandWirelessControllerWtpProfileRadio2(d *schema.ResourceData, v interfac
 	pre_append = pre + ".0." + "call_capacity"
 	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
 		result["call-capacity"], _ = expandWirelessControllerWtpProfileRadio2CallCapacity(d, i["call_capacity"], pre_append)
+	}
+	pre_append = pre + ".0." + "cca_threshold"
+	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+		result["cca-threshold"], _ = expandWirelessControllerWtpProfileRadio2CcaThreshold(d, i["cca_threshold"], pre_append)
 	}
 	pre_append = pre + ".0." + "channel"
 	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
@@ -10441,9 +11089,41 @@ func expandWirelessControllerWtpProfileRadio2(d *schema.ResourceData, v interfac
 	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
 		result["vap-all"], _ = expandWirelessControllerWtpProfileRadio2VapAll(d, i["vap_all"], pre_append)
 	}
+	pre_append = pre + ".0." + "vap_status"
+	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+		result["vap-status"], _ = expandWirelessControllerWtpProfileRadio2VapStatus(d, i["vap_status"], pre_append)
+	}
 	pre_append = pre + ".0." + "vap1"
 	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
 		result["vap1"], _ = expandWirelessControllerWtpProfileRadio2Vap1(d, i["vap1"], pre_append)
+	}
+	pre_append = pre + ".0." + "vap10"
+	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+		result["vap10"], _ = expandWirelessControllerWtpProfileRadio2Vap10(d, i["vap10"], pre_append)
+	}
+	pre_append = pre + ".0." + "vap11"
+	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+		result["vap11"], _ = expandWirelessControllerWtpProfileRadio2Vap11(d, i["vap11"], pre_append)
+	}
+	pre_append = pre + ".0." + "vap12"
+	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+		result["vap12"], _ = expandWirelessControllerWtpProfileRadio2Vap12(d, i["vap12"], pre_append)
+	}
+	pre_append = pre + ".0." + "vap13"
+	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+		result["vap13"], _ = expandWirelessControllerWtpProfileRadio2Vap13(d, i["vap13"], pre_append)
+	}
+	pre_append = pre + ".0." + "vap14"
+	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+		result["vap14"], _ = expandWirelessControllerWtpProfileRadio2Vap14(d, i["vap14"], pre_append)
+	}
+	pre_append = pre + ".0." + "vap15"
+	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+		result["vap15"], _ = expandWirelessControllerWtpProfileRadio2Vap15(d, i["vap15"], pre_append)
+	}
+	pre_append = pre + ".0." + "vap16"
+	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+		result["vap16"], _ = expandWirelessControllerWtpProfileRadio2Vap16(d, i["vap16"], pre_append)
 	}
 	pre_append = pre + ".0." + "vap2"
 	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
@@ -10472,6 +11152,10 @@ func expandWirelessControllerWtpProfileRadio2(d *schema.ResourceData, v interfac
 	pre_append = pre + ".0." + "vap8"
 	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
 		result["vap8"], _ = expandWirelessControllerWtpProfileRadio2Vap8(d, i["vap8"], pre_append)
+	}
+	pre_append = pre + ".0." + "vap9"
+	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+		result["vap9"], _ = expandWirelessControllerWtpProfileRadio2Vap9(d, i["vap9"], pre_append)
 	}
 	pre_append = pre + ".0." + "vaps"
 	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
@@ -10602,6 +11286,10 @@ func expandWirelessControllerWtpProfileRadio2CallAdmissionControl(d *schema.Reso
 }
 
 func expandWirelessControllerWtpProfileRadio2CallCapacity(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWirelessControllerWtpProfileRadio2CcaThreshold(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -10817,7 +11505,39 @@ func expandWirelessControllerWtpProfileRadio2VapAll(d *schema.ResourceData, v in
 	return v, nil
 }
 
+func expandWirelessControllerWtpProfileRadio2VapStatus(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandWirelessControllerWtpProfileRadio2Vap1(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWirelessControllerWtpProfileRadio2Vap10(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWirelessControllerWtpProfileRadio2Vap11(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWirelessControllerWtpProfileRadio2Vap12(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWirelessControllerWtpProfileRadio2Vap13(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWirelessControllerWtpProfileRadio2Vap14(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWirelessControllerWtpProfileRadio2Vap15(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWirelessControllerWtpProfileRadio2Vap16(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -10846,6 +11566,10 @@ func expandWirelessControllerWtpProfileRadio2Vap7(d *schema.ResourceData, v inte
 }
 
 func expandWirelessControllerWtpProfileRadio2Vap8(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWirelessControllerWtpProfileRadio2Vap9(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -10986,6 +11710,10 @@ func expandWirelessControllerWtpProfileRadio3(d *schema.ResourceData, v interfac
 	pre_append = pre + ".0." + "call_capacity"
 	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
 		result["call-capacity"], _ = expandWirelessControllerWtpProfileRadio3CallCapacity(d, i["call_capacity"], pre_append)
+	}
+	pre_append = pre + ".0." + "cca_threshold"
+	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+		result["cca-threshold"], _ = expandWirelessControllerWtpProfileRadio3CcaThreshold(d, i["cca_threshold"], pre_append)
 	}
 	pre_append = pre + ".0." + "channel"
 	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
@@ -11199,9 +11927,41 @@ func expandWirelessControllerWtpProfileRadio3(d *schema.ResourceData, v interfac
 	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
 		result["vap-all"], _ = expandWirelessControllerWtpProfileRadio3VapAll(d, i["vap_all"], pre_append)
 	}
+	pre_append = pre + ".0." + "vap_status"
+	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+		result["vap-status"], _ = expandWirelessControllerWtpProfileRadio3VapStatus(d, i["vap_status"], pre_append)
+	}
 	pre_append = pre + ".0." + "vap1"
 	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
 		result["vap1"], _ = expandWirelessControllerWtpProfileRadio3Vap1(d, i["vap1"], pre_append)
+	}
+	pre_append = pre + ".0." + "vap10"
+	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+		result["vap10"], _ = expandWirelessControllerWtpProfileRadio3Vap10(d, i["vap10"], pre_append)
+	}
+	pre_append = pre + ".0." + "vap11"
+	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+		result["vap11"], _ = expandWirelessControllerWtpProfileRadio3Vap11(d, i["vap11"], pre_append)
+	}
+	pre_append = pre + ".0." + "vap12"
+	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+		result["vap12"], _ = expandWirelessControllerWtpProfileRadio3Vap12(d, i["vap12"], pre_append)
+	}
+	pre_append = pre + ".0." + "vap13"
+	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+		result["vap13"], _ = expandWirelessControllerWtpProfileRadio3Vap13(d, i["vap13"], pre_append)
+	}
+	pre_append = pre + ".0." + "vap14"
+	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+		result["vap14"], _ = expandWirelessControllerWtpProfileRadio3Vap14(d, i["vap14"], pre_append)
+	}
+	pre_append = pre + ".0." + "vap15"
+	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+		result["vap15"], _ = expandWirelessControllerWtpProfileRadio3Vap15(d, i["vap15"], pre_append)
+	}
+	pre_append = pre + ".0." + "vap16"
+	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+		result["vap16"], _ = expandWirelessControllerWtpProfileRadio3Vap16(d, i["vap16"], pre_append)
 	}
 	pre_append = pre + ".0." + "vap2"
 	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
@@ -11230,6 +11990,10 @@ func expandWirelessControllerWtpProfileRadio3(d *schema.ResourceData, v interfac
 	pre_append = pre + ".0." + "vap8"
 	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
 		result["vap8"], _ = expandWirelessControllerWtpProfileRadio3Vap8(d, i["vap8"], pre_append)
+	}
+	pre_append = pre + ".0." + "vap9"
+	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+		result["vap9"], _ = expandWirelessControllerWtpProfileRadio3Vap9(d, i["vap9"], pre_append)
 	}
 	pre_append = pre + ".0." + "vaps"
 	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
@@ -11360,6 +12124,10 @@ func expandWirelessControllerWtpProfileRadio3CallAdmissionControl(d *schema.Reso
 }
 
 func expandWirelessControllerWtpProfileRadio3CallCapacity(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWirelessControllerWtpProfileRadio3CcaThreshold(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -11575,7 +12343,39 @@ func expandWirelessControllerWtpProfileRadio3VapAll(d *schema.ResourceData, v in
 	return v, nil
 }
 
+func expandWirelessControllerWtpProfileRadio3VapStatus(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandWirelessControllerWtpProfileRadio3Vap1(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWirelessControllerWtpProfileRadio3Vap10(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWirelessControllerWtpProfileRadio3Vap11(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWirelessControllerWtpProfileRadio3Vap12(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWirelessControllerWtpProfileRadio3Vap13(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWirelessControllerWtpProfileRadio3Vap14(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWirelessControllerWtpProfileRadio3Vap15(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWirelessControllerWtpProfileRadio3Vap16(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -11604,6 +12404,10 @@ func expandWirelessControllerWtpProfileRadio3Vap7(d *schema.ResourceData, v inte
 }
 
 func expandWirelessControllerWtpProfileRadio3Vap8(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWirelessControllerWtpProfileRadio3Vap9(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -11744,6 +12548,10 @@ func expandWirelessControllerWtpProfileRadio4(d *schema.ResourceData, v interfac
 	pre_append = pre + ".0." + "call_capacity"
 	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
 		result["call-capacity"], _ = expandWirelessControllerWtpProfileRadio4CallCapacity(d, i["call_capacity"], pre_append)
+	}
+	pre_append = pre + ".0." + "cca_threshold"
+	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+		result["cca-threshold"], _ = expandWirelessControllerWtpProfileRadio4CcaThreshold(d, i["cca_threshold"], pre_append)
 	}
 	pre_append = pre + ".0." + "channel"
 	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
@@ -11957,9 +12765,41 @@ func expandWirelessControllerWtpProfileRadio4(d *schema.ResourceData, v interfac
 	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
 		result["vap-all"], _ = expandWirelessControllerWtpProfileRadio4VapAll(d, i["vap_all"], pre_append)
 	}
+	pre_append = pre + ".0." + "vap_status"
+	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+		result["vap-status"], _ = expandWirelessControllerWtpProfileRadio4VapStatus(d, i["vap_status"], pre_append)
+	}
 	pre_append = pre + ".0." + "vap1"
 	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
 		result["vap1"], _ = expandWirelessControllerWtpProfileRadio4Vap1(d, i["vap1"], pre_append)
+	}
+	pre_append = pre + ".0." + "vap10"
+	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+		result["vap10"], _ = expandWirelessControllerWtpProfileRadio4Vap10(d, i["vap10"], pre_append)
+	}
+	pre_append = pre + ".0." + "vap11"
+	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+		result["vap11"], _ = expandWirelessControllerWtpProfileRadio4Vap11(d, i["vap11"], pre_append)
+	}
+	pre_append = pre + ".0." + "vap12"
+	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+		result["vap12"], _ = expandWirelessControllerWtpProfileRadio4Vap12(d, i["vap12"], pre_append)
+	}
+	pre_append = pre + ".0." + "vap13"
+	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+		result["vap13"], _ = expandWirelessControllerWtpProfileRadio4Vap13(d, i["vap13"], pre_append)
+	}
+	pre_append = pre + ".0." + "vap14"
+	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+		result["vap14"], _ = expandWirelessControllerWtpProfileRadio4Vap14(d, i["vap14"], pre_append)
+	}
+	pre_append = pre + ".0." + "vap15"
+	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+		result["vap15"], _ = expandWirelessControllerWtpProfileRadio4Vap15(d, i["vap15"], pre_append)
+	}
+	pre_append = pre + ".0." + "vap16"
+	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+		result["vap16"], _ = expandWirelessControllerWtpProfileRadio4Vap16(d, i["vap16"], pre_append)
 	}
 	pre_append = pre + ".0." + "vap2"
 	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
@@ -11988,6 +12828,10 @@ func expandWirelessControllerWtpProfileRadio4(d *schema.ResourceData, v interfac
 	pre_append = pre + ".0." + "vap8"
 	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
 		result["vap8"], _ = expandWirelessControllerWtpProfileRadio4Vap8(d, i["vap8"], pre_append)
+	}
+	pre_append = pre + ".0." + "vap9"
+	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+		result["vap9"], _ = expandWirelessControllerWtpProfileRadio4Vap9(d, i["vap9"], pre_append)
 	}
 	pre_append = pre + ".0." + "vaps"
 	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
@@ -12118,6 +12962,10 @@ func expandWirelessControllerWtpProfileRadio4CallAdmissionControl(d *schema.Reso
 }
 
 func expandWirelessControllerWtpProfileRadio4CallCapacity(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWirelessControllerWtpProfileRadio4CcaThreshold(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -12333,7 +13181,39 @@ func expandWirelessControllerWtpProfileRadio4VapAll(d *schema.ResourceData, v in
 	return v, nil
 }
 
+func expandWirelessControllerWtpProfileRadio4VapStatus(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandWirelessControllerWtpProfileRadio4Vap1(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWirelessControllerWtpProfileRadio4Vap10(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWirelessControllerWtpProfileRadio4Vap11(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWirelessControllerWtpProfileRadio4Vap12(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWirelessControllerWtpProfileRadio4Vap13(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWirelessControllerWtpProfileRadio4Vap14(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWirelessControllerWtpProfileRadio4Vap15(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWirelessControllerWtpProfileRadio4Vap16(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -12362,6 +13242,10 @@ func expandWirelessControllerWtpProfileRadio4Vap7(d *schema.ResourceData, v inte
 }
 
 func expandWirelessControllerWtpProfileRadio4Vap8(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWirelessControllerWtpProfileRadio4Vap9(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -12473,6 +13357,15 @@ func expandWirelessControllerWtpProfileWanPortMode(d *schema.ResourceData, v int
 
 func getObjectWirelessControllerWtpProfile(d *schema.ResourceData) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
+
+	if v, ok := d.GetOk("n80211mc_mode"); ok || d.HasChange("n80211mc_mode") {
+		t, err := expandWirelessControllerWtpProfile80211McMode(d, v, "n80211mc_mode")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["80211mc-mode"] = t
+		}
+	}
 
 	if v, ok := d.GetOk("_is_factory_setting"); ok || d.HasChange("_is_factory_setting") {
 		t, err := expandWirelessControllerWtpProfileIsFactorySetting(d, v, "_is_factory_setting")
@@ -12921,6 +13814,15 @@ func getObjectWirelessControllerWtpProfile(d *schema.ResourceData) (*map[string]
 			return &obj, err
 		} else if t != nil {
 			obj["ip-fragment-preventing"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("ipsec_offload"); ok || d.HasChange("ipsec_offload") {
+		t, err := expandWirelessControllerWtpProfileIpsecOffload(d, v, "ipsec_offload")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["ipsec-offload"] = t
 		}
 	}
 

@@ -210,14 +210,21 @@ func resourceDnsfilterProfileDnsTranslationUpdate(d *schema.ResourceData, m inte
 
 	wsParams["adom"] = adomv
 
-	_, err = c.UpdateDnsfilterProfileDnsTranslation(obj, mkey, paradict, wsParams)
+	v, err := c.UpdateDnsfilterProfileDnsTranslation(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating DnsfilterProfileDnsTranslation resource: %v", err)
 	}
 
 	log.Printf(strconv.Itoa(c.Retries))
 
-	d.SetId(strconv.Itoa(getIntKey(d, "fosid")))
+	if v != nil && v["id"] != nil {
+		if vidn, ok := v["id"].(float64); ok {
+			d.SetId(strconv.Itoa(int(vidn)))
+			return resourceDnsfilterProfileDnsTranslationRead(d, m)
+		} else {
+			return fmt.Errorf("Error updating DnsfilterProfileDnsTranslation resource: %v", err)
+		}
+	}
 
 	return resourceDnsfilterProfileDnsTranslationRead(d, m)
 }

@@ -52,7 +52,7 @@ func resourceFirewallPolicy() *schema.Resource {
 				ForceNew: true,
 			},
 			"_policy_block": &schema.Schema{
-				Type:     schema.TypeInt,
+				Type:     schema.TypeString,
 				Optional: true,
 			},
 			"action": &schema.Schema{
@@ -161,7 +161,17 @@ func resourceFirewallPolicy() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
+			"creation_time": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+			},
 			"custom_log_fields": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Computed: true,
+			},
+			"custom_tags": &schema.Schema{
 				Type:     schema.TypeSet,
 				Elem:     &schema.Schema{Type: schema.TypeString},
 				Optional: true,
@@ -280,6 +290,43 @@ func resourceFirewallPolicy() *schema.Resource {
 				Elem:     &schema.Schema{Type: schema.TypeString},
 				Optional: true,
 				Computed: true,
+			},
+			"fabric_force_sync": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+			"fabric_object": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+			"fabric_object_source": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+			"fabric_policy": &schema.Schema{
+				Type:     schema.TypeList,
+				Optional: true,
+				MaxItems: 1,
+				Computed: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"from": &schema.Schema{
+							Type:     schema.TypeSet,
+							Elem:     &schema.Schema{Type: schema.TypeString},
+							Optional: true,
+							Computed: true,
+						},
+						"to": &schema.Schema{
+							Type:     schema.TypeSet,
+							Elem:     &schema.Schema{Type: schema.TypeString},
+							Optional: true,
+							Computed: true,
+						},
+					},
+				},
 			},
 			"fec": &schema.Schema{
 				Type:     schema.TypeString,
@@ -909,6 +956,11 @@ func resourceFirewallPolicy() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"skip_vrf_match": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
 			"src_vendor_mac": &schema.Schema{
 				Type:     schema.TypeSet,
 				Elem:     &schema.Schema{Type: schema.TypeString},
@@ -1158,6 +1210,12 @@ func resourceFirewallPolicy() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"ztna_destination": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Computed: true,
+			},
 			"wsso": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -1179,6 +1237,12 @@ func resourceFirewallPolicy() *schema.Resource {
 				Computed: true,
 			},
 			"ztna_ems_tag_secondary": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Computed: true,
+			},
+			"ztna_ems_tag6": &schema.Schema{
 				Type:     schema.TypeSet,
 				Elem:     &schema.Schema{Type: schema.TypeString},
 				Optional: true,
@@ -1455,14 +1519,21 @@ func resourceFirewallPolicyUpdate(d *schema.ResourceData, m interface{}) error {
 
 	wsParams["adom"] = adomv
 
-	_, err = c.UpdateFirewallPolicy(obj, mkey, paradict, wsParams)
+	v, err := c.UpdateFirewallPolicy(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating FirewallPolicy resource: %v", err)
 	}
 
 	log.Printf(strconv.Itoa(c.Retries))
 
-	d.SetId(strconv.Itoa(getIntKey(d, "policyid")))
+	if v != nil && v["policyid"] != nil {
+		if vidn, ok := v["policyid"].(float64); ok {
+			d.SetId(strconv.Itoa(int(vidn)))
+			return resourceFirewallPolicyRead(d, m)
+		} else {
+			return fmt.Errorf("Error updating FirewallPolicy resource: %v", err)
+		}
+	}
 
 	return resourceFirewallPolicyRead(d, m)
 }
@@ -1647,7 +1718,15 @@ func flattenFirewallPolicyComments(v interface{}, d *schema.ResourceData, pre st
 	return v
 }
 
+func flattenFirewallPolicyCreationTime(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenFirewallPolicyCustomLogFields(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
+func flattenFirewallPolicyCustomTags(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return flattenStringList(v)
 }
 
@@ -1736,6 +1815,49 @@ func flattenFirewallPolicyEmailCollect(v interface{}, d *schema.ResourceData, pr
 }
 
 func flattenFirewallPolicyEmailfilterProfile(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
+func flattenFirewallPolicyFabricForceSync(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenFirewallPolicyFabricObject(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenFirewallPolicyFabricObjectSource(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenFirewallPolicyFabricPolicy(v interface{}, d *schema.ResourceData, pre string) []map[string]interface{} {
+	if v == nil {
+		return nil
+	}
+
+	i := v.(map[string]interface{})
+	result := make(map[string]interface{})
+
+	pre_append := "" // complex
+	pre_append = pre + ".0." + "from"
+	if _, ok := i["from"]; ok {
+		result["from"] = flattenFirewallPolicyFabricPolicyFrom(i["from"], d, pre_append)
+	}
+
+	pre_append = pre + ".0." + "to"
+	if _, ok := i["to"]; ok {
+		result["to"] = flattenFirewallPolicyFabricPolicyTo(i["to"], d, pre_append)
+	}
+
+	lastresult := []map[string]interface{}{result}
+	return lastresult
+}
+
+func flattenFirewallPolicyFabricPolicyFrom(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
+func flattenFirewallPolicyFabricPolicyTo(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return flattenStringList(v)
 }
 
@@ -2207,6 +2329,10 @@ func flattenFirewallPolicySgtCheck(v interface{}, d *schema.ResourceData, pre st
 	return v
 }
 
+func flattenFirewallPolicySkipVrfMatch(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenFirewallPolicySrcVendorMac(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return flattenStringList(v)
 }
@@ -2391,6 +2517,10 @@ func flattenFirewallPolicyWebproxyProfile(v interface{}, d *schema.ResourceData,
 	return flattenStringList(v)
 }
 
+func flattenFirewallPolicyZtnaDestination(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
 func flattenFirewallPolicyWsso(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -2408,6 +2538,10 @@ func flattenFirewallPolicyZtnaEmsTagNegate(v interface{}, d *schema.ResourceData
 }
 
 func flattenFirewallPolicyZtnaEmsTagSecondary(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
+func flattenFirewallPolicyZtnaEmsTag6(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return flattenStringList(v)
 }
 
@@ -2776,6 +2910,16 @@ func refreshObjectFirewallPolicy(d *schema.ResourceData, o map[string]interface{
 		}
 	}
 
+	if err = d.Set("creation_time", flattenFirewallPolicyCreationTime(o["creation-time"], d, "creation_time")); err != nil {
+		if vv, ok := fortiAPIPatch(o["creation-time"], "FirewallPolicy-CreationTime"); ok {
+			if err = d.Set("creation_time", vv); err != nil {
+				return fmt.Errorf("Error reading creation_time: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading creation_time: %v", err)
+		}
+	}
+
 	if err = d.Set("custom_log_fields", flattenFirewallPolicyCustomLogFields(o["custom-log-fields"], d, "custom_log_fields")); err != nil {
 		if vv, ok := fortiAPIPatch(o["custom-log-fields"], "FirewallPolicy-CustomLogFields"); ok {
 			if err = d.Set("custom_log_fields", vv); err != nil {
@@ -2783,6 +2927,16 @@ func refreshObjectFirewallPolicy(d *schema.ResourceData, o map[string]interface{
 			}
 		} else {
 			return fmt.Errorf("Error reading custom_log_fields: %v", err)
+		}
+	}
+
+	if err = d.Set("custom_tags", flattenFirewallPolicyCustomTags(o["custom-tags"], d, "custom_tags")); err != nil {
+		if vv, ok := fortiAPIPatch(o["custom-tags"], "FirewallPolicy-CustomTags"); ok {
+			if err = d.Set("custom_tags", vv); err != nil {
+				return fmt.Errorf("Error reading custom_tags: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading custom_tags: %v", err)
 		}
 	}
 
@@ -3003,6 +3157,60 @@ func refreshObjectFirewallPolicy(d *schema.ResourceData, o map[string]interface{
 			}
 		} else {
 			return fmt.Errorf("Error reading emailfilter_profile: %v", err)
+		}
+	}
+
+	if err = d.Set("fabric_force_sync", flattenFirewallPolicyFabricForceSync(o["fabric-force-sync"], d, "fabric_force_sync")); err != nil {
+		if vv, ok := fortiAPIPatch(o["fabric-force-sync"], "FirewallPolicy-FabricForceSync"); ok {
+			if err = d.Set("fabric_force_sync", vv); err != nil {
+				return fmt.Errorf("Error reading fabric_force_sync: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading fabric_force_sync: %v", err)
+		}
+	}
+
+	if err = d.Set("fabric_object", flattenFirewallPolicyFabricObject(o["fabric-object"], d, "fabric_object")); err != nil {
+		if vv, ok := fortiAPIPatch(o["fabric-object"], "FirewallPolicy-FabricObject"); ok {
+			if err = d.Set("fabric_object", vv); err != nil {
+				return fmt.Errorf("Error reading fabric_object: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading fabric_object: %v", err)
+		}
+	}
+
+	if err = d.Set("fabric_object_source", flattenFirewallPolicyFabricObjectSource(o["fabric-object-source"], d, "fabric_object_source")); err != nil {
+		if vv, ok := fortiAPIPatch(o["fabric-object-source"], "FirewallPolicy-FabricObjectSource"); ok {
+			if err = d.Set("fabric_object_source", vv); err != nil {
+				return fmt.Errorf("Error reading fabric_object_source: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading fabric_object_source: %v", err)
+		}
+	}
+
+	if isImportTable() {
+		if err = d.Set("fabric_policy", flattenFirewallPolicyFabricPolicy(o["fabric-policy"], d, "fabric_policy")); err != nil {
+			if vv, ok := fortiAPIPatch(o["fabric-policy"], "FirewallPolicy-FabricPolicy"); ok {
+				if err = d.Set("fabric_policy", vv); err != nil {
+					return fmt.Errorf("Error reading fabric_policy: %v", err)
+				}
+			} else {
+				return fmt.Errorf("Error reading fabric_policy: %v", err)
+			}
+		}
+	} else {
+		if _, ok := d.GetOk("fabric_policy"); ok {
+			if err = d.Set("fabric_policy", flattenFirewallPolicyFabricPolicy(o["fabric-policy"], d, "fabric_policy")); err != nil {
+				if vv, ok := fortiAPIPatch(o["fabric-policy"], "FirewallPolicy-FabricPolicy"); ok {
+					if err = d.Set("fabric_policy", vv); err != nil {
+						return fmt.Errorf("Error reading fabric_policy: %v", err)
+					}
+				} else {
+					return fmt.Errorf("Error reading fabric_policy: %v", err)
+				}
+			}
 		}
 	}
 
@@ -4176,6 +4384,16 @@ func refreshObjectFirewallPolicy(d *schema.ResourceData, o map[string]interface{
 		}
 	}
 
+	if err = d.Set("skip_vrf_match", flattenFirewallPolicySkipVrfMatch(o["skip-vrf-match"], d, "skip_vrf_match")); err != nil {
+		if vv, ok := fortiAPIPatch(o["skip-vrf-match"], "FirewallPolicy-SkipVrfMatch"); ok {
+			if err = d.Set("skip_vrf_match", vv); err != nil {
+				return fmt.Errorf("Error reading skip_vrf_match: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading skip_vrf_match: %v", err)
+		}
+	}
+
 	if err = d.Set("src_vendor_mac", flattenFirewallPolicySrcVendorMac(o["src-vendor-mac"], d, "src_vendor_mac")); err != nil {
 		if vv, ok := fortiAPIPatch(o["src-vendor-mac"], "FirewallPolicy-SrcVendorMac"); ok {
 			if err = d.Set("src_vendor_mac", vv); err != nil {
@@ -4636,6 +4854,16 @@ func refreshObjectFirewallPolicy(d *schema.ResourceData, o map[string]interface{
 		}
 	}
 
+	if err = d.Set("ztna_destination", flattenFirewallPolicyZtnaDestination(o["ztna-destination"], d, "ztna_destination")); err != nil {
+		if vv, ok := fortiAPIPatch(o["ztna-destination"], "FirewallPolicy-ZtnaDestination"); ok {
+			if err = d.Set("ztna_destination", vv); err != nil {
+				return fmt.Errorf("Error reading ztna_destination: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading ztna_destination: %v", err)
+		}
+	}
+
 	if err = d.Set("wsso", flattenFirewallPolicyWsso(o["wsso"], d, "wsso")); err != nil {
 		if vv, ok := fortiAPIPatch(o["wsso"], "FirewallPolicy-Wsso"); ok {
 			if err = d.Set("wsso", vv); err != nil {
@@ -4683,6 +4911,16 @@ func refreshObjectFirewallPolicy(d *schema.ResourceData, o map[string]interface{
 			}
 		} else {
 			return fmt.Errorf("Error reading ztna_ems_tag_secondary: %v", err)
+		}
+	}
+
+	if err = d.Set("ztna_ems_tag6", flattenFirewallPolicyZtnaEmsTag6(o["ztna-ems-tag6"], d, "ztna_ems_tag6")); err != nil {
+		if vv, ok := fortiAPIPatch(o["ztna-ems-tag6"], "FirewallPolicy-ZtnaEmsTag6"); ok {
+			if err = d.Set("ztna_ems_tag6", vv); err != nil {
+				return fmt.Errorf("Error reading ztna_ems_tag6: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading ztna_ems_tag6: %v", err)
 		}
 	}
 
@@ -5117,7 +5355,15 @@ func expandFirewallPolicyComments(d *schema.ResourceData, v interface{}, pre str
 	return v, nil
 }
 
+func expandFirewallPolicyCreationTime(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandFirewallPolicyCustomLogFields(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandFirewallPolicyCustomTags(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return expandStringList(v.(*schema.Set).List()), nil
 }
 
@@ -5206,6 +5452,48 @@ func expandFirewallPolicyEmailCollect(d *schema.ResourceData, v interface{}, pre
 }
 
 func expandFirewallPolicyEmailfilterProfile(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandFirewallPolicyFabricForceSync(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandFirewallPolicyFabricObject(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandFirewallPolicyFabricObjectSource(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandFirewallPolicyFabricPolicy(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	l := v.([]interface{})
+	if len(l) == 0 || l[0] == nil {
+		return nil, nil
+	}
+
+	i := l[0].(map[string]interface{})
+	result := make(map[string]interface{})
+
+	pre_append := "" // complex
+	pre_append = pre + ".0." + "from"
+	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+		result["from"], _ = expandFirewallPolicyFabricPolicyFrom(d, i["from"], pre_append)
+	}
+	pre_append = pre + ".0." + "to"
+	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+		result["to"], _ = expandFirewallPolicyFabricPolicyTo(d, i["to"], pre_append)
+	}
+
+	return result, nil
+}
+
+func expandFirewallPolicyFabricPolicyFrom(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandFirewallPolicyFabricPolicyTo(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return expandStringList(v.(*schema.Set).List()), nil
 }
 
@@ -5677,6 +5965,10 @@ func expandFirewallPolicySgtCheck(d *schema.ResourceData, v interface{}, pre str
 	return v, nil
 }
 
+func expandFirewallPolicySkipVrfMatch(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandFirewallPolicySrcVendorMac(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return expandStringList(v.(*schema.Set).List()), nil
 }
@@ -5861,6 +6153,10 @@ func expandFirewallPolicyWebproxyProfile(d *schema.ResourceData, v interface{}, 
 	return expandStringList(v.(*schema.Set).List()), nil
 }
 
+func expandFirewallPolicyZtnaDestination(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
 func expandFirewallPolicyWsso(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -5878,6 +6174,10 @@ func expandFirewallPolicyZtnaEmsTagNegate(d *schema.ResourceData, v interface{},
 }
 
 func expandFirewallPolicyZtnaEmsTagSecondary(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandFirewallPolicyZtnaEmsTag6(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return expandStringList(v.(*schema.Set).List()), nil
 }
 
@@ -6223,12 +6523,30 @@ func getObjectFirewallPolicy(d *schema.ResourceData) (*map[string]interface{}, e
 		}
 	}
 
+	if v, ok := d.GetOk("creation_time"); ok || d.HasChange("creation_time") {
+		t, err := expandFirewallPolicyCreationTime(d, v, "creation_time")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["creation-time"] = t
+		}
+	}
+
 	if v, ok := d.GetOk("custom_log_fields"); ok || d.HasChange("custom_log_fields") {
 		t, err := expandFirewallPolicyCustomLogFields(d, v, "custom_log_fields")
 		if err != nil {
 			return &obj, err
 		} else if t != nil {
 			obj["custom-log-fields"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("custom_tags"); ok || d.HasChange("custom_tags") {
+		t, err := expandFirewallPolicyCustomTags(d, v, "custom_tags")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["custom-tags"] = t
 		}
 	}
 
@@ -6427,6 +6745,42 @@ func getObjectFirewallPolicy(d *schema.ResourceData) (*map[string]interface{}, e
 			return &obj, err
 		} else if t != nil {
 			obj["emailfilter-profile"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("fabric_force_sync"); ok || d.HasChange("fabric_force_sync") {
+		t, err := expandFirewallPolicyFabricForceSync(d, v, "fabric_force_sync")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["fabric-force-sync"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("fabric_object"); ok || d.HasChange("fabric_object") {
+		t, err := expandFirewallPolicyFabricObject(d, v, "fabric_object")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["fabric-object"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("fabric_object_source"); ok || d.HasChange("fabric_object_source") {
+		t, err := expandFirewallPolicyFabricObjectSource(d, v, "fabric_object_source")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["fabric-object-source"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("fabric_policy"); ok || d.HasChange("fabric_policy") {
+		t, err := expandFirewallPolicyFabricPolicy(d, v, "fabric_policy")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["fabric-policy"] = t
 		}
 	}
 
@@ -7483,6 +7837,15 @@ func getObjectFirewallPolicy(d *schema.ResourceData) (*map[string]interface{}, e
 		}
 	}
 
+	if v, ok := d.GetOk("skip_vrf_match"); ok || d.HasChange("skip_vrf_match") {
+		t, err := expandFirewallPolicySkipVrfMatch(d, v, "skip_vrf_match")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["skip-vrf-match"] = t
+		}
+	}
+
 	if v, ok := d.GetOk("src_vendor_mac"); ok || d.HasChange("src_vendor_mac") {
 		t, err := expandFirewallPolicySrcVendorMac(d, v, "src_vendor_mac")
 		if err != nil {
@@ -7897,6 +8260,15 @@ func getObjectFirewallPolicy(d *schema.ResourceData) (*map[string]interface{}, e
 		}
 	}
 
+	if v, ok := d.GetOk("ztna_destination"); ok || d.HasChange("ztna_destination") {
+		t, err := expandFirewallPolicyZtnaDestination(d, v, "ztna_destination")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["ztna-destination"] = t
+		}
+	}
+
 	if v, ok := d.GetOk("wsso"); ok || d.HasChange("wsso") {
 		t, err := expandFirewallPolicyWsso(d, v, "wsso")
 		if err != nil {
@@ -7939,6 +8311,15 @@ func getObjectFirewallPolicy(d *schema.ResourceData) (*map[string]interface{}, e
 			return &obj, err
 		} else if t != nil {
 			obj["ztna-ems-tag-secondary"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("ztna_ems_tag6"); ok || d.HasChange("ztna_ems_tag6") {
+		t, err := expandFirewallPolicyZtnaEmsTag6(d, v, "ztna_ems_tag6")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["ztna-ems-tag6"] = t
 		}
 	}
 

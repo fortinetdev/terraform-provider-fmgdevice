@@ -31,6 +31,8 @@ The following arguments are supported:
 * `log` - Log. Valid values: `none`, `all`, `blocked`.
 
 * `name` - Name.
+* `replace_api_key` - Replace-Api-Key. Valid values: `disable`, `enable`.
+
 * `response` - Response. The structure of `response` block is documented below.
 * `unknown_api` - Unknown-Api. Valid values: `disable`, `enable`.
 

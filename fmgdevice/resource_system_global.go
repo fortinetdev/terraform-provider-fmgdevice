@@ -173,6 +173,34 @@ func resourceSystemGlobal() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"admin_http_json_request_limit": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+			},
+			"admin_http_login_request_size_limit": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+			},
+			"admin_http_rate_limit_exempt_auth": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"admin_http_rate_limit_max_requests": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+			},
+			"admin_http_request_body_timeout": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+			},
+			"admin_http_request_header_timeout": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+			},
+			"admin_http_unauthenticated_request_body_timeout": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+			},
 			"admin_https_pki_required": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -703,6 +731,12 @@ func resourceSystemGlobal() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"gui_custom_theme": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Computed: true,
+			},
 			"gui_date_format": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -769,6 +803,10 @@ func resourceSystemGlobal() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"gui_login_request_rate_limit": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+			},
 			"gui_replacement_message_groups": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -778,6 +816,10 @@ func resourceSystemGlobal() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+			},
+			"gui_restrict_theme_change": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
 			},
 			"gui_theme": &schema.Schema{
 				Type:     schema.TypeString,
@@ -988,6 +1030,10 @@ func resourceSystemGlobal() *schema.Resource {
 				Computed: true,
 			},
 			"log_daemon_cpu_threshold": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+			},
+			"log_fsck_timeout": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
 			},
@@ -1546,6 +1592,10 @@ func resourceSystemGlobal() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"tcp_congestion_control": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 			"tcp_halfclose_timer": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
@@ -2065,6 +2115,34 @@ func flattenSystemGlobalAdminHstsMaxAge(v interface{}, d *schema.ResourceData, p
 	return v
 }
 
+func flattenSystemGlobalAdminHttpJsonRequestLimit(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemGlobalAdminHttpLoginRequestSizeLimit(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemGlobalAdminHttpRateLimitExemptAuth(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemGlobalAdminHttpRateLimitMaxRequests(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemGlobalAdminHttpRequestBodyTimeout(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemGlobalAdminHttpRequestHeaderTimeout(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemGlobalAdminHttpUnauthenticatedRequestBodyTimeout(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenSystemGlobalAdminHttpsPkiRequired(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -2497,6 +2575,10 @@ func flattenSystemGlobalGuiCustomLanguage(v interface{}, d *schema.ResourceData,
 	return v
 }
 
+func flattenSystemGlobalGuiCustomTheme(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
 func flattenSystemGlobalGuiDateFormat(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -2553,11 +2635,19 @@ func flattenSystemGlobalGuiLocalOut(v interface{}, d *schema.ResourceData, pre s
 	return v
 }
 
+func flattenSystemGlobalGuiLoginRequestRateLimit(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenSystemGlobalGuiReplacementMessageGroups(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
 func flattenSystemGlobalGuiRestApiCache(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemGlobalGuiRestrictThemeChange(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -2730,6 +2820,10 @@ func flattenSystemGlobalLldpTransmission(v interface{}, d *schema.ResourceData, 
 }
 
 func flattenSystemGlobalLogDaemonCpuThreshold(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemGlobalLogFsckTimeout(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -3211,6 +3305,10 @@ func flattenSystemGlobalSysPerfLogInterval(v interface{}, d *schema.ResourceData
 }
 
 func flattenSystemGlobalSyslogAffinity(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemGlobalTcpCongestionControl(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -3754,6 +3852,76 @@ func refreshObjectSystemGlobal(d *schema.ResourceData, o map[string]interface{})
 			}
 		} else {
 			return fmt.Errorf("Error reading admin_hsts_max_age: %v", err)
+		}
+	}
+
+	if err = d.Set("admin_http_json_request_limit", flattenSystemGlobalAdminHttpJsonRequestLimit(o["admin-http-json-request-limit"], d, "admin_http_json_request_limit")); err != nil {
+		if vv, ok := fortiAPIPatch(o["admin-http-json-request-limit"], "SystemGlobal-AdminHttpJsonRequestLimit"); ok {
+			if err = d.Set("admin_http_json_request_limit", vv); err != nil {
+				return fmt.Errorf("Error reading admin_http_json_request_limit: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading admin_http_json_request_limit: %v", err)
+		}
+	}
+
+	if err = d.Set("admin_http_login_request_size_limit", flattenSystemGlobalAdminHttpLoginRequestSizeLimit(o["admin-http-login-request-size-limit"], d, "admin_http_login_request_size_limit")); err != nil {
+		if vv, ok := fortiAPIPatch(o["admin-http-login-request-size-limit"], "SystemGlobal-AdminHttpLoginRequestSizeLimit"); ok {
+			if err = d.Set("admin_http_login_request_size_limit", vv); err != nil {
+				return fmt.Errorf("Error reading admin_http_login_request_size_limit: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading admin_http_login_request_size_limit: %v", err)
+		}
+	}
+
+	if err = d.Set("admin_http_rate_limit_exempt_auth", flattenSystemGlobalAdminHttpRateLimitExemptAuth(o["admin-http-rate-limit-exempt-auth"], d, "admin_http_rate_limit_exempt_auth")); err != nil {
+		if vv, ok := fortiAPIPatch(o["admin-http-rate-limit-exempt-auth"], "SystemGlobal-AdminHttpRateLimitExemptAuth"); ok {
+			if err = d.Set("admin_http_rate_limit_exempt_auth", vv); err != nil {
+				return fmt.Errorf("Error reading admin_http_rate_limit_exempt_auth: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading admin_http_rate_limit_exempt_auth: %v", err)
+		}
+	}
+
+	if err = d.Set("admin_http_rate_limit_max_requests", flattenSystemGlobalAdminHttpRateLimitMaxRequests(o["admin-http-rate-limit-max-requests"], d, "admin_http_rate_limit_max_requests")); err != nil {
+		if vv, ok := fortiAPIPatch(o["admin-http-rate-limit-max-requests"], "SystemGlobal-AdminHttpRateLimitMaxRequests"); ok {
+			if err = d.Set("admin_http_rate_limit_max_requests", vv); err != nil {
+				return fmt.Errorf("Error reading admin_http_rate_limit_max_requests: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading admin_http_rate_limit_max_requests: %v", err)
+		}
+	}
+
+	if err = d.Set("admin_http_request_body_timeout", flattenSystemGlobalAdminHttpRequestBodyTimeout(o["admin-http-request-body-timeout"], d, "admin_http_request_body_timeout")); err != nil {
+		if vv, ok := fortiAPIPatch(o["admin-http-request-body-timeout"], "SystemGlobal-AdminHttpRequestBodyTimeout"); ok {
+			if err = d.Set("admin_http_request_body_timeout", vv); err != nil {
+				return fmt.Errorf("Error reading admin_http_request_body_timeout: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading admin_http_request_body_timeout: %v", err)
+		}
+	}
+
+	if err = d.Set("admin_http_request_header_timeout", flattenSystemGlobalAdminHttpRequestHeaderTimeout(o["admin-http-request-header-timeout"], d, "admin_http_request_header_timeout")); err != nil {
+		if vv, ok := fortiAPIPatch(o["admin-http-request-header-timeout"], "SystemGlobal-AdminHttpRequestHeaderTimeout"); ok {
+			if err = d.Set("admin_http_request_header_timeout", vv); err != nil {
+				return fmt.Errorf("Error reading admin_http_request_header_timeout: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading admin_http_request_header_timeout: %v", err)
+		}
+	}
+
+	if err = d.Set("admin_http_unauthenticated_request_body_timeout", flattenSystemGlobalAdminHttpUnauthenticatedRequestBodyTimeout(o["admin-http-unauthenticated-request-body-timeout"], d, "admin_http_unauthenticated_request_body_timeout")); err != nil {
+		if vv, ok := fortiAPIPatch(o["admin-http-unauthenticated-request-body-timeout"], "SystemGlobal-AdminHttpUnauthenticatedRequestBodyTimeout"); ok {
+			if err = d.Set("admin_http_unauthenticated_request_body_timeout", vv); err != nil {
+				return fmt.Errorf("Error reading admin_http_unauthenticated_request_body_timeout: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading admin_http_unauthenticated_request_body_timeout: %v", err)
 		}
 	}
 
@@ -4837,6 +5005,16 @@ func refreshObjectSystemGlobal(d *schema.ResourceData, o map[string]interface{})
 		}
 	}
 
+	if err = d.Set("gui_custom_theme", flattenSystemGlobalGuiCustomTheme(o["gui-custom-theme"], d, "gui_custom_theme")); err != nil {
+		if vv, ok := fortiAPIPatch(o["gui-custom-theme"], "SystemGlobal-GuiCustomTheme"); ok {
+			if err = d.Set("gui_custom_theme", vv); err != nil {
+				return fmt.Errorf("Error reading gui_custom_theme: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading gui_custom_theme: %v", err)
+		}
+	}
+
 	if err = d.Set("gui_date_format", flattenSystemGlobalGuiDateFormat(o["gui-date-format"], d, "gui_date_format")); err != nil {
 		if vv, ok := fortiAPIPatch(o["gui-date-format"], "SystemGlobal-GuiDateFormat"); ok {
 			if err = d.Set("gui_date_format", vv); err != nil {
@@ -4977,6 +5155,16 @@ func refreshObjectSystemGlobal(d *schema.ResourceData, o map[string]interface{})
 		}
 	}
 
+	if err = d.Set("gui_login_request_rate_limit", flattenSystemGlobalGuiLoginRequestRateLimit(o["gui-login-request-rate-limit"], d, "gui_login_request_rate_limit")); err != nil {
+		if vv, ok := fortiAPIPatch(o["gui-login-request-rate-limit"], "SystemGlobal-GuiLoginRequestRateLimit"); ok {
+			if err = d.Set("gui_login_request_rate_limit", vv); err != nil {
+				return fmt.Errorf("Error reading gui_login_request_rate_limit: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading gui_login_request_rate_limit: %v", err)
+		}
+	}
+
 	if err = d.Set("gui_replacement_message_groups", flattenSystemGlobalGuiReplacementMessageGroups(o["gui-replacement-message-groups"], d, "gui_replacement_message_groups")); err != nil {
 		if vv, ok := fortiAPIPatch(o["gui-replacement-message-groups"], "SystemGlobal-GuiReplacementMessageGroups"); ok {
 			if err = d.Set("gui_replacement_message_groups", vv); err != nil {
@@ -4994,6 +5182,16 @@ func refreshObjectSystemGlobal(d *schema.ResourceData, o map[string]interface{})
 			}
 		} else {
 			return fmt.Errorf("Error reading gui_rest_api_cache: %v", err)
+		}
+	}
+
+	if err = d.Set("gui_restrict_theme_change", flattenSystemGlobalGuiRestrictThemeChange(o["gui-restrict-theme-change"], d, "gui_restrict_theme_change")); err != nil {
+		if vv, ok := fortiAPIPatch(o["gui-restrict-theme-change"], "SystemGlobal-GuiRestrictThemeChange"); ok {
+			if err = d.Set("gui_restrict_theme_change", vv); err != nil {
+				return fmt.Errorf("Error reading gui_restrict_theme_change: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading gui_restrict_theme_change: %v", err)
 		}
 	}
 
@@ -5424,6 +5622,16 @@ func refreshObjectSystemGlobal(d *schema.ResourceData, o map[string]interface{})
 			}
 		} else {
 			return fmt.Errorf("Error reading log_daemon_cpu_threshold: %v", err)
+		}
+	}
+
+	if err = d.Set("log_fsck_timeout", flattenSystemGlobalLogFsckTimeout(o["log-fsck-timeout"], d, "log_fsck_timeout")); err != nil {
+		if vv, ok := fortiAPIPatch(o["log-fsck-timeout"], "SystemGlobal-LogFsckTimeout"); ok {
+			if err = d.Set("log_fsck_timeout", vv); err != nil {
+				return fmt.Errorf("Error reading log_fsck_timeout: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading log_fsck_timeout: %v", err)
 		}
 	}
 
@@ -6531,6 +6739,16 @@ func refreshObjectSystemGlobal(d *schema.ResourceData, o map[string]interface{})
 		}
 	}
 
+	if err = d.Set("tcp_congestion_control", flattenSystemGlobalTcpCongestionControl(o["tcp-congestion-control"], d, "tcp_congestion_control")); err != nil {
+		if vv, ok := fortiAPIPatch(o["tcp-congestion-control"], "SystemGlobal-TcpCongestionControl"); ok {
+			if err = d.Set("tcp_congestion_control", vv); err != nil {
+				return fmt.Errorf("Error reading tcp_congestion_control: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading tcp_congestion_control: %v", err)
+		}
+	}
+
 	if err = d.Set("tcp_halfclose_timer", flattenSystemGlobalTcpHalfcloseTimer(o["tcp-halfclose-timer"], d, "tcp_halfclose_timer")); err != nil {
 		if vv, ok := fortiAPIPatch(o["tcp-halfclose-timer"], "SystemGlobal-TcpHalfcloseTimer"); ok {
 			if err = d.Set("tcp_halfclose_timer", vv); err != nil {
@@ -7208,6 +7426,34 @@ func expandSystemGlobalAdminHstsMaxAge(d *schema.ResourceData, v interface{}, pr
 	return v, nil
 }
 
+func expandSystemGlobalAdminHttpJsonRequestLimit(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemGlobalAdminHttpLoginRequestSizeLimit(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemGlobalAdminHttpRateLimitExemptAuth(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemGlobalAdminHttpRateLimitMaxRequests(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemGlobalAdminHttpRequestBodyTimeout(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemGlobalAdminHttpRequestHeaderTimeout(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemGlobalAdminHttpUnauthenticatedRequestBodyTimeout(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandSystemGlobalAdminHttpsPkiRequired(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -7640,6 +7886,10 @@ func expandSystemGlobalGuiCustomLanguage(d *schema.ResourceData, v interface{}, 
 	return v, nil
 }
 
+func expandSystemGlobalGuiCustomTheme(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
 func expandSystemGlobalGuiDateFormat(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -7696,11 +7946,19 @@ func expandSystemGlobalGuiLocalOut(d *schema.ResourceData, v interface{}, pre st
 	return v, nil
 }
 
+func expandSystemGlobalGuiLoginRequestRateLimit(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandSystemGlobalGuiReplacementMessageGroups(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
 func expandSystemGlobalGuiRestApiCache(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemGlobalGuiRestrictThemeChange(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -7873,6 +8131,10 @@ func expandSystemGlobalLldpTransmission(d *schema.ResourceData, v interface{}, p
 }
 
 func expandSystemGlobalLogDaemonCpuThreshold(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemGlobalLogFsckTimeout(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -8351,6 +8613,10 @@ func expandSystemGlobalSysPerfLogInterval(d *schema.ResourceData, v interface{},
 }
 
 func expandSystemGlobalSyslogAffinity(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemGlobalTcpCongestionControl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -8858,6 +9124,69 @@ func getObjectSystemGlobal(d *schema.ResourceData, bemptysontable bool) (*map[st
 			return &obj, err
 		} else if t != nil {
 			obj["admin-hsts-max-age"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("admin_http_json_request_limit"); ok || d.HasChange("admin_http_json_request_limit") {
+		t, err := expandSystemGlobalAdminHttpJsonRequestLimit(d, v, "admin_http_json_request_limit")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["admin-http-json-request-limit"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("admin_http_login_request_size_limit"); ok || d.HasChange("admin_http_login_request_size_limit") {
+		t, err := expandSystemGlobalAdminHttpLoginRequestSizeLimit(d, v, "admin_http_login_request_size_limit")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["admin-http-login-request-size-limit"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("admin_http_rate_limit_exempt_auth"); ok || d.HasChange("admin_http_rate_limit_exempt_auth") {
+		t, err := expandSystemGlobalAdminHttpRateLimitExemptAuth(d, v, "admin_http_rate_limit_exempt_auth")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["admin-http-rate-limit-exempt-auth"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("admin_http_rate_limit_max_requests"); ok || d.HasChange("admin_http_rate_limit_max_requests") {
+		t, err := expandSystemGlobalAdminHttpRateLimitMaxRequests(d, v, "admin_http_rate_limit_max_requests")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["admin-http-rate-limit-max-requests"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("admin_http_request_body_timeout"); ok || d.HasChange("admin_http_request_body_timeout") {
+		t, err := expandSystemGlobalAdminHttpRequestBodyTimeout(d, v, "admin_http_request_body_timeout")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["admin-http-request-body-timeout"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("admin_http_request_header_timeout"); ok || d.HasChange("admin_http_request_header_timeout") {
+		t, err := expandSystemGlobalAdminHttpRequestHeaderTimeout(d, v, "admin_http_request_header_timeout")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["admin-http-request-header-timeout"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("admin_http_unauthenticated_request_body_timeout"); ok || d.HasChange("admin_http_unauthenticated_request_body_timeout") {
+		t, err := expandSystemGlobalAdminHttpUnauthenticatedRequestBodyTimeout(d, v, "admin_http_unauthenticated_request_body_timeout")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["admin-http-unauthenticated-request-body-timeout"] = t
 		}
 	}
 
@@ -9833,6 +10162,15 @@ func getObjectSystemGlobal(d *schema.ResourceData, bemptysontable bool) (*map[st
 		}
 	}
 
+	if v, ok := d.GetOk("gui_custom_theme"); ok || d.HasChange("gui_custom_theme") {
+		t, err := expandSystemGlobalGuiCustomTheme(d, v, "gui_custom_theme")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["gui-custom-theme"] = t
+		}
+	}
+
 	if v, ok := d.GetOk("gui_date_format"); ok || d.HasChange("gui_date_format") {
 		t, err := expandSystemGlobalGuiDateFormat(d, v, "gui_date_format")
 		if err != nil {
@@ -9959,6 +10297,15 @@ func getObjectSystemGlobal(d *schema.ResourceData, bemptysontable bool) (*map[st
 		}
 	}
 
+	if v, ok := d.GetOk("gui_login_request_rate_limit"); ok || d.HasChange("gui_login_request_rate_limit") {
+		t, err := expandSystemGlobalGuiLoginRequestRateLimit(d, v, "gui_login_request_rate_limit")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["gui-login-request-rate-limit"] = t
+		}
+	}
+
 	if v, ok := d.GetOk("gui_replacement_message_groups"); ok || d.HasChange("gui_replacement_message_groups") {
 		t, err := expandSystemGlobalGuiReplacementMessageGroups(d, v, "gui_replacement_message_groups")
 		if err != nil {
@@ -9974,6 +10321,15 @@ func getObjectSystemGlobal(d *schema.ResourceData, bemptysontable bool) (*map[st
 			return &obj, err
 		} else if t != nil {
 			obj["gui-rest-api-cache"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("gui_restrict_theme_change"); ok || d.HasChange("gui_restrict_theme_change") {
+		t, err := expandSystemGlobalGuiRestrictThemeChange(d, v, "gui_restrict_theme_change")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["gui-restrict-theme-change"] = t
 		}
 	}
 
@@ -10361,6 +10717,15 @@ func getObjectSystemGlobal(d *schema.ResourceData, bemptysontable bool) (*map[st
 			return &obj, err
 		} else if t != nil {
 			obj["log-daemon-cpu-threshold"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("log_fsck_timeout"); ok || d.HasChange("log_fsck_timeout") {
+		t, err := expandSystemGlobalLogFsckTimeout(d, v, "log_fsck_timeout")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["log-fsck-timeout"] = t
 		}
 	}
 
@@ -11355,6 +11720,15 @@ func getObjectSystemGlobal(d *schema.ResourceData, bemptysontable bool) (*map[st
 			return &obj, err
 		} else if t != nil {
 			obj["syslog-affinity"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("tcp_congestion_control"); ok || d.HasChange("tcp_congestion_control") {
+		t, err := expandSystemGlobalTcpCongestionControl(d, v, "tcp_congestion_control")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["tcp-congestion-control"] = t
 		}
 	}
 

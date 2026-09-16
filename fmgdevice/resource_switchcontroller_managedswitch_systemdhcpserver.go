@@ -295,14 +295,21 @@ func resourceSwitchControllerManagedSwitchSystemDhcpServerUpdate(d *schema.Resou
 
 	wsParams["adom"] = adomv
 
-	_, err = c.UpdateSwitchControllerManagedSwitchSystemDhcpServer(obj, mkey, paradict, wsParams)
+	v, err := c.UpdateSwitchControllerManagedSwitchSystemDhcpServer(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating SwitchControllerManagedSwitchSystemDhcpServer resource: %v", err)
 	}
 
 	log.Printf(strconv.Itoa(c.Retries))
 
-	d.SetId(strconv.Itoa(getIntKey(d, "fosid")))
+	if v != nil && v["id"] != nil {
+		if vidn, ok := v["id"].(float64); ok {
+			d.SetId(strconv.Itoa(int(vidn)))
+			return resourceSwitchControllerManagedSwitchSystemDhcpServerRead(d, m)
+		} else {
+			return fmt.Errorf("Error updating SwitchControllerManagedSwitchSystemDhcpServer resource: %v", err)
+		}
+	}
 
 	return resourceSwitchControllerManagedSwitchSystemDhcpServerRead(d, m)
 }

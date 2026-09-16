@@ -121,6 +121,16 @@ func resourceUserNacPolicy() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
+			"port_setting_override": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"qos_policy": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Computed: true,
+			},
 			"severity": &schema.Schema{
 				Type:     schema.TypeSet,
 				Elem:     &schema.Schema{Type: schema.TypeInt},
@@ -451,6 +461,14 @@ func flattenUserNacPolicyOs(v interface{}, d *schema.ResourceData, pre string) i
 	return v
 }
 
+func flattenUserNacPolicyPortSettingOverride(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenUserNacPolicyQosPolicy(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
 func flattenUserNacPolicySeverity(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return flattenIntegerList(v)
 }
@@ -657,6 +675,26 @@ func refreshObjectUserNacPolicy(d *schema.ResourceData, o map[string]interface{}
 			}
 		} else {
 			return fmt.Errorf("Error reading os: %v", err)
+		}
+	}
+
+	if err = d.Set("port_setting_override", flattenUserNacPolicyPortSettingOverride(o["port-setting-override"], d, "port_setting_override")); err != nil {
+		if vv, ok := fortiAPIPatch(o["port-setting-override"], "UserNacPolicy-PortSettingOverride"); ok {
+			if err = d.Set("port_setting_override", vv); err != nil {
+				return fmt.Errorf("Error reading port_setting_override: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading port_setting_override: %v", err)
+		}
+	}
+
+	if err = d.Set("qos_policy", flattenUserNacPolicyQosPolicy(o["qos-policy"], d, "qos_policy")); err != nil {
+		if vv, ok := fortiAPIPatch(o["qos-policy"], "UserNacPolicy-QosPolicy"); ok {
+			if err = d.Set("qos_policy", vv); err != nil {
+				return fmt.Errorf("Error reading qos_policy: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading qos_policy: %v", err)
 		}
 	}
 
@@ -869,6 +907,14 @@ func expandUserNacPolicyOs(d *schema.ResourceData, v interface{}, pre string) (i
 	return v, nil
 }
 
+func expandUserNacPolicyPortSettingOverride(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandUserNacPolicyQosPolicy(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
 func expandUserNacPolicySeverity(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return expandIntegerList(v.(*schema.Set).List()), nil
 }
@@ -1060,6 +1106,24 @@ func getObjectUserNacPolicy(d *schema.ResourceData) (*map[string]interface{}, er
 			return &obj, err
 		} else if t != nil {
 			obj["os"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("port_setting_override"); ok || d.HasChange("port_setting_override") {
+		t, err := expandUserNacPolicyPortSettingOverride(d, v, "port_setting_override")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["port-setting-override"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("qos_policy"); ok || d.HasChange("qos_policy") {
+		t, err := expandUserNacPolicyQosPolicy(d, v, "qos_policy")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["qos-policy"] = t
 		}
 	}
 

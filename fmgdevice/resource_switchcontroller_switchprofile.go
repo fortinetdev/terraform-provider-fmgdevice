@@ -73,6 +73,17 @@ func resourceSwitchControllerSwitchProfile() *schema.Resource {
 				ForceNew: true,
 				Optional: true,
 			},
+			"private_data_encryption": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"private_data_encryption_key": &schema.Schema{
+				Type:      schema.TypeSet,
+				Elem:      &schema.Schema{Type: schema.TypeString},
+				Optional:  true,
+				Sensitive: true,
+				Computed:  true,
+			},
 			"revision_backup_on_logout": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -291,6 +302,10 @@ func flattenSwitchControllerSwitchProfileName(v interface{}, d *schema.ResourceD
 	return v
 }
 
+func flattenSwitchControllerSwitchProfilePrivateDataEncryption(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenSwitchControllerSwitchProfileRevisionBackupOnLogout(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -329,6 +344,16 @@ func refreshObjectSwitchControllerSwitchProfile(d *schema.ResourceData, o map[st
 			}
 		} else {
 			return fmt.Errorf("Error reading name: %v", err)
+		}
+	}
+
+	if err = d.Set("private_data_encryption", flattenSwitchControllerSwitchProfilePrivateDataEncryption(o["private-data-encryption"], d, "private_data_encryption")); err != nil {
+		if vv, ok := fortiAPIPatch(o["private-data-encryption"], "SwitchControllerSwitchProfile-PrivateDataEncryption"); ok {
+			if err = d.Set("private_data_encryption", vv); err != nil {
+				return fmt.Errorf("Error reading private_data_encryption: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading private_data_encryption: %v", err)
 		}
 	}
 
@@ -377,6 +402,14 @@ func expandSwitchControllerSwitchProfileName(d *schema.ResourceData, v interface
 	return v, nil
 }
 
+func expandSwitchControllerSwitchProfilePrivateDataEncryption(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSwitchControllerSwitchProfilePrivateDataEncryptionKey(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
 func expandSwitchControllerSwitchProfileRevisionBackupOnLogout(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -421,6 +454,24 @@ func getObjectSwitchControllerSwitchProfile(d *schema.ResourceData) (*map[string
 			return &obj, err
 		} else if t != nil {
 			obj["name"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("private_data_encryption"); ok || d.HasChange("private_data_encryption") {
+		t, err := expandSwitchControllerSwitchProfilePrivateDataEncryption(d, v, "private_data_encryption")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["private-data-encryption"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("private_data_encryption_key"); ok || d.HasChange("private_data_encryption_key") {
+		t, err := expandSwitchControllerSwitchProfilePrivateDataEncryptionKey(d, v, "private_data_encryption_key")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["private-data-encryption-key"] = t
 		}
 	}
 

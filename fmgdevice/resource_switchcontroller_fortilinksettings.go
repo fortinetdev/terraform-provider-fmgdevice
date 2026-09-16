@@ -56,6 +56,12 @@ func resourceSwitchControllerFortilinkSettings() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"admin_policy": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Computed: true,
+			},
 			"fortilink": &schema.Schema{
 				Type:     schema.TypeSet,
 				Elem:     &schema.Schema{Type: schema.TypeString},
@@ -323,6 +329,10 @@ func flattenSwitchControllerFortilinkSettingsAccessVlanMode(v interface{}, d *sc
 	return v
 }
 
+func flattenSwitchControllerFortilinkSettingsAdminPolicy(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
 func flattenSwitchControllerFortilinkSettingsFortilink(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return flattenStringList(v)
 }
@@ -428,6 +438,16 @@ func refreshObjectSwitchControllerFortilinkSettings(d *schema.ResourceData, o ma
 		}
 	}
 
+	if err = d.Set("admin_policy", flattenSwitchControllerFortilinkSettingsAdminPolicy(o["admin-policy"], d, "admin_policy")); err != nil {
+		if vv, ok := fortiAPIPatch(o["admin-policy"], "SwitchControllerFortilinkSettings-AdminPolicy"); ok {
+			if err = d.Set("admin_policy", vv); err != nil {
+				return fmt.Errorf("Error reading admin_policy: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading admin_policy: %v", err)
+		}
+	}
+
 	if err = d.Set("fortilink", flattenSwitchControllerFortilinkSettingsFortilink(o["fortilink"], d, "fortilink")); err != nil {
 		if vv, ok := fortiAPIPatch(o["fortilink"], "SwitchControllerFortilinkSettings-Fortilink"); ok {
 			if err = d.Set("fortilink", vv); err != nil {
@@ -503,6 +523,10 @@ func flattenSwitchControllerFortilinkSettingsFortiTestDebug(d *schema.ResourceDa
 
 func expandSwitchControllerFortilinkSettingsAccessVlanMode(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
+}
+
+func expandSwitchControllerFortilinkSettingsAdminPolicy(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
 }
 
 func expandSwitchControllerFortilinkSettingsFortilink(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
@@ -600,6 +624,15 @@ func getObjectSwitchControllerFortilinkSettings(d *schema.ResourceData) (*map[st
 			return &obj, err
 		} else if t != nil {
 			obj["access-vlan-mode"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("admin_policy"); ok || d.HasChange("admin_policy") {
+		t, err := expandSwitchControllerFortilinkSettingsAdminPolicy(d, v, "admin_policy")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["admin-policy"] = t
 		}
 	}
 

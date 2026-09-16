@@ -46,6 +46,8 @@ The following arguments are supported:
 * `device_name` - FortiManager managed device name. This variable is used in the request URL. If not specified, it will inherit the variable `device_name` of the provider.
 * `device_vdom` - FortiManager managed device vdom. This variable is used in the request URL. If not specified, it will inherit the variable `device_vdom` of the provider.
 
+* `n80211mc_mode` - Set 802.11mc mode of the AP (default = auto). Valid values: `auto`, `initiator`, `responder`.
+
 * `_is_factory_setting` - _Is_Factory_Setting. Valid values: `disable`, `enable`, `ext`.
 
 * `admin_auth_tacacs` - Remote authentication server for admin user.
@@ -120,6 +122,8 @@ The following arguments are supported:
 * `indoor_outdoor_deployment` - Set to allow indoor/outdoor-only channels under regulatory rules (default = platform-determined). Valid values: `platform-determined`, `outdoor`, `indoor`.
 
 * `ip_fragment_preventing` - Method(s) by which IP fragmentation is prevented for control and data packets through CAPWAP tunnel (default = tcp-mss-adjust). Valid values: `tcp-mss-adjust`, `icmp-unreachable`.
+
+* `ipsec_offload` - Enable/disable data channel IPSec offloading (default = enable). Valid values: `disable`, `enable`.
 
 * `lan` - Lan. The structure of `lan` block is documented below.
 * `lbs` - Lbs. The structure of `lbs` block is documented below.
@@ -352,6 +356,7 @@ The `radio_1` block supports:
 * `call_admission_control` - Enable/disable WiFi multimedia (WMM) call admission control to optimize WiFi bandwidth use for VoIP calls. New VoIP calls are only accepted if there is enough bandwidth available to support them. Valid values: `disable`, `enable`.
 
 * `call_capacity` - Maximum number of Voice over WLAN (VoWLAN) phones supported by the radio (0 - 60, default = 10).
+* `cca_threshold` - Configure Clear Channel Assessment (CCA) threshold in dBm (-94 to -11, default = 0, 0 for unconfigured).
 * `channel` - Selected list of wireless radio channels.
 * `channel_bonding` - Channel bandwidth: 320, 240, 160, 80, 40, or 20MHz. Channels may use both 20 and 40 by enabling coexistence. Valid values: `disable`, `enable`, `80MHz`, `40MHz`, `20MHz`, `160MHz`, `320MHz`, `240MHz`.
 
@@ -429,7 +434,16 @@ The `radio_1` block supports:
 
 * `vap_all` - Configure method for assigning SSIDs to this FortiAP (default = automatically assign tunnel SSIDs). Valid values: `disable`, `enable`, `tunnel`, `bridge`, `manual`.
 
+* `vap_status` - Enable/disable all configured SSIDs on this radio (default = enable). Valid values: `disable`, `enable`.
+
 * `vap1` - Virtual Access Point (VAP) for wlan ID 1
+* `vap10` - Virtual Access Point (VAP) for wlan ID 10
+* `vap11` - Virtual Access Point (VAP) for wlan ID 11
+* `vap12` - Virtual Access Point (VAP) for wlan ID 12
+* `vap13` - Virtual Access Point (VAP) for wlan ID 13
+* `vap14` - Virtual Access Point (VAP) for wlan ID 14
+* `vap15` - Virtual Access Point (VAP) for wlan ID 15
+* `vap16` - Virtual Access Point (VAP) for wlan ID 16
 * `vap2` - Virtual Access Point (VAP) for wlan ID 2
 * `vap3` - Virtual Access Point (VAP) for wlan ID 3
 * `vap4` - Virtual Access Point (VAP) for wlan ID 4
@@ -437,6 +451,7 @@ The `radio_1` block supports:
 * `vap6` - Virtual Access Point (VAP) for wlan ID 6
 * `vap7` - Virtual Access Point (VAP) for wlan ID 7
 * `vap8` - Virtual Access Point (VAP) for wlan ID 8
+* `vap9` - Virtual Access Point (VAP) for wlan ID 9
 * `vaps` - Manually selected list of Virtual Access Points (VAPs).
 * `wids_profile` - Wireless Intrusion Detection System (WIDS) profile name to assign to the radio.
 * `zero_wait_dfs` - Enable/disable zero wait DFS on radio (default = enable). Valid values: `disable`, `enable`.
@@ -491,6 +506,7 @@ The `radio_2` block supports:
 * `call_admission_control` - Enable/disable WiFi multimedia (WMM) call admission control to optimize WiFi bandwidth use for VoIP calls. New VoIP calls are only accepted if there is enough bandwidth available to support them. Valid values: `disable`, `enable`.
 
 * `call_capacity` - Maximum number of Voice over WLAN (VoWLAN) phones supported by the radio (0 - 60, default = 10).
+* `cca_threshold` - Configure Clear Channel Assessment (CCA) threshold in dBm (-94 to -11, default = 0, 0 for unconfigured).
 * `channel` - Selected list of wireless radio channels.
 * `channel_bonding` - Channel bandwidth: 320, 240, 160, 80, 40, or 20MHz. Channels may use both 20 and 40 by enabling coexistence. Valid values: `disable`, `enable`, `80MHz`, `40MHz`, `20MHz`, `160MHz`, `320MHz`, `240MHz`.
 
@@ -568,7 +584,16 @@ The `radio_2` block supports:
 
 * `vap_all` - Configure method for assigning SSIDs to this FortiAP (default = automatically assign tunnel SSIDs). Valid values: `disable`, `enable`, `tunnel`, `bridge`, `manual`.
 
+* `vap_status` - Enable/disable all configured SSIDs on this radio (default = enable). Valid values: `disable`, `enable`.
+
 * `vap1` - Virtual Access Point (VAP) for wlan ID 1
+* `vap10` - Virtual Access Point (VAP) for wlan ID 10
+* `vap11` - Virtual Access Point (VAP) for wlan ID 11
+* `vap12` - Virtual Access Point (VAP) for wlan ID 12
+* `vap13` - Virtual Access Point (VAP) for wlan ID 13
+* `vap14` - Virtual Access Point (VAP) for wlan ID 14
+* `vap15` - Virtual Access Point (VAP) for wlan ID 15
+* `vap16` - Virtual Access Point (VAP) for wlan ID 16
 * `vap2` - Virtual Access Point (VAP) for wlan ID 2
 * `vap3` - Virtual Access Point (VAP) for wlan ID 3
 * `vap4` - Virtual Access Point (VAP) for wlan ID 4
@@ -576,6 +601,7 @@ The `radio_2` block supports:
 * `vap6` - Virtual Access Point (VAP) for wlan ID 6
 * `vap7` - Virtual Access Point (VAP) for wlan ID 7
 * `vap8` - Virtual Access Point (VAP) for wlan ID 8
+* `vap9` - Virtual Access Point (VAP) for wlan ID 9
 * `vaps` - Manually selected list of Virtual Access Points (VAPs).
 * `wids_profile` - Wireless Intrusion Detection System (WIDS) profile name to assign to the radio.
 * `zero_wait_dfs` - Enable/disable zero wait DFS on radio (default = enable). Valid values: `disable`, `enable`.
@@ -630,6 +656,7 @@ The `radio_3` block supports:
 * `call_admission_control` - Enable/disable WiFi multimedia (WMM) call admission control to optimize WiFi bandwidth use for VoIP calls. New VoIP calls are only accepted if there is enough bandwidth available to support them. Valid values: `disable`, `enable`.
 
 * `call_capacity` - Maximum number of Voice over WLAN (VoWLAN) phones supported by the radio (0 - 60, default = 10).
+* `cca_threshold` - Configure Clear Channel Assessment (CCA) threshold in dBm (-94 to -11, default = 0, 0 for unconfigured).
 * `channel` - Selected list of wireless radio channels.
 * `channel_bonding` - Channel bandwidth: 320, 240, 160, 80, 40, or 20MHz. Channels may use both 20 and 40 by enabling coexistence. Valid values: `80MHz`, `40MHz`, `20MHz`, `160MHz`, `320MHz`, `240MHz`.
 
@@ -707,7 +734,16 @@ The `radio_3` block supports:
 
 * `vap_all` - Configure method for assigning SSIDs to this FortiAP (default = automatically assign tunnel SSIDs). Valid values: `disable`, `enable`, `tunnel`, `bridge`, `manual`.
 
+* `vap_status` - Enable/disable all configured SSIDs on this radio (default = enable). Valid values: `disable`, `enable`.
+
 * `vap1` - Virtual Access Point (VAP) for wlan ID 1
+* `vap10` - Virtual Access Point (VAP) for wlan ID 10
+* `vap11` - Virtual Access Point (VAP) for wlan ID 11
+* `vap12` - Virtual Access Point (VAP) for wlan ID 12
+* `vap13` - Virtual Access Point (VAP) for wlan ID 13
+* `vap14` - Virtual Access Point (VAP) for wlan ID 14
+* `vap15` - Virtual Access Point (VAP) for wlan ID 15
+* `vap16` - Virtual Access Point (VAP) for wlan ID 16
 * `vap2` - Virtual Access Point (VAP) for wlan ID 2
 * `vap3` - Virtual Access Point (VAP) for wlan ID 3
 * `vap4` - Virtual Access Point (VAP) for wlan ID 4
@@ -715,6 +751,7 @@ The `radio_3` block supports:
 * `vap6` - Virtual Access Point (VAP) for wlan ID 6
 * `vap7` - Virtual Access Point (VAP) for wlan ID 7
 * `vap8` - Virtual Access Point (VAP) for wlan ID 8
+* `vap9` - Virtual Access Point (VAP) for wlan ID 9
 * `vaps` - Manually selected list of Virtual Access Points (VAPs).
 * `wids_profile` - Wireless Intrusion Detection System (WIDS) profile name to assign to the radio.
 * `zero_wait_dfs` - Enable/disable zero wait DFS on radio (default = enable). Valid values: `disable`, `enable`.
@@ -769,6 +806,7 @@ The `radio_4` block supports:
 * `call_admission_control` - Enable/disable WiFi multimedia (WMM) call admission control to optimize WiFi bandwidth use for VoIP calls. New VoIP calls are only accepted if there is enough bandwidth available to support them. Valid values: `disable`, `enable`.
 
 * `call_capacity` - Maximum number of Voice over WLAN (VoWLAN) phones supported by the radio (0 - 60, default = 10).
+* `cca_threshold` - Configure Clear Channel Assessment (CCA) threshold in dBm (-94 to -11, default = 0, 0 for unconfigured).
 * `channel` - Selected list of wireless radio channels.
 * `channel_bonding` - Channel bandwidth: 320, 240, 160, 80, 40, or 20MHz. Channels may use both 20 and 40 by enabling coexistence. Valid values: `80MHz`, `40MHz`, `20MHz`, `160MHz`, `320MHz`, `240MHz`.
 
@@ -846,7 +884,16 @@ The `radio_4` block supports:
 
 * `vap_all` - Configure method for assigning SSIDs to this FortiAP (default = automatically assign tunnel SSIDs). Valid values: `disable`, `enable`, `tunnel`, `bridge`, `manual`.
 
+* `vap_status` - Enable/disable all configured SSIDs on this radio (default = enable). Valid values: `disable`, `enable`.
+
 * `vap1` - Virtual Access Point (VAP) for wlan ID 1
+* `vap10` - Virtual Access Point (VAP) for wlan ID 10
+* `vap11` - Virtual Access Point (VAP) for wlan ID 11
+* `vap12` - Virtual Access Point (VAP) for wlan ID 12
+* `vap13` - Virtual Access Point (VAP) for wlan ID 13
+* `vap14` - Virtual Access Point (VAP) for wlan ID 14
+* `vap15` - Virtual Access Point (VAP) for wlan ID 15
+* `vap16` - Virtual Access Point (VAP) for wlan ID 16
 * `vap2` - Virtual Access Point (VAP) for wlan ID 2
 * `vap3` - Virtual Access Point (VAP) for wlan ID 3
 * `vap4` - Virtual Access Point (VAP) for wlan ID 4
@@ -854,6 +901,7 @@ The `radio_4` block supports:
 * `vap6` - Virtual Access Point (VAP) for wlan ID 6
 * `vap7` - Virtual Access Point (VAP) for wlan ID 7
 * `vap8` - Virtual Access Point (VAP) for wlan ID 8
+* `vap9` - Virtual Access Point (VAP) for wlan ID 9
 * `vaps` - Manually selected list of Virtual Access Points (VAPs).
 * `wids_profile` - Wireless Intrusion Detection System (WIDS) profile name to assign to the radio.
 * `zero_wait_dfs` - Enable/disable zero wait DFS on radio (default = enable). Valid values: `disable`, `enable`.

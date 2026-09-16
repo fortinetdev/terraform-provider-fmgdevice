@@ -80,6 +80,16 @@ func resourceFirewallProxyAddress() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
+			"custom_tags": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Computed: true,
+			},
+			"display_with": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 			"header": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -440,6 +450,14 @@ func flattenFirewallProxyAddressComment(v interface{}, d *schema.ResourceData, p
 	return v
 }
 
+func flattenFirewallProxyAddressCustomTags(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
+func flattenFirewallProxyAddressDisplayWith(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenFirewallProxyAddressHeader(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -707,6 +725,26 @@ func refreshObjectFirewallProxyAddress(d *schema.ResourceData, o map[string]inte
 		}
 	}
 
+	if err = d.Set("custom_tags", flattenFirewallProxyAddressCustomTags(o["custom-tags"], d, "custom_tags")); err != nil {
+		if vv, ok := fortiAPIPatch(o["custom-tags"], "FirewallProxyAddress-CustomTags"); ok {
+			if err = d.Set("custom_tags", vv); err != nil {
+				return fmt.Errorf("Error reading custom_tags: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading custom_tags: %v", err)
+		}
+	}
+
+	if err = d.Set("display_with", flattenFirewallProxyAddressDisplayWith(o["display-with"], d, "display_with")); err != nil {
+		if vv, ok := fortiAPIPatch(o["display-with"], "FirewallProxyAddress-DisplayWith"); ok {
+			if err = d.Set("display_with", vv); err != nil {
+				return fmt.Errorf("Error reading display_with: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading display_with: %v", err)
+		}
+	}
+
 	if err = d.Set("header", flattenFirewallProxyAddressHeader(o["header"], d, "header")); err != nil {
 		if vv, ok := fortiAPIPatch(o["header"], "FirewallProxyAddress-Header"); ok {
 			if err = d.Set("header", vv); err != nil {
@@ -968,6 +1006,14 @@ func expandFirewallProxyAddressComment(d *schema.ResourceData, v interface{}, pr
 	return v, nil
 }
 
+func expandFirewallProxyAddressCustomTags(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandFirewallProxyAddressDisplayWith(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandFirewallProxyAddressHeader(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -1205,6 +1251,24 @@ func getObjectFirewallProxyAddress(d *schema.ResourceData) (*map[string]interfac
 			return &obj, err
 		} else if t != nil {
 			obj["comment"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("custom_tags"); ok || d.HasChange("custom_tags") {
+		t, err := expandFirewallProxyAddressCustomTags(d, v, "custom_tags")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["custom-tags"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("display_with"); ok || d.HasChange("display_with") {
+		t, err := expandFirewallProxyAddressDisplayWith(d, v, "display_with")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["display-with"] = t
 		}
 	}
 

@@ -48,6 +48,12 @@ The following arguments are supported:
 * `endip` - Final IPv4 address (inclusive) in the range for the address pool (format xxx.xxx.xxx.xxx, Default: 0.0.0.0).
 * `endport` - Final port number (inclusive) in the range for the address pool (1024 - 65535, Default: 65533).
 * `exclude_ip` - Exclude IPs x.x.x.x.
+* `fabric_force_sync` - Enable/disable forced synchronization of configuration objects from the root FortiGate unit to the downstream devices.  Configuration conflict check is skipped. Valid values: `disable`, `enable`.
+
+* `fabric_object` - Security Fabric global object setting. Valid values: `disable`, `enable`.
+
+* `fabric_object_source` - Source of truth for fabric object. Valid values: `member`, `local`, `root`.
+
 * `icmp_session_quota` - Maximum number of concurrent ICMP sessions allowed per client (0 - 2097000, default = 0 which means no limit).
 * `name` - IP pool name.
 * `nat64` - Enable/disable NAT64. Valid values: `disable`, `enable`.
@@ -73,6 +79,7 @@ The following arguments are supported:
 * `udp_session_quota` - Maximum number of concurrent UDP sessions allowed per client (0 - 2097000, default = 0 which means no limit).
 * `utilization_alarm_clear` - Pool utilization alarm clear threshold (40-100).
 * `utilization_alarm_raise` - Pool utilization alarm raise threshold (50-100).
+* `uuid` - Universally Unique Identifier (UUID; automatically assigned but can be manually reset).
 * `dynamic_sort_subtable` - true or false, set this parameter to true when using dynamic for_each + toset to configure and sort sub-tables, please do not set this parameter when configuring static sub-tables.
 
 The `dynamic_mapping` block supports:
@@ -102,6 +109,12 @@ The `dynamic_mapping` block supports:
 * `endip` - Final IPv4 address (inclusive) in the range for the address pool (format xxx.xxx.xxx.xxx, Default: 0.0.0.0).
 * `endport` - Final port number (inclusive) in the range for the address pool (1024 - 65535, Default: 65533).
 * `exclude_ip` - Exclude IPs x.x.x.x.
+* `fabric_force_sync` - Enable/disable forced synchronization of configuration objects from the root FortiGate unit to the downstream devices.  Configuration conflict check is skipped. Valid values: `disable`, `enable`.
+
+* `fabric_object` - Security Fabric global object setting. Valid values: `disable`, `enable`.
+
+* `fabric_object_source` - Source of truth for fabric object. Valid values: `member`, `local`, `root`.
+
 * `icmp_session_quota` - Maximum number of concurrent ICMP sessions allowed per client (0 - 2097000, default = 0 which means no limit).
 * `nat64` - Enable/disable NAT64. Valid values: `disable`, `enable`.
 
@@ -126,6 +139,7 @@ The `dynamic_mapping` block supports:
 * `udp_session_quota` - Maximum number of concurrent UDP sessions allowed per client (0 - 2097000, default = 0 which means no limit).
 * `utilization_alarm_clear` - Pool utilization alarm clear threshold (40-100).
 * `utilization_alarm_raise` - Pool utilization alarm raise threshold (50-100).
+* `uuid` - Universally Unique Identifier (UUID; automatically assigned but can be manually reset).
 
 The `_scope` block supports:
 

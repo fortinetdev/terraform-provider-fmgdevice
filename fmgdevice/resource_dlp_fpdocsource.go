@@ -130,6 +130,11 @@ func resourceDlpFpDocSource() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
+			"uuid": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
 			"vdom": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -396,6 +401,10 @@ func flattenDlpFpDocSourceUsername(v interface{}, d *schema.ResourceData, pre st
 	return v
 }
 
+func flattenDlpFpDocSourceUuid(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenDlpFpDocSourceVdom(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -557,6 +566,16 @@ func refreshObjectDlpFpDocSource(d *schema.ResourceData, o map[string]interface{
 		}
 	}
 
+	if err = d.Set("uuid", flattenDlpFpDocSourceUuid(o["uuid"], d, "uuid")); err != nil {
+		if vv, ok := fortiAPIPatch(o["uuid"], "DlpFpDocSource-Uuid"); ok {
+			if err = d.Set("uuid", vv); err != nil {
+				return fmt.Errorf("Error reading uuid: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading uuid: %v", err)
+		}
+	}
+
 	if err = d.Set("vdom", flattenDlpFpDocSourceVdom(o["vdom"], d, "vdom")); err != nil {
 		if vv, ok := fortiAPIPatch(o["vdom"], "DlpFpDocSource-Vdom"); ok {
 			if err = d.Set("vdom", vv); err != nil {
@@ -647,6 +666,10 @@ func expandDlpFpDocSourceTodMin(d *schema.ResourceData, v interface{}, pre strin
 }
 
 func expandDlpFpDocSourceUsername(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandDlpFpDocSourceUuid(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -802,6 +825,15 @@ func getObjectDlpFpDocSource(d *schema.ResourceData) (*map[string]interface{}, e
 			return &obj, err
 		} else if t != nil {
 			obj["username"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("uuid"); ok || d.HasChange("uuid") {
+		t, err := expandDlpFpDocSourceUuid(d, v, "uuid")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["uuid"] = t
 		}
 	}
 

@@ -225,6 +225,12 @@ func resourceRouterMulticast() *schema.Resource {
 							Optional: true,
 							Computed: true,
 						},
+						"update_source": &schema.Schema{
+							Type:     schema.TypeSet,
+							Elem:     &schema.Schema{Type: schema.TypeString},
+							Optional: true,
+							Computed: true,
+						},
 					},
 				},
 			},
@@ -774,6 +780,12 @@ func flattenRouterMulticastInterface(v interface{}, d *schema.ResourceData, pre 
 			tmp["ttl_threshold"] = fortiAPISubPartPatch(v, "RouterMulticast-Interface-TtlThreshold")
 		}
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "update_source"
+		if _, ok := i["update-source"]; ok {
+			v := flattenRouterMulticastInterfaceUpdateSource(i["update-source"], d, pre_append)
+			tmp["update_source"] = fortiAPISubPartPatch(v, "RouterMulticast-Interface-UpdateSource")
+		}
+
 		if len(tmp) > 0 {
 			result = append(result, tmp)
 		}
@@ -995,6 +1007,10 @@ func flattenRouterMulticastInterfaceStaticGroup(v interface{}, d *schema.Resourc
 
 func flattenRouterMulticastInterfaceTtlThreshold(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
+}
+
+func flattenRouterMulticastInterfaceUpdateSource(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
 }
 
 func flattenRouterMulticastMulticastRouting(v interface{}, d *schema.ResourceData, pre string) interface{} {
@@ -1736,6 +1752,11 @@ func expandRouterMulticastInterface(d *schema.ResourceData, v interface{}, pre s
 			tmp["ttl-threshold"], _ = expandRouterMulticastInterfaceTtlThreshold(d, i["ttl_threshold"], pre_append)
 		}
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "update_source"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["update-source"], _ = expandRouterMulticastInterfaceUpdateSource(d, i["update_source"], pre_append)
+		}
+
 		if len(tmp) > 0 {
 			result = append(result, tmp)
 		}
@@ -1943,6 +1964,10 @@ func expandRouterMulticastInterfaceStaticGroup(d *schema.ResourceData, v interfa
 
 func expandRouterMulticastInterfaceTtlThreshold(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
+}
+
+func expandRouterMulticastInterfaceUpdateSource(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
 }
 
 func expandRouterMulticastMulticastRouting(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {

@@ -231,6 +231,21 @@ func resourceFirewallProfileProtocolOptions() *schema.Resource {
 					},
 				},
 			},
+			"fabric_force_sync": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+			"fabric_object": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+			"fabric_object_source": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
 			"feature_set": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -444,6 +459,12 @@ func resourceFirewallProfileProtocolOptions() *schema.Resource {
 						},
 						"streaming_content_bypass": &schema.Schema{
 							Type:     schema.TypeString,
+							Optional: true,
+							Computed: true,
+						},
+						"streaming_content_scan_type": &schema.Schema{
+							Type:     schema.TypeSet,
+							Elem:     &schema.Schema{Type: schema.TypeString},
 							Optional: true,
 							Computed: true,
 						},
@@ -943,6 +964,90 @@ func resourceFirewallProfileProtocolOptions() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+			},
+			"uuid": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+			"websocket": &schema.Schema{
+				Type:     schema.TypeList,
+				Optional: true,
+				MaxItems: 1,
+				Computed: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"comfort_amount": &schema.Schema{
+							Type:     schema.TypeInt,
+							Optional: true,
+							Computed: true,
+						},
+						"comfort_interval": &schema.Schema{
+							Type:     schema.TypeInt,
+							Optional: true,
+							Computed: true,
+						},
+						"options": &schema.Schema{
+							Type:     schema.TypeSet,
+							Elem:     &schema.Schema{Type: schema.TypeString},
+							Optional: true,
+							Computed: true,
+						},
+						"oversize_limit": &schema.Schema{
+							Type:     schema.TypeInt,
+							Optional: true,
+							Computed: true,
+						},
+						"scan_bzip2": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+							Computed: true,
+						},
+						"status": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"stream_based_uncompressed_limit": &schema.Schema{
+							Type:     schema.TypeInt,
+							Optional: true,
+						},
+						"tcp_window_maximum": &schema.Schema{
+							Type:     schema.TypeInt,
+							Optional: true,
+							Computed: true,
+						},
+						"tcp_window_minimum": &schema.Schema{
+							Type:     schema.TypeInt,
+							Optional: true,
+							Computed: true,
+						},
+						"tcp_window_size": &schema.Schema{
+							Type:     schema.TypeInt,
+							Optional: true,
+							Computed: true,
+						},
+						"tcp_window_type": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+							Computed: true,
+						},
+						"tunnel_non_websocket": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+							Computed: true,
+						},
+						"uncompressed_nest_limit": &schema.Schema{
+							Type:     schema.TypeInt,
+							Optional: true,
+							Computed: true,
+						},
+						"uncompressed_oversize_limit": &schema.Schema{
+							Type:     schema.TypeInt,
+							Optional: true,
+							Computed: true,
+						},
+					},
+				},
 			},
 			"proxy_redirect": &schema.Schema{
 				Type:     schema.TypeList,
@@ -1510,6 +1615,18 @@ func flattenFirewallProfileProtocolOptionsDnsStatus(v interface{}, d *schema.Res
 	return v
 }
 
+func flattenFirewallProfileProtocolOptionsFabricForceSync(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenFirewallProfileProtocolOptionsFabricObject(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenFirewallProfileProtocolOptionsFabricObjectSource(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenFirewallProfileProtocolOptionsFeatureSet(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -1799,6 +1916,11 @@ func flattenFirewallProfileProtocolOptionsHttp(v interface{}, d *schema.Resource
 		result["streaming_content_bypass"] = flattenFirewallProfileProtocolOptionsHttpStreamingContentBypass(i["streaming-content-bypass"], d, pre_append)
 	}
 
+	pre_append = pre + ".0." + "streaming_content_scan_type"
+	if _, ok := i["streaming-content-scan-type"]; ok {
+		result["streaming_content_scan_type"] = flattenFirewallProfileProtocolOptionsHttpStreamingContentScanType(i["streaming-content-scan-type"], d, pre_append)
+	}
+
 	pre_append = pre + ".0." + "strip_x_forwarded_for"
 	if _, ok := i["strip-x-forwarded-for"]; ok {
 		result["strip_x_forwarded_for"] = flattenFirewallProfileProtocolOptionsHttpStripXForwardedFor(i["strip-x-forwarded-for"], d, pre_append)
@@ -1964,6 +2086,10 @@ func flattenFirewallProfileProtocolOptionsHttpStreamBasedUncompressedLimit(v int
 
 func flattenFirewallProfileProtocolOptionsHttpStreamingContentBypass(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
+}
+
+func flattenFirewallProfileProtocolOptionsHttpStreamingContentScanType(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
 }
 
 func flattenFirewallProfileProtocolOptionsHttpStripXForwardedFor(v interface{}, d *schema.ResourceData, pre string) interface{} {
@@ -2713,6 +2839,149 @@ func flattenFirewallProfileProtocolOptionsSwitchingProtocolsLog(v interface{}, d
 	return v
 }
 
+func flattenFirewallProfileProtocolOptionsUuid(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenFirewallProfileProtocolOptionsWebsocket(v interface{}, d *schema.ResourceData, pre string) []map[string]interface{} {
+	if v == nil {
+		return nil
+	}
+
+	i := v.(map[string]interface{})
+	result := make(map[string]interface{})
+
+	pre_append := "" // complex
+	pre_append = pre + ".0." + "comfort_amount"
+	if _, ok := i["comfort-amount"]; ok {
+		result["comfort_amount"] = flattenFirewallProfileProtocolOptionsWebsocketComfortAmount(i["comfort-amount"], d, pre_append)
+	}
+
+	pre_append = pre + ".0." + "comfort_interval"
+	if _, ok := i["comfort-interval"]; ok {
+		result["comfort_interval"] = flattenFirewallProfileProtocolOptionsWebsocketComfortInterval(i["comfort-interval"], d, pre_append)
+	}
+
+	pre_append = pre + ".0." + "options"
+	if _, ok := i["options"]; ok {
+		result["options"] = flattenFirewallProfileProtocolOptionsWebsocketOptions(i["options"], d, pre_append)
+	}
+
+	pre_append = pre + ".0." + "oversize_limit"
+	if _, ok := i["oversize-limit"]; ok {
+		result["oversize_limit"] = flattenFirewallProfileProtocolOptionsWebsocketOversizeLimit(i["oversize-limit"], d, pre_append)
+	}
+
+	pre_append = pre + ".0." + "scan_bzip2"
+	if _, ok := i["scan-bzip2"]; ok {
+		result["scan_bzip2"] = flattenFirewallProfileProtocolOptionsWebsocketScanBzip2(i["scan-bzip2"], d, pre_append)
+	}
+
+	pre_append = pre + ".0." + "status"
+	if _, ok := i["status"]; ok {
+		result["status"] = flattenFirewallProfileProtocolOptionsWebsocketStatus(i["status"], d, pre_append)
+	}
+
+	pre_append = pre + ".0." + "stream_based_uncompressed_limit"
+	if _, ok := i["stream-based-uncompressed-limit"]; ok {
+		result["stream_based_uncompressed_limit"] = flattenFirewallProfileProtocolOptionsWebsocketStreamBasedUncompressedLimit(i["stream-based-uncompressed-limit"], d, pre_append)
+	}
+
+	pre_append = pre + ".0." + "tcp_window_maximum"
+	if _, ok := i["tcp-window-maximum"]; ok {
+		result["tcp_window_maximum"] = flattenFirewallProfileProtocolOptionsWebsocketTcpWindowMaximum(i["tcp-window-maximum"], d, pre_append)
+	}
+
+	pre_append = pre + ".0." + "tcp_window_minimum"
+	if _, ok := i["tcp-window-minimum"]; ok {
+		result["tcp_window_minimum"] = flattenFirewallProfileProtocolOptionsWebsocketTcpWindowMinimum(i["tcp-window-minimum"], d, pre_append)
+	}
+
+	pre_append = pre + ".0." + "tcp_window_size"
+	if _, ok := i["tcp-window-size"]; ok {
+		result["tcp_window_size"] = flattenFirewallProfileProtocolOptionsWebsocketTcpWindowSize(i["tcp-window-size"], d, pre_append)
+	}
+
+	pre_append = pre + ".0." + "tcp_window_type"
+	if _, ok := i["tcp-window-type"]; ok {
+		result["tcp_window_type"] = flattenFirewallProfileProtocolOptionsWebsocketTcpWindowType(i["tcp-window-type"], d, pre_append)
+	}
+
+	pre_append = pre + ".0." + "tunnel_non_websocket"
+	if _, ok := i["tunnel-non-websocket"]; ok {
+		result["tunnel_non_websocket"] = flattenFirewallProfileProtocolOptionsWebsocketTunnelNonWebsocket(i["tunnel-non-websocket"], d, pre_append)
+	}
+
+	pre_append = pre + ".0." + "uncompressed_nest_limit"
+	if _, ok := i["uncompressed-nest-limit"]; ok {
+		result["uncompressed_nest_limit"] = flattenFirewallProfileProtocolOptionsWebsocketUncompressedNestLimit(i["uncompressed-nest-limit"], d, pre_append)
+	}
+
+	pre_append = pre + ".0." + "uncompressed_oversize_limit"
+	if _, ok := i["uncompressed-oversize-limit"]; ok {
+		result["uncompressed_oversize_limit"] = flattenFirewallProfileProtocolOptionsWebsocketUncompressedOversizeLimit(i["uncompressed-oversize-limit"], d, pre_append)
+	}
+
+	lastresult := []map[string]interface{}{result}
+	return lastresult
+}
+
+func flattenFirewallProfileProtocolOptionsWebsocketComfortAmount(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenFirewallProfileProtocolOptionsWebsocketComfortInterval(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenFirewallProfileProtocolOptionsWebsocketOptions(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
+func flattenFirewallProfileProtocolOptionsWebsocketOversizeLimit(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenFirewallProfileProtocolOptionsWebsocketScanBzip2(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenFirewallProfileProtocolOptionsWebsocketStatus(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenFirewallProfileProtocolOptionsWebsocketStreamBasedUncompressedLimit(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenFirewallProfileProtocolOptionsWebsocketTcpWindowMaximum(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenFirewallProfileProtocolOptionsWebsocketTcpWindowMinimum(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenFirewallProfileProtocolOptionsWebsocketTcpWindowSize(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenFirewallProfileProtocolOptionsWebsocketTcpWindowType(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenFirewallProfileProtocolOptionsWebsocketTunnelNonWebsocket(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenFirewallProfileProtocolOptionsWebsocketUncompressedNestLimit(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenFirewallProfileProtocolOptionsWebsocketUncompressedOversizeLimit(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenFirewallProfileProtocolOptionsProxyRedirect(v interface{}, d *schema.ResourceData, pre string) []map[string]interface{} {
 	if v == nil {
 		return nil
@@ -2802,6 +3071,36 @@ func refreshObjectFirewallProfileProtocolOptions(d *schema.ResourceData, o map[s
 					return fmt.Errorf("Error reading dns: %v", err)
 				}
 			}
+		}
+	}
+
+	if err = d.Set("fabric_force_sync", flattenFirewallProfileProtocolOptionsFabricForceSync(o["fabric-force-sync"], d, "fabric_force_sync")); err != nil {
+		if vv, ok := fortiAPIPatch(o["fabric-force-sync"], "FirewallProfileProtocolOptions-FabricForceSync"); ok {
+			if err = d.Set("fabric_force_sync", vv); err != nil {
+				return fmt.Errorf("Error reading fabric_force_sync: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading fabric_force_sync: %v", err)
+		}
+	}
+
+	if err = d.Set("fabric_object", flattenFirewallProfileProtocolOptionsFabricObject(o["fabric-object"], d, "fabric_object")); err != nil {
+		if vv, ok := fortiAPIPatch(o["fabric-object"], "FirewallProfileProtocolOptions-FabricObject"); ok {
+			if err = d.Set("fabric_object", vv); err != nil {
+				return fmt.Errorf("Error reading fabric_object: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading fabric_object: %v", err)
+		}
+	}
+
+	if err = d.Set("fabric_object_source", flattenFirewallProfileProtocolOptionsFabricObjectSource(o["fabric-object-source"], d, "fabric_object_source")); err != nil {
+		if vv, ok := fortiAPIPatch(o["fabric-object-source"], "FirewallProfileProtocolOptions-FabricObjectSource"); ok {
+			if err = d.Set("fabric_object_source", vv); err != nil {
+				return fmt.Errorf("Error reading fabric_object_source: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading fabric_object_source: %v", err)
 		}
 	}
 
@@ -3078,6 +3377,40 @@ func refreshObjectFirewallProfileProtocolOptions(d *schema.ResourceData, o map[s
 			}
 		} else {
 			return fmt.Errorf("Error reading switching_protocols_log: %v", err)
+		}
+	}
+
+	if err = d.Set("uuid", flattenFirewallProfileProtocolOptionsUuid(o["uuid"], d, "uuid")); err != nil {
+		if vv, ok := fortiAPIPatch(o["uuid"], "FirewallProfileProtocolOptions-Uuid"); ok {
+			if err = d.Set("uuid", vv); err != nil {
+				return fmt.Errorf("Error reading uuid: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading uuid: %v", err)
+		}
+	}
+
+	if isImportTable() {
+		if err = d.Set("websocket", flattenFirewallProfileProtocolOptionsWebsocket(o["websocket"], d, "websocket")); err != nil {
+			if vv, ok := fortiAPIPatch(o["websocket"], "FirewallProfileProtocolOptions-Websocket"); ok {
+				if err = d.Set("websocket", vv); err != nil {
+					return fmt.Errorf("Error reading websocket: %v", err)
+				}
+			} else {
+				return fmt.Errorf("Error reading websocket: %v", err)
+			}
+		}
+	} else {
+		if _, ok := d.GetOk("websocket"); ok {
+			if err = d.Set("websocket", flattenFirewallProfileProtocolOptionsWebsocket(o["websocket"], d, "websocket")); err != nil {
+				if vv, ok := fortiAPIPatch(o["websocket"], "FirewallProfileProtocolOptions-Websocket"); ok {
+					if err = d.Set("websocket", vv); err != nil {
+						return fmt.Errorf("Error reading websocket: %v", err)
+					}
+				} else {
+					return fmt.Errorf("Error reading websocket: %v", err)
+				}
+			}
 		}
 	}
 
@@ -3452,6 +3785,18 @@ func expandFirewallProfileProtocolOptionsDnsStatus(d *schema.ResourceData, v int
 	return v, nil
 }
 
+func expandFirewallProfileProtocolOptionsFabricForceSync(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandFirewallProfileProtocolOptionsFabricObject(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandFirewallProfileProtocolOptionsFabricObjectSource(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandFirewallProfileProtocolOptionsFeatureSet(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -3704,6 +4049,10 @@ func expandFirewallProfileProtocolOptionsHttp(d *schema.ResourceData, v interfac
 	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
 		result["streaming-content-bypass"], _ = expandFirewallProfileProtocolOptionsHttpStreamingContentBypass(d, i["streaming_content_bypass"], pre_append)
 	}
+	pre_append = pre + ".0." + "streaming_content_scan_type"
+	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+		result["streaming-content-scan-type"], _ = expandFirewallProfileProtocolOptionsHttpStreamingContentScanType(d, i["streaming_content_scan_type"], pre_append)
+	}
 	pre_append = pre + ".0." + "strip_x_forwarded_for"
 	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
 		result["strip-x-forwarded-for"], _ = expandFirewallProfileProtocolOptionsHttpStripXForwardedFor(d, i["strip_x_forwarded_for"], pre_append)
@@ -3854,6 +4203,10 @@ func expandFirewallProfileProtocolOptionsHttpStreamBasedUncompressedLimit(d *sch
 
 func expandFirewallProfileProtocolOptionsHttpStreamingContentBypass(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
+}
+
+func expandFirewallProfileProtocolOptionsHttpStreamingContentScanType(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
 }
 
 func expandFirewallProfileProtocolOptionsHttpStripXForwardedFor(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
@@ -4546,6 +4899,136 @@ func expandFirewallProfileProtocolOptionsSwitchingProtocolsLog(d *schema.Resourc
 	return v, nil
 }
 
+func expandFirewallProfileProtocolOptionsUuid(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandFirewallProfileProtocolOptionsWebsocket(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	l := v.([]interface{})
+	if len(l) == 0 || l[0] == nil {
+		return nil, nil
+	}
+
+	i := l[0].(map[string]interface{})
+	result := make(map[string]interface{})
+
+	pre_append := "" // complex
+	pre_append = pre + ".0." + "comfort_amount"
+	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+		result["comfort-amount"], _ = expandFirewallProfileProtocolOptionsWebsocketComfortAmount(d, i["comfort_amount"], pre_append)
+	}
+	pre_append = pre + ".0." + "comfort_interval"
+	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+		result["comfort-interval"], _ = expandFirewallProfileProtocolOptionsWebsocketComfortInterval(d, i["comfort_interval"], pre_append)
+	}
+	pre_append = pre + ".0." + "options"
+	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+		result["options"], _ = expandFirewallProfileProtocolOptionsWebsocketOptions(d, i["options"], pre_append)
+	}
+	pre_append = pre + ".0." + "oversize_limit"
+	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+		result["oversize-limit"], _ = expandFirewallProfileProtocolOptionsWebsocketOversizeLimit(d, i["oversize_limit"], pre_append)
+	}
+	pre_append = pre + ".0." + "scan_bzip2"
+	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+		result["scan-bzip2"], _ = expandFirewallProfileProtocolOptionsWebsocketScanBzip2(d, i["scan_bzip2"], pre_append)
+	}
+	pre_append = pre + ".0." + "status"
+	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+		result["status"], _ = expandFirewallProfileProtocolOptionsWebsocketStatus(d, i["status"], pre_append)
+	}
+	pre_append = pre + ".0." + "stream_based_uncompressed_limit"
+	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+		result["stream-based-uncompressed-limit"], _ = expandFirewallProfileProtocolOptionsWebsocketStreamBasedUncompressedLimit(d, i["stream_based_uncompressed_limit"], pre_append)
+	}
+	pre_append = pre + ".0." + "tcp_window_maximum"
+	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+		result["tcp-window-maximum"], _ = expandFirewallProfileProtocolOptionsWebsocketTcpWindowMaximum(d, i["tcp_window_maximum"], pre_append)
+	}
+	pre_append = pre + ".0." + "tcp_window_minimum"
+	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+		result["tcp-window-minimum"], _ = expandFirewallProfileProtocolOptionsWebsocketTcpWindowMinimum(d, i["tcp_window_minimum"], pre_append)
+	}
+	pre_append = pre + ".0." + "tcp_window_size"
+	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+		result["tcp-window-size"], _ = expandFirewallProfileProtocolOptionsWebsocketTcpWindowSize(d, i["tcp_window_size"], pre_append)
+	}
+	pre_append = pre + ".0." + "tcp_window_type"
+	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+		result["tcp-window-type"], _ = expandFirewallProfileProtocolOptionsWebsocketTcpWindowType(d, i["tcp_window_type"], pre_append)
+	}
+	pre_append = pre + ".0." + "tunnel_non_websocket"
+	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+		result["tunnel-non-websocket"], _ = expandFirewallProfileProtocolOptionsWebsocketTunnelNonWebsocket(d, i["tunnel_non_websocket"], pre_append)
+	}
+	pre_append = pre + ".0." + "uncompressed_nest_limit"
+	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+		result["uncompressed-nest-limit"], _ = expandFirewallProfileProtocolOptionsWebsocketUncompressedNestLimit(d, i["uncompressed_nest_limit"], pre_append)
+	}
+	pre_append = pre + ".0." + "uncompressed_oversize_limit"
+	if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+		result["uncompressed-oversize-limit"], _ = expandFirewallProfileProtocolOptionsWebsocketUncompressedOversizeLimit(d, i["uncompressed_oversize_limit"], pre_append)
+	}
+
+	return result, nil
+}
+
+func expandFirewallProfileProtocolOptionsWebsocketComfortAmount(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandFirewallProfileProtocolOptionsWebsocketComfortInterval(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandFirewallProfileProtocolOptionsWebsocketOptions(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandFirewallProfileProtocolOptionsWebsocketOversizeLimit(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandFirewallProfileProtocolOptionsWebsocketScanBzip2(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandFirewallProfileProtocolOptionsWebsocketStatus(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandFirewallProfileProtocolOptionsWebsocketStreamBasedUncompressedLimit(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandFirewallProfileProtocolOptionsWebsocketTcpWindowMaximum(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandFirewallProfileProtocolOptionsWebsocketTcpWindowMinimum(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandFirewallProfileProtocolOptionsWebsocketTcpWindowSize(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandFirewallProfileProtocolOptionsWebsocketTcpWindowType(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandFirewallProfileProtocolOptionsWebsocketTunnelNonWebsocket(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandFirewallProfileProtocolOptionsWebsocketUncompressedNestLimit(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandFirewallProfileProtocolOptionsWebsocketUncompressedOversizeLimit(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandFirewallProfileProtocolOptionsProxyRedirect(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	l := v.([]interface{})
 	if len(l) == 0 || l[0] == nil {
@@ -4603,6 +5086,33 @@ func getObjectFirewallProfileProtocolOptions(d *schema.ResourceData) (*map[strin
 			return &obj, err
 		} else if t != nil {
 			obj["dns"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("fabric_force_sync"); ok || d.HasChange("fabric_force_sync") {
+		t, err := expandFirewallProfileProtocolOptionsFabricForceSync(d, v, "fabric_force_sync")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["fabric-force-sync"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("fabric_object"); ok || d.HasChange("fabric_object") {
+		t, err := expandFirewallProfileProtocolOptionsFabricObject(d, v, "fabric_object")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["fabric-object"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("fabric_object_source"); ok || d.HasChange("fabric_object_source") {
+		t, err := expandFirewallProfileProtocolOptionsFabricObjectSource(d, v, "fabric_object_source")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["fabric-object-source"] = t
 		}
 	}
 
@@ -4738,6 +5248,24 @@ func getObjectFirewallProfileProtocolOptions(d *schema.ResourceData) (*map[strin
 			return &obj, err
 		} else if t != nil {
 			obj["switching-protocols-log"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("uuid"); ok || d.HasChange("uuid") {
+		t, err := expandFirewallProfileProtocolOptionsUuid(d, v, "uuid")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["uuid"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("websocket"); ok || d.HasChange("websocket") {
+		t, err := expandFirewallProfileProtocolOptionsWebsocket(d, v, "websocket")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["websocket"] = t
 		}
 	}
 

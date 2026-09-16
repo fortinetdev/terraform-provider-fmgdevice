@@ -62,6 +62,12 @@ func resourceRouterBgpNetwork() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"internet_service_name": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Computed: true,
+			},
 			"network_import_check": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -189,14 +195,21 @@ func resourceRouterBgpNetworkUpdate(d *schema.ResourceData, m interface{}) error
 
 	wsParams["adom"] = adomv
 
-	_, err = c.UpdateRouterBgpNetwork(obj, mkey, paradict, wsParams)
+	v, err := c.UpdateRouterBgpNetwork(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating RouterBgpNetwork resource: %v", err)
 	}
 
 	log.Printf(strconv.Itoa(c.Retries))
 
-	d.SetId(strconv.Itoa(getIntKey(d, "fosid")))
+	if v != nil && v["id"] != nil {
+		if vidn, ok := v["id"].(float64); ok {
+			d.SetId(strconv.Itoa(int(vidn)))
+			return resourceRouterBgpNetworkRead(d, m)
+		} else {
+			return fmt.Errorf("Error updating RouterBgpNetwork resource: %v", err)
+		}
+	}
 
 	return resourceRouterBgpNetworkRead(d, m)
 }
@@ -297,6 +310,10 @@ func flattenRouterBgpNetworkId2edl(v interface{}, d *schema.ResourceData, pre st
 	return v
 }
 
+func flattenRouterBgpNetworkInternetServiceName2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
 func flattenRouterBgpNetworkNetworkImportCheck2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -333,6 +350,16 @@ func refreshObjectRouterBgpNetwork(d *schema.ResourceData, o map[string]interfac
 			}
 		} else {
 			return fmt.Errorf("Error reading fosid: %v", err)
+		}
+	}
+
+	if err = d.Set("internet_service_name", flattenRouterBgpNetworkInternetServiceName2edl(o["internet-service-name"], d, "internet_service_name")); err != nil {
+		if vv, ok := fortiAPIPatch(o["internet-service-name"], "RouterBgpNetwork-InternetServiceName"); ok {
+			if err = d.Set("internet_service_name", vv); err != nil {
+				return fmt.Errorf("Error reading internet_service_name: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading internet_service_name: %v", err)
 		}
 	}
 
@@ -393,6 +420,10 @@ func expandRouterBgpNetworkId2edl(d *schema.ResourceData, v interface{}, pre str
 	return v, nil
 }
 
+func expandRouterBgpNetworkInternetServiceName2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
 func expandRouterBgpNetworkNetworkImportCheck2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -427,6 +458,15 @@ func getObjectRouterBgpNetwork(d *schema.ResourceData) (*map[string]interface{},
 			return &obj, err
 		} else if t != nil {
 			obj["id"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("internet_service_name"); ok || d.HasChange("internet_service_name") {
+		t, err := expandRouterBgpNetworkInternetServiceName2edl(d, v, "internet_service_name")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["internet-service-name"] = t
 		}
 	}
 

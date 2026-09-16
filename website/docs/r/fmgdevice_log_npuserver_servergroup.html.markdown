@@ -31,6 +31,8 @@ The following arguments are supported:
 
 * `log_user_info` - Enable/disbale logging user information. Valid values: `disable`, `enable`.
 
+* `rsso_ipv4_prefix_length` - Configure the prefix length for the source IPv4 address used in RSSO log enrichment.
+* `rsso_ipv6_prefix_length` - Configure the prefix length for the source IPv6 address used in RSSO log enrichment.
 * `server_number` - server number in this group.
 * `server_start_id` - the start id of the continuous server series in this group,[1,16].
 * `sw_log_flags` - Set flags for software logging via driver. Valid values: `tcp-udp-only`, `enable-all-log`, `disable-all-log`.

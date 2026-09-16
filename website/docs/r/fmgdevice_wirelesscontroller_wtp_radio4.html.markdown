@@ -43,6 +43,7 @@ The following arguments are supported:
 * `auto_power_target` - Target of automatic transmit power adjustment in dBm (-95 to -20, default = -70).
 * `band` - WiFi band that Radio 4 operates on. Valid values: `802.11a`, `802.11b`, `802.11g`, `802.11n`, `802.11n-5G`, `802.11n,g-only`, `802.11g-only`, `802.11n-only`, `802.11n-5G-only`, `802.11ac`, `802.11ac,n-only`, `802.11ac-only`, `802.11ax-5G`, `802.11ax,ac-only`, `802.11ax,ac,n-only`, `802.11ax-5G-only`, `802.11ax`, `802.11ax,n-only`, `802.11ax,n,g-only`, `802.11ax-only`, `802.11ac-2G`, `802.11ax-6G`, `802.11n-2G`, `802.11ac-5G`, `802.11ax-2G`, `802.11be-2G`, `802.11be-5G`, `802.11be-6G`.
 
+* `cca_threshold` - Configure Clear Channel Assessment (CCA) threshold in dBm (-94 to -11, default = 0, 0 for unconfigured).
 * `channel` - Selected list of wireless radio channels.
 * `drma_manual_mode` - Radio mode to be used for DRMA manual mode (default = ncf). Valid values: `ap`, `monitor`, `ncf`, `ncf-peek`.
 
@@ -50,9 +51,13 @@ The following arguments are supported:
 
 * `override_band` - Enable to override the WTP profile band setting. Valid values: `disable`, `enable`.
 
+* `override_cca_threshold` - Enable to override WTP profile CCA threshold enable/disable settings. Valid values: `disable`, `enable`.
+
 * `override_channel` - Enable to override WTP profile channel settings. Valid values: `disable`, `enable`.
 
 * `override_txpower` - Enable to override the WTP profile power level configuration. Valid values: `disable`, `enable`.
+
+* `override_vap_status` - Enable to override WTP profile Virtual Access Point (VAP) enable/disable settings. Valid values: `disable`, `enable`.
 
 * `override_vaps` - Enable to override WTP profile Virtual Access Point (VAP) settings. Valid values: `disable`, `enable`.
 
@@ -65,7 +70,16 @@ The following arguments are supported:
 
 * `vap_all` - Configure method for assigning SSIDs to this FortiAP (default = automatically assign tunnel SSIDs). Valid values: `disable`, `enable`, `tunnel`, `bridge`, `manual`.
 
+* `vap_status` - Enable/disable all configured SSIDs on this radio (default = enable). Valid values: `disable`, `enable`.
+
 * `vap1` - Virtual Access Point (VAP) for wlan ID 1
+* `vap10` - Virtual Access Point (VAP) for wlan ID 10
+* `vap11` - Virtual Access Point (VAP) for wlan ID 11
+* `vap12` - Virtual Access Point (VAP) for wlan ID 12
+* `vap13` - Virtual Access Point (VAP) for wlan ID 13
+* `vap14` - Virtual Access Point (VAP) for wlan ID 14
+* `vap15` - Virtual Access Point (VAP) for wlan ID 15
+* `vap16` - Virtual Access Point (VAP) for wlan ID 16
 * `vap2` - Virtual Access Point (VAP) for wlan ID 2
 * `vap3` - Virtual Access Point (VAP) for wlan ID 3
 * `vap4` - Virtual Access Point (VAP) for wlan ID 4
@@ -73,6 +87,7 @@ The following arguments are supported:
 * `vap6` - Virtual Access Point (VAP) for wlan ID 6
 * `vap7` - Virtual Access Point (VAP) for wlan ID 7
 * `vap8` - Virtual Access Point (VAP) for wlan ID 8
+* `vap9` - Virtual Access Point (VAP) for wlan ID 9
 * `vaps` - Manually selected list of Virtual Access Points (VAPs).
 
 

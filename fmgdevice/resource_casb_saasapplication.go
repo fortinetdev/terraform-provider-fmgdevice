@@ -55,7 +55,15 @@ func resourceCasbSaasApplication() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
+			"category": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 			"description": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"display_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 			},
@@ -64,6 +72,10 @@ func resourceCasbSaasApplication() *schema.Resource {
 				Elem:     &schema.Schema{Type: schema.TypeString},
 				Optional: true,
 				Computed: true,
+			},
+			"icon_id": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
 			},
 			"input_attributes": &schema.Schema{
 				Type:     schema.TypeList,
@@ -146,6 +158,10 @@ func resourceCasbSaasApplication() *schema.Resource {
 						},
 					},
 				},
+			},
+			"popularity": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
 			},
 			"status": &schema.Schema{
 				Type:     schema.TypeString,
@@ -367,12 +383,24 @@ func flattenCasbSaasApplicationCasbName(v interface{}, d *schema.ResourceData, p
 	return v
 }
 
+func flattenCasbSaasApplicationCategory(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenCasbSaasApplicationDescription(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenCasbSaasApplicationDisplayName(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
 func flattenCasbSaasApplicationDomains(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return flattenStringList(v)
+}
+
+func flattenCasbSaasApplicationIconId(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
 }
 
 func flattenCasbSaasApplicationInputAttributes(v interface{}, d *schema.ResourceData, pre string) []map[string]interface{} {
@@ -567,6 +595,10 @@ func flattenCasbSaasApplicationOutputAttributesType(v interface{}, d *schema.Res
 	return v
 }
 
+func flattenCasbSaasApplicationPopularity(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenCasbSaasApplicationStatus(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -596,6 +628,16 @@ func refreshObjectCasbSaasApplication(d *schema.ResourceData, o map[string]inter
 		}
 	}
 
+	if err = d.Set("category", flattenCasbSaasApplicationCategory(o["category"], d, "category")); err != nil {
+		if vv, ok := fortiAPIPatch(o["category"], "CasbSaasApplication-Category"); ok {
+			if err = d.Set("category", vv); err != nil {
+				return fmt.Errorf("Error reading category: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading category: %v", err)
+		}
+	}
+
 	if err = d.Set("description", flattenCasbSaasApplicationDescription(o["description"], d, "description")); err != nil {
 		if vv, ok := fortiAPIPatch(o["description"], "CasbSaasApplication-Description"); ok {
 			if err = d.Set("description", vv); err != nil {
@@ -606,6 +648,16 @@ func refreshObjectCasbSaasApplication(d *schema.ResourceData, o map[string]inter
 		}
 	}
 
+	if err = d.Set("display_name", flattenCasbSaasApplicationDisplayName(o["display-name"], d, "display_name")); err != nil {
+		if vv, ok := fortiAPIPatch(o["display-name"], "CasbSaasApplication-DisplayName"); ok {
+			if err = d.Set("display_name", vv); err != nil {
+				return fmt.Errorf("Error reading display_name: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading display_name: %v", err)
+		}
+	}
+
 	if err = d.Set("domains", flattenCasbSaasApplicationDomains(o["domains"], d, "domains")); err != nil {
 		if vv, ok := fortiAPIPatch(o["domains"], "CasbSaasApplication-Domains"); ok {
 			if err = d.Set("domains", vv); err != nil {
@@ -613,6 +665,16 @@ func refreshObjectCasbSaasApplication(d *schema.ResourceData, o map[string]inter
 			}
 		} else {
 			return fmt.Errorf("Error reading domains: %v", err)
+		}
+	}
+
+	if err = d.Set("icon_id", flattenCasbSaasApplicationIconId(o["icon-id"], d, "icon_id")); err != nil {
+		if vv, ok := fortiAPIPatch(o["icon-id"], "CasbSaasApplication-IconId"); ok {
+			if err = d.Set("icon_id", vv); err != nil {
+				return fmt.Errorf("Error reading icon_id: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading icon_id: %v", err)
 		}
 	}
 
@@ -674,6 +736,16 @@ func refreshObjectCasbSaasApplication(d *schema.ResourceData, o map[string]inter
 		}
 	}
 
+	if err = d.Set("popularity", flattenCasbSaasApplicationPopularity(o["popularity"], d, "popularity")); err != nil {
+		if vv, ok := fortiAPIPatch(o["popularity"], "CasbSaasApplication-Popularity"); ok {
+			if err = d.Set("popularity", vv); err != nil {
+				return fmt.Errorf("Error reading popularity: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading popularity: %v", err)
+		}
+	}
+
 	if err = d.Set("status", flattenCasbSaasApplicationStatus(o["status"], d, "status")); err != nil {
 		if vv, ok := fortiAPIPatch(o["status"], "CasbSaasApplication-Status"); ok {
 			if err = d.Set("status", vv); err != nil {
@@ -717,12 +789,24 @@ func expandCasbSaasApplicationCasbName(d *schema.ResourceData, v interface{}, pr
 	return v, nil
 }
 
+func expandCasbSaasApplicationCategory(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandCasbSaasApplicationDescription(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandCasbSaasApplicationDisplayName(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
 func expandCasbSaasApplicationDomains(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandCasbSaasApplicationIconId(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
 }
 
 func expandCasbSaasApplicationInputAttributes(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
@@ -894,6 +978,10 @@ func expandCasbSaasApplicationOutputAttributesType(d *schema.ResourceData, v int
 	return v, nil
 }
 
+func expandCasbSaasApplicationPopularity(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandCasbSaasApplicationStatus(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -918,6 +1006,15 @@ func getObjectCasbSaasApplication(d *schema.ResourceData) (*map[string]interface
 		}
 	}
 
+	if v, ok := d.GetOk("category"); ok || d.HasChange("category") {
+		t, err := expandCasbSaasApplicationCategory(d, v, "category")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["category"] = t
+		}
+	}
+
 	if v, ok := d.GetOk("description"); ok || d.HasChange("description") {
 		t, err := expandCasbSaasApplicationDescription(d, v, "description")
 		if err != nil {
@@ -927,12 +1024,30 @@ func getObjectCasbSaasApplication(d *schema.ResourceData) (*map[string]interface
 		}
 	}
 
+	if v, ok := d.GetOk("display_name"); ok || d.HasChange("display_name") {
+		t, err := expandCasbSaasApplicationDisplayName(d, v, "display_name")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["display-name"] = t
+		}
+	}
+
 	if v, ok := d.GetOk("domains"); ok || d.HasChange("domains") {
 		t, err := expandCasbSaasApplicationDomains(d, v, "domains")
 		if err != nil {
 			return &obj, err
 		} else if t != nil {
 			obj["domains"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("icon_id"); ok || d.HasChange("icon_id") {
+		t, err := expandCasbSaasApplicationIconId(d, v, "icon_id")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["icon-id"] = t
 		}
 	}
 
@@ -960,6 +1075,15 @@ func getObjectCasbSaasApplication(d *schema.ResourceData) (*map[string]interface
 			return &obj, err
 		} else if t != nil {
 			obj["output-attributes"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("popularity"); ok || d.HasChange("popularity") {
+		t, err := expandCasbSaasApplicationPopularity(d, v, "popularity")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["popularity"] = t
 		}
 	}
 

@@ -365,6 +365,10 @@ func resourceVpnIpsecPhase1() *schema.Resource {
 				Type:     schema.TypeInt,
 				Optional: true,
 			},
+			"fec_separate_redundant_tunnel": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 			"fgsp_sync": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -890,6 +894,10 @@ func resourceVpnIpsecPhase1() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"ztna_cert_scim_authorization": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 			"dynamic_sort_subtable": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -1340,6 +1348,10 @@ func flattenVpnIpsecPhase1FecRedundant(v interface{}, d *schema.ResourceData, pr
 }
 
 func flattenVpnIpsecPhase1FecSendTimeout(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenVpnIpsecPhase1FecSeparateRedundantTunnel(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -1838,6 +1850,10 @@ func flattenVpnIpsecPhase1WizardType(v interface{}, d *schema.ResourceData, pre 
 }
 
 func flattenVpnIpsecPhase1Xauthtype(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenVpnIpsecPhase1ZtnaCertScimAuthorization(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -2475,6 +2491,16 @@ func refreshObjectVpnIpsecPhase1(d *schema.ResourceData, o map[string]interface{
 			}
 		} else {
 			return fmt.Errorf("Error reading fec_send_timeout: %v", err)
+		}
+	}
+
+	if err = d.Set("fec_separate_redundant_tunnel", flattenVpnIpsecPhase1FecSeparateRedundantTunnel(o["fec-separate-redundant-tunnel"], d, "fec_separate_redundant_tunnel")); err != nil {
+		if vv, ok := fortiAPIPatch(o["fec-separate-redundant-tunnel"], "VpnIpsecPhase1-FecSeparateRedundantTunnel"); ok {
+			if err = d.Set("fec_separate_redundant_tunnel", vv); err != nil {
+				return fmt.Errorf("Error reading fec_separate_redundant_tunnel: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading fec_separate_redundant_tunnel: %v", err)
 		}
 	}
 
@@ -3476,6 +3502,16 @@ func refreshObjectVpnIpsecPhase1(d *schema.ResourceData, o map[string]interface{
 		}
 	}
 
+	if err = d.Set("ztna_cert_scim_authorization", flattenVpnIpsecPhase1ZtnaCertScimAuthorization(o["ztna-cert-scim-authorization"], d, "ztna_cert_scim_authorization")); err != nil {
+		if vv, ok := fortiAPIPatch(o["ztna-cert-scim-authorization"], "VpnIpsecPhase1-ZtnaCertScimAuthorization"); ok {
+			if err = d.Set("ztna_cert_scim_authorization", vv); err != nil {
+				return fmt.Errorf("Error reading ztna_cert_scim_authorization: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading ztna_cert_scim_authorization: %v", err)
+		}
+	}
+
 	return nil
 }
 
@@ -3738,6 +3774,10 @@ func expandVpnIpsecPhase1FecRedundant(d *schema.ResourceData, v interface{}, pre
 }
 
 func expandVpnIpsecPhase1FecSendTimeout(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandVpnIpsecPhase1FecSeparateRedundantTunnel(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -4236,6 +4276,10 @@ func expandVpnIpsecPhase1WizardType(d *schema.ResourceData, v interface{}, pre s
 }
 
 func expandVpnIpsecPhase1Xauthtype(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandVpnIpsecPhase1ZtnaCertScimAuthorization(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -4815,6 +4859,15 @@ func getObjectVpnIpsecPhase1(d *schema.ResourceData) (*map[string]interface{}, e
 			return &obj, err
 		} else if t != nil {
 			obj["fec-send-timeout"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("fec_separate_redundant_tunnel"); ok || d.HasChange("fec_separate_redundant_tunnel") {
+		t, err := expandVpnIpsecPhase1FecSeparateRedundantTunnel(d, v, "fec_separate_redundant_tunnel")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["fec-separate-redundant-tunnel"] = t
 		}
 	}
 
@@ -5724,6 +5777,15 @@ func getObjectVpnIpsecPhase1(d *schema.ResourceData) (*map[string]interface{}, e
 			return &obj, err
 		} else if t != nil {
 			obj["xauthtype"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("ztna_cert_scim_authorization"); ok || d.HasChange("ztna_cert_scim_authorization") {
+		t, err := expandVpnIpsecPhase1ZtnaCertScimAuthorization(d, v, "ztna_cert_scim_authorization")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["ztna-cert-scim-authorization"] = t
 		}
 	}
 

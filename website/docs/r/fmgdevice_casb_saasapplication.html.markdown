@@ -24,11 +24,15 @@ The following arguments are supported:
 * `device_vdom` - FortiManager managed device vdom. This variable is used in the request URL. If not specified, it will inherit the variable `device_vdom` of the provider.
 
 * `casb_name` - SaaS application signature name.
+* `category` - SaaS application signature category.
 * `description` - SaaS application description.
+* `display_name` - SaaS application signature display name.
 * `domains` - SaaS application domain list.
+* `icon_id` - SaaS application signature icon ID.
 * `input_attributes` - Input-Attributes. The structure of `input_attributes` block is documented below.
 * `name` - SaaS application name.
 * `output_attributes` - Output-Attributes. The structure of `output_attributes` block is documented below.
+* `popularity` - SaaS application signature popularity.
 * `status` - Enable/disable setting. Valid values: `disable`, `enable`.
 
 * `type` - SaaS application type. Valid values: `built-in`, `customized`.

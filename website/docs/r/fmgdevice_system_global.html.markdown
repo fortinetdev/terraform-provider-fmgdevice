@@ -79,6 +79,14 @@ The following arguments are supported:
 
 * `admin_host` - Administrative host for HTTP and HTTPS. When set, will be used in lieu of the client's Host header for any redirection.
 * `admin_hsts_max_age` - HTTPS Strict-Transport-Security header max-age in seconds. A value of 0 will reset any HSTS records in the browser.When admin-https-redirect is disabled the header max-age will be 0.
+* `admin_http_json_request_limit` - Admin-Http-Json-Request-Limit.
+* `admin_http_login_request_size_limit` - Admin-Http-Login-Request-Size-Limit.
+* `admin_http_rate_limit_exempt_auth` - Enable/disable exemption of authenticated administrator sessions from rate limiting. Valid values: `disable`, `enable`.
+
+* `admin_http_rate_limit_max_requests` - Maximum number of HTTP requests that are allowed to be made in a second by a single client (0 will disable rate limiting).
+* `admin_http_request_body_timeout` - Authenticated HTTP request body timeout, in milliseconds (0 will disable the timeout).
+* `admin_http_request_header_timeout` - HTTP request header timeout, in milliseconds (0 will disable the timeout).
+* `admin_http_unauthenticated_request_body_timeout` - Unauthenticated HTTP request body timeout, in milliseconds, before authentication (0 will disable the timeout).
 * `admin_https_pki_required` - Enable/disable admin login method. Enable to force administrators to provide a valid certificate to log in if PKI is enabled. Disable to allow administrators to log in with a certificate or password. Valid values: `disable`, `enable`.
 
 * `admin_https_redirect` - Enable/disable redirection of HTTP administration access to HTTPS. Valid values: `disable`, `enable`.
@@ -251,6 +259,7 @@ The following arguments are supported:
 
 * `gui_custom_language` - Enable/disable custom languages in GUI. Valid values: `disable`, `enable`.
 
+* `gui_custom_theme` - Custom theme that overrides the default FortiGate themes.
 * `gui_date_format` - Default date format used throughout GUI. Valid values: `yyyy/MM/dd`, `dd/MM/yyyy`, `MM/dd/yyyy`, `yyyy-MM-dd`, `dd-MM-yyyy`, `MM-dd-yyyy`.
 
 * `gui_date_time_source` - Source from which the FortiGate GUI uses to display date and time entries. Valid values: `system`, `browser`.
@@ -276,9 +285,12 @@ The following arguments are supported:
 * `gui_lines_per_page` - Gui-Lines-Per-Page.
 * `gui_local_out` - Enable/disable Local-out traffic on the GUI. Valid values: `disable`, `enable`.
 
+* `gui_login_request_rate_limit` - Conifgure number of login requests to maintain in the request queue (0 - 30, default = 0 for no rate limit).
 * `gui_replacement_message_groups` - Enable/disable replacement message groups on the GUI. Valid values: `disable`, `enable`.
 
 * `gui_rest_api_cache` - Enable/disable REST API result caching on FortiGate. Valid values: `disable`, `enable`.
+
+* `gui_restrict_theme_change` - Enable/disable restricting editing and assigning override themes to super admins. Valid values: `disable`, `enable`.
 
 * `gui_theme` - Color scheme for the administration GUI. Valid values: `blue`, `green`, `melongene`, `red`, `mariner`, `neutrino`, `jade`, `graphite`, `dark-matter`, `onyx`, `eclipse`, `retro`, `fpx`, `jet-stream`, `security-fabric`.
 
@@ -349,6 +361,7 @@ The following arguments are supported:
 * `lldp_transmission` - Enable/disable Link Layer Discovery Protocol (LLDP) transmission. Valid values: `disable`, `enable`.
 
 * `log_daemon_cpu_threshold` - Configure syslog daemon process spawning threshold. Use a percentage threshold of syslogd CPU usage (1 - 99) or set to zero to use dynamic scheduling based on the number of packets in the syslogd queue (default = 0).
+* `log_fsck_timeout` - Configure the maximum the number of seconds the FortiGate unit waits while the file system check is in progress before allowing the boot process to complete and the system fully is operational.  Zero seconds means the FortiGate unit waits until the file system check is complete (0 - 3600, default = 300).
 * `log_single_cpu_high` - Enable/disable logging the event of a single CPU core reaching CPU usage threshold. Valid values: `disable`, `enable`.
 
 * `log_ssl_connection` - Enable/disable logging of SSL connection events. Valid values: `disable`, `enable`.
@@ -522,6 +535,8 @@ The following arguments are supported:
 * `sys_file_check_interval` - Set scheduled system file checking interval in minutes (10 - 10080 min, default = 60, 0 = disabled).
 * `sys_perf_log_interval` - Time in minutes between updates of performance statistics logging. (1 - 15 min, default = 5, 0 = disabled).
 * `syslog_affinity` - Affinity setting for syslog (hexadecimal value up to 256 bits in the format of xxxxxxxxxxxxxxxx).
+* `tcp_congestion_control` - Configure TCP congestion control algorithm (default = cubic). Valid values: `cubic`, `bbr`.
+
 * `tcp_halfclose_timer` - Number of seconds the FortiGate unit should wait to close a session after one peer has sent a FIN packet but the other has not responded (1 - 86400 sec (1 day), default = 120).
 * `tcp_halfopen_timer` - Number of seconds the FortiGate unit should wait to close a session after one peer has sent an open session packet but the other has not responded (1 - 86400 sec (1 day), default = 10).
 * `tcp_option` - Enable SACK, timestamp and MSS TCP options. Valid values: `disable`, `enable`.

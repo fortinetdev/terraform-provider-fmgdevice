@@ -28,6 +28,12 @@ The following arguments are supported:
 * `dynamic_mapping` - Dynamic_Mapping. The structure of `dynamic_mapping` block is documented below.
 * `endip` - Final IPv6 address (inclusive) in the range for the address pool (format = xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx, default = ::).
 * `external_prefix` - External NPTv6 prefix length (32 - 64).
+* `fabric_force_sync` - Enable/disable forced synchronization of configuration objects from the root FortiGate unit to the downstream devices.  Configuration conflict check is skipped. Valid values: `disable`, `enable`.
+
+* `fabric_object` - Security Fabric global object setting. Valid values: `disable`, `enable`.
+
+* `fabric_object_source` - Source of truth for fabric object. Valid values: `member`, `local`, `root`.
+
 * `internal_prefix` - Internal NPTv6 prefix length (32 - 64).
 * `name` - IPv6 IP pool name.
 * `nat46` - Enable/disable NAT46. Valid values: `disable`, `enable`.
@@ -35,6 +41,7 @@ The following arguments are supported:
 * `startip` - First IPv6 address (inclusive) in the range for the address pool (format = xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx, default = ::).
 * `type` - Configure IPv6 pool type (overload or NPTv6). Valid values: `overload`, `nptv6`.
 
+* `uuid` - Universally Unique Identifier (UUID; automatically assigned but can be manually reset).
 * `dynamic_sort_subtable` - true or false, set this parameter to true when using dynamic for_each + toset to configure and sort sub-tables, please do not set this parameter when configuring static sub-tables.
 
 The `dynamic_mapping` block supports:
@@ -45,12 +52,19 @@ The `dynamic_mapping` block supports:
 * `comments` - Comment.
 * `endip` - Final IPv6 address (inclusive) in the range for the address pool (format = xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx, default = ::).
 * `external_prefix` - External NPTv6 prefix length (32 - 64).
+* `fabric_force_sync` - Enable/disable forced synchronization of configuration objects from the root FortiGate unit to the downstream devices.  Configuration conflict check is skipped. Valid values: `disable`, `enable`.
+
+* `fabric_object` - Security Fabric global object setting. Valid values: `disable`, `enable`.
+
+* `fabric_object_source` - Source of truth for fabric object. Valid values: `member`, `local`, `root`.
+
 * `internal_prefix` - Internal NPTv6 prefix length (32 - 64).
 * `nat46` - Enable/disable NAT46. Valid values: `disable`, `enable`.
 
 * `startip` - First IPv6 address (inclusive) in the range for the address pool (format = xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx, default = ::).
 * `type` - Configure IPv6 pool type (overload or NPTv6). Valid values: `overload`, `nptv6`.
 
+* `uuid` - Universally Unique Identifier (UUID; automatically assigned but can be manually reset).
 
 The `_scope` block supports:
 

@@ -41,6 +41,8 @@ The following arguments are supported:
 
 * `fortiextender` - Enable/disable FortiExtender logging. Valid values: `disable`, `enable`.
 
+* `ftnt_sec_mod` - Enable/disable Forti Security Module logging. Valid values: `disable`, `enable`.
+
 * `ha` - Enable/disable ha event logging. Valid values: `disable`, `enable`.
 
 * `rest_api` - Enable/disable REST API logging. Valid values: `disable`, `enable`.
@@ -74,6 +76,8 @@ The following arguments are supported:
 * `crwl` - Crwl. Valid values: `disable`, `enable`.
 
 * `iptables` - Iptables. Valid values: `disable`, `enable`.
+
+* `nftables` - Nftables. Valid values: `disable`, `enable`.
 
 * `wcs` - Wcs. Valid values: `disable`, `enable`.
 

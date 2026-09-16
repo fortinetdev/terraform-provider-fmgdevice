@@ -133,6 +133,8 @@ The following arguments are supported:
 * `captive_portal_radius_server` - Captive portal RADIUS server domain name or IP address.
 * `captive_portal_session_timeout_interval` - Session timeout interval (0 - 864000 sec, default = 0).
 * `captive_portal_auth_timeout` - Hard timeout - AP will always clear the session after timeout regardless of traffic (0 - 864000 sec, default = 0).
+* `captive_portal_dynamic_redirect_url` - Enable/disable captive portal dynamic redirect URL (default = disable). Valid values: `disable`, `enable`.
+
 * `captive_portal_fw_accounting` - Enable/disable RADIUS accounting for captive portal firewall authentication session. Valid values: `disable`, `enable`.
 
 * `dhcp_address_enforcement` - Enable/disable DHCP address enforcement (default = disable). Valid values: `disable`, `enable`.
@@ -142,6 +144,7 @@ The following arguments are supported:
 
 * `dhcp_option82_circuit_id_insertion` - Enable/disable DHCP option 82 circuit-id insert (default = disable). Valid values: `disable`, `style-1`, `style-2`, `style-3`.
 
+* `dhcp_option82_delimiter` - DHCP option 82 field delimiter.
 * `dhcp_option82_insertion` - Enable/disable DHCP option 82 insert (default = disable). Valid values: `disable`, `enable`.
 
 * `dhcp_option82_remote_id_insertion` - Enable/disable DHCP option 82 remote-id insert (default = disable). Valid values: `disable`, `style-1`.
@@ -298,6 +301,9 @@ The following arguments are supported:
 * `radio_2g_threshold` - Minimum signal level/threshold in dBm required for the AP response to receive a packet in 2.4G band (-95 to -20, default = -79).
 * `radio_5g_threshold` - Minimum signal level/threshold in dBm required for the AP response to receive a packet in 5G band(-95 to -20, default = -76).
 * `radio_sensitivity` - Enable/disable software radio sensitivity (to ignore weak signals) (default = disable). Valid values: `disable`, `enable`.
+
+* `radius_auth_surviv_intv` - RADIUS authentication survivability cache timeout interval in seconds (3600 - 864000, default = 86400).
+* `radius_auth_survivability` - Enable/disable RADIUS authentication survivability (default = disable). Valid values: `disable`, `enable`.
 
 * `radius_mac_auth` - Enable/disable RADIUS-based MAC authentication of clients (default = disable). Valid values: `disable`, `enable`.
 
@@ -472,6 +478,8 @@ The `dynamic_mapping` block supports:
 
 * `captive_portal_ac_name` - Local-bridging captive portal ac-name.
 * `captive_portal_auth_timeout` - Hard timeout - AP will always clear the session after timeout regardless of traffic (0 - 864000 sec, default = 0).
+* `captive_portal_dynamic_redirect_url` - Enable/disable captive portal dynamic redirect URL (default = disable). Valid values: `disable`, `enable`.
+
 * `captive_portal_fw_accounting` - Enable/disable RADIUS accounting for captive portal firewall authentication session. Valid values: `disable`, `enable`.
 
 * `captive_portal_macauth_radius_secret` - Captive-Portal-Macauth-Radius-Secret.
@@ -487,6 +495,7 @@ The `dynamic_mapping` block supports:
 
 * `dhcp_option82_circuit_id_insertion` - Enable/disable DHCP option 82 circuit-id insert (default = disable). Valid values: `disable`, `style-1`, `style-2`, `style-3`.
 
+* `dhcp_option82_delimiter` - DHCP option 82 field delimiter.
 * `dhcp_option82_insertion` - Enable/disable DHCP option 82 insert (default = disable). Valid values: `disable`, `enable`.
 
 * `dhcp_option82_remote_id_insertion` - Enable/disable DHCP option 82 remote-id insert (default = disable). Valid values: `disable`, `style-1`.
@@ -640,6 +649,9 @@ The `dynamic_mapping` block supports:
 * `radio_2g_threshold` - Minimum signal level/threshold in dBm required for the AP response to receive a packet in 2.4G band (-95 to -20, default = -79).
 * `radio_5g_threshold` - Minimum signal level/threshold in dBm required for the AP response to receive a packet in 5G band(-95 to -20, default = -76).
 * `radio_sensitivity` - Enable/disable software radio sensitivity (to ignore weak signals) (default = disable). Valid values: `disable`, `enable`.
+
+* `radius_auth_surviv_intv` - RADIUS authentication survivability cache timeout interval in seconds (3600 - 864000, default = 86400).
+* `radius_auth_survivability` - Enable/disable RADIUS authentication survivability (default = disable). Valid values: `disable`, `enable`.
 
 * `radius_mac_auth` - Enable/disable RADIUS-based MAC authentication of clients (default = disable). Valid values: `disable`, `enable`.
 

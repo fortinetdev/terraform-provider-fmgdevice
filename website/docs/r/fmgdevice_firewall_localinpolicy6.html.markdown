@@ -17,9 +17,11 @@ The following arguments are supported:
 * `device_name` - FortiManager managed device name. This variable is used in the request URL. If not specified, it will inherit the variable `device_name` of the provider.
 * `device_vdom` - FortiManager managed device vdom. This variable is used in the request URL. If not specified, it will inherit the variable `device_vdom` of the provider.
 
+* `_policy_block` - _Policy_Block.
 * `action` - Action performed on traffic matching the policy (default = deny). Valid values: `deny`, `accept`.
 
 * `comments` - Comment.
+* `custom_tags` - Custom tags.
 * `dstaddr` - Destination address object from available options.
 * `dstaddr_negate` - When enabled dstaddr specifies what the destination address must NOT be. Valid values: `disable`, `enable`.
 

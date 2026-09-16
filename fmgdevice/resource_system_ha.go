@@ -307,6 +307,34 @@ func resourceSystemHa() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"link_group": &schema.Schema{
+				Type:     schema.TypeList,
+				Optional: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"member": &schema.Schema{
+							Type:     schema.TypeSet,
+							Elem:     &schema.Schema{Type: schema.TypeString},
+							Optional: true,
+							Computed: true,
+						},
+						"min_members": &schema.Schema{
+							Type:     schema.TypeInt,
+							Optional: true,
+						},
+						"name": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+					},
+				},
+			},
+			"link_group_monitor": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Computed: true,
+			},
 			"load_balance_all": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -652,6 +680,12 @@ func resourceSystemHa() *schema.Resource {
 				Optional: true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
+						"link_group_monitor": &schema.Schema{
+							Type:     schema.TypeSet,
+							Elem:     &schema.Schema{Type: schema.TypeString},
+							Optional: true,
+							Computed: true,
+						},
 						"monitor": &schema.Schema{
 							Type:     schema.TypeSet,
 							Elem:     &schema.Schema{Type: schema.TypeString},
@@ -1147,6 +1181,69 @@ func flattenSystemHaLinkFailedSignal(v interface{}, d *schema.ResourceData, pre 
 	return v
 }
 
+func flattenSystemHaLinkGroup(v interface{}, d *schema.ResourceData, pre string) []map[string]interface{} {
+	if v == nil {
+		return nil
+	}
+
+	l := v.([]interface{})
+	if len(l) == 0 || l[0] == nil {
+		return nil
+	}
+
+	result := make([]map[string]interface{}, 0, len(l))
+
+	con := 0
+	for _, r := range l {
+		tmp := make(map[string]interface{})
+		i := r.(map[string]interface{})
+
+		pre_append := "" // table
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "member"
+		if _, ok := i["member"]; ok {
+			v := flattenSystemHaLinkGroupMember(i["member"], d, pre_append)
+			tmp["member"] = fortiAPISubPartPatch(v, "SystemHa-LinkGroup-Member")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "min_members"
+		if _, ok := i["min-members"]; ok {
+			v := flattenSystemHaLinkGroupMinMembers(i["min-members"], d, pre_append)
+			tmp["min_members"] = fortiAPISubPartPatch(v, "SystemHa-LinkGroup-MinMembers")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "name"
+		if _, ok := i["name"]; ok {
+			v := flattenSystemHaLinkGroupName(i["name"], d, pre_append)
+			tmp["name"] = fortiAPISubPartPatch(v, "SystemHa-LinkGroup-Name")
+		}
+
+		if len(tmp) > 0 {
+			result = append(result, tmp)
+		}
+
+		con += 1
+	}
+
+	return result
+}
+
+func flattenSystemHaLinkGroupMember(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
+func flattenSystemHaLinkGroupMinMembers(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemHaLinkGroupName(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenSystemHaLinkGroupMonitor(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
 func flattenSystemHaLoadBalanceAll(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -1526,6 +1623,12 @@ func flattenSystemHaVcluster(v interface{}, d *schema.ResourceData, pre string) 
 
 		pre_append := "" // table
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "link_group_monitor"
+		if _, ok := i["link-group-monitor"]; ok {
+			v := flattenSystemHaVclusterLinkGroupMonitor(i["link-group-monitor"], d, pre_append)
+			tmp["link_group_monitor"] = fortiAPISubPartPatch(v, "SystemHa-Vcluster-LinkGroupMonitor")
+		}
+
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "monitor"
 		if _, ok := i["monitor"]; ok {
 			v := flattenSystemHaVclusterMonitor(i["monitor"], d, pre_append)
@@ -1600,6 +1703,10 @@ func flattenSystemHaVcluster(v interface{}, d *schema.ResourceData, pre string) 
 	}
 
 	return result
+}
+
+func flattenSystemHaVclusterLinkGroupMonitor(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
 }
 
 func flattenSystemHaVclusterMonitor(v interface{}, d *schema.ResourceData, pre string) interface{} {
@@ -2124,6 +2231,40 @@ func refreshObjectSystemHa(d *schema.ResourceData, o map[string]interface{}) err
 			}
 		} else {
 			return fmt.Errorf("Error reading link_failed_signal: %v", err)
+		}
+	}
+
+	if isImportTable() {
+		if err = d.Set("link_group", flattenSystemHaLinkGroup(o["link-group"], d, "link_group")); err != nil {
+			if vv, ok := fortiAPIPatch(o["link-group"], "SystemHa-LinkGroup"); ok {
+				if err = d.Set("link_group", vv); err != nil {
+					return fmt.Errorf("Error reading link_group: %v", err)
+				}
+			} else {
+				return fmt.Errorf("Error reading link_group: %v", err)
+			}
+		}
+	} else {
+		if _, ok := d.GetOk("link_group"); ok {
+			if err = d.Set("link_group", flattenSystemHaLinkGroup(o["link-group"], d, "link_group")); err != nil {
+				if vv, ok := fortiAPIPatch(o["link-group"], "SystemHa-LinkGroup"); ok {
+					if err = d.Set("link_group", vv); err != nil {
+						return fmt.Errorf("Error reading link_group: %v", err)
+					}
+				} else {
+					return fmt.Errorf("Error reading link_group: %v", err)
+				}
+			}
+		}
+	}
+
+	if err = d.Set("link_group_monitor", flattenSystemHaLinkGroupMonitor(o["link-group-monitor"], d, "link_group_monitor")); err != nil {
+		if vv, ok := fortiAPIPatch(o["link-group-monitor"], "SystemHa-LinkGroupMonitor"); ok {
+			if err = d.Set("link_group_monitor", vv); err != nil {
+				return fmt.Errorf("Error reading link_group_monitor: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading link_group_monitor: %v", err)
 		}
 	}
 
@@ -3052,6 +3193,61 @@ func expandSystemHaLinkFailedSignal(d *schema.ResourceData, v interface{}, pre s
 	return v, nil
 }
 
+func expandSystemHaLinkGroup(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	l := v.([]interface{})
+	result := make([]map[string]interface{}, 0, len(l))
+
+	if len(l) == 0 || l[0] == nil {
+		return result, nil
+	}
+
+	con := 0
+	for _, r := range l {
+		tmp := make(map[string]interface{})
+		i := r.(map[string]interface{})
+		pre_append := "" // table
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "member"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["member"], _ = expandSystemHaLinkGroupMember(d, i["member"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "min_members"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["min-members"], _ = expandSystemHaLinkGroupMinMembers(d, i["min_members"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "name"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["name"], _ = expandSystemHaLinkGroupName(d, i["name"], pre_append)
+		}
+
+		if len(tmp) > 0 {
+			result = append(result, tmp)
+		}
+
+		con += 1
+	}
+
+	return result, nil
+}
+
+func expandSystemHaLinkGroupMember(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandSystemHaLinkGroupMinMembers(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemHaLinkGroupName(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandSystemHaLinkGroupMonitor(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
 func expandSystemHaLoadBalanceAll(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -3414,6 +3610,11 @@ func expandSystemHaVcluster(d *schema.ResourceData, v interface{}, pre string) (
 		i := r.(map[string]interface{})
 		pre_append := "" // table
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "link_group_monitor"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["link-group-monitor"], _ = expandSystemHaVclusterLinkGroupMonitor(d, i["link_group_monitor"], pre_append)
+		}
+
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "monitor"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
 			tmp["monitor"], _ = expandSystemHaVclusterMonitor(d, i["monitor"], pre_append)
@@ -3477,6 +3678,10 @@ func expandSystemHaVcluster(d *schema.ResourceData, v interface{}, pre string) (
 	}
 
 	return result, nil
+}
+
+func expandSystemHaVclusterLinkGroupMonitor(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
 }
 
 func expandSystemHaVclusterMonitor(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
@@ -3939,6 +4144,28 @@ func getObjectSystemHa(d *schema.ResourceData, bemptysontable bool) (*map[string
 			return &obj, err
 		} else if t != nil {
 			obj["link-failed-signal"] = t
+		}
+	}
+
+	if bemptysontable {
+		obj["link-group"] = make([]struct{}, 0)
+	} else {
+		if v, ok := d.GetOk("link_group"); ok || d.HasChange("link_group") {
+			t, err := expandSystemHaLinkGroup(d, v, "link_group")
+			if err != nil {
+				return &obj, err
+			} else if t != nil {
+				obj["link-group"] = t
+			}
+		}
+	}
+
+	if v, ok := d.GetOk("link_group_monitor"); ok || d.HasChange("link_group_monitor") {
+		t, err := expandSystemHaLinkGroupMonitor(d, v, "link_group_monitor")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["link-group-monitor"] = t
 		}
 	}
 

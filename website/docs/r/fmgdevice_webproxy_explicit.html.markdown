@@ -38,6 +38,8 @@ The following arguments are supported:
 
 * `client_cert` - Enable/disable to request client certificate. Valid values: `disable`, `enable`.
 
+* `client_certificate_blocklist` - Enable/disable blocking client malicious certificates list by FortiGuard during TLS handshake. Valid values: `disable`, `enable`.
+
 * `empty_cert_action` - Action of an empty client certificate. Valid values: `block`, `accept`, `accept-unmanageable`.
 
 * `ftp_incoming_port` - Accept incoming FTP-over-HTTP requests on one or more ports (0 - 65535, default = 0; use the same as HTTP).

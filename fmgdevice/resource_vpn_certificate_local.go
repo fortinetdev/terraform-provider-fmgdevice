@@ -185,6 +185,17 @@ func resourceVpnCertificateLocal() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"keyid": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"keyid_password": &schema.Schema{
+				Type:      schema.TypeSet,
+				Elem:      &schema.Schema{Type: schema.TypeString},
+				Optional:  true,
+				Sensitive: true,
+				Computed:  true,
+			},
 			"last_updated": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
@@ -577,6 +588,10 @@ func flattenVpnCertificateLocalIkeLocalidType(v interface{}, d *schema.ResourceD
 	return v
 }
 
+func flattenVpnCertificateLocalKeyid(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenVpnCertificateLocalLastUpdated(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -924,6 +939,16 @@ func refreshObjectVpnCertificateLocal(d *schema.ResourceData, o map[string]inter
 		}
 	}
 
+	if err = d.Set("keyid", flattenVpnCertificateLocalKeyid(o["keyid"], d, "keyid")); err != nil {
+		if vv, ok := fortiAPIPatch(o["keyid"], "VpnCertificateLocal-Keyid"); ok {
+			if err = d.Set("keyid", vv); err != nil {
+				return fmt.Errorf("Error reading keyid: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading keyid: %v", err)
+		}
+	}
+
 	if err = d.Set("last_updated", flattenVpnCertificateLocalLastUpdated(o["last-updated"], d, "last_updated")); err != nil {
 		if vv, ok := fortiAPIPatch(o["last-updated"], "VpnCertificateLocal-LastUpdated"); ok {
 			if err = d.Set("last_updated", vv); err != nil {
@@ -1207,6 +1232,14 @@ func expandVpnCertificateLocalIkeLocalid(d *schema.ResourceData, v interface{}, 
 
 func expandVpnCertificateLocalIkeLocalidType(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
+}
+
+func expandVpnCertificateLocalKeyid(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandVpnCertificateLocalKeyidPassword(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
 }
 
 func expandVpnCertificateLocalLastUpdated(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
@@ -1542,6 +1575,24 @@ func getObjectVpnCertificateLocal(d *schema.ResourceData) (*map[string]interface
 			return &obj, err
 		} else if t != nil {
 			obj["ike-localid-type"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("keyid"); ok || d.HasChange("keyid") {
+		t, err := expandVpnCertificateLocalKeyid(d, v, "keyid")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["keyid"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("keyid_password"); ok || d.HasChange("keyid_password") {
+		t, err := expandVpnCertificateLocalKeyidPassword(d, v, "keyid_password")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["keyid-password"] = t
 		}
 	}
 

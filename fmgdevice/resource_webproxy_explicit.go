@@ -51,6 +51,10 @@ func resourceWebProxyExplicit() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"client_certificate_blocklist": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 			"empty_cert_action": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -435,6 +439,10 @@ func flattenWebProxyExplicitClientCert(v interface{}, d *schema.ResourceData, pr
 	return v
 }
 
+func flattenWebProxyExplicitClientCertificateBlocklist(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenWebProxyExplicitEmptyCertAction(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -702,6 +710,16 @@ func refreshObjectWebProxyExplicit(d *schema.ResourceData, o map[string]interfac
 			}
 		} else {
 			return fmt.Errorf("Error reading client_cert: %v", err)
+		}
+	}
+
+	if err = d.Set("client_certificate_blocklist", flattenWebProxyExplicitClientCertificateBlocklist(o["client-certificate-blocklist"], d, "client_certificate_blocklist")); err != nil {
+		if vv, ok := fortiAPIPatch(o["client-certificate-blocklist"], "WebProxyExplicit-ClientCertificateBlocklist"); ok {
+			if err = d.Set("client_certificate_blocklist", vv); err != nil {
+				return fmt.Errorf("Error reading client_certificate_blocklist: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading client_certificate_blocklist: %v", err)
 		}
 	}
 
@@ -1102,6 +1120,10 @@ func expandWebProxyExplicitClientCert(d *schema.ResourceData, v interface{}, pre
 	return v, nil
 }
 
+func expandWebProxyExplicitClientCertificateBlocklist(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandWebProxyExplicitEmptyCertAction(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -1351,6 +1373,15 @@ func getObjectWebProxyExplicit(d *schema.ResourceData, bemptysontable bool) (*ma
 			return &obj, err
 		} else if t != nil {
 			obj["client-cert"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("client_certificate_blocklist"); ok || d.HasChange("client_certificate_blocklist") {
+		t, err := expandWebProxyExplicitClientCertificateBlocklist(d, v, "client_certificate_blocklist")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["client-certificate-blocklist"] = t
 		}
 	}
 

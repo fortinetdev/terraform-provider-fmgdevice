@@ -61,6 +61,8 @@ The following arguments are supported:
 
 * `upload_destination` - The type of server to upload log files to. Only FTP is currently supported. Valid values: `ftp-server`, `fortianalyzer`.
 
+* `upload_file_format` - Configure the file format to be used for log files prior to being uploaded. Valid values: `default`, `lz4`.
+
 * `upload_ssl_conn` - Enable/disable encrypted FTPS communication to upload log files. Valid values: `default`, `high`, `low`, `disable`.
 
 * `uploaddir` - The remote directory on the FTP server to upload log files to.

@@ -68,6 +68,7 @@ The `pools` block supports:
 
 * `client_mapping_limit` - Mapping limit per client (0 - 65535, default = 0, 0 = unlimited).
 * `client_subnet` - Subnets from which PCP requests are accepted.
+* `client6_prefix` - Prefixes from which PCP requests are accepted.
 * `description` - Description.
 * `ext_intf` - External interface name.
 * `extip` - IP address or address range on the external interface that you want to map to an address on the internal network.
@@ -80,6 +81,8 @@ The `pools` block supports:
 * `multicast_announcement` - Enable/disable multicast announcements. Valid values: `disable`, `enable`.
 
 * `name` - PCP pool name.
+* `nat46` - Enable/disable NAT46. Valid values: `disable`, `enable`.
+
 * `recycle_delay` - Minimum delay (in seconds) the PCP Server will wait before recycling mappings that have expired (0 - 3600, default = 0).
 * `third_party` - Allow/disallow third party option. Valid values: `disallow`, `allow`.
 

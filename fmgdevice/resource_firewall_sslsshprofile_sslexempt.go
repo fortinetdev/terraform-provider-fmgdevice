@@ -206,14 +206,21 @@ func resourceFirewallSslSshProfileSslExemptUpdate(d *schema.ResourceData, m inte
 
 	wsParams["adom"] = adomv
 
-	_, err = c.UpdateFirewallSslSshProfileSslExempt(obj, mkey, paradict, wsParams)
+	v, err := c.UpdateFirewallSslSshProfileSslExempt(obj, mkey, paradict, wsParams)
 	if err != nil {
 		return fmt.Errorf("Error updating FirewallSslSshProfileSslExempt resource: %v", err)
 	}
 
 	log.Printf(strconv.Itoa(c.Retries))
 
-	d.SetId(strconv.Itoa(getIntKey(d, "fosid")))
+	if v != nil && v["id"] != nil {
+		if vidn, ok := v["id"].(float64); ok {
+			d.SetId(strconv.Itoa(int(vidn)))
+			return resourceFirewallSslSshProfileSslExemptRead(d, m)
+		} else {
+			return fmt.Errorf("Error updating FirewallSslSshProfileSslExempt resource: %v", err)
+		}
+	}
 
 	return resourceFirewallSslSshProfileSslExemptRead(d, m)
 }

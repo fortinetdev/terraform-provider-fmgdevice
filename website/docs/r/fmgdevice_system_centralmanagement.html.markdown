@@ -79,6 +79,8 @@ The following arguments are supported:
 * `server_list` - Server-List. The structure of `server_list` block is documented below.
 * `type` - Central management type. Valid values: `fortimanager`, `fortiguard`, `none`.
 
+* `use_default_servers_as_main` - Enable/disable use of the public FortiGuard servers as main servers. Valid values: `disable`, `enable`.
+
 * `use_elbc_vdom` - Enable/disable use of special ELBC config sync VDOM to connect to FortiManager. Valid values: `disable`, `enable`.
 
 * `vdom` - Virtual domain (VDOM) name to use when communicating with FortiManager.

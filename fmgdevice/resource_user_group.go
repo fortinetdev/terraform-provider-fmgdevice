@@ -118,6 +118,18 @@ func resourceUserGroup() *schema.Resource {
 							Type:     schema.TypeString,
 							Optional: true,
 						},
+						"fabric_force_sync": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"fabric_object": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"fabric_object_source": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
 						"group_type": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
@@ -248,6 +260,26 @@ func resourceUserGroup() *schema.Resource {
 						"redir_url": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+						},
+						"scim_group_attr_type": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"scim_groups": &schema.Schema{
+							Type:     schema.TypeSet,
+							Elem:     &schema.Schema{Type: schema.TypeString},
+							Optional: true,
+							Computed: true,
+						},
+						"scim_user_attr_type": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"scim_users": &schema.Schema{
+							Type:     schema.TypeSet,
+							Elem:     &schema.Schema{Type: schema.TypeString},
+							Optional: true,
+							Computed: true,
 						},
 						"sms_custom_server": &schema.Schema{
 							Type:     schema.TypeSet,
@@ -387,6 +419,11 @@ func resourceUserGroup() *schema.Resource {
 							Type:     schema.TypeString,
 							Optional: true,
 						},
+						"uuid": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+							Computed: true,
+						},
 					},
 				},
 			},
@@ -404,6 +441,18 @@ func resourceUserGroup() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+			},
+			"fabric_force_sync": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"fabric_object": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"fabric_object_source": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
 			},
 			"group_type": &schema.Schema{
 				Type:     schema.TypeString,
@@ -525,6 +574,26 @@ func resourceUserGroup() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"scim_group_attr_type": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"scim_groups": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Computed: true,
+			},
+			"scim_user_attr_type": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"scim_users": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Computed: true,
+			},
 			"sms_custom_server": &schema.Schema{
 				Type:     schema.TypeSet,
 				Elem:     &schema.Schema{Type: schema.TypeString},
@@ -551,6 +620,11 @@ func resourceUserGroup() *schema.Resource {
 				Computed: true,
 			},
 			"user_name": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+			"uuid": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
@@ -847,6 +921,24 @@ func flattenUserGroupDynamicMapping(v interface{}, d *schema.ResourceData, pre s
 			tmp["expire_type"] = fortiAPISubPartPatch(v, "UserGroup-DynamicMapping-ExpireType")
 		}
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "fabric_force_sync"
+		if _, ok := i["fabric-force-sync"]; ok {
+			v := flattenUserGroupDynamicMappingFabricForceSync(i["fabric-force-sync"], d, pre_append)
+			tmp["fabric_force_sync"] = fortiAPISubPartPatch(v, "UserGroup-DynamicMapping-FabricForceSync")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "fabric_object"
+		if _, ok := i["fabric-object"]; ok {
+			v := flattenUserGroupDynamicMappingFabricObject(i["fabric-object"], d, pre_append)
+			tmp["fabric_object"] = fortiAPISubPartPatch(v, "UserGroup-DynamicMapping-FabricObject")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "fabric_object_source"
+		if _, ok := i["fabric-object-source"]; ok {
+			v := flattenUserGroupDynamicMappingFabricObjectSource(i["fabric-object-source"], d, pre_append)
+			tmp["fabric_object_source"] = fortiAPISubPartPatch(v, "UserGroup-DynamicMapping-FabricObjectSource")
+		}
+
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "group_type"
 		if _, ok := i["group-type"]; ok {
 			v := flattenUserGroupDynamicMappingGroupType(i["group-type"], d, pre_append)
@@ -929,6 +1021,30 @@ func flattenUserGroupDynamicMapping(v interface{}, d *schema.ResourceData, pre s
 		if _, ok := i["redir-url"]; ok {
 			v := flattenUserGroupDynamicMappingRedirUrl(i["redir-url"], d, pre_append)
 			tmp["redir_url"] = fortiAPISubPartPatch(v, "UserGroup-DynamicMapping-RedirUrl")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "scim_group_attr_type"
+		if _, ok := i["scim-group-attr-type"]; ok {
+			v := flattenUserGroupDynamicMappingScimGroupAttrType(i["scim-group-attr-type"], d, pre_append)
+			tmp["scim_group_attr_type"] = fortiAPISubPartPatch(v, "UserGroup-DynamicMapping-ScimGroupAttrType")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "scim_groups"
+		if _, ok := i["scim-groups"]; ok {
+			v := flattenUserGroupDynamicMappingScimGroups(i["scim-groups"], d, pre_append)
+			tmp["scim_groups"] = fortiAPISubPartPatch(v, "UserGroup-DynamicMapping-ScimGroups")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "scim_user_attr_type"
+		if _, ok := i["scim-user-attr-type"]; ok {
+			v := flattenUserGroupDynamicMappingScimUserAttrType(i["scim-user-attr-type"], d, pre_append)
+			tmp["scim_user_attr_type"] = fortiAPISubPartPatch(v, "UserGroup-DynamicMapping-ScimUserAttrType")
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "scim_users"
+		if _, ok := i["scim-users"]; ok {
+			v := flattenUserGroupDynamicMappingScimUsers(i["scim-users"], d, pre_append)
+			tmp["scim_users"] = fortiAPISubPartPatch(v, "UserGroup-DynamicMapping-ScimUsers")
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "sms_custom_server"
@@ -1093,6 +1209,12 @@ func flattenUserGroupDynamicMapping(v interface{}, d *schema.ResourceData, pre s
 			tmp["user_name"] = fortiAPISubPartPatch(v, "UserGroup-DynamicMapping-UserName")
 		}
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "uuid"
+		if _, ok := i["uuid"]; ok {
+			v := flattenUserGroupDynamicMappingUuid(i["uuid"], d, pre_append)
+			tmp["uuid"] = fortiAPISubPartPatch(v, "UserGroup-DynamicMapping-Uuid")
+		}
+
 		if len(tmp) > 0 {
 			result = append(result, tmp)
 		}
@@ -1177,6 +1299,18 @@ func flattenUserGroupDynamicMappingExpire(v interface{}, d *schema.ResourceData,
 }
 
 func flattenUserGroupDynamicMappingExpireType(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenUserGroupDynamicMappingFabricForceSync(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenUserGroupDynamicMappingFabricObject(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenUserGroupDynamicMappingFabricObjectSource(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -1426,6 +1560,22 @@ func flattenUserGroupDynamicMappingRedirUrl(v interface{}, d *schema.ResourceDat
 	return v
 }
 
+func flattenUserGroupDynamicMappingScimGroupAttrType(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenUserGroupDynamicMappingScimGroups(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
+func flattenUserGroupDynamicMappingScimUserAttrType(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenUserGroupDynamicMappingScimUsers(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
 func flattenUserGroupDynamicMappingSmsCustomServer(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return flattenStringList(v)
 }
@@ -1579,6 +1729,10 @@ func flattenUserGroupDynamicMappingUserName(v interface{}, d *schema.ResourceDat
 	return v
 }
 
+func flattenUserGroupDynamicMappingUuid(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenUserGroupEmail(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
@@ -1588,6 +1742,18 @@ func flattenUserGroupExpire(v interface{}, d *schema.ResourceData, pre string) i
 }
 
 func flattenUserGroupExpireType(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenUserGroupFabricForceSync(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenUserGroupFabricObject(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenUserGroupFabricObjectSource(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -1815,6 +1981,22 @@ func flattenUserGroupPassword(v interface{}, d *schema.ResourceData, pre string)
 	return v
 }
 
+func flattenUserGroupScimGroupAttrType(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenUserGroupScimGroups(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
+func flattenUserGroupScimUserAttrType(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenUserGroupScimUsers(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return flattenStringList(v)
+}
+
 func flattenUserGroupSmsCustomServer(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return flattenStringList(v)
 }
@@ -1836,6 +2018,10 @@ func flattenUserGroupUserId(v interface{}, d *schema.ResourceData, pre string) i
 }
 
 func flattenUserGroupUserName(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenUserGroupUuid(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -1945,6 +2131,36 @@ func refreshObjectUserGroup(d *schema.ResourceData, o map[string]interface{}) er
 			}
 		} else {
 			return fmt.Errorf("Error reading expire_type: %v", err)
+		}
+	}
+
+	if err = d.Set("fabric_force_sync", flattenUserGroupFabricForceSync(o["fabric-force-sync"], d, "fabric_force_sync")); err != nil {
+		if vv, ok := fortiAPIPatch(o["fabric-force-sync"], "UserGroup-FabricForceSync"); ok {
+			if err = d.Set("fabric_force_sync", vv); err != nil {
+				return fmt.Errorf("Error reading fabric_force_sync: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading fabric_force_sync: %v", err)
+		}
+	}
+
+	if err = d.Set("fabric_object", flattenUserGroupFabricObject(o["fabric-object"], d, "fabric_object")); err != nil {
+		if vv, ok := fortiAPIPatch(o["fabric-object"], "UserGroup-FabricObject"); ok {
+			if err = d.Set("fabric_object", vv); err != nil {
+				return fmt.Errorf("Error reading fabric_object: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading fabric_object: %v", err)
+		}
+	}
+
+	if err = d.Set("fabric_object_source", flattenUserGroupFabricObjectSource(o["fabric-object-source"], d, "fabric_object_source")); err != nil {
+		if vv, ok := fortiAPIPatch(o["fabric-object-source"], "UserGroup-FabricObjectSource"); ok {
+			if err = d.Set("fabric_object_source", vv); err != nil {
+				return fmt.Errorf("Error reading fabric_object_source: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading fabric_object_source: %v", err)
 		}
 	}
 
@@ -2086,6 +2302,46 @@ func refreshObjectUserGroup(d *schema.ResourceData, o map[string]interface{}) er
 		}
 	}
 
+	if err = d.Set("scim_group_attr_type", flattenUserGroupScimGroupAttrType(o["scim-group-attr-type"], d, "scim_group_attr_type")); err != nil {
+		if vv, ok := fortiAPIPatch(o["scim-group-attr-type"], "UserGroup-ScimGroupAttrType"); ok {
+			if err = d.Set("scim_group_attr_type", vv); err != nil {
+				return fmt.Errorf("Error reading scim_group_attr_type: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading scim_group_attr_type: %v", err)
+		}
+	}
+
+	if err = d.Set("scim_groups", flattenUserGroupScimGroups(o["scim-groups"], d, "scim_groups")); err != nil {
+		if vv, ok := fortiAPIPatch(o["scim-groups"], "UserGroup-ScimGroups"); ok {
+			if err = d.Set("scim_groups", vv); err != nil {
+				return fmt.Errorf("Error reading scim_groups: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading scim_groups: %v", err)
+		}
+	}
+
+	if err = d.Set("scim_user_attr_type", flattenUserGroupScimUserAttrType(o["scim-user-attr-type"], d, "scim_user_attr_type")); err != nil {
+		if vv, ok := fortiAPIPatch(o["scim-user-attr-type"], "UserGroup-ScimUserAttrType"); ok {
+			if err = d.Set("scim_user_attr_type", vv); err != nil {
+				return fmt.Errorf("Error reading scim_user_attr_type: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading scim_user_attr_type: %v", err)
+		}
+	}
+
+	if err = d.Set("scim_users", flattenUserGroupScimUsers(o["scim-users"], d, "scim_users")); err != nil {
+		if vv, ok := fortiAPIPatch(o["scim-users"], "UserGroup-ScimUsers"); ok {
+			if err = d.Set("scim_users", vv); err != nil {
+				return fmt.Errorf("Error reading scim_users: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading scim_users: %v", err)
+		}
+	}
+
 	if err = d.Set("sms_custom_server", flattenUserGroupSmsCustomServer(o["sms-custom-server"], d, "sms_custom_server")); err != nil {
 		if vv, ok := fortiAPIPatch(o["sms-custom-server"], "UserGroup-SmsCustomServer"); ok {
 			if err = d.Set("sms_custom_server", vv); err != nil {
@@ -2143,6 +2399,16 @@ func refreshObjectUserGroup(d *schema.ResourceData, o map[string]interface{}) er
 			}
 		} else {
 			return fmt.Errorf("Error reading user_name: %v", err)
+		}
+	}
+
+	if err = d.Set("uuid", flattenUserGroupUuid(o["uuid"], d, "uuid")); err != nil {
+		if vv, ok := fortiAPIPatch(o["uuid"], "UserGroup-Uuid"); ok {
+			if err = d.Set("uuid", vv); err != nil {
+				return fmt.Errorf("Error reading uuid: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading uuid: %v", err)
 		}
 	}
 
@@ -2250,6 +2516,21 @@ func expandUserGroupDynamicMapping(d *schema.ResourceData, v interface{}, pre st
 			tmp["expire-type"], _ = expandUserGroupDynamicMappingExpireType(d, i["expire_type"], pre_append)
 		}
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "fabric_force_sync"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["fabric-force-sync"], _ = expandUserGroupDynamicMappingFabricForceSync(d, i["fabric_force_sync"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "fabric_object"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["fabric-object"], _ = expandUserGroupDynamicMappingFabricObject(d, i["fabric_object"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "fabric_object_source"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["fabric-object-source"], _ = expandUserGroupDynamicMappingFabricObjectSource(d, i["fabric_object_source"], pre_append)
+		}
+
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "group_type"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
 			tmp["group-type"], _ = expandUserGroupDynamicMappingGroupType(d, i["group_type"], pre_append)
@@ -2328,6 +2609,26 @@ func expandUserGroupDynamicMapping(d *schema.ResourceData, v interface{}, pre st
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "redir_url"
 		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
 			tmp["redir-url"], _ = expandUserGroupDynamicMappingRedirUrl(d, i["redir_url"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "scim_group_attr_type"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["scim-group-attr-type"], _ = expandUserGroupDynamicMappingScimGroupAttrType(d, i["scim_group_attr_type"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "scim_groups"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["scim-groups"], _ = expandUserGroupDynamicMappingScimGroups(d, i["scim_groups"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "scim_user_attr_type"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["scim-user-attr-type"], _ = expandUserGroupDynamicMappingScimUserAttrType(d, i["scim_user_attr_type"], pre_append)
+		}
+
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "scim_users"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["scim-users"], _ = expandUserGroupDynamicMappingScimUsers(d, i["scim_users"], pre_append)
 		}
 
 		pre_append = pre + "." + strconv.Itoa(con) + "." + "sms_custom_server"
@@ -2470,6 +2771,11 @@ func expandUserGroupDynamicMapping(d *schema.ResourceData, v interface{}, pre st
 			tmp["user-name"], _ = expandUserGroupDynamicMappingUserName(d, i["user_name"], pre_append)
 		}
 
+		pre_append = pre + "." + strconv.Itoa(con) + "." + "uuid"
+		if _, ok := d.GetOk(pre_append); ok || d.HasChange(pre_append) {
+			tmp["uuid"], _ = expandUserGroupDynamicMappingUuid(d, i["uuid"], pre_append)
+		}
+
 		if len(tmp) > 0 {
 			result = append(result, tmp)
 		}
@@ -2547,6 +2853,18 @@ func expandUserGroupDynamicMappingExpire(d *schema.ResourceData, v interface{}, 
 }
 
 func expandUserGroupDynamicMappingExpireType(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandUserGroupDynamicMappingFabricForceSync(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandUserGroupDynamicMappingFabricObject(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandUserGroupDynamicMappingFabricObjectSource(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -2781,6 +3099,22 @@ func expandUserGroupDynamicMappingRedirUrl(d *schema.ResourceData, v interface{}
 	return v, nil
 }
 
+func expandUserGroupDynamicMappingScimGroupAttrType(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandUserGroupDynamicMappingScimGroups(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandUserGroupDynamicMappingScimUserAttrType(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandUserGroupDynamicMappingScimUsers(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
 func expandUserGroupDynamicMappingSmsCustomServer(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return expandStringList(v.(*schema.Set).List()), nil
 }
@@ -2931,6 +3265,10 @@ func expandUserGroupDynamicMappingUserName(d *schema.ResourceData, v interface{}
 	return v, nil
 }
 
+func expandUserGroupDynamicMappingUuid(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandUserGroupEmail(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
@@ -2940,6 +3278,18 @@ func expandUserGroupExpire(d *schema.ResourceData, v interface{}, pre string) (i
 }
 
 func expandUserGroupExpireType(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandUserGroupFabricForceSync(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandUserGroupFabricObject(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandUserGroupFabricObjectSource(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -3153,6 +3503,22 @@ func expandUserGroupPassword(d *schema.ResourceData, v interface{}, pre string) 
 	return v, nil
 }
 
+func expandUserGroupScimGroupAttrType(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandUserGroupScimGroups(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
+func expandUserGroupScimUserAttrType(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandUserGroupScimUsers(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return expandStringList(v.(*schema.Set).List()), nil
+}
+
 func expandUserGroupSmsCustomServer(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return expandStringList(v.(*schema.Set).List()), nil
 }
@@ -3174,6 +3540,10 @@ func expandUserGroupUserId(d *schema.ResourceData, v interface{}, pre string) (i
 }
 
 func expandUserGroupUserName(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandUserGroupUuid(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -3257,6 +3627,33 @@ func getObjectUserGroup(d *schema.ResourceData) (*map[string]interface{}, error)
 			return &obj, err
 		} else if t != nil {
 			obj["expire-type"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("fabric_force_sync"); ok || d.HasChange("fabric_force_sync") {
+		t, err := expandUserGroupFabricForceSync(d, v, "fabric_force_sync")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["fabric-force-sync"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("fabric_object"); ok || d.HasChange("fabric_object") {
+		t, err := expandUserGroupFabricObject(d, v, "fabric_object")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["fabric-object"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("fabric_object_source"); ok || d.HasChange("fabric_object_source") {
+		t, err := expandUserGroupFabricObjectSource(d, v, "fabric_object_source")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["fabric-object-source"] = t
 		}
 	}
 
@@ -3359,6 +3756,42 @@ func getObjectUserGroup(d *schema.ResourceData) (*map[string]interface{}, error)
 		}
 	}
 
+	if v, ok := d.GetOk("scim_group_attr_type"); ok || d.HasChange("scim_group_attr_type") {
+		t, err := expandUserGroupScimGroupAttrType(d, v, "scim_group_attr_type")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["scim-group-attr-type"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("scim_groups"); ok || d.HasChange("scim_groups") {
+		t, err := expandUserGroupScimGroups(d, v, "scim_groups")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["scim-groups"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("scim_user_attr_type"); ok || d.HasChange("scim_user_attr_type") {
+		t, err := expandUserGroupScimUserAttrType(d, v, "scim_user_attr_type")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["scim-user-attr-type"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("scim_users"); ok || d.HasChange("scim_users") {
+		t, err := expandUserGroupScimUsers(d, v, "scim_users")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["scim-users"] = t
+		}
+	}
+
 	if v, ok := d.GetOk("sms_custom_server"); ok || d.HasChange("sms_custom_server") {
 		t, err := expandUserGroupSmsCustomServer(d, v, "sms_custom_server")
 		if err != nil {
@@ -3410,6 +3843,15 @@ func getObjectUserGroup(d *schema.ResourceData) (*map[string]interface{}, error)
 			return &obj, err
 		} else if t != nil {
 			obj["user-name"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("uuid"); ok || d.HasChange("uuid") {
+		t, err := expandUserGroupUuid(d, v, "uuid")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["uuid"] = t
 		}
 	}
 

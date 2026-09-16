@@ -74,6 +74,10 @@ func resourceWirelessControllerWtpRadio2() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"cca_threshold": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 			"channel": &schema.Schema{
 				Type:     schema.TypeSet,
 				Elem:     &schema.Schema{Type: schema.TypeString},
@@ -93,6 +97,10 @@ func resourceWirelessControllerWtpRadio2() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"override_cca_threshold": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 			"override_channel": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -102,6 +110,10 @@ func resourceWirelessControllerWtpRadio2() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+			},
+			"override_vap_status": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
 			},
 			"override_vaps": &schema.Schema{
 				Type:     schema.TypeString,
@@ -134,7 +146,39 @@ func resourceWirelessControllerWtpRadio2() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
+			"vap_status": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 			"vap1": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"vap10": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"vap11": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"vap12": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"vap13": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"vap14": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"vap15": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"vap16": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 			},
@@ -163,6 +207,10 @@ func resourceWirelessControllerWtpRadio2() *schema.Resource {
 				Optional: true,
 			},
 			"vap8": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"vap9": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 			},
@@ -347,6 +395,10 @@ func flattenWirelessControllerWtpRadio2Band2edl(v interface{}, d *schema.Resourc
 	return convstr2list(v, d.Get(pre))
 }
 
+func flattenWirelessControllerWtpRadio2CcaThreshold2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenWirelessControllerWtpRadio2Channel2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return flattenStringList(v)
 }
@@ -363,11 +415,19 @@ func flattenWirelessControllerWtpRadio2OverrideBand2edl(v interface{}, d *schema
 	return v
 }
 
+func flattenWirelessControllerWtpRadio2OverrideCcaThreshold2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenWirelessControllerWtpRadio2OverrideChannel2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
 func flattenWirelessControllerWtpRadio2OverrideTxpower2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWirelessControllerWtpRadio2OverrideVapStatus2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -399,7 +459,39 @@ func flattenWirelessControllerWtpRadio2VapAll2edl(v interface{}, d *schema.Resou
 	return v
 }
 
+func flattenWirelessControllerWtpRadio2VapStatus2edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
 func flattenWirelessControllerWtpRadio2Vap12edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWirelessControllerWtpRadio2Vap102edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWirelessControllerWtpRadio2Vap112edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWirelessControllerWtpRadio2Vap122edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWirelessControllerWtpRadio2Vap132edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWirelessControllerWtpRadio2Vap142edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWirelessControllerWtpRadio2Vap152edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWirelessControllerWtpRadio2Vap162edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -428,6 +520,10 @@ func flattenWirelessControllerWtpRadio2Vap72edl(v interface{}, d *schema.Resourc
 }
 
 func flattenWirelessControllerWtpRadio2Vap82edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
+	return v
+}
+
+func flattenWirelessControllerWtpRadio2Vap92edl(v interface{}, d *schema.ResourceData, pre string) interface{} {
 	return v
 }
 
@@ -488,6 +584,16 @@ func refreshObjectWirelessControllerWtpRadio2(d *schema.ResourceData, o map[stri
 		}
 	}
 
+	if err = d.Set("cca_threshold", flattenWirelessControllerWtpRadio2CcaThreshold2edl(o["cca-threshold"], d, "cca_threshold")); err != nil {
+		if vv, ok := fortiAPIPatch(o["cca-threshold"], "WirelessControllerWtpRadio2-CcaThreshold"); ok {
+			if err = d.Set("cca_threshold", vv); err != nil {
+				return fmt.Errorf("Error reading cca_threshold: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading cca_threshold: %v", err)
+		}
+	}
+
 	if err = d.Set("channel", flattenWirelessControllerWtpRadio2Channel2edl(o["channel"], d, "channel")); err != nil {
 		if vv, ok := fortiAPIPatch(o["channel"], "WirelessControllerWtpRadio2-Channel"); ok {
 			if err = d.Set("channel", vv); err != nil {
@@ -528,6 +634,16 @@ func refreshObjectWirelessControllerWtpRadio2(d *schema.ResourceData, o map[stri
 		}
 	}
 
+	if err = d.Set("override_cca_threshold", flattenWirelessControllerWtpRadio2OverrideCcaThreshold2edl(o["override-cca-threshold"], d, "override_cca_threshold")); err != nil {
+		if vv, ok := fortiAPIPatch(o["override-cca-threshold"], "WirelessControllerWtpRadio2-OverrideCcaThreshold"); ok {
+			if err = d.Set("override_cca_threshold", vv); err != nil {
+				return fmt.Errorf("Error reading override_cca_threshold: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading override_cca_threshold: %v", err)
+		}
+	}
+
 	if err = d.Set("override_channel", flattenWirelessControllerWtpRadio2OverrideChannel2edl(o["override-channel"], d, "override_channel")); err != nil {
 		if vv, ok := fortiAPIPatch(o["override-channel"], "WirelessControllerWtpRadio2-OverrideChannel"); ok {
 			if err = d.Set("override_channel", vv); err != nil {
@@ -545,6 +661,16 @@ func refreshObjectWirelessControllerWtpRadio2(d *schema.ResourceData, o map[stri
 			}
 		} else {
 			return fmt.Errorf("Error reading override_txpower: %v", err)
+		}
+	}
+
+	if err = d.Set("override_vap_status", flattenWirelessControllerWtpRadio2OverrideVapStatus2edl(o["override-vap-status"], d, "override_vap_status")); err != nil {
+		if vv, ok := fortiAPIPatch(o["override-vap-status"], "WirelessControllerWtpRadio2-OverrideVapStatus"); ok {
+			if err = d.Set("override_vap_status", vv); err != nil {
+				return fmt.Errorf("Error reading override_vap_status: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading override_vap_status: %v", err)
 		}
 	}
 
@@ -618,6 +744,16 @@ func refreshObjectWirelessControllerWtpRadio2(d *schema.ResourceData, o map[stri
 		}
 	}
 
+	if err = d.Set("vap_status", flattenWirelessControllerWtpRadio2VapStatus2edl(o["vap-status"], d, "vap_status")); err != nil {
+		if vv, ok := fortiAPIPatch(o["vap-status"], "WirelessControllerWtpRadio2-VapStatus"); ok {
+			if err = d.Set("vap_status", vv); err != nil {
+				return fmt.Errorf("Error reading vap_status: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading vap_status: %v", err)
+		}
+	}
+
 	if err = d.Set("vap1", flattenWirelessControllerWtpRadio2Vap12edl(o["vap1"], d, "vap1")); err != nil {
 		if vv, ok := fortiAPIPatch(o["vap1"], "WirelessControllerWtpRadio2-Vap1"); ok {
 			if err = d.Set("vap1", vv); err != nil {
@@ -625,6 +761,76 @@ func refreshObjectWirelessControllerWtpRadio2(d *schema.ResourceData, o map[stri
 			}
 		} else {
 			return fmt.Errorf("Error reading vap1: %v", err)
+		}
+	}
+
+	if err = d.Set("vap10", flattenWirelessControllerWtpRadio2Vap102edl(o["vap10"], d, "vap10")); err != nil {
+		if vv, ok := fortiAPIPatch(o["vap10"], "WirelessControllerWtpRadio2-Vap10"); ok {
+			if err = d.Set("vap10", vv); err != nil {
+				return fmt.Errorf("Error reading vap10: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading vap10: %v", err)
+		}
+	}
+
+	if err = d.Set("vap11", flattenWirelessControllerWtpRadio2Vap112edl(o["vap11"], d, "vap11")); err != nil {
+		if vv, ok := fortiAPIPatch(o["vap11"], "WirelessControllerWtpRadio2-Vap11"); ok {
+			if err = d.Set("vap11", vv); err != nil {
+				return fmt.Errorf("Error reading vap11: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading vap11: %v", err)
+		}
+	}
+
+	if err = d.Set("vap12", flattenWirelessControllerWtpRadio2Vap122edl(o["vap12"], d, "vap12")); err != nil {
+		if vv, ok := fortiAPIPatch(o["vap12"], "WirelessControllerWtpRadio2-Vap12"); ok {
+			if err = d.Set("vap12", vv); err != nil {
+				return fmt.Errorf("Error reading vap12: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading vap12: %v", err)
+		}
+	}
+
+	if err = d.Set("vap13", flattenWirelessControllerWtpRadio2Vap132edl(o["vap13"], d, "vap13")); err != nil {
+		if vv, ok := fortiAPIPatch(o["vap13"], "WirelessControllerWtpRadio2-Vap13"); ok {
+			if err = d.Set("vap13", vv); err != nil {
+				return fmt.Errorf("Error reading vap13: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading vap13: %v", err)
+		}
+	}
+
+	if err = d.Set("vap14", flattenWirelessControllerWtpRadio2Vap142edl(o["vap14"], d, "vap14")); err != nil {
+		if vv, ok := fortiAPIPatch(o["vap14"], "WirelessControllerWtpRadio2-Vap14"); ok {
+			if err = d.Set("vap14", vv); err != nil {
+				return fmt.Errorf("Error reading vap14: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading vap14: %v", err)
+		}
+	}
+
+	if err = d.Set("vap15", flattenWirelessControllerWtpRadio2Vap152edl(o["vap15"], d, "vap15")); err != nil {
+		if vv, ok := fortiAPIPatch(o["vap15"], "WirelessControllerWtpRadio2-Vap15"); ok {
+			if err = d.Set("vap15", vv); err != nil {
+				return fmt.Errorf("Error reading vap15: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading vap15: %v", err)
+		}
+	}
+
+	if err = d.Set("vap16", flattenWirelessControllerWtpRadio2Vap162edl(o["vap16"], d, "vap16")); err != nil {
+		if vv, ok := fortiAPIPatch(o["vap16"], "WirelessControllerWtpRadio2-Vap16"); ok {
+			if err = d.Set("vap16", vv); err != nil {
+				return fmt.Errorf("Error reading vap16: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading vap16: %v", err)
 		}
 	}
 
@@ -698,6 +904,16 @@ func refreshObjectWirelessControllerWtpRadio2(d *schema.ResourceData, o map[stri
 		}
 	}
 
+	if err = d.Set("vap9", flattenWirelessControllerWtpRadio2Vap92edl(o["vap9"], d, "vap9")); err != nil {
+		if vv, ok := fortiAPIPatch(o["vap9"], "WirelessControllerWtpRadio2-Vap9"); ok {
+			if err = d.Set("vap9", vv); err != nil {
+				return fmt.Errorf("Error reading vap9: %v", err)
+			}
+		} else {
+			return fmt.Errorf("Error reading vap9: %v", err)
+		}
+	}
+
 	if err = d.Set("vaps", flattenWirelessControllerWtpRadio2Vaps2edl(o["vaps"], d, "vaps")); err != nil {
 		if vv, ok := fortiAPIPatch(o["vaps"], "WirelessControllerWtpRadio2-Vaps"); ok {
 			if err = d.Set("vaps", vv); err != nil {
@@ -737,6 +953,10 @@ func expandWirelessControllerWtpRadio2Band2edl(d *schema.ResourceData, v interfa
 	return expandStringList(v.(*schema.Set).List()), nil
 }
 
+func expandWirelessControllerWtpRadio2CcaThreshold2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandWirelessControllerWtpRadio2Channel2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return expandStringList(v.(*schema.Set).List()), nil
 }
@@ -753,11 +973,19 @@ func expandWirelessControllerWtpRadio2OverrideBand2edl(d *schema.ResourceData, v
 	return v, nil
 }
 
+func expandWirelessControllerWtpRadio2OverrideCcaThreshold2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandWirelessControllerWtpRadio2OverrideChannel2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
 func expandWirelessControllerWtpRadio2OverrideTxpower2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWirelessControllerWtpRadio2OverrideVapStatus2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -789,7 +1017,39 @@ func expandWirelessControllerWtpRadio2VapAll2edl(d *schema.ResourceData, v inter
 	return v, nil
 }
 
+func expandWirelessControllerWtpRadio2VapStatus2edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
 func expandWirelessControllerWtpRadio2Vap12edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWirelessControllerWtpRadio2Vap102edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWirelessControllerWtpRadio2Vap112edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWirelessControllerWtpRadio2Vap122edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWirelessControllerWtpRadio2Vap132edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWirelessControllerWtpRadio2Vap142edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWirelessControllerWtpRadio2Vap152edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWirelessControllerWtpRadio2Vap162edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -818,6 +1078,10 @@ func expandWirelessControllerWtpRadio2Vap72edl(d *schema.ResourceData, v interfa
 }
 
 func expandWirelessControllerWtpRadio2Vap82edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
+	return v, nil
+}
+
+func expandWirelessControllerWtpRadio2Vap92edl(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
 	return v, nil
 }
 
@@ -873,6 +1137,15 @@ func getObjectWirelessControllerWtpRadio2(d *schema.ResourceData, bemptysontable
 		}
 	}
 
+	if v, ok := d.GetOk("cca_threshold"); ok || d.HasChange("cca_threshold") {
+		t, err := expandWirelessControllerWtpRadio2CcaThreshold2edl(d, v, "cca_threshold")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["cca-threshold"] = t
+		}
+	}
+
 	if v, ok := d.GetOk("channel"); ok || d.HasChange("channel") {
 		t, err := expandWirelessControllerWtpRadio2Channel2edl(d, v, "channel")
 		if err != nil {
@@ -909,6 +1182,15 @@ func getObjectWirelessControllerWtpRadio2(d *schema.ResourceData, bemptysontable
 		}
 	}
 
+	if v, ok := d.GetOk("override_cca_threshold"); ok || d.HasChange("override_cca_threshold") {
+		t, err := expandWirelessControllerWtpRadio2OverrideCcaThreshold2edl(d, v, "override_cca_threshold")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["override-cca-threshold"] = t
+		}
+	}
+
 	if v, ok := d.GetOk("override_channel"); ok || d.HasChange("override_channel") {
 		t, err := expandWirelessControllerWtpRadio2OverrideChannel2edl(d, v, "override_channel")
 		if err != nil {
@@ -924,6 +1206,15 @@ func getObjectWirelessControllerWtpRadio2(d *schema.ResourceData, bemptysontable
 			return &obj, err
 		} else if t != nil {
 			obj["override-txpower"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("override_vap_status"); ok || d.HasChange("override_vap_status") {
+		t, err := expandWirelessControllerWtpRadio2OverrideVapStatus2edl(d, v, "override_vap_status")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["override-vap-status"] = t
 		}
 	}
 
@@ -990,12 +1281,84 @@ func getObjectWirelessControllerWtpRadio2(d *schema.ResourceData, bemptysontable
 		}
 	}
 
+	if v, ok := d.GetOk("vap_status"); ok || d.HasChange("vap_status") {
+		t, err := expandWirelessControllerWtpRadio2VapStatus2edl(d, v, "vap_status")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["vap-status"] = t
+		}
+	}
+
 	if v, ok := d.GetOk("vap1"); ok || d.HasChange("vap1") {
 		t, err := expandWirelessControllerWtpRadio2Vap12edl(d, v, "vap1")
 		if err != nil {
 			return &obj, err
 		} else if t != nil {
 			obj["vap1"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("vap10"); ok || d.HasChange("vap10") {
+		t, err := expandWirelessControllerWtpRadio2Vap102edl(d, v, "vap10")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["vap10"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("vap11"); ok || d.HasChange("vap11") {
+		t, err := expandWirelessControllerWtpRadio2Vap112edl(d, v, "vap11")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["vap11"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("vap12"); ok || d.HasChange("vap12") {
+		t, err := expandWirelessControllerWtpRadio2Vap122edl(d, v, "vap12")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["vap12"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("vap13"); ok || d.HasChange("vap13") {
+		t, err := expandWirelessControllerWtpRadio2Vap132edl(d, v, "vap13")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["vap13"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("vap14"); ok || d.HasChange("vap14") {
+		t, err := expandWirelessControllerWtpRadio2Vap142edl(d, v, "vap14")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["vap14"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("vap15"); ok || d.HasChange("vap15") {
+		t, err := expandWirelessControllerWtpRadio2Vap152edl(d, v, "vap15")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["vap15"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("vap16"); ok || d.HasChange("vap16") {
+		t, err := expandWirelessControllerWtpRadio2Vap162edl(d, v, "vap16")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["vap16"] = t
 		}
 	}
 
@@ -1059,6 +1422,15 @@ func getObjectWirelessControllerWtpRadio2(d *schema.ResourceData, bemptysontable
 			return &obj, err
 		} else if t != nil {
 			obj["vap8"] = t
+		}
+	}
+
+	if v, ok := d.GetOk("vap9"); ok || d.HasChange("vap9") {
+		t, err := expandWirelessControllerWtpRadio2Vap92edl(d, v, "vap9")
+		if err != nil {
+			return &obj, err
+		} else if t != nil {
+			obj["vap9"] = t
 		}
 	}
 

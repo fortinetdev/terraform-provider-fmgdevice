@@ -89,6 +89,7 @@ func resourceExtensionControllerExtenderProfileLanExtensionBackhaul() *schema.Re
 			"port": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"role": &schema.Schema{
 				Type:     schema.TypeString,

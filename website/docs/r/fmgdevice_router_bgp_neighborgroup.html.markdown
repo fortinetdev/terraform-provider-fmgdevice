@@ -58,6 +58,8 @@ The following arguments are supported:
 * `adv_additional_path_vpnv4` - Number of VPNv4 additional paths that can be advertised to this neighbor.
 * `adv_additional_path_vpnv6` - Number of VPNv6 additional paths that can be advertised to this neighbor.
 * `adv_additional_path6` - Number of IPv6 additional paths that can be advertised to this neighbor.
+* `adv_evpn_route` - Types of EVPN routes that can be advertised to this neighbor as IPv4 routes. Valid values: `type2`, `type5`, `local`.
+
 * `advertisement_interval` - Minimum interval (sec) between sending updates.
 * `allowas_in` - IPv4 The maximum number of occurrence of my AS number allowed.
 * `allowas_in_enable` - Enable/disable IPv4 Enable to allow my AS in AS path. Valid values: `disable`, `enable`.
@@ -115,6 +117,7 @@ The following arguments are supported:
 * `default_originate_routemap` - Route map to specify criteria to originate IPv4 default.
 * `default_originate_routemap6` - Route map to specify criteria to originate IPv6 default.
 * `description` - Description.
+* `display_options` - Display-Options.
 * `distribute_list_in` - Filter for IPv4 updates from this neighbor.
 * `distribute_list_in_vpnv4` - Filter for VPNv4 updates from this neighbor.
 * `distribute_list_in_vpnv6` - Filter for VPNv6 updates from this neighbor.
@@ -128,6 +131,8 @@ The following arguments are supported:
 * `ebgp_enforce_multihop` - Enable/disable allow multi-hop EBGP neighbors. Valid values: `disable`, `enable`.
 
 * `ebgp_multihop_ttl` - EBGP multihop TTL for this peer.
+* `enforce_preferred_source` - Enable/disable enforce usage of the update-source as preferred source for IPv4 routes learned from this neighbor. Valid values: `disable`, `enable`.
+
 * `filter_list_in` - BGP filter for IPv4 inbound routes.
 * `filter_list_in_vpnv4` - BGP filter for VPNv4 inbound routes.
 * `filter_list_in_vpnv6` - BGP filter for VPNv6 inbound routes.
@@ -136,6 +141,9 @@ The following arguments are supported:
 * `filter_list_out_vpnv4` - BGP filter for VPNv4 outbound routes.
 * `filter_list_out_vpnv6` - BGP filter for VPNv6 outbound routes.
 * `filter_list_out6` - BGP filter for IPv6 outbound routes.
+* `graceful_shutdown_community` - Graceful shutdown community.
+* `graceful_shutdown_delay` - Delay in seconds before graceful shutdown ends.
+* `graceful_shutdown_local_preference` - Graceful shutdown local preference.
 * `holdtime_timer` - Interval (sec) before peer considered dead.
 * `interface` - Specify outgoing interface for peer connection. For IPv6 peer, the interface should have link-local address.
 * `keep_alive_timer` - Keep alive timer interval (sec).
@@ -170,6 +178,10 @@ The following arguments are supported:
 * `next_hop_self` - Enable/disable IPv4 next-hop calculation for this neighbor. Valid values: `disable`, `enable`.
 
 * `next_hop_self_rr` - Enable/disable setting nexthop's address to interface's IPv4 address for route-reflector routes. Valid values: `disable`, `enable`.
+
+* `next_hop_self_rr_vpnv4` - Enable/disable setting of the nexthop's address to interface's address for route-reflector VPNv4 routes. Valid values: `disable`, `enable`.
+
+* `next_hop_self_rr_vpnv6` - Enable/disable setting of the nexthop's address to interface's address for route-reflector VPNv6 routes. Valid values: `disable`, `enable`.
 
 * `next_hop_self_rr6` - Enable/disable setting nexthop's address to interface's IPv6 address for route-reflector routes. Valid values: `disable`, `enable`.
 
@@ -279,6 +291,8 @@ The following arguments are supported:
 * `unsuppress_map` - IPv4 Route map to selectively unsuppress suppressed routes.
 * `unsuppress_map6` - IPv6 Route map to selectively unsuppress suppressed routes.
 * `update_source` - Interface to use as source IP/IPv6 address of TCP connections.
+* `use_sdwan` - Use SDWAN rules for BGP connection. Valid values: `disable`, `enable`.
+
 * `weight` - Neighbor weight.
 
 
